@@ -1,0 +1,314 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 (日本) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 17, 1\r\n"
+    "#pragma code_page(932)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""l.jpn\\afxres.rc""          // 標準のコンポーネント\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\memory.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "memoryのﾊﾞｰｼﾞｮﾝ情報"
+FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x0
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,12,18,21
+    LTEXT           "memory Version 2.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) koichi 2006 All Rights",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_MEMORY_DIALOG DIALOGEX 0, 0, 216, 159
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "フラッシュ暗算α"
+FONT 11, "ＭＳ Ｐゴシック", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "終了",IDOK,165,109,44,11
+    PUSHBUTTON      "ｷｬﾝｾﾙ",IDCANCEL,64,143,30,11
+    CTEXT           "ココに表示",IDC_SHOW,10,22,193,24,SS_CENTERIMAGE
+    PUSHBUTTON      "開始",IDC_START,165,63,44,11
+    EDITTEXT        IDC_PR_NUM,45,67,19,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "出題数",IDC_STATIC,19,68,24,8
+    EDITTEXT        IDC_PR_KETA,45,81,19,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "桁数",IDC_STATIC,26,82,16,8
+    DEFPUSHBUTTON   "答え合わせ",IDC_ANS,165,84,44,11
+    GROUPBOX        "問題",IDC_STATIC,8,13,201,38,BS_CENTER
+    LTEXT           "(1～20)",IDC_PRO_STR,65,68,25,8
+    LTEXT           "(1～15)",IDC_KETA_STR,65,82,29,8
+    CONTROL         "暗記",IDC_ANKI,"Button",BS_AUTORADIOBUTTON,28,111,31,10
+    CONTROL         "計算",IDC_KEISAN,"Button",BS_AUTORADIOBUTTON,28,100,31,10
+    CONTROL         "英小字",IDC_ENG_SMALL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,65,111,32,10
+    CONTROL         "英大字",IDC_ENG_LARGE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,103,111,32,10
+    CONTROL         "数字",IDC_NUMBER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,65,100,25,10
+    SCROLLBAR       IDC_VIEW_SPEED,51,133,83,8
+    LTEXT           "表示速度",IDC_STATIC,18,133,32,8
+    LTEXT           "(1000ms)",IDC_SPEED_TXT,20,142,38,10
+    PUSHBUTTON      "ヘルプ",ID_HELP,164,129,45,11
+END
+
+IDD_MEM_ANSER DIALOGEX 0, 0, 295, 289
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "解答"
+FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "答え合わせ",ID_ANS_CHK,223,53,65,18
+    PUSHBUTTON      "カンニング",ID_ANS_SHOW,223,105,65,18,BS_MULTILINE
+    LTEXT           "No 1",ANS_NO1,8,43,15,8
+    EDITTEXT        IDC_ANS_TEXT1,24,41,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_JUDGE1,93,43,8,8
+    LTEXT           "No 2",ANS_NO2,8,67,15,8
+    EDITTEXT        IDC_ANS_TEXT2,24,65,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_JUDGE2,93,65,8,8
+    LTEXT           "No 3",ANS_NO3,8,91,15,8
+    EDITTEXT        IDC_ANS_TEXT3,24,89,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_JUDGE3,93,91,8,8
+    LTEXT           "No 4",ANS_NO4,8,115,15,8
+    EDITTEXT        IDC_ANS_TEXT4,24,113,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_JUDGE4,93,115,8,8
+    LTEXT           "No 5",ANS_NO5,8,139,15,8
+    EDITTEXT        IDC_ANS_TEXT5,24,137,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER5,26,150,66,8
+    LTEXT           "",IDC_JUDGE5,93,139,8,8
+    LTEXT           "No 6",ANS_NO6,8,163,15,8
+    EDITTEXT        IDC_ANS_TEXT6,24,161,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER6,26,174,66,8
+    LTEXT           "",IDC_JUDGE6,93,163,8,8
+    LTEXT           "No 7",ANS_NO7,8,187,15,8
+    EDITTEXT        IDC_ANS_TEXT7,24,185,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER7,26,198,66,8
+    LTEXT           "",IDC_JUDGE7,93,187,8,8
+    LTEXT           "No 8",ANS_NO8,8,211,15,8
+    EDITTEXT        IDC_ANS_TEXT8,24,209,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER8,26,222,66,8
+    LTEXT           "",IDC_JUDGE8,93,211,8,8
+    LTEXT           "No 9",ANS_NO9,8,235,15,8
+    EDITTEXT        IDC_ANS_TEXT9,24,233,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER9,26,246,66,8
+    LTEXT           "",IDC_JUDGE9,93,235,8,8
+    LTEXT           "No10",ANS_NO10,8,259,15,8
+    EDITTEXT        IDC_ANS_TEXT10,24,257,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER10,26,274,66,8
+    LTEXT           "",IDC_JUDGE10,93,259,8,8
+    LTEXT           "No11",ANS_NO11,114,43,15,8
+    EDITTEXT        IDC_ANS_TEXT11,130,41,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER11,136,54,66,8
+    LTEXT           "",IDC_JUDGE11,199,41,8,8
+    LTEXT           "No12",ANS_NO12,114,67,15,8
+    EDITTEXT        IDC_ANS_TEXT12,130,65,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER12,136,78,66,8
+    LTEXT           "",IDC_JUDGE12,199,65,8,8
+    LTEXT           "No13",ANS_NO13,114,91,15,8
+    EDITTEXT        IDC_ANS_TEXT13,130,89,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER13,136,102,66,8
+    LTEXT           "",IDC_JUDGE13,199,91,8,8
+    LTEXT           "No14",ANS_NO14,114,115,15,8
+    EDITTEXT        IDC_ANS_TEXT14,130,113,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER14,136,126,66,8
+    LTEXT           "",IDC_JUDGE14,199,115,8,8
+    LTEXT           "No15",ANS_NO15,114,139,15,8
+    EDITTEXT        IDC_ANS_TEXT15,130,137,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER15,136,150,66,8
+    LTEXT           "",IDC_JUDGE15,199,139,8,8
+    LTEXT           "No16",ANS_NO16,114,163,15,8
+    EDITTEXT        IDC_ANS_TEXT16,130,161,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER16,136,174,66,8
+    LTEXT           "",IDC_JUDGE16,199,163,8,8
+    LTEXT           "No17",ANS_NO17,114,187,15,8
+    EDITTEXT        IDC_ANS_TEXT17,130,185,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER17,136,198,66,8
+    LTEXT           "",IDC_JUDGE17,199,187,8,8
+    LTEXT           "No18",ANS_NO18,114,211,15,8
+    EDITTEXT        IDC_ANS_TEXT18,130,209,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER18,136,222,66,8
+    LTEXT           "",IDC_JUDGE18,199,211,8,8
+    LTEXT           "No19",ANS_NO19,114,235,15,8
+    EDITTEXT        IDC_ANS_TEXT19,130,233,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ANSER19,136,246,66,8
+    LTEXT           "",IDC_JUDGE19,199,235,8,8
+    LTEXT           "No20",ANS_NO20,114,259,15,8
+    EDITTEXT        IDC_ANS_TEXT20,130,257,66,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_JUDGE20,199,259,8,8
+    PUSHBUTTON      "閉じる",ID_ANSOK,223,247,65,18
+    LTEXT           "解答は半角で入力して下さい。",IDC_STATIC,75,13,90,8
+    CTEXT           "",IDC_CHEAT,75,25,88,10
+    LTEXT           "",IDC_ANSER4,26,126,66,8
+    LTEXT           "",IDC_ANSER3,26,102,66,8
+    LTEXT           "",IDC_ANSER2,26,78,66,8
+    LTEXT           "",IDC_ANSER1,26,54,66,8
+    LTEXT           "",IDC_ANSER20,136,274,66,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041104B0"
+        BEGIN
+            VALUE "FileDescription", "memory MFC ｱﾌﾟﾘｹｰｼｮﾝ"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "memory"
+            VALUE "LegalCopyright", "Copyright (C) 2006"
+            VALUE "OriginalFilename", "memory.EXE"
+            VALUE "ProductName", "memory ｱﾌﾟﾘｹｰｼｮﾝ"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_MEMORY_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 209
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 154
+    END
+
+    IDD_MEM_ANSER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 288
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 282
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "ﾊﾞｰｼﾞｮﾝ情報(&A)..."
+END
+
+#endif    // 日本語 (日本) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE 17, 1
+#pragma code_page(932)
+#endif //_WIN32
+#include "l.jpn\afxres.rc"          // 標準のコンポーネント
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

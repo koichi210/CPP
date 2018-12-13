@@ -1,0 +1,4 @@
+LIBRARY EventHookd
+
+SECTIONS
+    .shared READ WRITE SHARED

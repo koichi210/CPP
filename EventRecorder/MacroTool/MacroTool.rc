@@ -1,0 +1,248 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 (日本) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)\r\n"
+    "LANGUAGE 17, 1\r\n"
+    "#pragma code_page(932)\r\n"
+    "#include ""afxres.rc""     // 標準コンポーネント\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\MacroTool.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAINDLG DIALOGEX 0, 0, 100, 26
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ﾏｸﾛ"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDET_SAMPLE,0,0,98,13,ES_AUTOHSCROLL,WS_EX_ACCEPTFILES
+    PUSHBUTTON      "実行",IDBT_EXEC,1,12,21,14
+    PUSHBUTTON      "停止",IDBT_STOP,23,12,21,14
+    PUSHBUTTON      "設定",IDBT_SETTING,45,12,21,14
+    DEFPUSHBUTTON   "閉じる",IDCLOSE,73,12,25,14
+END
+
+IDD_MACROTOOL_DIALOG DIALOGEX 0, 0, 247, 179
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "設定"
+FONT 9, "MS UI Gothic", 0, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_LISTCTRL,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,1,3,199,79
+    GROUPBOX        "共通設定",IDC_STATIC,1,85,44,91
+    LTEXT           "回数",IDC_STATIC,5,97,15,8
+    EDITTEXT        IDET_REPEAT_NUM,4,105,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "遅延時間",IDC_STATIC,5,126,28,8
+    EDITTEXT        IDET_REPEAT_TIME,4,134,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "(1234::1234)",IDLB_STATES,5,165,35,8
+    GROUPBOX        "設定",IDC_STATIC,56,85,142,91
+    LTEXT           "回数",IDC_STATIC,63,95,15,8
+    EDITTEXT        IDET_EXECUTE,62,103,22,13,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "遅延時間",IDC_STATIC,94,95,28,8
+    EDITTEXT        IDET_SLEEP,93,104,46,13,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "コメント",IDC_STATIC,148,95,20,8
+    EDITTEXT        IDET_COMMENT,147,103,46,13,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,67,122,56,51
+    GROUPBOX        "",IDC_STATIC,130,122,63,51
+    CONTROL         "マウス",IDRB_MOUSE,"Button",BS_AUTORADIOBUTTON,64,122,31,10
+    CONTROL         "キー",IDRB_KEY,"Button",BS_AUTORADIOBUTTON,128,122,27,10
+    LTEXT           "X ：",IDC_STATIC,79,132,11,8
+    EDITTEXT        IDET_MOUSE_X,72,141,21,13,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Y ：",IDC_STATIC,100,132,11,8
+    EDITTEXT        IDET_MOUSE_Y,95,141,21,13,ES_AUTOHSCROLL | ES_NUMBER
+    COMBOBOX        IDCB_MOUSE,72,158,45,180,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDET_KEY,135,133,25,13,ES_AUTOHSCROLL
+    COMBOBOX        IDCB_KEY,135,149,27,180,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Shift",IDCH_KEY_SHIFT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,164,132,25,10
+    CONTROL         "Ctrl",IDCH_KEY_CTRL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,164,144,24,10
+    CONTROL         "Alt",IDCH_KEY_ALT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,164,156,25,10
+    PUSHBUTTON      "コピー",IDBT_LIST_COPY,204,3,39,14
+    PUSHBUTTON      "貼り付け",IDBT_LIST_PASTE,204,17,39,14
+    PUSHBUTTON      "挿入",IDBT_LIST_INSERT,204,31,39,14
+    PUSHBUTTON      "削除",IDBT_LIST_DELETE,204,45,39,14
+    PUSHBUTTON      "全削除",IDBT_ALLCLEAR,204,59,39,14
+    PUSHBUTTON      "記録",IDBT_RECORD,204,79,39,14
+    PUSHBUTTON      "ファイル読込",IDBT_READ,204,99,39,14
+    PUSHBUTTON      "ファイル保存",IDBT_WRITE,204,113,39,14
+    DEFPUSHBUTTON   "OK",IDOK,204,134,39,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,204,148,39,14
+    PUSHBUTTON      "ヘルプ",IDBT_HELP,204,162,39,14
+END
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "バージョン情報 MacroTool"
+FONT 9, "MS UI Gothic", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "IDS_VERSION",IDC_VERSION,84,12,48,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2013",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,16,WS_GROUP
+    LTEXT           "Macro Tools",IDC_STATIC,40,12,37,8,SS_NOPREFIX
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041103a4"
+        BEGIN
+            VALUE "CompanyName", "Riposo Company"
+            VALUE "FileDescription", "MacroTool"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "マクロツール"
+            VALUE "LegalCopyright", "(C) Riposo Company.  All rights reserved."
+            VALUE "OriginalFilename", "MacroTool.exe"
+            VALUE "ProductName", "マクロツール"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 932
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_MAINDLG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 98
+    END
+
+    IDD_MACROTOOL_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 1
+        RIGHTMARGIN, 243
+        TOPMARGIN, 2
+        BOTTOMMARGIN, 177
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "バージョン情報 MacroTool(&A)..."
+    IDS_VERSION             "Ver 2.3"
+END
+
+#endif    // 日本語 (日本) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+LANGUAGE 17, 1
+#pragma code_page(932)
+#include "afxres.rc"     // 標準コンポーネント
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

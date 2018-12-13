@@ -1,0 +1,30 @@
+【基本設定】
+	画角
+		・幅	1920
+		・高さ	1080
+
+	動画設定
+		・bpp		24
+		・FPS		20
+		・記録時間	5
+
+
+【圧縮設定】
+	下記、圧縮モードごとの動画ファイルサイズ
+
+	圧縮モード
+		・Microsoft Video1
+			⇒45.0MB
+
+		・Intel IYUVコーデック
+		　※WindowsMediaPlayerでは開けない。
+		　　コーデックが必要かも。
+			⇒296MB
+
+		・Cinepak Codec by Radius
+			⇒24.3MB
+
+
+		・非圧縮
+			⇒593MB
+
