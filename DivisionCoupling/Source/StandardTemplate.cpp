@@ -6,6 +6,8 @@
 #include "stdafx.h"
 #include "StandardTemplate.h"
 
+#include <string>
+
 #if USE_IMM_H
 #include <imm.h> //ImmAssociateContext(),imm32.lib
 #endif
@@ -2054,4 +2056,27 @@ BOOL CMyCompareFile::IsSameFile()
 	}
 
 	return bReturn;
+}
+
+void Trim(char * cSource, char * cDest, int cDestSize, const char * TrimCharList)
+{
+	CString SourceStr = cSource;
+
+	CString DestStr = Trim(SourceStr, TrimCharList);
+	strncpy(cDest, DestStr, cDestSize);
+}
+
+CString Trim(CString SourceStr, const char * TrimCharList)
+{
+	// Memo：Trimしたい文字
+	// TrimCharList = "\"";
+
+	// 左右端の該当文字をTrim
+	std::string strFileName = SourceStr;
+	std::string::size_type left = strFileName.find_first_not_of(TrimCharList);
+	std::string::size_type right = strFileName.find_last_not_of(TrimCharList);
+	std::string strResult = strFileName.substr(left, right - left + 1);
+
+	// 入力引数の文字列を更新
+	return strResult.c_str();
 }

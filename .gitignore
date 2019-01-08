@@ -51,3 +51,12 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+*.aps
+*.sdf
+*.suo
+*.user
+*.cache
+*.tlog
+*.log
+*.manifest
+*.lastbuildstate

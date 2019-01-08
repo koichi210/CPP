@@ -343,3 +343,8 @@ protected:
 	void Close();
 	BOOL IsSameFile();
 };
+
+
+/////////////////////////////////////////////////////////////////////////////
+void Trim(char * cSource, char * cDest, int cDestSize, const char * TrimCharList);
+CString Trim(CString SourceStr, const char * TrimCharList);
