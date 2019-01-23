@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurnMemory", "TurnMemory.vcxproj", "{BB61FB71-65DE-2ED3-39BC-7DFDE696D918}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurnMemory", "Source\TurnMemory.vcxproj", "{9B03B8C4-A5D3-8AAE-1DE7-ED99638D5A65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BB61FB71-65DE-2ED3-39BC-7DFDE696D918}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BB61FB71-65DE-2ED3-39BC-7DFDE696D918}.Debug|Win32.Build.0 = Debug|Win32
-		{BB61FB71-65DE-2ED3-39BC-7DFDE696D918}.Release|Win32.ActiveCfg = Release|Win32
-		{BB61FB71-65DE-2ED3-39BC-7DFDE696D918}.Release|Win32.Build.0 = Release|Win32
+		{9B03B8C4-A5D3-8AAE-1DE7-ED99638D5A65}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B03B8C4-A5D3-8AAE-1DE7-ED99638D5A65}.Debug|Win32.Build.0 = Debug|Win32
+		{9B03B8C4-A5D3-8AAE-1DE7-ED99638D5A65}.Release|Win32.ActiveCfg = Release|Win32
+		{9B03B8C4-A5D3-8AAE-1DE7-ED99638D5A65}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

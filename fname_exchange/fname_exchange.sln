@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fname_exchange", "fname_exchange.vcxproj", "{0D18790D-DDFF-4F79-939A-63F580E53336}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fname_exchange", "Source\fname_exchange.vcxproj", "{0D18790D-DDFF-4F79-939A-63F580E53336}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
