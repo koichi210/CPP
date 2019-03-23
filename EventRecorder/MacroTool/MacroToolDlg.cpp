@@ -408,7 +408,7 @@ void CMacroToolDlg::OnEnChangeMouseX()
 	BOOL bValid;
 	int value;
 
-	value = (int)GetDlgItemInt(IDET_MOUSE_X, &bValid, FALSE);
+	value = (int)GetDlgItemInt(IDET_MOUSE_X, &bValid, TRUE);
 	if ( value > MAX_MOUSE_POINT_VALUE )
 	{
 		value = MAX_MOUSE_POINT_VALUE;
