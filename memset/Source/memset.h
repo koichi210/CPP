@@ -1,5 +1,5 @@
 
-// meset.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
+// memset.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
 //
 
 #pragma once
@@ -11,14 +11,14 @@
 #include "resource.h"		// メイン シンボル
 
 
-// CmesetApp:
-// このクラスの実装については、meset.cpp を参照してください。
+// CmemsetApp:
+// このクラスの実装については、memset.cpp を参照してください。
 //
 
-class CmesetApp : public CWinApp
+class CmemsetApp : public CWinApp
 {
 public:
-	CmesetApp();
+	CmemsetApp();
 
 // オーバーライド
 public:
@@ -29,4 +29,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CmesetApp theApp;
+extern CmemsetApp theApp;

@@ -1,19 +1,19 @@
 
-// mesetDlg.h : ヘッダー ファイル
+// memsetDlg.h : ヘッダー ファイル
 //
 
 #pragma once
 
 
-// CmesetDlg ダイアログ
-class CmesetDlg : public CDialogEx
+// CmemsetDlg ダイアログ
+class CmemsetDlg : public CDialogEx
 {
 // コンストラクション
 public:
-	CmesetDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	CmemsetDlg(CWnd* pParent = NULL);	// 標準コンストラクター
 
 // ダイアログ データ
-	enum { IDD = IDD_MESET_DIALOG };
+	enum { IDD = IDD_memset_DIALOG };
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート

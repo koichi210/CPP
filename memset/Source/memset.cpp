@@ -1,26 +1,26 @@
 
-// meset.cpp : アプリケーションのクラス動作を定義します。
+// memset.cpp : アプリケーションのクラス動作を定義します。
 //
 
 #include "stdafx.h"
-#include "meset.h"
-#include "mesetDlg.h"
+#include "memset.h"
+#include "memsetDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CmesetApp
+// CmemsetApp
 
-BEGIN_MESSAGE_MAP(CmesetApp, CWinApp)
+BEGIN_MESSAGE_MAP(CmemsetApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 
-// CmesetApp コンストラクション
+// CmemsetApp コンストラクション
 
-CmesetApp::CmesetApp()
+CmemsetApp::CmemsetApp()
 {
 	// 再起動マネージャーをサポートします
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
@@ -30,14 +30,14 @@ CmesetApp::CmesetApp()
 }
 
 
-// 唯一の CmesetApp オブジェクトです。
+// 唯一の CmemsetApp オブジェクトです。
 
-CmesetApp theApp;
+CmemsetApp theApp;
 
 
-// CmesetApp 初期化
+// CmemsetApp 初期化
 
-BOOL CmesetApp::InitInstance()
+BOOL CmemsetApp::InitInstance()
 {
 	// アプリケーション マニフェストが visual スタイルを有効にするために、
 	// ComCtl32.dll Version 6 以降の使用を指定する場合は、
@@ -67,7 +67,7 @@ BOOL CmesetApp::InitInstance()
 	// この文字列を変更してください。
 	SetRegistryKey(_T("アプリケーション ウィザードで生成されたローカル アプリケーション"));
 
-	CmesetDlg dlg;
+	CmemsetDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

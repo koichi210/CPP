@@ -1,10 +1,10 @@
 
-// mesetDlg.cpp : 実装ファイル
+// memsetDlg.cpp : 実装ファイル
 //
 
 #include "stdafx.h"
-#include "meset.h"
-#include "mesetDlg.h"
+#include "memset.h"
+#include "memsetDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -43,35 +43,35 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CmesetDlg ダイアログ
+// CmemsetDlg ダイアログ
 
 
 
 
-CmesetDlg::CmesetDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CmesetDlg::IDD, pParent)
+CmemsetDlg::CmemsetDlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CmemsetDlg::IDD, pParent)
 	, m_FillVal(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CmesetDlg::DoDataExchange(CDataExchange* pDX)
+void CmemsetDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDET_FILL_VAL, m_FillVal);
 }
 
-BEGIN_MESSAGE_MAP(CmesetDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CmemsetDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_EXE, &CmesetDlg::OnBnClickedExe)
+	ON_BN_CLICKED(IDBT_EXE, &CmemsetDlg::OnBnClickedExe)
 END_MESSAGE_MAP()
 
 
-// CmesetDlg メッセージ ハンドラー
+// CmemsetDlg メッセージ ハンドラー
 
-BOOL CmesetDlg::OnInitDialog()
+BOOL CmemsetDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -105,7 +105,7 @@ BOOL CmesetDlg::OnInitDialog()
 	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
-void CmesetDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CmemsetDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -122,7 +122,7 @@ void CmesetDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
 //  これは、Framework によって自動的に設定されます。
 
-void CmesetDlg::OnPaint()
+void CmemsetDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -149,14 +149,14 @@ void CmesetDlg::OnPaint()
 
 // ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
 //  システムがこの関数を呼び出します。
-HCURSOR CmesetDlg::OnQueryDragIcon()
+HCURSOR CmemsetDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 
 
-void CmesetDlg::OnBnClickedExe()
+void CmemsetDlg::OnBnClickedExe()
 {
 	UpdateData();
 

@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3AF62F3E-D690-4FB2-BF0D-FFBD03CF5F3A}</ProjectGuid>
-    <RootNamespace>meset</RootNamespace>
+    <RootNamespace>memset</RootNamespace>
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -41,9 +41,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IntDir>obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IntDir>obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -95,33 +97,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="res\meset.ico" />
-    <None Include="res\meset.rc2" />
+    <None Include="res\memset.ico" />
+    <None Include="res\memset.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="meset.h" />
-    <ClInclude Include="mesetDlg.h" />
+    <ClInclude Include="memset.h" />
+    <ClInclude Include="memsetDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="meset.cpp" />
-    <ClCompile Include="mesetDlg.cpp" />
+    <ClCompile Include="memset.cpp" />
+    <ClCompile Include="memsetDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="meset.rc" />
+    <ResourceCompile Include="memset.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="meset.rc" />
+      <UserProperties RESOURCE_FILE="memset.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
