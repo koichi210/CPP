@@ -433,7 +433,7 @@ void CMacroToolDlg::OnEnChangeMouseY()
 	BOOL bValid;
 	int value;
 
-	value = (int)GetDlgItemInt(IDET_MOUSE_Y, &bValid, FALSE);
+	value = (int)GetDlgItemInt(IDET_MOUSE_Y, &bValid, TRUE);
 	if ( value > MAX_MOUSE_POINT_VALUE )
 	{
 		value = MAX_MOUSE_POINT_VALUE;
@@ -896,16 +896,16 @@ BOOL CMacroToolDlg::CheckLogFormat(EVENT evt)
 	}
 
 	// Mouse - X
-	if ( ! (evt.evMouse.pt.x >= 0) )
-	{
-		bReturn = FALSE;
-	}
+	//if ( ! (evt.evMouse.pt.x >= 0) )
+	//{
+	//	bReturn = FALSE;
+	//}
 
 	// Mouse - Y
-	if ( ! (evt.evMouse.pt.y >= 0) )
-	{
-		bReturn = FALSE;
-	}
+	//if ( ! (evt.evMouse.pt.y >= 0) )
+	//{
+	//	bReturn = FALSE;
+	//}
 
 	// MouseCaps
 	if ( evt.nEvent == EVENT_MOUSE )
