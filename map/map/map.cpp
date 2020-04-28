@@ -10,7 +10,13 @@ using namespace std;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	// map のデータ構造
+	//clear()	全ての要素をクリア
+	//erase()	指定要素をクリア
+	//empty()	マップがカラか？
+	//size()	要素数を取得
+	//find()	指定キーと一致する要素のイテレータを取得
+
+	// map のデータ構造（最初の型がキー）
     map <string, int> price;
 
 	// キー名
