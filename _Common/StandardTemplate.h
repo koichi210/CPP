@@ -348,3 +348,6 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 void Trim(char * cSource, char * cDest, int cDestSize, const char * TrimCharList);
 CString Trim(CString SourceStr, const char * TrimCharList);
+
+CHAR * GetArgument( LPSTR pCmdLine );
+void * GetArgumentSample( LPSTR lpCmdLine );

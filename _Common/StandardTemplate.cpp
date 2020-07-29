@@ -8,6 +8,9 @@
 
 #include <string>
 
+#include <shlwapi.h>
+#pragma comment(lib, "Shlwapi.lib")
+
 #if USE_IMM_H
 #include <imm.h> //ImmAssociateContext(),imm32.lib
 #endif
@@ -2076,7 +2079,57 @@ CString Trim(CString SourceStr, const char * TrimCharList)
 	std::string::size_type left = strFileName.find_first_not_of(TrimCharList);
 	std::string::size_type right = strFileName.find_last_not_of(TrimCharList);
 	std::string strResult = strFileName.substr(left, right - left + 1);
+	//std::strcpy(DestName, strResult.c_str());  
 
 	// 入力引数の文字列を更新
 	return strResult.c_str();
+}
+
+CHAR * GetArgument( LPSTR pCmdLine )
+{
+	static CHAR *pNextPrt = NULL;
+
+	CHAR *pToken = NULL;
+	if ( pCmdLine != NULL )
+	{
+		pToken = pCmdLine;
+	}
+	else
+	{
+		pToken = pNextPrt;
+	}
+
+	CHAR Delim[2] = "";
+	UINT Idx = 0;
+	if ( strncmp(pToken, "\"", 1) == 0 )
+	{
+		// ダブルクォートで始まる
+		Idx = 1;
+		strcpy(Delim, "\"");
+	}
+	else
+	{
+		// パス名にスペースが入っていないと、ダブルクォートは付かない
+		Idx = 0;
+		strcpy(Delim, " ");
+	}
+	pToken = strtok( &pToken[Idx], Delim );
+	pNextPrt = &pToken[Idx + strlen(pToken) + 1];
+
+	if ( ! PathFileExists(pToken) )
+	{
+		pToken = NULL;
+	}
+	return pToken;
+}
+
+void * GetArgumentSample( LPSTR lpCmdLine )
+{
+	CHAR* pArgument = lpCmdLine;
+	pArgument = GetArgument( pArgument );
+	while ( pArgument != NULL )
+	{
+		MessageBox( NULL, pArgument, "info", M B_OK);
+		pArgument = GetArgument( NULL );
+	}
 }
