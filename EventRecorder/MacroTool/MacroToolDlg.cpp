@@ -65,12 +65,14 @@ CMacroToolDlg::CMacroToolDlg(CWnd* pParent /*=NULL*/, CString fName) : CDialog(C
 	m_Record = FALSE;
 	m_fName = fName;
 	m_idx = 0;
+	m_IsDebug = FALSE;
 
 	m_hDLLInst = LoadLibrary(DLL_NAME);
 	StartKeyHook = NULL;
 	StopKeyHook = NULL;
 	StartMouseHook = NULL;
 	StopMouseHook = NULL;
+	DebugMode = NULL;
 	if ( m_hDLLInst )
 	{
 #if USE_KEY_HOOK
@@ -79,6 +81,7 @@ CMacroToolDlg::CMacroToolDlg(CWnd* pParent /*=NULL*/, CString fName) : CDialog(C
 #endif
 		StartMouseHook = (StartMouseHookFUNC *)GetProcAddress(m_hDLLInst, "StartMouseHook");
 		StopMouseHook = (StopMouseHookFUNC *)GetProcAddress(m_hDLLInst, "StopMouseHook");
+		DebugMode = (DebugModeFUNC *)GetProcAddress(m_hDLLInst, "DebugMode");
 	}
 
 	//親から設定を継承
@@ -145,6 +148,8 @@ BEGIN_MESSAGE_MAP(CMacroToolDlg, CDialog)
 	ON_BN_CLICKED(IDBT_WRITE, OnWrite)
 	ON_BN_CLICKED(IDBT_HELP, OnHelp)
 	ON_BN_CLICKED(IDBT_RECORD, OnRecord)
+	ON_WM_LBUTTONDBLCLK()
+	ON_BN_CLICKED(IDOK, OnBnClickedOk)
 END_MESSAGE_MAP()
 
 // CMacroToolDlg メッセージ ハンドラ
@@ -1279,13 +1284,9 @@ void CMacroToolDlg::GetSettings(EVENT *pevt, size_t sz)
 	}
 }
 
-void CMacroToolDlg::SetTitleBar()
+int CMacroToolDlg::GetTotalTime()
 {
-	CString sTitle,sTmp;
-	TIME tm;
-	int nMsec;
-
-	nMsec = m_p->m_nRepeatDelayMsec;
+	int nMsec = m_p->m_nRepeatDelayMsec;
 	for (int i=0; i < MAXNUM_CLOUMN; i++)
 	{
 		if ( m_tmpEvent[i].nEvent != EVENT_UNDEFINE )
@@ -1293,8 +1294,18 @@ void CMacroToolDlg::SetTitleBar()
 			nMsec += m_tmpEvent[i].sleep * m_tmpEvent[i].nExe;
 		}
 	}
+
+	return nMsec;
+}
+
+void CMacroToolDlg::SetTitleBar()
+{
+	int nMsec = GetTotalTime();
+
+	TIME tm;
 	MakeTime(nMsec, &tm);
 
+	CString sTitle, sTmp;
 	sTitle.SetString(STR_SET_TITLE);
 	sTmp.Format(STR_SLEEP_TITLE,
 		tm.nHour,
@@ -1391,4 +1402,58 @@ void CMacroToolDlg::StopRecord()
 CString CMacroToolDlg::GetSettingFileName()
 {
 	return m_fName;
+}
+
+void CMacroToolDlg::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	m_IsDebug = ! m_IsDebug;
+
+	CString str;
+	str.Format("DebugMode=%d", m_IsDebug);
+	MessageBox(str);
+
+	if ( DebugMode )
+	{
+		DebugMode(m_IsDebug);
+	}
+
+	CDialog::OnLButtonDblClk(nFlags, point);
+}
+
+BOOL CMacroToolDlg::IsSuccessSetting()
+{
+	if  ( m_p->m_nRepeatNum <= 1 )
+	{
+		/* 実行回数が1回以下は警告対象外 */
+		return TRUE;
+	}
+
+	int nMsec = GetTotalTime();
+	if ( nMsec > CHECK_CRISIS_MSEC )
+	{
+		/* 1回の実行時間が規定時間未満は警告対象外 */
+		return TRUE;
+	}
+
+	CString str;
+	str.Format("下記が設定されました。設定を見直しますか？\n　・2回以上の実行回数\n　・１回の実行時間が2秒未満");
+	int ret = MessageBox(str, "Warning", MB_YESNO);
+	if ( ret == IDNO )
+	{
+		/* ユーザーが問題無いと判断 */
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+void CMacroToolDlg::OnBnClickedOk()
+{
+	if( ! IsSuccessSetting() )
+	{
+		// 設定し直し
+		return;
+	}
+		
+	CDialog::OnOK();
 }

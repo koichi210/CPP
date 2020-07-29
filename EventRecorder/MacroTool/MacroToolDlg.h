@@ -9,6 +9,8 @@
 #define USE_KEY_HOOK	0
 #define DLL_LOG_FNAME	"MacroLog.txt"
 
+#define CHECK_CRISIS_MSEC	(2000)	// éñåÃñhé~ÇÃÇΩÇﬂÅAãKíËéûä‘ÇñûÇΩÇ»Ç¢ê›íËÇÕåxçêÇï\é¶Ç∑ÇÈ	
+
 // IniçÄñ⁄ñº
 #define INI_FILE_SECTION_TABLE "TABLE"
 #define INI_FILE_SECTION_COMMON "COMMON"
@@ -50,15 +52,15 @@
 #define LABELIDX_EXECUTE	LABELIDX_NO+1
 #define LABELIDX_SLEEP		LABELIDX_EXECUTE+1
 #define LABELIDX_EVENT		LABELIDX_SLEEP+1
-#define LABELIDX_DETAIL	LABELIDX_EVENT+1
+#define LABELIDX_DETAIL		LABELIDX_EVENT+1
 #define LABELIDX_COMMENT	LABELIDX_DETAIL+1
 
 #define LABEL_WIDTH_NO			25
 #define LABEL_WIDTH_EXECUTE		45
 #define LABEL_WIDTH_SLEEP		45
 #define LABEL_WIDTH_EVENT		40
-#define LABEL_WIDTH_DETAIL		140
-#define LABEL_WIDTH_COMMENT		30
+#define LABEL_WIDTH_DETAIL		165
+#define LABEL_WIDTH_COMMENT		46
 
 #define STR_TRUE			"Åõ"
 #define STR_FALSE			"Å~"
@@ -120,6 +122,7 @@ typedef BOOL _stdcall StartKeyHookFUNC();
 typedef BOOL _stdcall StartMouseHookFUNC();
 typedef BOOL _stdcall StopKeyHookFUNC();
 typedef BOOL _stdcall StopMouseHookFUNC();
+typedef void _stdcall DebugModeFUNC(BOOL IsDebug);
 
 #ifdef _DEBUG
  #define DLL_NAME	"../Release/EventHookd.dll"
@@ -160,11 +163,13 @@ protected:
 	CComboBox	m_MouseArray;
 	CComboBox	m_KeyArray;
 	BOOL		m_Record;
+	BOOL		m_IsDebug;
 
 	StartKeyHookFUNC	* StartKeyHook;
 	StartMouseHookFUNC	* StartMouseHook;
 	StopKeyHookFUNC		* StopKeyHook;
 	StopMouseHookFUNC	* StopMouseHook;
+	DebugModeFUNC		* DebugMode;
 	HINSTANCE m_hDLLInst;
 
 //ä˘ë∂ÉÅÉìÉoä÷êî
@@ -176,6 +181,8 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnRecord();
 	afx_msg void OnLvnItemchangedListctrl(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedOk();
 	DECLARE_MESSAGE_MAP()
 
 //ÉÅÉìÉoä÷êî
@@ -234,8 +241,9 @@ public:
 	void UpdateListControlDetail(int idx = CURRENT_IDX);
 	void UpdateListControlComment(int idx = CURRENT_IDX);
 	void GetSettings(EVENT *pevt, size_t sz);
+	int GetTotalTime();
 	void SetTitleBar();
 	BOOL MakeTime(int nMsec, TIME *pTm);
 	CString GetSettingFileName();
-
+	BOOL IsSuccessSetting();
 };

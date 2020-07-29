@@ -11,6 +11,7 @@ HHOOK		ghMouseHook = NULL;
 SYSTEMTIME	gOld_tm = {0,0,0,0,0,0,0,0};
 #pragma data_seg()
 HINSTANCE	ghInst = NULL;
+BOOL		m_IsDebug = FALSE;
 
 BOOL APIENTRY DllMain( HANDLE hinstDLL, DWORD fdwReason, LPVOID lpvReserved )
 {
@@ -63,6 +64,11 @@ EXPORTS BOOL StopMouseHook()
 		return FALSE;
 	}
 	return TRUE;
+}
+
+EXPORTS void DebugMode(BOOL IsDebug)
+{
+	m_IsDebug = IsDebug;
 }
 
 LRESULT CALLBACK KeyHookProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -211,13 +217,18 @@ BOOL GetMouseParameter(WPARAM wParam, int *nCap)
 
 void WriteLog(char *string)
 {
-	FILE *fp = NULL;
-	char TempDir[MAX_PATH];
-	char fname[MAX_PATH];
+	if ( !m_IsDebug)
+	{
+		return;
+	}
 
-	GetTempPath( sizeof(TempDir), TempDir);
-	sprintf(fname, "%s\\%s",TempDir, DLL_LOG_FNAME);
-	fp = fopen(fname, "a");
+	char fname[MAX_PATH];
+	//char TempDir[MAX_PATH];
+	//GetTempPath( sizeof(TempDir), TempDir);
+	//sprintf(fname, "%s\\%s",TempDir, DLL_LOG_FNAME);
+	strcpy(fname, DLL_LOG_FNAME);
+
+	FILE *fp = fopen(fname, "a");
 	if ( fp )
 	{
 		fputs(string, fp);

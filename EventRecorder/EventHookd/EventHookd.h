@@ -60,6 +60,7 @@ EXPORTS BOOL StartKeyHook();
 EXPORTS BOOL StartMouseHook();
 EXPORTS BOOL StopKeyHook();
 EXPORTS BOOL StopMouseHook();
+EXPORTS void DebugMode(BOOL IsDebug);
 
 LRESULT CALLBACK KeyHookProc(int, WPARAM, LPARAM);
 LRESULT CALLBACK MouseHookProc(int, WPARAM, LPARAM);
