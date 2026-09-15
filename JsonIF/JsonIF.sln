@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JsonIF", "JsonIF\JsonIF.vcxproj", "{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}.Debug|x64.ActiveCfg = Debug|x64
+		{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}.Debug|x64.Build.0 = Debug|x64
+		{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}.Debug|x86.ActiveCfg = Debug|Win32
+		{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}.Debug|x86.Build.0 = Debug|Win32
+		{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}.Release|x64.ActiveCfg = Release|x64
+		{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}.Release|x64.Build.0 = Release|x64
+		{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}.Release|x86.ActiveCfg = Release|Win32
+		{02B1DBFB-0EF9-401A-91EF-AD4594CB631B}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D36DAED-95E2-4986-80A6-FD98F7C7380D}
+	EndGlobalSection
+EndGlobal
