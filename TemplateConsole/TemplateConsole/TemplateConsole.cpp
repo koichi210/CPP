@@ -1,4 +1,4 @@
-// TemplateConsole.cpp : ƒRƒ“ƒ\[ƒ‹ ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ ƒ|ƒCƒ“ƒg‚ğ’è‹`‚µ‚Ü‚·B
+ï»¿// TemplateConsole.cpp : ã‚³ãƒ³ã‚½ãƒ¼ãƒ« ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒª ãƒã‚¤ãƒ³ãƒˆã‚’å®šç¾©ã—ã¾ã™ã€‚
 //
 
 #include "stdafx.h"
@@ -7,21 +7,21 @@
  
 using namespace std;
  
-//  ƒeƒ“ƒvƒŒ[ƒgŠÖ”
+//  ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆé–¢æ•°
 template <typename T>
 T FuncAdd(T x, T y)
 {
     return x + y;
 }
 
-//  ƒeƒ“ƒvƒŒ[ƒgŠÖ”i•¡”ˆø”j
+//  ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆé–¢æ•°ï¼ˆè¤‡æ•°å¼•æ•°ï¼‰
 template<typename T, typename S>
 S FuncMul(T x, S y)
 {
     return x * y;
 }
 
-//  ƒeƒ“ƒvƒŒ[ƒgƒNƒ‰ƒX
+//  ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚¯ãƒ©ã‚¹
 template<typename T> class CCalc
 {
 public:
@@ -37,11 +37,11 @@ public:
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    cout << FuncAdd<string>("ABC", "def") << endl;	// string‚ğ–¾¦“I‚Éw’è
-    cout << FuncAdd<int>(12, 34) << endl;			// int‚ğ–¾¦“I‚Éw’è
-    cout << FuncAdd(5, 6) << endl;					// int‚Ìê‡Aw’èÈ—ª‰Â”\
+    cout << FuncAdd<string>("ABC", "def") << endl;	// stringã‚’æ˜ç¤ºçš„ã«æŒ‡å®š
+    cout << FuncAdd<int>(12, 34) << endl;			// intã‚’æ˜ç¤ºçš„ã«æŒ‡å®š
+    cout << FuncAdd(5, 6) << endl;					// intã®å ´åˆã€æŒ‡å®šçœç•¥å¯èƒ½
 
-    cout << FuncMul<int, double>(20, 1.5) << endl;	// •¡”ˆø”‚ğw’è
+    cout << FuncMul<int, double>(20, 1.5) << endl;	// è¤‡æ•°å¼•æ•°ã‚’æŒ‡å®š
 
 	CCalc<int> calc1;
 	calc1.m_n1 = 7;
