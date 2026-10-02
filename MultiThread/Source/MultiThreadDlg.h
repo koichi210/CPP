@@ -1,36 +1,27 @@
-﻿
-// MultiThreadDlg.h : ヘッダー ファイル
-//
+﻿// MultiThreadDlg.h : メインダイアログ（ワーカースレッドからタイトルを更新する）
 
 #pragma once
 
-
-// CMultiThreadDlg ダイアログ
 class CMultiThreadDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CMultiThreadDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CMultiThreadDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_MULTITHREAD_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
+	virtual BOOL OnInitDialog() override;
+
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+	afx_msg void OnBnClickedStart();
+	afx_msg void OnBnClickedStop();
 	DECLARE_MESSAGE_MAP()
-public:
-	BOOL m_stop ;
-	afx_msg void OnBnClickedButton1();
-	afx_msg void OnBnClickedButton2();
-};
 
-UINT ProcThread(LPVOID pParam);
+private:
+	static UINT CountThreadProc(LPVOID pParam);
+
+	HICON m_hIcon;
+	// UI スレッドが書き、ワーカースレッドが読むので atomic にする
+	std::atomic<bool> m_bStop{ false };
+};

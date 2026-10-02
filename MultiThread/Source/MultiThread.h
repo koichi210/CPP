@@ -1,6 +1,4 @@
-﻿
-// MultiThread.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
-//
+﻿// MultiThread.h : アプリケーションクラス
 
 #pragma once
 
@@ -8,25 +6,14 @@
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
-
-
-// CMultiThreadApp:
-// このクラスの実装については、MultiThread.cpp を参照してください。
-//
+#include "resource.h"
 
 class CMultiThreadApp : public CWinApp
 {
 public:
 	CMultiThreadApp();
 
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-
-// 実装
+	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
-
-extern CMultiThreadApp theApp;

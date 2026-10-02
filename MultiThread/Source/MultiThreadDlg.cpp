@@ -1,6 +1,4 @@
-﻿
-// MultiThreadDlg.cpp : 実装ファイル
-//
+﻿// MultiThreadDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "MultiThread.h"
@@ -11,68 +9,51 @@
 #define new DEBUG_NEW
 #endif
 
+namespace
+{
+	constexpr int kMaxCount = 32767;		// これに達したら 0 に戻す
+	constexpr DWORD kIntervalMs = 1000;
+}
 
-// CMultiThreadDlg ダイアログ
-
-
-
-
-CMultiThreadDlg::CMultiThreadDlg(CWnd* pParent /*=NULL*/)
+CMultiThreadDlg::CMultiThreadDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CMultiThreadDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CMultiThreadDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialogEx::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CMultiThreadDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CMultiThreadDlg::OnBnClickedButton1)
-	ON_BN_CLICKED(IDC_BUTTON2, &CMultiThreadDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON1, &CMultiThreadDlg::OnBnClickedStart)
+	ON_BN_CLICKED(IDC_BUTTON2, &CMultiThreadDlg::OnBnClickedStop)
 END_MESSAGE_MAP()
-
-
-// CMultiThreadDlg メッセージ ハンドラー
 
 BOOL CMultiThreadDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
 void CMultiThreadDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int cxIcon = GetSystemMetrics(SM_CXICON);
+		const int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - cxIcon + 1) / 2;
+		const int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -81,53 +62,38 @@ void CMultiThreadDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CMultiThreadDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-void CMultiThreadDlg::OnBnClickedButton1()
+// 「Start」：カウントアップするワーカースレッドを起動する（押すたびに1本ずつ増える）
+void CMultiThreadDlg::OnBnClickedStart()
 {
-	m_stop=FALSE;
-	AfxBeginThread(ProcThread, this);
+	m_bStop = false;
+	AfxBeginThread(CountThreadProc, this);
 }
 
-
-void CMultiThreadDlg::OnBnClickedButton2()
+// 「Stop」：動いているワーカースレッドすべてに停止を指示する
+void CMultiThreadDlg::OnBnClickedStop()
 {
-	m_stop=TRUE;
+	m_bStop = true;
 }
 
-
-UINT ProcThread(LPVOID pParam)
+// 1秒ごとにカウンタを進めてダイアログのタイトルに表示する
+UINT CMultiThreadDlg::CountThreadProc(LPVOID pParam)
 {
-	CMultiThreadDlg* pDlg=(CMultiThreadDlg*)pParam;
-	int cnt=0;
-	CString str;
+	auto* pDlg = static_cast<CMultiThreadDlg*>(pParam);
+	int count = 0;
+	CString title;
 
-	while(TRUE)
+	while (!pDlg->m_bStop)
 	{
-		if ( pDlg->m_stop )
-		{
-			break;
-		}
+		count = (count >= kMaxCount) ? 0 : count + 1;
 
-		if ( cnt >= 32767 )
-		{
-			cnt = 0;
-		}
-		else
-		{
-			cnt++;
-		}
-
-		str.Format("test %04d", cnt);
-		pDlg->SetWindowText(str);
-		Sleep(1000);
+		title.Format(_T("test %04d"), count);
+		pDlg->SetWindowText(title);
+		Sleep(kIntervalMs);
 	}
 	return TRUE;
 }
