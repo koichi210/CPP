@@ -23,6 +23,10 @@ CManageAvi::CManageAvi()
 
 	ZeroMemory(&m_Resize, sizeof(POINT));
 	ZeroMemory(&m_rect, sizeof(RECT));
+
+	m_paviFile = NULL;
+	m_paviStream = NULL;
+	m_pcompressAviStream = NULL;
 }
 
 CManageAvi::~CManageAvi()
@@ -135,7 +139,7 @@ void CManageAvi::GetBitmapInfo()
 
 	if ( m_BitmapBpp != 0 )
 	{
-		m_bitmapInfo.bmiHeader.biSizeImage = m_bitmapInfo.bmiHeader.biHeight * ((3 * m_bitmapInfo.bmiHeader.biWidth + 3) / 4) * 4;
+		m_bitmapInfo.bmiHeader.biSizeImage = m_bitmapInfo.bmiHeader.biHeight * ((m_bitmapInfo.bmiHeader.biWidth * m_BitmapBpp + 31) / 32) * 4;
 	}
 	else
 	{
@@ -191,9 +195,10 @@ AVI_ERROR_T CManageAvi::SeStreamFormat()
 		opt.lpParms = cv.lpState;
 		opt.cbParms = cv.cbState;
 		opt.dwInterleaveEvery = 0;
-		::ICCompressorFree(&cv);
 
-		if (AVIERR_OK != ::AVIMakeCompressedStream(&m_pcompressAviStream, m_paviStream, &opt, NULL))
+		HRESULT hr = ::AVIMakeCompressedStream(&m_pcompressAviStream, m_paviStream, &opt, NULL);
+		::ICCompressorFree(&cv);
+		if (AVIERR_OK != hr)
 		{
 			return AVI_ERROR_CREATE_COMPRESS_STREAM;
 		}
@@ -352,16 +357,19 @@ UINT ProcThread(LPVOID pParam)
 		if ( Avi->m_paviStream )
 		{
 			::AVIStreamRelease(Avi->m_paviStream);
+			Avi->m_paviStream = NULL;
 		}
 
 		if ( Avi->m_pcompressAviStream )
 		{
 			::AVIStreamRelease(Avi->m_pcompressAviStream);
+			Avi->m_pcompressAviStream = NULL;
 		}
 
 		if ( Avi->m_paviFile )
 		{
 			::AVIFileRelease(Avi->m_paviFile);
+			Avi->m_paviFile = NULL;
 		}
 		::AVIFileExit();
 
@@ -379,9 +387,21 @@ void DrawCursor(HDC hdc, float ScaleX, float ScaleY)
 	GetCursorInfo(&cursorInfo);
 
 	ICONINFO   iconInfo;
-	GetIconInfo(cursorInfo.hCursor, &iconInfo);
+	if ( !GetIconInfo(cursorInfo.hCursor, &iconInfo) )
+	{
+		return;
+	}
 
 	int x = (int)(cursorInfo.ptScreenPos.x * ScaleX) - iconInfo.xHotspot;
 	int y = (int)(cursorInfo.ptScreenPos.y * ScaleY) - iconInfo.yHotspot;
 	DrawIcon(hdc, x, y, cursorInfo.hCursor);
+
+	if ( iconInfo.hbmMask )
+	{
+		DeleteObject(iconInfo.hbmMask);
+	}
+	if ( iconInfo.hbmColor )
+	{
+		DeleteObject(iconInfo.hbmColor);
+	}
 }
