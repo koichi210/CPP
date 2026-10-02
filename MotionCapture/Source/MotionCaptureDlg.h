@@ -1,5 +1,5 @@
-
-// MotionCaptureDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿
+// MotionCaptureDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #pragma once
@@ -7,25 +7,25 @@
 #include "ManageAvi.h"
 
 
-// CMotionCaptureDlg ƒ_ƒCƒAƒƒO
+// CMotionCaptureDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class CMotionCaptureDlg : public CDialogEx
 {
-// ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 public:
-	CMotionCaptureDlg(CWnd* pParent = NULL);	// •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^[
+	CMotionCaptureDlg(CWnd* pParent = NULL);	// æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_MOTIONCAPTURE_DIALOG };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 
 
-// À‘•
+// å®Ÿè£…
 protected:
 	HICON m_hIcon;
 
-	// ¶¬‚³‚ê‚½AƒƒbƒZ[ƒWŠ„‚è“–‚ÄŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²ã‚Šå½“ã¦é–¢æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -38,26 +38,26 @@ protected:
 public :
 	CManageAvi m_Avi;
 
-	// GUIİ’è[ƒtƒ@ƒCƒ‹–¼]
+	// GUIè¨­å®š[ãƒ•ã‚¡ã‚¤ãƒ«å]
 	CString m_SaveFilename;
 
-	// GUIİ’è[‹L˜^]
+	// GUIè¨­å®š[è¨˜éŒ²]
 	int m_FrameRate;
 	UINT m_TimeoutSec;
 	UINT m_SkipFrame;
 
-	// GUIİ’è[Capt]
+	// GUIè¨­å®š[Capt]
 	int m_CaptRectX;
 	int m_CaptRectY;
 	int m_CaptRectWidth;
 	int m_CaptRectHeight;
 	UINT m_BitmapBpp;		// 0,1,4,8,16,24,32 (0 is implied by the JPEG or PNG format)
 
-	// GUIİ’è[Resize]
+	// GUIè¨­å®š[Resize]
 	int m_ResizeRectWidth;
 	int m_ResizeRectHeight;
 	BOOL m_ResizeEnable;
 
-	// GUIİ’è[ƒ}ƒEƒXƒ|ƒCƒ“ƒ^]
+	// GUIè¨­å®š[ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿]
 	BOOL m_MousePointRec;
 };

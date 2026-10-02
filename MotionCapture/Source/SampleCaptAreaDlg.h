@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
 
 #define PICTURE_BOX_WIDTH	(700)
 #define PICTURE_BOX_HEIGHT	(400)
 
-// SampleCaptAreaDlg ƒ_ƒCƒAƒƒO
+// SampleCaptAreaDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class SampleCaptAreaDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(SampleCaptAreaDlg)
 
 public:
-	SampleCaptAreaDlg(CWnd* pParent = NULL);   // •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^[
-	SampleCaptAreaDlg(RECT rt, UINT BitmapBpp, CWnd* pParent = NULL);   // •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^[
+	SampleCaptAreaDlg(CWnd* pParent = NULL);   // æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼
+	SampleCaptAreaDlg(RECT rt, UINT BitmapBpp, CWnd* pParent = NULL);   // æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼
 	virtual ~SampleCaptAreaDlg();
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_SAMPLE_CAPT_AREA_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	DECLARE_MESSAGE_MAP()
 

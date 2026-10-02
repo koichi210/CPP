@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "stdafx.h"
 #include <vfw.h>
@@ -14,14 +14,14 @@ typedef enum {
 s} AVI_ERROR_T;
 
 
-// CMotionCaptureDlg ƒ_ƒCƒAƒƒO
+// CMotionCaptureDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class CManageAvi
 {
 public:
-	CManageAvi();	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^[
-	~CManageAvi();	// ƒfƒXƒgƒ‰ƒNƒ^
+	CManageAvi();	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼
+	~CManageAvi();	// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-	// ƒ†[ƒU[‚ªg—p
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒä½¿ç”¨
 	void SetSaveFileName(CString Filename);
 	void SetCaptureRect(RECT rect);
 	void SetCaptureRect(int top, int left, int right, int bottom);
@@ -37,7 +37,7 @@ public:
 	void StartRecord();
 	BOOL IsExecution();
 
-	// ƒvƒƒZƒX‚ªg—p
+	// ãƒ—ãƒ­ã‚»ã‚¹ãŒä½¿ç”¨
 	void GetAviStreamInfo();
 	void GetBitmapInfo();
 	AVI_ERROR_T CreateAviFile();
@@ -45,10 +45,10 @@ public:
 	void Record();
 
 public:
-	// ˆ—Œn
-	BOOL m_IsExecution;	// Às’†ƒtƒ‰ƒO
+	// å‡¦ç†ç³»
+	BOOL m_IsExecution;	// å®Ÿè¡Œä¸­ãƒ•ãƒ©ã‚°
 
-	// İ’è
+	// è¨­å®š
 	CString m_SaveFilename;
 	BOOL m_CompressEnable;
 	BOOL m_ResizeEnable;
@@ -56,13 +56,13 @@ public:
 	POINT m_Resize;
 	RECT m_rect;
 	UINT m_FrameRate;
-	DWORD m_Scale;		// Šî–{‚Í“™”{
-	DWORD m_Quality;	// 0`10,000 (-1 is drivers default)
+	DWORD m_Scale;		// åŸºæœ¬ã¯ç­‰å€
+	DWORD m_Quality;	// 0ï½10,000 (-1 is drivers default)
 	UINT m_BitmapBpp;	// 0,1,4,8,16,24,32 (0 is implied by the JPEG or PNG format)
 	UINT m_TimeoutSec;
 	UINT m_SkipFrame;
 
-	// ƒvƒƒZƒX‚ªg—p
+	// ãƒ—ãƒ­ã‚»ã‚¹ãŒä½¿ç”¨
 	AVISTREAMINFO m_aviStreamInfo;
 	BITMAPINFO m_bitmapInfo;
 	PAVIFILE m_paviFile;
@@ -72,5 +72,5 @@ public:
 
 };
 
-UINT ProcThread(LPVOID pParam);	// ˜^‰æˆ—
-void DrawCursor(HDC hdc, float ScaleX, float ScaleY);	// ƒ}ƒEƒXƒ|ƒCƒ“ƒ^•`‰æ
+UINT ProcThread(LPVOID pParam);	// éŒ²ç”»å‡¦ç†
+void DrawCursor(HDC hdc, float ScaleX, float ScaleY);	// ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿æç”»

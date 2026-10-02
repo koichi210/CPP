@@ -1,5 +1,5 @@
-
-// ManageAvi.cpp : À‘•ƒtƒ@ƒCƒ‹
+ï»¿
+// ManageAvi.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "stdafx.h"
@@ -29,7 +29,7 @@ CManageAvi::~CManageAvi()
 {
 }
 
-//	ƒ†[ƒU[‚ªg—p /////////////////////////////////////////////////////////////
+//	ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒä½¿ç”¨ /////////////////////////////////////////////////////////////
 void CManageAvi::SetSaveFileName(CString Filename)
 {
 	m_SaveFilename = Filename;
@@ -99,7 +99,7 @@ void CManageAvi::StopRecord()
 
 void CManageAvi::StartRecord()
 {
-	// Àsƒtƒ‰ƒO‚ğİ’è
+	// å®Ÿè¡Œãƒ•ãƒ©ã‚°ã‚’è¨­å®š
 	m_IsExecution = TRUE;
 
 	AfxBeginThread(ProcThread, this);
@@ -110,14 +110,14 @@ BOOL CManageAvi::IsExecution()
 	return m_IsExecution;
 }
 
-// ƒvƒƒZƒX‚ªg—p //////////////////////////////////////////////////////////////
+// ãƒ—ãƒ­ã‚»ã‚¹ãŒä½¿ç”¨ //////////////////////////////////////////////////////////////
 void CManageAvi::GetAviStreamInfo()
 {
 	ZeroMemory(&m_aviStreamInfo, sizeof(AVISTREAMINFO));
 	m_aviStreamInfo.fccType = streamtypeVIDEO;
 	m_aviStreamInfo.fccHandler = comptypeDIB;
 	m_aviStreamInfo.dwScale = m_Scale;							// For video streams, this rate should be the frame rate.
-	m_aviStreamInfo.dwRate = m_FrameRate;						//ƒtƒŒ[ƒ€ƒŒ[ƒg
+	m_aviStreamInfo.dwRate = m_FrameRate;						//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆ
 	m_aviStreamInfo.dwLength = m_TimeoutSec * m_FrameRate;		// RecordTime = Length / FrameRate (sec)
 	m_aviStreamInfo.dwQuality = m_Quality;
 	m_aviStreamInfo.rcFrame = m_rect; 
@@ -131,7 +131,7 @@ void CManageAvi::GetBitmapInfo()
 	m_bitmapInfo.bmiHeader.biHeight = m_aviStreamInfo.rcFrame.bottom;
 	m_bitmapInfo.bmiHeader.biPlanes = 1;
 	m_bitmapInfo.bmiHeader.biBitCount = m_BitmapBpp;
-	m_bitmapInfo.bmiHeader.biCompression = BI_RGB;	// TODOFBI_JPEG‚Éİ’è‚Å‚«‚È‚¢
+	m_bitmapInfo.bmiHeader.biCompression = BI_RGB;	// TODOï¼šBI_JPEGã«è¨­å®šã§ããªã„
 
 	if ( m_BitmapBpp != 0 )
 	{
@@ -212,8 +212,8 @@ void CManageAvi::Record()
 	HDC hMemDC = ::CreateCompatibleDC(NULL);
 	LPVOID pvBits;
 
-	// TODOFƒŠƒTƒCƒY—LŒøA‰æ–ÊŠO‚Ìƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚Ü‚ÅE‚Á‚Ä‚µ‚Ü‚¤B
-	//       m_bitmapInfo‚Ìwidth‚Æheight‚ğŒ©’¼‚·•K—v‚ ‚èB
+	// TODOï¼šãƒªã‚µã‚¤ã‚ºæœ‰åŠ¹æ™‚ã€ç”»é¢å¤–ã®ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ã¾ã§æ‹¾ã£ã¦ã—ã¾ã†ã€‚
+	//       m_bitmapInfoã®widthã¨heightã‚’è¦‹ç›´ã™å¿…è¦ã‚ã‚Šã€‚
 	HBITMAP hMemBitmap = ::CreateDIBSection(NULL, &m_bitmapInfo, DIB_RGB_COLORS, &pvBits, NULL, 0);
 	HBITMAP hOldBitmap = (HBITMAP)::SelectObject(hMemDC, hMemBitmap);
 
@@ -227,10 +227,10 @@ void CManageAvi::Record()
 		ScaleY = (float)m_Resize.y / m_bitmapInfo.bmiHeader.biHeight;
 	}
 
-	// ƒLƒƒƒvƒ`ƒƒ
+	// ã‚­ãƒ£ãƒ—ãƒãƒ£
 	for (DWORD dwFrameNo = 0; dwFrameNo < m_aviStreamInfo.dwLength; dwFrameNo++)
 	{
-		// ’â~—v‹‚ª‚«‚½‚çI—¹
+		// åœæ­¢è¦æ±‚ãŒããŸã‚‰çµ‚äº†
 		if ( m_IsExecution == FALSE )
 		{
 			break;
@@ -238,18 +238,18 @@ void CManageAvi::Record()
 
 		if ( m_ResizeEnable )
 		{
-			// ƒŠƒTƒCƒY
-			::StretchBlt(hMemDC,					// ƒRƒs[æ‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒnƒ“ƒhƒ‹
-				0,									// ƒRƒs[æ’·•ûŒ`‚Ì¶ã‹÷‚Ì x À•W
-				0,									// ƒRƒs[æ’·•ûŒ`‚Ì¶ã‹÷‚Ì y À•W
-				m_Resize.x,							// ƒRƒs[æ’·•ûŒ`‚Ì•
-				m_Resize.y,							// ƒRƒs[æ’·•ûŒ`‚Ì‚‚³
-				dcScreen,							// ƒRƒs[Œ³‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒnƒ“ƒhƒ‹
-				0,									// ƒRƒs[Œ³’·•ûŒ`‚Ì¶ã‹÷‚Ì x À•W
-				0,									// ƒRƒs[Œ³’·•ûŒ`‚Ì¶ã‹÷‚Ì y À•W
-				m_bitmapInfo.bmiHeader.biWidth,		// ƒRƒs[Œ³’·•ûŒ`‚Ì•
-				m_bitmapInfo.bmiHeader.biHeight,	// ƒRƒs[Œ³’·•ûŒ`‚Ì‚‚³
-				SRCCOPY);							// ƒ‰ƒXƒ^ƒIƒyƒŒ[ƒVƒ‡ƒ“ƒR[ƒh
+			// ãƒªã‚µã‚¤ã‚º
+			::StretchBlt(hMemDC,					// ã‚³ãƒ”ãƒ¼å…ˆã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+				0,									// ã‚³ãƒ”ãƒ¼å…ˆé•·æ–¹å½¢ã®å·¦ä¸Šéš…ã® x åº§æ¨™
+				0,									// ã‚³ãƒ”ãƒ¼å…ˆé•·æ–¹å½¢ã®å·¦ä¸Šéš…ã® y åº§æ¨™
+				m_Resize.x,							// ã‚³ãƒ”ãƒ¼å…ˆé•·æ–¹å½¢ã®å¹…
+				m_Resize.y,							// ã‚³ãƒ”ãƒ¼å…ˆé•·æ–¹å½¢ã®é«˜ã•
+				dcScreen,							// ã‚³ãƒ”ãƒ¼å…ƒã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+				0,									// ã‚³ãƒ”ãƒ¼å…ƒé•·æ–¹å½¢ã®å·¦ä¸Šéš…ã® x åº§æ¨™
+				0,									// ã‚³ãƒ”ãƒ¼å…ƒé•·æ–¹å½¢ã®å·¦ä¸Šéš…ã® y åº§æ¨™
+				m_bitmapInfo.bmiHeader.biWidth,		// ã‚³ãƒ”ãƒ¼å…ƒé•·æ–¹å½¢ã®å¹…
+				m_bitmapInfo.bmiHeader.biHeight,	// ã‚³ãƒ”ãƒ¼å…ƒé•·æ–¹å½¢ã®é«˜ã•
+				SRCCOPY);							// ãƒ©ã‚¹ã‚¿ã‚ªãƒšãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰
 		}
 		else
 		{
@@ -278,7 +278,7 @@ void CManageAvi::Record()
 	::DeleteDC(dcScreen);
 }
 
-// ƒvƒƒZƒX ////////////////////////////////////////////////////////////////////
+// ãƒ—ãƒ­ã‚»ã‚¹ ////////////////////////////////////////////////////////////////////
 UINT ProcThread(LPVOID pParam)
 {
 	CManageAvi* Avi=(CManageAvi*)pParam;
@@ -304,18 +304,18 @@ UINT ProcThread(LPVOID pParam)
 			throw Success;
 		}
 
-		// ƒƒCƒ“ˆ—
+		// ãƒ¡ã‚¤ãƒ³å‡¦ç†
 		Avi->Record();
 		
 		if ( Avi->IsExecution() )
 		{
-			// ƒ^ƒCƒ€ƒAƒEƒg
-			MessageBox(NULL, "ƒ^ƒCƒ€ƒAƒEƒg‚ª”­¶‚µ‚Ü‚µ‚½B\n‹L˜^‚ğ’â~‚µƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚µ‚Ü‚µ‚½B", "Warning", MB_OK);
+			// ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ
+			MessageBox(NULL, "ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚\nè¨˜éŒ²ã‚’åœæ­¢ã—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã—ã¾ã—ãŸã€‚", "Warning", MB_OK);
 		}
 		else
 		{
-			// ’â~ƒ{ƒ^ƒ“
-			MessageBox(NULL, "ƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚µ‚Ü‚µ‚½B", "Infomation", MB_OK);
+			// åœæ­¢ãƒœã‚¿ãƒ³
+			MessageBox(NULL, "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã—ã¾ã—ãŸã€‚", "Infomation", MB_OK);
 		}
 
 	}
@@ -325,19 +325,19 @@ UINT ProcThread(LPVOID pParam)
 		switch (err)
 		{
 		case AVI_ERROR_FILE_OPEN :
-			msg = "AVIƒtƒ@ƒCƒ‹‚ªŠJ‚¯‚Ü‚¹‚ñ‚Å‚µ‚½B" + Avi->m_SaveFilename;
+			msg = "AVIãƒ•ã‚¡ã‚¤ãƒ«ãŒé–‹ã‘ã¾ã›ã‚“ã§ã—ãŸã€‚" + Avi->m_SaveFilename;
 			break;
 
 		case 	AVI_ERROR_CREATE_STREAM :
-			msg = "Stream‚ª¶¬‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B";
+			msg = "StreamãŒç”Ÿæˆã§ãã¾ã›ã‚“ã§ã—ãŸã€‚";
 			break;
 
 		case 	AVI_ERROR_CANCEL_COMPRESS :
-			msg = "ˆ³kİ’è‚ªƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ü‚µ‚½B";
+			msg = "åœ§ç¸®è¨­å®šãŒã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚Œã¾ã—ãŸã€‚";
 			break;
 
 		case 	AVI_ERROR_CREATE_COMPRESS_STREAM :
-			msg = "ˆ³kStream‚ª¶¬‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B";
+			msg = "åœ§ç¸®StreamãŒç”Ÿæˆã§ãã¾ã›ã‚“ã§ã—ãŸã€‚";
 			break;
 
 		default :
@@ -365,7 +365,7 @@ UINT ProcThread(LPVOID pParam)
 		}
 		::AVIFileExit();
 
-		// ÀsI—¹
+		// å®Ÿè¡Œçµ‚äº†
 		Avi->m_IsExecution = FALSE;
 	}
 

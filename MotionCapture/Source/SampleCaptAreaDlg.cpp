@@ -1,4 +1,4 @@
-// SampleCaptAreaDlg.cpp : À‘•ƒtƒ@ƒCƒ‹
+ï»¿// SampleCaptAreaDlg.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-// SampleCaptAreaDlg ƒ_ƒCƒAƒƒO
+// SampleCaptAreaDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 IMPLEMENT_DYNAMIC(SampleCaptAreaDlg, CDialogEx)
 
@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(SampleCaptAreaDlg, CDialogEx)
 	ON_WM_CREATE()
 	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
-// SampleCaptAreaDlg ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// SampleCaptAreaDlg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
 
 void SampleCaptAreaDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
@@ -57,7 +57,7 @@ void SampleCaptAreaDlg::GetBitmapInfo()
 	m_bitmapInfo.bmiHeader.biHeight = m_Preview.bottom - m_Preview.top;
 	m_bitmapInfo.bmiHeader.biPlanes = 1;
 	m_bitmapInfo.bmiHeader.biBitCount = m_BitmapBpp;
-	m_bitmapInfo.bmiHeader.biCompression = BI_RGB;	// TODOFBI_JPEG‚Éİ’è‚Å‚«‚È‚¢
+	m_bitmapInfo.bmiHeader.biCompression = BI_RGB;	// TODOï¼šBI_JPEGã«è¨­å®šã§ããªã„
 
 	if ( m_BitmapBpp != 0 )
 	{
@@ -82,7 +82,7 @@ void SampleCaptAreaDlg::ScreenCapture()
 
 	HDC dcScreen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), NULL);
 
-	// ƒLƒƒƒvƒ`ƒƒ
+	// ã‚­ãƒ£ãƒ—ãƒãƒ£
 	::BitBlt(hMemDC, 0, 0, m_bitmapInfo.bmiHeader.biWidth, m_bitmapInfo.bmiHeader.biHeight, dcScreen, 0, 0, SRCCOPY);
 
 	//SaveBitmapFile(hMemBitmap,"c:\\Bitmap.bmp");
@@ -98,17 +98,17 @@ void SampleCaptAreaDlg::PreView()
 	CBitmap Bmp;
 	CString SamplePath = "c:\\Sample.bmp";
 
-	// Bitmapƒ[ƒh uÀÑ‚ ‚éƒR[ƒhv
+	// Bitmapãƒ­ãƒ¼ãƒ‰ ã€Œå®Ÿç¸¾ã‚ã‚‹ã‚³ãƒ¼ãƒ‰ã€
 	if ( 1 ) 
 	{
-		// ƒtƒ@ƒCƒ‹‚Ì‘¶İƒ`ƒFƒbƒN
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
 		if (!PathFileExists(SamplePath))
 		{
-			MessageBox("ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½B\n" + SamplePath);
+			MessageBox("ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸã€‚\n" + SamplePath);
 			return;
 		}
 
-		// PictureBox‚É‰æ‘œƒ[ƒh
+		// PictureBoxã«ç”»åƒãƒ­ãƒ¼ãƒ‰
 		Bmp.Attach( (HBITMAP)::LoadImage(
 			AfxGetInstanceHandle(),
 			SamplePath,
@@ -123,10 +123,10 @@ void SampleCaptAreaDlg::PreView()
 		Bmp.Detach();
 	}
 
-	// •Û‘¶‚ğ‚İ‚é
+	// ä¿å­˜ã‚’è©¦ã¿ã‚‹
 	//CImage img;
-	//img.Attach((Bmp);      // bmp‚ÍCBitmap
-	//img.Save(pszName, ImageFormatBMP); // ‚±‚ñ‚ÈŠ´‚¶‚¶‚áƒ_ƒ‚©‚ÈH
+	//img.Attach((Bmp);      // bmpã¯CBitmap
+	//img.Save(pszName, ImageFormatBMP); // ã“ã‚“ãªæ„Ÿã˜ã˜ã‚ƒãƒ€ãƒ¡ã‹ãªï¼Ÿ
 }
 
 void SampleCaptArea()
@@ -198,12 +198,12 @@ BOOL SampleCaptAreaDlg::WriteBitmap(LPTSTR lpszFileName, int nWidth, int nHeight
 
 BOOL SaveBitmapFile(HBITMAP bmp,LPSTR filename)
 {
-    //// BITMAPî•ñ‚ğæ“¾‚·‚é
+    //// BITMAPæƒ…å ±ã‚’å–å¾—ã™ã‚‹
     //BITMAP bi;
     //ZeroMemory(&bi,sizeof(bi));
     //if(GetObject(bmp,sizeof(bi),&bi) == 0)return FALSE;
 
-    //// ƒtƒ@ƒCƒ‹ƒTƒCƒYŒvZ
+    //// ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºè¨ˆç®—
     //LONG filesize = bi.bmWidthBytes * bi.bmHeight + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
     //LONG bpp = 0;
     //switch(bi.bmBitsPixel){
@@ -221,11 +221,11 @@ BOOL SaveBitmapFile(HBITMAP bmp,LPSTR filename)
     //    break;
     //}
 
-    //// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+    //// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
     //HFILE fp = _lcreat(filename,0);
     //if(fp == HFILE_ERROR)return FALSE;
 
-    //// BITMAPFILEHEADERƒwƒbƒ_[o—Í
+    //// BITMAPFILEHEADERãƒ˜ãƒƒãƒ€ãƒ¼å‡ºåŠ›
     //BITMAPFILEHEADER fh;
     //ZeroMemory(&fh,sizeof(fh));
     //memcpy(&fh.bfType,"BM",2);
@@ -235,7 +235,7 @@ BOOL SaveBitmapFile(HBITMAP bmp,LPSTR filename)
     //fh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * bpp;
     //_lwrite(fp,(LPSTR)&fh,sizeof(fh));
 
-    //// BITMAPINFOHEADERƒwƒbƒ_[o—Í
+    //// BITMAPINFOHEADERãƒ˜ãƒƒãƒ€ãƒ¼å‡ºåŠ›
     //LPBITMAPINFO pbi = (LPBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * bpp);
     //ZeroMemory(pbi,sizeof(BITMAPINFOHEADER));
     //pbi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -249,7 +249,7 @@ BOOL SaveBitmapFile(HBITMAP bmp,LPSTR filename)
     //}
     //_lwrite(fp,(LPSTR)pbi,sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * bpp);
 
-    //// ‰æ‘œƒf[ƒ^‚ğ“¾‚é
+    //// ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
     //LPBYTE bits = (LPBYTE)malloc(bi.bmWidthBytes * bi.bmHeight);
     //HDC dc = GetDC(0);
     //HDC mdc = CreateCompatibleDC(dc);
@@ -258,7 +258,7 @@ BOOL SaveBitmapFile(HBITMAP bmp,LPSTR filename)
     //int l = GetDIBits(mdc,bmp,0,bi.bmHeight,bits,pbi,DIB_RGB_COLORS);
     //_lwrite(fp,(LPSTR)bits,bi.bmWidthBytes * bi.bmHeight);
 
-    //// ì‹Æ—Ìˆæ‚ğŠJ•ú
+    //// ä½œæ¥­é ˜åŸŸã‚’é–‹æ”¾
     //free(pbi);
     //free(bits);
     //_lclose(fp);

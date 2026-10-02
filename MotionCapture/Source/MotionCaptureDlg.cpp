@@ -1,5 +1,5 @@
-
-// MotionCaptureDlg.cpp : �����t�@�C��
+﻿
+// MotionCaptureDlg.cpp : 実装ファイル
 //
 
 #include "stdafx.h"
@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-// CMotionCaptureDlg �_�C�A���O
+// CMotionCaptureDlg ダイアログ
 CMotionCaptureDlg::CMotionCaptureDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMotionCaptureDlg::IDD, pParent)
 	, m_ResizeRectWidth(0)
@@ -24,7 +24,7 @@ CMotionCaptureDlg::CMotionCaptureDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	// �O������w�肷��p�����[�^
+	// 外部から指定するパラメータ
 	m_SaveFilename = "c:\\ScreenCapture.avi";
 	m_MousePointRec = TRUE;
 
@@ -74,35 +74,35 @@ BEGIN_MESSAGE_MAP(CMotionCaptureDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CMotionCaptureDlg ���b�Z�[�W �n���h���[
+// CMotionCaptureDlg メッセージ ハンドラー
 
 BOOL CMotionCaptureDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ���̃_�C�A���O�̃A�C�R����ݒ肵�܂��B�A�v���P�[�V�����̃��C�� �E�B���h�E���_�C�A���O�łȂ��ꍇ�A
-	//  Framework �́A���̐ݒ�������I�ɍs���܂��B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R���̐ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R���̐ݒ�
+	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
+	//  Framework は、この設定を自動的に行います。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
-	// TODO: �������������ɒǉ����܂��B
+	// TODO: 初期化をここに追加します。
 
-	return TRUE;  // �t�H�[�J�X���R���g���[���ɐݒ肵���ꍇ�������ATRUE ��Ԃ��܂��B
+	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
-// �_�C�A���O�ɍŏ����{�^����ǉ�����ꍇ�A�A�C�R����`�悷�邽�߂�
-//  ���̃R�[�h���K�v�ł��B�h�L�������g/�r���[ ���f�����g�� MFC �A�v���P�[�V�����̏ꍇ�A
-//  ����́AFramework �ɂ���Ď����I�ɐݒ肳��܂��B
+// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
+//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
+//  これは、Framework によって自動的に設定されます。
 
 void CMotionCaptureDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// �N���C�A���g�̎l�p�`�̈���̒���
+		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -110,7 +110,7 @@ void CMotionCaptureDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R���̕`��
+		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -119,8 +119,8 @@ void CMotionCaptureDlg::OnPaint()
 	}
 }
 
-// ���[�U�[���ŏ��������E�B���h�E���h���b�O���Ă���Ƃ��ɕ\������J�[�\�����擾���邽�߂ɁA
-//  �V�X�e�������̊֐����Ăяo���܂��B
+// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
+//  システムがこの関数を呼び出します。
 HCURSOR CMotionCaptureDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -128,7 +128,7 @@ HCURSOR CMotionCaptureDlg::OnQueryDragIcon()
 
 void CMotionCaptureDlg::OnBnClickedOk()
 {
-	// TODO: �����ɃR���g���[���ʒm�n���h���[ �R�[�h��ǉ����܂��B
+	// TODO: ここにコントロール通知ハンドラー コードを追加します。
 	//CDialogEx::OnOK();
 }
 
@@ -136,7 +136,7 @@ void CMotionCaptureDlg::OnBnClickedRecord()
 {
 	if (m_Avi.IsExecution() )
 	{
-		int rt = MessageBox("���s���ł��B���f���܂����H", "Warning", MB_YESNO);
+		int rt = MessageBox("実行中です。中断しますか？", "Warning", MB_YESNO);
 		if ( rt == IDYES )
 		{
 			OnBnClickedRecordStop();
@@ -144,10 +144,10 @@ void CMotionCaptureDlg::OnBnClickedRecord()
 		return;
 	}
 
-	// GUI�̒l���擾
+	// GUIの値を取得
 	UpdateData();
 
-	// �ʃv���Z�X���A�N�Z�X�����`�F�b�N
+	// 別プロセスがアクセス中かチェック
 	{
 		CFile cfile;
 		if ( cfile.Open(_T(m_SaveFilename), CFile::modeCreate | CFile::modeWrite) )
@@ -156,12 +156,12 @@ void CMotionCaptureDlg::OnBnClickedRecord()
 		}
 		else
 		{
-			MessageBox("�ʃv���Z�X���g�p���ł��B", "Warning", MB_OK);
+			MessageBox("別プロセスが使用中です。", "Warning", MB_OK);
 			return;
 		}
 	}
 
-	// �p�����[�^��ݒ�
+	// パラメータを設定
 	m_Avi.SetSaveFileName(m_SaveFilename);
 	m_Avi.SetFrameRate(m_FrameRate);
 	m_Avi.SetRecordSec(m_TimeoutSec);
@@ -171,13 +171,13 @@ void CMotionCaptureDlg::OnBnClickedRecord()
 	m_Avi.SetResize(m_ResizeEnable, m_ResizeRectWidth, m_ResizeRectHeight);
 	m_Avi.SetRecordMousePoint(m_MousePointRec);
 
-	// �L�^�J�n
+	// 記録開始
 	m_Avi.StartRecord();
 }
 
 void CMotionCaptureDlg::OnBnClickedRecordStop()
 {
-	// �L�^�^�X�N���~�߂�
+	// 記録タスクを止める
 	m_Avi.StopRecord();
 }
 
