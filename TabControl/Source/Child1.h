@@ -1,21 +1,21 @@
-#pragma once
+ï»¿#pragma once
 
 
-// CChild1 ƒ_ƒCƒAƒƒO
+// CChild1 ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 class CChild1 : public CDialogEx
 {
 	DECLARE_DYNAMIC(CChild1)
 
 public:
-	CChild1(CWnd* pParent = NULL);   // •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^[
+	CChild1(CWnd* pParent = NULL);   // æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼
 	virtual ~CChild1();
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_CHILD1 };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 
 	DECLARE_MESSAGE_MAP()
 };

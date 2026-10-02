@@ -1,4 +1,4 @@
-// Child2.cpp : ŽÀ‘•ƒtƒ@ƒCƒ‹
+ï»¿// Child2.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-// CChild2 ƒ_ƒCƒAƒƒO
+// CChild2 ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 IMPLEMENT_DYNAMIC(CChild2, CDialogEx)
 
@@ -31,4 +31,4 @@ BEGIN_MESSAGE_MAP(CChild2, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CChild2 ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// CChild2 ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
