@@ -1811,7 +1811,7 @@ void CMyEvent::KeyAction(WORD VirtualKey, BOOL bHold)
 
 void CMyEvent::FunctionKeyAction(BYTE VirtualKey, BOOL bHold)
 {
-	if ( VirtualKey != VK_NONE )
+	if ( VirtualKey != (BYTE)VK_NONE )
 	{
 		SendInputKey(VirtualKey, bHold);
 	}

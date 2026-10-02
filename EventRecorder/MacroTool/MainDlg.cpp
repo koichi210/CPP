@@ -124,10 +124,7 @@ void CMainDlg::OnExec()
 	GetDlgItem(IDBT_SETTING)->EnableWindow(FALSE);
 
 	sPROCSETTINGS	*pProcSettings;
-//	pProcSettings = (sPROCSETTINGS *) new sPROCSETTINGS;
-
-	sPROCSETTINGS	tmp;
-	pProcSettings = (sPROCSETTINGS *) &tmp;
+	pProcSettings = (sPROCSETTINGS *) new sPROCSETTINGS;
 
 	CString sTitle;
 	sTitle.Format("%s %s", m_ver, STR_START_PROC);
@@ -263,6 +260,7 @@ UINT ProcThread(LPVOID pParam)
 		SleepCnt(p->nRepeatTime, p->bpProcFlg);	// 全体を対象としたsleep時間
 	}
 	PostMessage(p->hWnd, WM_ENDPROC, NULL, NULL);
+	delete p;
 
 	return TRUE;
 }

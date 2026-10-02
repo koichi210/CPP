@@ -130,7 +130,7 @@ LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 			WriteLog(str);
 		}
 	}
-	return CallNextHookEx(ghKeyHook, nCode, wParam, lParam);
+	return CallNextHookEx(ghMouseHook, nCode, wParam, lParam);
 }
 
 BOOL GetKeyParameter(WPARAM wParam, DWORD *dwCap, TCHAR *key)

@@ -768,65 +768,88 @@ void CMacroToolDlg::OnWrite()
 }
 
 
+// strtok と違い、空のフィールドも1つとして数える
+static char *NextField(char **ppNext)
+{
+	char *pField = *ppNext;
+	if ( pField == NULL )
+	{
+		return NULL;
+	}
+
+	char *pDelim = strpbrk(pField, ",;");
+	if ( pDelim )
+	{
+		*pDelim = '\0';
+		*ppNext = pDelim + 1;
+	}
+	else
+	{
+		*ppNext = NULL;
+	}
+	return pField;
+}
+
 void CMacroToolDlg::SplitLogString(EVENT *pEvt, char *str, int sz)
 {
 	char *pstr;
+	char *pNext = str;
 
-	pstr = strtok(str, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		pEvt->nExe = atoi(pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		pEvt->sleep = atoi(pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		pEvt->nEvent = atoi(pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		pEvt->evMouse.pt.x = atoi(pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		pEvt->evMouse.pt.y = atoi(pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		pEvt->evMouse.nOpe = atoi(pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		pEvt->evKey.dwCap = atoi(pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		pEvt->evKey.keyEx = atoi(pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		strcpy(pEvt->evKey.key, pstr);
 	}
 
-	pstr = strtok(NULL, ",;");
+	pstr = NextField(&pNext);
 	if ( pstr )
 	{
 		strcpy(pEvt->comment, pstr);
@@ -915,7 +938,7 @@ BOOL CMacroToolDlg::CheckLogFormat(EVENT evt)
 	// MouseCaps
 	if ( evt.nEvent == EVENT_MOUSE )
 	{
-		if ( ! ( 0 <= evt.evMouse.nOpe && evt.evMouse.nOpe <= MOUSE_ARRAY_MAX) )
+		if ( ! ( 0 <= evt.evMouse.nOpe && evt.evMouse.nOpe < MOUSE_ARRAY_MAX) )
 		{
 			bReturn = FALSE;
 		}
@@ -925,6 +948,11 @@ BOOL CMacroToolDlg::CheckLogFormat(EVENT evt)
 	if ( evt.nEvent == EVENT_KEY )
 	{
 		if ( ! ( evt.evKey.dwCap >= 0) )
+		{
+			bReturn = FALSE;
+		}
+
+		if ( ! ( 0 <= evt.evKey.keyEx && evt.evKey.keyEx < KEY_ARRAY_MAX) )
 		{
 			bReturn = FALSE;
 		}
@@ -1385,7 +1413,7 @@ void CMacroToolDlg::StartRecord()
 void CMacroToolDlg::StopRecord()
 {
 #if USE_KEY_HOOK // キーボードは未完成
-	if ( StopKeyHook && StopKeyHook()
+	if ( StopKeyHook && StopKeyHook() &&
 		 StopMouseHook && StopMouseHook() )
 #else
 	if ( StopMouseHook && StopMouseHook() )

@@ -118,11 +118,11 @@ const char arKey[KEY_ARRAY_MAX][MAX_PATH] = {"上記", "F1", "F2", "F3", "F4", "
 #define SEC_MAX		60
 #define MSEC_MAX	1000
 
-typedef BOOL _stdcall StartKeyHookFUNC();
-typedef BOOL _stdcall StartMouseHookFUNC();
-typedef BOOL _stdcall StopKeyHookFUNC();
-typedef BOOL _stdcall StopMouseHookFUNC();
-typedef void _stdcall DebugModeFUNC(BOOL IsDebug);
+typedef BOOL __cdecl StartKeyHookFUNC();
+typedef BOOL __cdecl StartMouseHookFUNC();
+typedef BOOL __cdecl StopKeyHookFUNC();
+typedef BOOL __cdecl StopMouseHookFUNC();
+typedef void __cdecl DebugModeFUNC(BOOL IsDebug);
 
 #ifdef _DEBUG
  #define DLL_NAME	"../Release/EventHookd.dll"
