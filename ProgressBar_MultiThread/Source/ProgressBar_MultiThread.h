@@ -1,6 +1,4 @@
-﻿
-// ProgressBar_MultiThread.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
-//
+﻿// ProgressBar_MultiThread.h : アプリケーションクラス
 
 #pragma once
 
@@ -8,23 +6,14 @@
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
-
-
-// CProgressBarApp:
-// このクラスの実装については、ProgressBar_MultiThread.cpp を参照してください。
-//
+#include "resource.h"
 
 class CProgressBarApp : public CWinApp
 {
 public:
 	CProgressBarApp();
 
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-
-// 実装
+	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };

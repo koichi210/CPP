@@ -1,41 +1,32 @@
-﻿
-// ProgressBar_MultiThreadDlg.h : ヘッダー ファイル
-//
+﻿// ProgressBar_MultiThreadDlg.h : メインダイアログ
 
 #pragma once
-#include "afxcmn.h"
 
-#define PROGRESS_MAX	(100000)
+#include <atomic>
 
-// CProgressBarDlg ダイアログ
 class CProgressBarDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CProgressBarDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CProgressBarDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_PROGRESSBAR_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-public:
-	BOOL m_stop ;
-	CProgressCtrl m_ddx_progress;
 	afx_msg void OnBnClickedStart();
 	afx_msg void OnBnClickedStop();
-	CString m_StatusBar;
-};
+	DECLARE_MESSAGE_MAP()
 
-UINT ProcThread(LPVOID pParam);
+private:
+	// 進捗を進めるワーカースレッド。UI スレッドを塞がないので、処理中も Stop が押せる
+	static UINT ProgressThread(LPVOID pParam);
+
+	HICON m_hIcon;
+	CProgressCtrl m_progress;
+	CString m_strStatus;
+	std::atomic<bool> m_stopRequested{ false };	// UI スレッドとワーカースレッドで共有
+};
