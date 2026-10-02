@@ -75,11 +75,20 @@ void CJsonIFDlg::OnBnClickedRapidjson()
 
 void CJsonIFDlg::OnBnClickedNlomannjson()
 {
-	nlohmann::json json_data;
+	// お試し用なので、JSON 操作の例外で落ちないよう内容を表示して止める
+	try
+	{
+		nlohmann::json json_data;
 
-	json_data["top"] = "TOP_LAYER";
-	json_data["top"]["sub"] = "SUB_LAYER";
+		// 文字列を入れた要素に子要素は付けられない（type_error）ので、"top" はオブジェクトにする
+		json_data["top"]["value"] = "TOP_LAYER";
+		json_data["top"]["sub"] = "SUB_LAYER";
 
-	// dump() は UTF-8 の std::string。文字セットに依らずビルドできるよう CString に変換して渡す
-	MessageBox(_T("title"), CString(json_data.dump().c_str()));
+		// dump() は UTF-8 の std::string。文字セットに依らずビルドできるよう CString に変換して渡す
+		MessageBox(CString(json_data.dump(2).c_str()), _T("nlohmann::json"));
+	}
+	catch (const nlohmann::json::exception& e)
+	{
+		MessageBox(CString(e.what()), _T("nlohmann::json エラー"), MB_ICONERROR);
+	}
 }
