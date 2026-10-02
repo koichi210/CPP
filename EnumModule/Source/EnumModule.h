@@ -1,6 +1,4 @@
-﻿
-// EnumModule.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
-//
+﻿// EnumModule.h : アプリケーションクラス
 
 #pragma once
 
@@ -8,25 +6,14 @@
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
-
-
-// CEnumModuleApp:
-// このクラスの実装については、EnumModule.cpp を参照してください。
-//
+#include "resource.h"
 
 class CEnumModuleApp : public CWinApp
 {
 public:
 	CEnumModuleApp();
 
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-
-// 実装
+	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
-
-extern CEnumModuleApp theApp;

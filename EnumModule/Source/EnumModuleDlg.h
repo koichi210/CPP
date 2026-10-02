@@ -1,37 +1,25 @@
-﻿
-// EnumModuleDlg.h : ヘッダー ファイル
-//
+﻿// EnumModuleDlg.h : メインダイアログ（プロセスが読み込んでいるモジュールを列挙）
 
 #pragma once
 
-
-// CEnumModuleDlg ダイアログ
 class CEnumModuleDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CEnumModuleDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CEnumModuleDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_ENUMMODULE_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
-	CString m_Result;
-	CString m_ProcessName;
-
-// 実装
-protected:
-	HICON m_hIcon;
-
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedGetModulename();
 	DECLARE_MESSAGE_MAP()
-};
 
-CString PrintModuleName( DWORD processID );
-BOOL GetPhysicalFileName(LPCTSTR szFileName, LPTSTR szRealFileName, SIZE_T nBufSize);
+private:
+	HICON m_hIcon;
+	CString m_strProcessName;
+	CString m_strResult;
+};
