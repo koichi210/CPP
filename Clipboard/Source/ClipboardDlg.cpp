@@ -1,6 +1,4 @@
-﻿
-// ClipboardDlg.cpp : 実装ファイル
-//
+﻿// ClipboardDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "Clipboard.h"
@@ -11,15 +9,8 @@
 #define new DEBUG_NEW
 #endif
 
-
-// CClipboardDlg ダイアログ
-
-
-
-
-CClipboardDlg::CClipboardDlg(CWnd* pParent /*=NULL*/)
+CClipboardDlg::CClipboardDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CClipboardDlg::IDD, pParent)
-	, m_Text(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -27,7 +18,7 @@ CClipboardDlg::CClipboardDlg(CWnd* pParent /*=NULL*/)
 void CClipboardDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDET_TEXT, m_Text);
+	DDX_Text(pDX, IDET_TEXT, m_strText);
 }
 
 BEGIN_MESSAGE_MAP(CClipboardDlg, CDialogEx)
@@ -36,44 +27,32 @@ BEGIN_MESSAGE_MAP(CClipboardDlg, CDialogEx)
 	ON_BN_CLICKED(IDBT_COPY_CLIPBOARD, &CClipboardDlg::OnBnClickedCopyClipboard)
 END_MESSAGE_MAP()
 
-
-// CClipboardDlg メッセージ ハンドラー
-
 BOOL CClipboardDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
 void CClipboardDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int cxIcon = GetSystemMetrics(SM_CXICON);
+		const int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - cxIcon + 1) / 2;
+		const int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -82,66 +61,55 @@ void CClipboardDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CClipboardDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
 void CClipboardDlg::OnBnClickedCopyClipboard()
 {
 	UpdateData(TRUE);
-	if ( ! SetClipboardText(m_Text))
+	if (!SetClipboardText(m_strText))
 	{
-		MessageBox("エラーが発生しました");
+		MessageBox(_T("エラーが発生しました"));
 	}
 }
 
-BOOL CClipboardDlg::SetClipboardText( const CHAR *Str )
+// CF_TEXT（マルチバイト文字列）としてクリップボードに設定する
+bool CClipboardDlg::SetClipboardText(const CStringA& text)
 {
-	BOOL IsSuccess = TRUE;
+	// 終端の '\0' も含めて渡す
+	const SIZE_T size = static_cast<SIZE_T>(text.GetLength()) + 1;
 
-	try
+	// クリップボードに渡すメモリは移動可能な共有メモリでなければならない
+	HGLOBAL hMem = GlobalAlloc(GMEM_SHARE | GMEM_MOVEABLE, size);
+	if (hMem == nullptr)
 	{
-		// 移動可能な共有メモリを確保
-		int BufSize = strlen( Str ) + 1;
-		HANDLE hMem = GlobalAlloc( GMEM_SHARE | GMEM_MOVEABLE, BufSize );
-		if ( !hMem )
-		{
-			throw  FALSE;
-		}
-
-		// 確保したメモリをロックし，アクセス可能にする
-		char  *Buf = (char *)GlobalLock( hMem );
-		if ( !Buf )
-		{
-			GlobalFree( hMem );
-			throw  FALSE;
-		}
-
-		strcpy_s( Buf, BufSize, m_Text );	// 文字列をセット
-		GlobalUnlock( hMem );				// メモリのロックを解除
-		if ( !OpenClipboard() )
-		{
-			GlobalFree( hMem );
-			throw  FALSE;
-		}
-		EmptyClipboard();                  // クリップボード内の古いデータを解放
-		if ( !SetClipboardData( CF_TEXT, hMem ) ) // クリップボードに新しいデータを入力
-		{
-			// 所有権がクリップボードに移らなかったので自分で解放する
-			GlobalFree( hMem );
-			CloseClipboard();
-			throw  FALSE;
-		}
-		CloseClipboard();
+		return false;
 	}
-	catch(BOOL Result)
+
+	void* pBuf = GlobalLock(hMem);
+	if (pBuf == nullptr)
 	{
-		IsSuccess = Result;
+		GlobalFree(hMem);
+		return false;
 	}
-	return IsSuccess;
+	memcpy(pBuf, static_cast<LPCSTR>(text), size);
+	GlobalUnlock(hMem);
+
+	if (!OpenClipboard())
+	{
+		GlobalFree(hMem);
+		return false;
+	}
+	EmptyClipboard();
+	// 成功するとメモリの所有権はクリップボードへ移る
+	const bool succeeded = (SetClipboardData(CF_TEXT, hMem) != nullptr);
+	CloseClipboard();
+
+	if (!succeeded)
+	{
+		GlobalFree(hMem);
+	}
+	return succeeded;
 }

@@ -1,35 +1,26 @@
-﻿
-// ClipboardDlg.h : ヘッダー ファイル
-//
+﻿// ClipboardDlg.h : メインダイアログ（入力した文字列をクリップボードへコピー）
 
 #pragma once
 
-
-// CClipboardDlg ダイアログ
 class CClipboardDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CClipboardDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CClipboardDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_CLIPBOARD_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
-	CString m_Text;
-
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
-	BOOL SetClipboardText( const CHAR *Str );
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedCopyClipboard();
 	DECLARE_MESSAGE_MAP()
+
+private:
+	bool SetClipboardText(const CStringA& text);
+
+	HICON m_hIcon;
+	CString m_strText;
 };
