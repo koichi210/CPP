@@ -13,6 +13,7 @@ namespace
 {
 	constexpr int kMaxCount = 32767;		// これに達したら 0 に戻す
 	constexpr DWORD kIntervalMs = 1000;
+	constexpr DWORD kStopCheckMs = 50;		// 待ちの途中でも停止にすぐ気づけるよう、この間隔で確認する
 }
 
 CMultiThreadDlg::CMultiThreadDlg(CWnd* pParent /*=nullptr*/)
@@ -26,6 +27,7 @@ BEGIN_MESSAGE_MAP(CMultiThreadDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CMultiThreadDlg::OnBnClickedStart)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMultiThreadDlg::OnBnClickedStop)
+	ON_WM_ENDSESSION()
 END_MESSAGE_MAP()
 
 BOOL CMultiThreadDlg::OnInitDialog()
@@ -71,13 +73,44 @@ HCURSOR CMultiThreadDlg::OnQueryDragIcon()
 void CMultiThreadDlg::OnBnClickedStart()
 {
 	m_bStop = false;
-	AfxBeginThread(CountThreadProc, this);
+	m_workers.Start(CountThreadProc, this);
 }
 
 // 「Stop」：動いているワーカースレッドすべてに停止を指示する
 void CMultiThreadDlg::OnBnClickedStop()
 {
 	m_bStop = true;
+}
+
+void CMultiThreadDlg::OnOK()
+{
+	StopWorkers();
+	CDialogEx::OnOK();
+}
+
+void CMultiThreadDlg::OnCancel()
+{
+	StopWorkers();
+	CDialogEx::OnCancel();
+}
+
+// シャットダウン・ログオフでは、この後すぐプロセスごと終了させられるので、その前に止める
+void CMultiThreadDlg::OnEndSession(BOOL bEnding)
+{
+	if (bEnding)
+	{
+		StopWorkers();
+	}
+	CDialogEx::OnEndSession(bEnding);
+}
+
+// ワーカーはダイアログを触るので、閉じる（ダイアログが破棄される）前に止めて終了を待つ
+void CMultiThreadDlg::StopWorkers()
+{
+	m_bStop = true;
+	EnableWindow(FALSE);	// 待っている間に Start を押させない
+	m_workers.WaitAll();
+	EnableWindow(TRUE);
 }
 
 // 1秒ごとにカウンタを進めてダイアログのタイトルに表示する
@@ -93,7 +126,11 @@ UINT CMultiThreadDlg::CountThreadProc(LPVOID pParam)
 
 		title.Format(_T("test %04d"), count);
 		pDlg->SetWindowText(title);
-		Sleep(kIntervalMs);
+
+		for (DWORD waited = 0; waited < kIntervalMs && !pDlg->m_bStop; waited += kStopCheckMs)
+		{
+			Sleep(kStopCheckMs);
+		}
 	}
 	return TRUE;
 }
