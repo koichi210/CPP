@@ -1,33 +1,23 @@
-﻿
-// memcpyDlg.h : ヘッダー ファイル
-//
+﻿// memcpyDlg.h : メインダイアログ
 
 #pragma once
 
-
-// CmemcpyDlg ダイアログ
-class CmemcpyDlg : public CDialogEx
+class CMemcpyDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CmemcpyDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CMemcpyDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_MEMCPY_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-public:
 	afx_msg void OnBnClickedButton1();
+	DECLARE_MESSAGE_MAP()
+
+private:
+	HICON m_hIcon;
 };

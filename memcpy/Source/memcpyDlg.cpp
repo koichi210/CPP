@@ -1,6 +1,4 @@
-﻿
-// memcpyDlg.cpp : 実装ファイル
-//
+﻿// memcpyDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "memcpy.h"
@@ -11,59 +9,42 @@
 #define new DEBUG_NEW
 #endif
 
-
-// CmemcpyDlg ダイアログ
-
-
-
-
-CmemcpyDlg::CmemcpyDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CmemcpyDlg::IDD, pParent)
+CMemcpyDlg::CMemcpyDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CmemcpyDlg::DoDataExchange(CDataExchange* pDX)
+void CMemcpyDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 }
 
-BEGIN_MESSAGE_MAP(CmemcpyDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CMemcpyDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CmemcpyDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &CMemcpyDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-
-// CmemcpyDlg メッセージ ハンドラー
-
-BOOL CmemcpyDlg::OnInitDialog()
+BOOL CMemcpyDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
-void CmemcpyDlg::OnPaint()
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
+void CMemcpyDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -71,7 +52,6 @@ void CmemcpyDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -80,22 +60,20 @@ void CmemcpyDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
-HCURSOR CmemcpyDlg::OnQueryDragIcon()
+HCURSOR CMemcpyDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-void CmemcpyDlg::OnBnClickedButton1()
+// コピー元より大きいサイズ（コピー先のサイズ）で memcpy するとどうなるかの確認用。
+// str は6バイトしか無いのに256バイト読むので、範囲外読み出し（未定義動作）を承知で残している
+void CMemcpyDlg::OnBnClickedButton1()
 {
 	char buff[256];
 	char str[] = "abcde";
 
 	CString Result = "";
-	for ( int i=0; i < 100; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		memcpy(buff, str, sizeof(buff));
 		Result += buff;
