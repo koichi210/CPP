@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <memory>
+#include <vector>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -56,6 +57,8 @@ BEGIN_MESSAGE_MAP(CDivisionCouplingDlg, CDialogEx)
 	ON_BN_CLICKED(IDBT_SPLIT_BROWSE, &CDivisionCouplingDlg::OnBnClickedSplitBrowse)
 	ON_BN_CLICKED(IDBT_MERGE_BROWSE, &CDivisionCouplingDlg::OnBnClickedMergeBrowse)
 	ON_BN_CLICKED(IDBT_STOP, &CDivisionCouplingDlg::OnBnClickedStop)
+	ON_WM_ENDSESSION()
+	ON_MESSAGE(WM_APP_PROCESS_FINISHED, &CDivisionCouplingDlg::OnProcessFinished)
 END_MESSAGE_MAP()
 
 BOOL CDivisionCouplingDlg::OnInitDialog()
@@ -108,6 +111,22 @@ void CDivisionCouplingDlg::OnBnClickedSplit()
 void CDivisionCouplingDlg::OnBnClickedMerge()
 {
 	GetDlgItemText(IDET_MERGE_FNAME, m_srcPath);
+
+	// 選んだ分割ファイルから最後の拡張子を外したものが結合後のファイル名
+	// 例: fname.jpg.div001 → fname.jpg
+	const int dot = m_srcPath.ReverseFind(_T('.'));
+	m_destPath = (dot >= 0) ? m_srcPath.Left(dot) : m_srcPath;
+
+	// 確認はワーカーを動かす前に UI スレッドで行う
+	if (PathFileExists(m_destPath))
+	{
+		if (MessageBox(_T("すでにファイルが存在します。上書きしますか？\n") + m_destPath, _T("Warning"), MB_YESNO) == IDNO)
+		{
+			MessageBox(_T("処理を中断しました。"));
+			return;
+		}
+	}
+
 	StartProcess(&CDivisionCouplingDlg::MergeThreadProc);
 }
 
@@ -121,17 +140,71 @@ void CDivisionCouplingDlg::OnBnClickedMergeBrowse()
 	BrowseFile(IDET_MERGE_FNAME);
 }
 
+// 開始ボタンはワーカーが止まりきってから OnProcessFinished で戻す（前の処理と同時に動かさないため）
 void CDivisionCouplingDlg::OnBnClickedStop()
 {
 	m_running = false;
-	EnableControls(false);
+	GetDlgItem(IDBT_STOP)->EnableWindow(FALSE);
 }
 
+void CDivisionCouplingDlg::OnOK()
+{
+	if (StopWorkersForClose())
+	{
+		CDialogEx::OnOK();
+	}
+}
+
+void CDivisionCouplingDlg::OnCancel()
+{
+	if (StopWorkersForClose())
+	{
+		CDialogEx::OnCancel();
+	}
+}
+
+bool CDivisionCouplingDlg::StopWorkersForClose()
+{
+	if (m_workers.IsRunning())
+	{
+		const int answer = MessageBox(_T("処理中です。中止して閉じますか？\n\n作成途中のファイルは削除します。"), _T("確認"), MB_YESNO | MB_ICONQUESTION);
+		if (answer != IDYES)
+		{
+			return false;
+		}
+	}
+
+	StopWorkers();
+	return true;
+}
+
+// シャットダウン・ログオフでは、この後すぐプロセスごと終了させられるので、確認せずに止めて後片付けさせる
+void CDivisionCouplingDlg::OnEndSession(BOOL bEnding)
+{
+	if (bEnding)
+	{
+		StopWorkers();
+	}
+	CDialogEx::OnEndSession(bEnding);
+}
+
+// ワーカーはダイアログを触るので、閉じる（ダイアログが破棄される）前に止めて終了を待つ
+void CDivisionCouplingDlg::StopWorkers()
+{
+	m_closing = true;
+	m_running = false;
+	EnableWindow(FALSE);	// 待っている間に操作させない
+	m_workers.WaitAll();
+	EnableWindow(TRUE);
+}
+
+// ワーカーは画面に何も出さず、終わったことだけ UI スレッドに伝えてすぐ終わる
+// （ワーカーがメッセージボックスを出すと、閉じるまでスレッドが終われないため）
 UINT CDivisionCouplingDlg::SplitThreadProc(LPVOID pParam)
 {
 	auto pDlg = static_cast<CDivisionCouplingDlg*>(pParam);
 	pDlg->Split();
-	pDlg->FinishProcess();
+	pDlg->PostMessage(WM_APP_PROCESS_FINISHED);
 	return TRUE;
 }
 
@@ -139,7 +212,7 @@ UINT CDivisionCouplingDlg::MergeThreadProc(LPVOID pParam)
 {
 	auto pDlg = static_cast<CDivisionCouplingDlg*>(pParam);
 	pDlg->Merge();
-	pDlg->FinishProcess();
+	pDlg->PostMessage(WM_APP_PROCESS_FINISHED);
 	return TRUE;
 }
 
@@ -148,19 +221,28 @@ void CDivisionCouplingDlg::StartProcess(AFX_THREADPROC pfnThreadProc)
 	m_error = Error::None;
 	m_running = true;
 	EnableControls(true);
-	AfxBeginThread(pfnThreadProc, this);
+	m_workers.Start(pfnThreadProc, this);
 }
 
-void CDivisionCouplingDlg::FinishProcess()
+LRESULT CDivisionCouplingDlg::OnProcessFinished(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	m_running = false;
 	EnableControls(false);
+
+	// 閉じる途中はダイアログの終了を妨げないよう、何も表示しない
+	if (m_closing)
+	{
+		return 0;
+	}
 
 	CString msg;
 	switch (m_error)
 	{
 	case Error::None:
-		return;
+		return 0;
+	case Error::Aborted:
+		MessageBox(_T("処理を中止しました。\n作成途中のファイルは削除しました。"), _T("info"), MB_OK);
+		return 0;
 	case Error::OpenSource:
 		msg = _T("元ファイルオープンエラー");
 		break;
@@ -175,6 +257,7 @@ void CDivisionCouplingDlg::FinishProcess()
 		break;
 	}
 	MessageBox(msg, _T("error"), MB_OK);
+	return 0;
 }
 
 void CDivisionCouplingDlg::Split()
@@ -208,6 +291,9 @@ void CDivisionCouplingDlg::Split()
 	}
 	m_progress.SetRange32(0, partCount);
 
+	// 途中で終わったときに消せるよう、作った分割ファイルを覚えておく
+	std::vector<CString> createdParts;
+
 	for (int index = 1; restSize > 0 && m_running; index++)
 	{
 		m_destPath = MakePartPath(m_srcPath, index);
@@ -217,6 +303,7 @@ void CDivisionCouplingDlg::Split()
 			m_error = Error::OpenDest;
 			break;
 		}
+		createdParts.push_back(m_destPath);
 
 		const UINT size = (restSize > static_cast<ULONGLONG>(m_divSize))
 			? static_cast<UINT>(m_divSize) : static_cast<UINT>(restSize);
@@ -230,24 +317,24 @@ void CDivisionCouplingDlg::Split()
 	}
 
 	srcFile.Close();
+
+	// 分割ファイルが欠けたまま残ると、結合したときに欠けたファイルが黙ってできてしまう
+	if (restSize > 0)
+	{
+		if (m_error == Error::None)
+		{
+			m_error = Error::Aborted;
+		}
+		for (const CString& part : createdParts)
+		{
+			::DeleteFile(part);
+		}
+	}
 }
 
 void CDivisionCouplingDlg::Merge()
 {
-	// 選んだ分割ファイルから最後の拡張子を外したものが結合後のファイル名
-	// 例: fname.jpg.div001 → fname.jpg
-	const int dot = m_srcPath.ReverseFind(_T('.'));
-	m_destPath = (dot >= 0) ? m_srcPath.Left(dot) : m_srcPath;
-
-	if (PathFileExists(m_destPath))
-	{
-		if (MessageBox(_T("すでにファイルが存在します。上書きしますか？\n") + m_destPath, _T("Warning"), MB_YESNO) == IDNO)
-		{
-			MessageBox(_T("処理を中断しました。"));
-			return;
-		}
-	}
-
+	// 結合先 m_destPath は OnBnClickedMerge で決めて、上書きの確認も済んでいる
 	CFile destFile;
 	if (!destFile.Open(m_destPath, CFile::modeCreate | CFile::modeWrite))
 	{
@@ -256,8 +343,14 @@ void CDivisionCouplingDlg::Merge()
 	}
 
 	// .div001 から番号順に、ファイルが無くなるまで連結する
-	for (int index = 1; m_running; index++)
+	for (int index = 1; ; index++)
 	{
+		if (!m_running)
+		{
+			m_error = Error::Aborted;
+			break;
+		}
+
 		CFile partFile;
 		if (!partFile.Open(MakePartPath(m_destPath, index), CFile::modeRead))
 		{
@@ -278,6 +371,12 @@ void CDivisionCouplingDlg::Merge()
 	}
 
 	destFile.Close();
+
+	// 途中で終わった結合結果は欠けているので残さない
+	if (m_error != Error::None)
+	{
+		::DeleteFile(m_destPath);
+	}
 }
 
 void CDivisionCouplingDlg::BrowseFile(UINT editId)
