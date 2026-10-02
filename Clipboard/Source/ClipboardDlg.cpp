@@ -1,5 +1,5 @@
-
-// ClipboardDlg.cpp : ŽÀ‘•ƒtƒ@ƒCƒ‹
+ï»¿
+// ClipboardDlg.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "stdafx.h"
@@ -12,7 +12,7 @@
 #endif
 
 
-// CClipboardDlg ƒ_ƒCƒAƒƒO
+// CClipboardDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 
 
@@ -37,35 +37,35 @@ BEGIN_MESSAGE_MAP(CClipboardDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CClipboardDlg ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// CClipboardDlg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
 
 BOOL CClipboardDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ‚±‚Ìƒ_ƒCƒAƒƒO‚ÌƒAƒCƒRƒ“‚ðÝ’è‚µ‚Ü‚·BƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒƒCƒ“ ƒEƒBƒ“ƒhƒE‚ªƒ_ƒCƒAƒƒO‚Å‚È‚¢ê‡A
-	//  Framework ‚ÍA‚±‚ÌÝ’è‚ðŽ©“®“I‚És‚¢‚Ü‚·B
-	SetIcon(m_hIcon, TRUE);			// ‘å‚«‚¢ƒAƒCƒRƒ“‚ÌÝ’è
-	SetIcon(m_hIcon, FALSE);		// ¬‚³‚¢ƒAƒCƒRƒ“‚ÌÝ’è
+	// ã“ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®šã—ã¾ã™ã€‚ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ¡ã‚¤ãƒ³ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§ãªã„å ´åˆã€
+	//  Framework ã¯ã€ã“ã®è¨­å®šã‚’è‡ªå‹•çš„ã«è¡Œã„ã¾ã™ã€‚
+	SetIcon(m_hIcon, TRUE);			// å¤§ãã„ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
+	SetIcon(m_hIcon, FALSE);		// å°ã•ã„ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
 
-	// TODO: ‰Šú‰»‚ð‚±‚±‚É’Ç‰Á‚µ‚Ü‚·B
+	// TODO: åˆæœŸåŒ–ã‚’ã“ã“ã«è¿½åŠ ã—ã¾ã™ã€‚
 
-	return TRUE;  // ƒtƒH[ƒJƒX‚ðƒRƒ“ƒgƒ[ƒ‹‚ÉÝ’è‚µ‚½ê‡‚ðœ‚«ATRUE ‚ð•Ô‚µ‚Ü‚·B
+	return TRUE;  // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«è¨­å®šã—ãŸå ´åˆã‚’é™¤ãã€TRUE ã‚’è¿”ã—ã¾ã™ã€‚
 }
 
-// ƒ_ƒCƒAƒƒO‚ÉÅ¬‰»ƒ{ƒ^ƒ“‚ð’Ç‰Á‚·‚éê‡AƒAƒCƒRƒ“‚ð•`‰æ‚·‚é‚½‚ß‚Ì
-//  ‰º‚ÌƒR[ƒh‚ª•K—v‚Å‚·BƒhƒLƒ…ƒƒ“ƒg/ƒrƒ…[ ƒ‚ƒfƒ‹‚ðŽg‚¤ MFC ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìê‡A
-//  ‚±‚ê‚ÍAFramework ‚É‚æ‚Á‚ÄŽ©“®“I‚ÉÝ’è‚³‚ê‚Ü‚·B
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã«æœ€å°åŒ–ãƒœã‚¿ãƒ³ã‚’è¿½åŠ ã™ã‚‹å ´åˆã€ã‚¢ã‚¤ã‚³ãƒ³ã‚’æç”»ã™ã‚‹ãŸã‚ã®
+//  ä¸‹ã®ã‚³ãƒ¼ãƒ‰ãŒå¿…è¦ã§ã™ã€‚ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ/ãƒ“ãƒ¥ãƒ¼ ãƒ¢ãƒ‡ãƒ«ã‚’ä½¿ã† MFC ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®å ´åˆã€
+//  ã“ã‚Œã¯ã€Framework ã«ã‚ˆã£ã¦è‡ªå‹•çš„ã«è¨­å®šã•ã‚Œã¾ã™ã€‚
 
 void CClipboardDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // •`‰æ‚ÌƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
+		CPaintDC dc(this); // æç”»ã®ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// ƒNƒ‰ƒCƒAƒ“ƒg‚ÌŽlŠpŒ`—Ìˆæ“à‚Ì’†‰›
+		// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®å››è§’å½¢é ˜åŸŸå†…ã®ä¸­å¤®
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -73,7 +73,7 @@ void CClipboardDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ƒAƒCƒRƒ“‚Ì•`‰æ
+		// ã‚¢ã‚¤ã‚³ãƒ³ã®æç”»
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -82,8 +82,8 @@ void CClipboardDlg::OnPaint()
 	}
 }
 
-// ƒ†[ƒU[‚ªÅ¬‰»‚µ‚½ƒEƒBƒ“ƒhƒE‚ðƒhƒ‰ƒbƒO‚µ‚Ä‚¢‚é‚Æ‚«‚É•\Ž¦‚·‚éƒJ[ƒ\ƒ‹‚ðŽæ“¾‚·‚é‚½‚ß‚ÉA
-//  ƒVƒXƒeƒ€‚ª‚±‚ÌŠÖ”‚ðŒÄ‚Ño‚µ‚Ü‚·B
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒæœ€å°åŒ–ã—ãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ãƒ‰ãƒ©ãƒƒã‚°ã—ã¦ã„ã‚‹ã¨ãã«è¡¨ç¤ºã™ã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚’å–å¾—ã™ã‚‹ãŸã‚ã«ã€
+//  ã‚·ã‚¹ãƒ†ãƒ ãŒã“ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™ã€‚
 HCURSOR CClipboardDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -96,7 +96,7 @@ void CClipboardDlg::OnBnClickedCopyClipboard()
 	UpdateData(TRUE);
 	if ( ! SetClipboardText(m_Text))
 	{
-		MessageBox("ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½");
+		MessageBox("ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ");
 	}
 }
 
@@ -106,7 +106,7 @@ BOOL CClipboardDlg::SetClipboardText( const CHAR *Str )
 
 	try
 	{
-		// ˆÚ“®‰Â”\‚È‹¤—Lƒƒ‚ƒŠ‚ðŠm•Û
+		// ç§»å‹•å¯èƒ½ãªå…±æœ‰ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
 		int BufSize = strlen( Str ) + 1;
 		HANDLE hMem = GlobalAlloc( GMEM_SHARE | GMEM_MOVEABLE, BufSize );
 		if ( !hMem )
@@ -114,19 +114,19 @@ BOOL CClipboardDlg::SetClipboardText( const CHAR *Str )
 			throw  FALSE;
 		}
 
-		// Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ðƒƒbƒN‚µCƒAƒNƒZƒX‰Â”\‚É‚·‚é
+		// ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã‚’ãƒ­ãƒƒã‚¯ã—ï¼Œã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½ã«ã™ã‚‹
 		char  *Buf = (char *)GlobalLock( hMem );
 		if ( !Buf )
 		{
 			throw  FALSE;
 		}
 
-		strcpy_s( Buf, BufSize, m_Text );	// •¶Žš—ñ‚ðƒZƒbƒg
-		GlobalUnlock( hMem );				// ƒƒ‚ƒŠ‚ÌƒƒbƒN‚ð‰ðœ
+		strcpy_s( Buf, BufSize, m_Text );	// æ–‡å­—åˆ—ã‚’ã‚»ãƒƒãƒˆ
+		GlobalUnlock( hMem );				// ãƒ¡ãƒ¢ãƒªã®ãƒ­ãƒƒã‚¯ã‚’è§£é™¤
 		if ( OpenClipboard() )
 		{
-			EmptyClipboard();                  // ƒNƒŠƒbƒvƒ{[ƒh“à‚ÌŒÃ‚¢ƒf[ƒ^‚ð‰ð•ú
-			SetClipboardData( CF_TEXT, hMem ); // ƒNƒŠƒbƒvƒ{[ƒh‚ÉV‚µ‚¢ƒf[ƒ^‚ð“ü—Í
+			EmptyClipboard();                  // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰å†…ã®å¤ã„ãƒ‡ãƒ¼ã‚¿ã‚’è§£æ”¾
+			SetClipboardData( CF_TEXT, hMem ); // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«æ–°ã—ã„ãƒ‡ãƒ¼ã‚¿ã‚’å…¥åŠ›
 			CloseClipboard();
 		}
 	}
