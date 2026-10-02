@@ -1,5 +1,5 @@
-
-// FileCompareDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿
+// FileCompareDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #pragma once
@@ -15,8 +15,8 @@
 #define POS_END				(-1)
 #define POS_INIT			(0)
 
-#define STR_START			"”äŠr"
-#define STR_STOP			"’â~"
+#define STR_START			"æ¯”è¼ƒ"
+#define STR_STOP			"åœæ­¢"
 
 typedef struct FileList{
 	int		nFindSame;
@@ -25,37 +25,37 @@ typedef struct FileList{
 
 UINT ProcThread(LPVOID pParam);
 
-// CFileCompareDlg ƒ_ƒCƒAƒƒO
+// CFileCompareDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class CFileCompareDlg : public CDialogEx
 {
-// ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 public:
 	HICON m_hIcon;
-	int m_SameGroup;						// “¯‚¶ƒtƒ@ƒCƒ‹‚Ì‰òiidxj
-	CProgressCtrl mdx_progress;				// ƒvƒƒOƒŒƒXƒo[
-	BOOL m_bProc;							// ˆ—ƒtƒ‰ƒOiFALSE=’â~—v‹j
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+	int m_SameGroup;						// åŒã˜ãƒ•ã‚¡ã‚¤ãƒ«ã®å¡Šï¼ˆidxï¼‰
+	CProgressCtrl mdx_progress;				// ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼
+	BOOL m_bProc;							// å‡¦ç†ãƒ•ãƒ©ã‚°ï¼ˆFALSE=åœæ­¢è¦æ±‚ï¼‰
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_FILECOMPARE_DIALOG };
-	FileList m_FileList[MAX_FILE_NUM];		// ‘Sƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒX
-	int		 m_FileNum;						// ‘ÎÛƒtƒ@ƒCƒ‹‚Ì‘S‘Ì”
-	CString m_FolderList[MAX_FOLDER_NUM];	// ‘ÎÛƒtƒHƒ‹ƒ_‚ÌƒŠƒXƒg
+	FileList m_FileList[MAX_FILE_NUM];		// å…¨ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹
+	int		 m_FileNum;						// å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã®å…¨ä½“æ•°
+	CString m_FolderList[MAX_FOLDER_NUM];	// å¯¾è±¡ãƒ•ã‚©ãƒ«ãƒ€ã®ãƒªã‚¹ãƒˆ
 
 
-// À‘•
+// å®Ÿè£…
 public:
-	CFileCompareDlg(CWnd* pParent = NULL);	// •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^[
+	CFileCompareDlg(CWnd* pParent = NULL);	// æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼
 
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ƒTƒ|[ƒg
-	void StopProc();	// ’â~ˆ—
-	void InitProc();	// ‰Šú‰»ˆ—
-	void GetFolder();	// ƒtƒHƒ‹ƒ_ˆê——‚ğæ“¾
-	void GetFile();		// ƒtƒ@ƒCƒ‹ˆê——‚ğæ“¾
-	void Compare();		// ƒtƒ@ƒCƒ‹”äŠr‚Ìe
-	int GetProgressBarEnd();	// ƒvƒƒOƒŒƒXƒo[‚ÌI—¹ˆÊ’u
-	void UpdateProgressBar(int nPos);		// ƒvƒƒOƒŒƒXƒo[‚Ìi’»
-	void OutputResult(BOOL bClear = FALSE);	// Œ‹‰Ê‚Ì‰æ–Ê•\¦
-	void Result();		// I—¹ˆ—
-	// ¶¬‚³‚ê‚½AƒƒbƒZ[ƒWŠ„‚è“–‚ÄŠÖ”
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã‚µãƒãƒ¼ãƒˆ
+	void StopProc();	// åœæ­¢å‡¦ç†
+	void InitProc();	// åˆæœŸåŒ–å‡¦ç†
+	void GetFolder();	// ãƒ•ã‚©ãƒ«ãƒ€ä¸€è¦§ã‚’å–å¾—
+	void GetFile();		// ãƒ•ã‚¡ã‚¤ãƒ«ä¸€è¦§ã‚’å–å¾—
+	void Compare();		// ãƒ•ã‚¡ã‚¤ãƒ«æ¯”è¼ƒã®è¦ª
+	int GetProgressBarEnd();	// ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã®çµ‚äº†ä½ç½®
+	void UpdateProgressBar(int nPos);		// ãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ã®é€²æ—
+	void OutputResult(BOOL bClear = FALSE);	// çµæœã®ç”»é¢è¡¨ç¤º
+	void Result();		// çµ‚äº†å‡¦ç†
+	// ç”Ÿæˆã•ã‚ŒãŸã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²ã‚Šå½“ã¦é–¢æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();

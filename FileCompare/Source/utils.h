@@ -1,10 +1,10 @@
-/////////////////////////////////////////////////////////////////////////////
-// ���ʂ̃��W���[���w�b�_
+﻿/////////////////////////////////////////////////////////////////////////////
+// 共通のモジュールヘッダ
 /////////////////////////////////////////////////////////////////////////////
 
-//����̃��C�u�������g�p����ꍇ�A�Ăяo������define���K�v
+//特定のライブラリを使用する場合、呼び出し側でdefineが必要
 #ifndef USE_IMM_H
-#define USE_IMM_H	0	// imm.h�̎g�p��
+#define USE_IMM_H	0	// imm.hの使用可否
 #endif
 
 
@@ -18,15 +18,15 @@
 		|| (0xe0 <= (unsigned char)(c&0xff) && (unsigned char)(c&0xff) <= 0xfc))
 
 
-// �\���̒�`
+// 構造体定義
 typedef struct
 {
-	int		iCtrlId;			//�R���g���[��ID
-	int		iStrId;				//�����񃊃\�[�XID (Caption)
+	int		iCtrlId;			//コントロールID
+	int		iStrId;				//文字列リソースID (Caption)
 } TABLE;
 
 
-// �O���[�o���֐�
+// グローバル関数
 void MyMergePath(CString *path, CString dir, CString file, CString ext);
 void MySplitPath(CString csPath, CString *cspDrv, CString *cspDir, CString *cspFile, CString *cspExt);
 void MyConnection(CString *csFile1, CString csFile2);
@@ -70,12 +70,12 @@ public:
 	DWORD	m_dwCharKind;
 			enum
 			{
-				F_DEFAULT      = 0, //SBCS �����S��
-				F_DIGIT        = 1, //10�i��(0 �` 9)
-				F_DIGIT_SIGN   = 2, //10�i��(0 �` 9)�ƕ���'-'
-				F_DECIMAL      = 3, //10�i��(0 �` 9)�Ə����_'.'
-				F_DECIMAL_SIGN = 4, //10�i��(0 �` 9)�Ə����_'.'�ƕ���'-'
-				F_ASCII        = 5, //0x00 �` 0x7F
+				F_DEFAULT      = 0, //SBCS 文字全般
+				F_DIGIT        = 1, //10進数(0 ～ 9)
+				F_DIGIT_SIGN   = 2, //10進数(0 ～ 9)と負号'-'
+				F_DECIMAL      = 3, //10進数(0 ～ 9)と小数点'.'
+				F_DECIMAL_SIGN = 4, //10進数(0 ～ 9)と小数点'.'と負号'-'
+				F_ASCII        = 5, //0x00 ～ 0x7F
 			};
 	char	*m_pszExceptions;
 	BOOL	m_bDisableCopyAndPaste;
@@ -185,19 +185,19 @@ class CMyListCtrl : public CListCtrl
 
 // Attributes
 protected:
-	CPoint		m_Pos;				// �J�����g�|�W�V����
-	CMyList		*m_MyList;			// �|�b�v�A�b�v���X�g
-	CString		*m_ListElements;	// ���X�g�̗v�f
-	DWORD		m_NumElements;		// ���X�g�̗v�f��
-	DWORD		m_EditKind;			// �G�f�B�b�g�{�b�N�X�Ŏg�p�\�ȕ���
-	UINT		m_MaxLength;		// ���͕����ő吔
-	int			m_SelItem;			// �I�����ꂽ��
-	int			m_SelSubItem;		// �I�����ꂽ�s
-	int			m_CurItem;			// �J�����g��
-	int			m_CurSubItem;		// �J�����g�s
-	CMyEdit		*m_MyEdit;			// �G�f�B�b�g�R���g���[��
-	BOOL		m_SideHeader;		// �T�C�h�w�b�_�L��
-	COLORREF	m_LineColor;		// �d�؂�̐F
+	CPoint		m_Pos;				// カレントポジション
+	CMyList		*m_MyList;			// ポップアップリスト
+	CString		*m_ListElements;	// リストの要素
+	DWORD		m_NumElements;		// リストの要素数
+	DWORD		m_EditKind;			// エディットボックスで使用可能な文字
+	UINT		m_MaxLength;		// 入力文字最大数
+	int			m_SelItem;			// 選択された列
+	int			m_SelSubItem;		// 選択された行
+	int			m_CurItem;			// カレント列
+	int			m_CurSubItem;		// カレント行
+	CMyEdit		*m_MyEdit;			// エディットコントロール
+	BOOL		m_SideHeader;		// サイドヘッダ有無
+	COLORREF	m_LineColor;		// 仕切りの色
 
 // Implementation
 public:
@@ -212,8 +212,8 @@ public:
 
 // Implementation
 protected:
-	virtual BOOL UseInEditKey(UINT nChar);		// �㏑���p�i�G�f�B�b�g��Ԃɂ��邽�߂̃L�[���͂�I�ʁj
-	virtual void CreatePopup(LONG col, CRect rect);	// �㏑���p�i��������|�b�v�A�b�v��؂蕪����j
+	virtual BOOL UseInEditKey(UINT nChar);		// 上書き用（エディット状態にするためのキー入力を選別）
+	virtual void CreatePopup(LONG col, CRect rect);	// 上書き用（生成するポップアップを切り分ける）
 	void CreatePopupEditBox(CRect &rect);
 	void CreatePopupListBox(CRect &rect);
 	void CellEdit(LV_HITTESTINFO hittest);
@@ -241,11 +241,11 @@ protected:
 
 typedef struct
 {
-	UINT		idText;					// ���X�g�ɕ\�����镶����
-	DWORD		value;					// �A�C�e���̒l
-	DWORD		dwConstraint;			// �A�C�e���֑̋�����
-	UINT		idIcon[MAX_ICON_NUM];	// �A�C�R����ID
-	int			idxItem;				// �e�[�u����O�l�߂����Ƃ��AWindows���狳���Ă��炤idx�E�\�ɂȂ�̂ŁB�B
+	UINT		idText;					// リストに表示する文字列
+	DWORD		value;					// アイテムの値
+	DWORD		dwConstraint;			// アイテムの禁則条件
+	UINT		idIcon[MAX_ICON_NUM];	// アイコンのID
+	int			idxItem;				// テーブルを前詰めしたとき、Windowsから教えてもらうidxウソになるので。。
 } ICONCOMBOBOXITEM;
 
 class CIconComboBox : public CComboBox
@@ -316,7 +316,7 @@ public :
 
 /////////////////////////////////////////////////////////////////////////////
 // CStdioFile class
-//#define NO_ERROR		(0)		// winerror.h�Œ�`�ς�
+//#define NO_ERROR		(0)		// winerror.hで定義済み
 #define FILE1_OPEN_ERROR (-1)
 #define FILE2_OPEN_ERROR (-2)
 
@@ -326,10 +326,10 @@ class CMyCompareFile
 public:
 	int m_err;
 protected:
-	CString m_file1;		// �Ăяo��������n���Ă����t�@�C����1
-	CString m_file2;		// �Ăяo��������n���Ă����t�@�C����2
-	CStdioFile m_cfile1;	// �t�@�C���|�C���^1
-	CStdioFile m_cfile2;	// �t�@�C���|�C���^2
+	CString m_file1;		// 呼び出し側から渡ってきたファイル名1
+	CString m_file2;		// 呼び出し側から渡ってきたファイル名2
+	CStdioFile m_cfile1;	// ファイルポインタ1
+	CStdioFile m_cfile2;	// ファイルポインタ2
 
 // Implementation
 public:
