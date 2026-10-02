@@ -1,5 +1,5 @@
-
-// PointerDlg.cpp : �����t�@�C��
+﻿
+// PointerDlg.cpp : 実装ファイル
 //
 
 #include "stdafx.h"
@@ -12,7 +12,7 @@
 #endif
 
 
-// CPointerDlg �_�C�A���O
+// CPointerDlg ダイアログ
 
 
 
@@ -35,38 +35,38 @@ BEGIN_MESSAGE_MAP(CPointerDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CPointerDlg ���b�Z�[�W �n���h���[
+// CPointerDlg メッセージ ハンドラー
 
 BOOL CPointerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ���̃_�C�A���O�̃A�C�R����ݒ肵�܂��B�A�v���P�[�V�����̃��C�� �E�B���h�E���_�C�A���O�łȂ��ꍇ�A
-	//  Framework �́A���̐ݒ�������I�ɍs���܂��B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R���̐ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R���̐ݒ�
+	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
+	//  Framework は、この設定を自動的に行います。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
-	// TODO: �������������ɒǉ����܂��B
+	// TODO: 初期化をここに追加します。
 	m_test.param1 = 1;
 	m_test.param2 = 20;
 	m_test.param3 = 300;
 
-	return TRUE;  // �t�H�[�J�X���R���g���[���ɐݒ肵���ꍇ�������ATRUE ��Ԃ��܂��B
+	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
-// �_�C�A���O�ɍŏ����{�^����ǉ�����ꍇ�A�A�C�R����`�悷�邽�߂�
-//  ���̃R�[�h���K�v�ł��B�h�L�������g/�r���[ ���f�����g�� MFC �A�v���P�[�V�����̏ꍇ�A
-//  ����́AFramework �ɂ���Ď����I�ɐݒ肳��܂��B
+// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
+//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
+//  これは、Framework によって自動的に設定されます。
 
 void CPointerDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// �N���C�A���g�̎l�p�`�̈���̒���
+		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -74,7 +74,7 @@ void CPointerDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R���̕`��
+		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -83,8 +83,8 @@ void CPointerDlg::OnPaint()
 	}
 }
 
-// ���[�U�[���ŏ��������E�B���h�E���h���b�O���Ă���Ƃ��ɕ\������J�[�\�����擾���邽�߂ɁA
-//  �V�X�e�������̊֐����Ăяo���܂��B
+// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
+//  システムがこの関数を呼び出します。
 HCURSOR CPointerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -102,11 +102,11 @@ void CPointerDlg::OnBnClickedButton1()
 
 	CString AddrStr;
 	AddrStr.Format(
-		"Addr  m_test�{��\t\t = %08x\n"
-		"Addr  pTest���w����\t = %08x\n"
-		"Addr  pTest2���w����\t = %08x\n"
-		"Addr  pTest�{��\t\t = %08x\n"
-		"Addr  pTest2�{��\t\t = %08x\n\n"
+		"Addr  m_test本体\t\t = %08x\n"
+		"Addr  pTestが指す先\t = %08x\n"
+		"Addr  pTest2が指す先\t = %08x\n"
+		"Addr  pTest本体\t\t = %08x\n"
+		"Addr  pTest2本体\t\t = %08x\n\n"
 
 		"Data  m_test.param2\t = %08x\n" 
 		"Data  pTest->param2\t = %08x\n"
