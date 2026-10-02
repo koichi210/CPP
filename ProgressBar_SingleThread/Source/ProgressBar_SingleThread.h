@@ -1,6 +1,4 @@
-﻿
-// ProgressBar_SingleThread.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
-//
+﻿// ProgressBar_SingleThread.h : アプリケーションクラス
 
 #pragma once
 
@@ -8,23 +6,14 @@
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
-
-
-// CProgressBar_SingleThreadApp:
-// このクラスの実装については、ProgressBar_SingleThread.cpp を参照してください。
-//
+#include "resource.h"
 
 class CProgressBar_SingleThreadApp : public CWinApp
 {
 public:
 	CProgressBar_SingleThreadApp();
 
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-
-// 実装
+	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };

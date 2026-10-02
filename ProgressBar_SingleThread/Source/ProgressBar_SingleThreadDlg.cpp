@@ -1,6 +1,4 @@
-﻿
-// ProgressBar_SingleThreadDlg.cpp : 実装ファイル
-//
+﻿// ProgressBar_SingleThreadDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "ProgressBar_SingleThread.h"
@@ -11,14 +9,13 @@
 #define new DEBUG_NEW
 #endif
 
+namespace
+{
+	constexpr int PROGRESS_MAX = 100000;
+}
 
-// CProgressBar_SingleThreadDlg ダイアログ
-
-
-
-
-CProgressBar_SingleThreadDlg::CProgressBar_SingleThreadDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CProgressBar_SingleThreadDlg::IDD, pParent)
+CProgressBar_SingleThreadDlg::CProgressBar_SingleThreadDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -26,7 +23,7 @@ CProgressBar_SingleThreadDlg::CProgressBar_SingleThreadDlg(CWnd* pParent /*=NULL
 void CProgressBar_SingleThreadDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_PROGRESS1, m_ddx_progress);
+	DDX_Control(pDX, IDC_PROGRESS1, m_progress);
 }
 
 BEGIN_MESSAGE_MAP(CProgressBar_SingleThreadDlg, CDialogEx)
@@ -36,36 +33,25 @@ BEGIN_MESSAGE_MAP(CProgressBar_SingleThreadDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_STOP, &CProgressBar_SingleThreadDlg::OnBnClickedStop)
 END_MESSAGE_MAP()
 
-
-// CProgressBar_SingleThreadDlg メッセージ ハンドラー
-
 BOOL CProgressBar_SingleThreadDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
 void CProgressBar_SingleThreadDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -73,7 +59,6 @@ void CProgressBar_SingleThreadDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -82,28 +67,25 @@ void CProgressBar_SingleThreadDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CProgressBar_SingleThreadDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+// UI スレッドでループを回すので、終わるまで他のボタンは反応しない（マルチスレッド版との比較用）
 void CProgressBar_SingleThreadDlg::OnBnClickedStart()
 {
-	// プログレスバー範囲設定
-	m_ddx_progress.SetRange32(0, PROGRESS_MAX -1);
+	m_progress.SetRange32(0, PROGRESS_MAX - 1);
 
 	for (int i = 0; i < PROGRESS_MAX; i++)
 	{
-		// プログレスバー現在位置設定
-		m_ddx_progress.SetPos(i);
+		m_progress.SetPos(i);
 	}
-	m_ddx_progress.SetPos(0);
+	m_progress.SetPos(0);
 }
 
 void CProgressBar_SingleThreadDlg::OnBnClickedStop()
 {
-	// SingleThreadなので、処理中に呼ばれない。
+	// シングルスレッドなので、処理中には呼ばれない
 	MessageBox("処理を中断します。");
 }

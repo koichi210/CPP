@@ -1,37 +1,25 @@
-﻿
-// ProgressBar_SingleThreadDlg.h : ヘッダー ファイル
-//
+﻿// ProgressBar_SingleThreadDlg.h : メインダイアログ
 
 #pragma once
-#include "afxcmn.h"
 
-#define PROGRESS_MAX	(100000)
-
-// CProgressBar_SingleThreadDlg ダイアログ
 class CProgressBar_SingleThreadDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CProgressBar_SingleThreadDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CProgressBar_SingleThreadDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_PROGRESSBAR_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-public:
-	CProgressCtrl m_ddx_progress;
 	afx_msg void OnBnClickedStart();
 	afx_msg void OnBnClickedStop();
+	DECLARE_MESSAGE_MAP()
+
+private:
+	HICON m_hIcon;
+	CProgressCtrl m_progress;
 };
