@@ -6,3 +6,4 @@
 #include "CommonCtrl.h"
 #include "InputSimulator.h"
 #include "FileComparer.h"
+#include "WorkerThreads.h"
