@@ -1,4 +1,4 @@
-// JointMovieDlg.cpp : ▌ю▒∙┐t┐@┐C┐▀
+О╩©// JointMovieDlg.cpp : Е╝÷Хё┘Ц┐∙Ц┌║Ц┌╓Ц┐╚
 //
 
 #include <afxtempl.h>
@@ -11,20 +11,20 @@
 #endif
 
 
-// ┐A┐v┐┼┐P│[┐V┐┤┐⌠┌л┐o│[┐W┐┤┐⌠▐Н∙Я┌и▌g┌М┌Й┌И CAboutDlg ┐_┐C┐A┐█┐O
+// Ц┌╒Ц┐≈Ц┐╙Ц┌╠Ц┐╪Ц┌╥Ц┐╖Ц┐ЁЦ│╝Ц┐░Ц┐╪Ц┌╦Ц┐╖Ц┐ЁФ┐┘Е═╠Ц│╚Д╫©Ц┌▐Ц┌▄Ц┌▀ CAboutDlg Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟
 
 class CAboutDlg : public CDialog
 {
 public:
 	CAboutDlg();
 
-// ┐_┐C┐A┐█┐O ┐f│[┐^
+// Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟ Ц┐┤Ц┐╪Ц┌©
 	enum { IDD = IDD_ABOUTBOX };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ┐T┐|│[┐g
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ц┌╣Ц┐²Ц┐╪Ц┐┬
 
-// ▌ю▒∙
+// Е╝÷Хё┘
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -42,7 +42,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CJointMovieDlg ┐_┐C┐A┐█┐O
+// CJointMovieDlg Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟
 
 
 CJointMovieDlg::CJointMovieDlg(CWnd* pParent /*=NULL*/)
@@ -74,15 +74,15 @@ BEGIN_MESSAGE_MAP(CJointMovieDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CJointMovieDlg ┐│┐b┐Z│[┐W ┐n┐⌠┐h┐┴
+// CJointMovieDlg Ц┐║Ц┐┐Ц┌╩Ц┐╪Ц┌╦ Ц┐▐Ц┐ЁЦ┐┴Ц┐╘
 
 BOOL CJointMovieDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// "┐o│[┐W┐┤┐⌠▐Н∙Я..." ┐│┐j┐┘│[┌П┐V┐X┐e┐─ ┐│┐j┐┘│[┌и▓г┴а┌╣┌э┌╥│B
+	// "Ц┐░Ц┐╪Ц┌╦Ц┐╖Ц┐ЁФ┐┘Е═╠..." Ц┐║Ц┐▀Ц┐╔Ц┐╪Ц┌▓Ц┌╥Ц┌╧Ц┐├Ц┐═ Ц┐║Ц┐▀Ц┐╔Ц┐╪Ц│╚Х©╫Е┼═Ц│≈Ц│╬Ц│≥Ц─┌
 
-	// IDM_ABOUTBOX ┌м│A┐V┐X┐e┐─ ┐R┐}┐⌠┐h┌л■м┬м⌠Ю┌и┌х┌╞┌Й┌н┌х┌Х┌э┌╧┌Я│B
+	// IDM_ABOUTBOX Ц│╞Ц─│Ц┌╥Ц┌╧Ц┐├Ц┐═ Ц┌ЁЦ┐·Ц┐ЁЦ┐┴Ц│╝Г╞└Е⌡╡Е├┘Ц│╚Ц│╙Ц│▒Ц┌▄Ц│╟Ц│╙Ц┌┼Ц│╬Ц│⌡Ц┌⌠Ц─┌
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -98,14 +98,14 @@ BOOL CJointMovieDlg::OnInitDialog()
 		}
 	}
 
-	// ┌╠┌л┐_┐C┐A┐█┐O┌л┐A┐C┐R┐⌠┌П░щ▓Х┌╣┌э┌╥│B┐A┐v┐┼┐P│[┐V┐┤┐⌠┌л┐│┐C┐⌠ ┐E┐B┐⌠┐h┐E┌╙┐_┐C┐A┐█┐O┌е┌х┌╒▐Й█┤│A
-	//  Framework ┌м│A┌╠┌л░щ▓Х┌П▌╘⌠╝⌠I┌и█s┌╒┌э┌╥│B
-	SetIcon(m_hIcon, TRUE);			// ▒Е┌╚┌╒┐A┐C┐R┐⌠┌л░щ▓Х
-	SetIcon(m_hIcon, FALSE);		// ▐╛┌Ё┌╒┐A┐C┐R┐⌠┌л░щ▓Х
+	// Ц│⌠Ц│╝Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟Ц│╝Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ┌▓Х╗╜Е╝ Ц│≈Ц│╬Ц│≥Ц─┌Ц┌╒Ц┐≈Ц┐╙Ц┌╠Ц┐╪Ц┌╥Ц┐╖Ц┐ЁЦ│╝Ц┐║Ц┌╓Ц┐Ё Ц┌╕Ц┌ёЦ┐ЁЦ┐┴Ц┌╕Ц│▄Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟Ц│╖Ц│╙Ц│└Е═╢Е░┬Ц─│
+	//  Framework Ц│╞Ц─│Ц│⌠Ц│╝Х╗╜Е╝ Ц┌▓Х┤╙Е▀∙Г └Ц│╚Х║▄Ц│└Ц│╬Ц│≥Ц─┌
+	SetIcon(m_hIcon, TRUE);			// Е╓╖Ц│█Ц│└Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ│╝Х╗╜Е╝ 
+	SetIcon(m_hIcon, FALSE);		// Е╟▐Ц│∙Ц│└Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ│╝Х╗╜Е╝ 
 
-	// TODO: ▐┴┼З┴╩┌П┌╠┌╠┌и▓г┴а┌╣┌э┌╥│B
+	// TODO: Е┬²Ф°÷Е▄√Ц┌▓Ц│⌠Ц│⌠Ц│╚Х©╫Е┼═Ц│≈Ц│╬Ц│≥Ц─┌
 
-	return TRUE;  // ┐t┐H│[┐J┐X┌П┐R┐⌠┐g┐█│[┐▀┌и░щ▓Х┌╣┌╫▐Й█┤┌П▐°┌╚│ATRUE ┌П∙т┌╣┌э┌╥│B
+	return TRUE;  // Ц┐∙Ц┌╘Ц┐╪Ц┌╚Ц┌╧Ц┌▓Ц┌ЁЦ┐ЁЦ┐┬Ц┐╜Ц┐╪Ц┐╚Ц│╚Х╗╜Е╝ Ц│≈Ц│÷Е═╢Е░┬Ц┌▓И≥╓Ц│█Ц─│TRUE Ц┌▓Х©■Ц│≈Ц│╬Ц│≥Ц─┌
 }
 
 void CJointMovieDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -121,19 +121,19 @@ void CJointMovieDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// ┐_┐C┐A┐█┐O┌и█е▐╛┴╩┐{┐^┐⌠┌П▓г┴а┌╥┌И▐Й█┤│A┐A┐C┐R┐⌠┌П∙`┴Ф┌╥┌И┌╫┌ъ┌л
-//  ┴╨┌л┐R│[┐h┌╙∙K≈v┌е┌╥│B┐h┐L┐┘┐│┐⌠┐g/┐r┐┘│[ ┐┌┐f┐▀┌П▌g┌╓ MFC ┐A┐v┐┼┐P│[┐V┐┤┐⌠┌л▐Й█┤│A
-//  ┌╠┌Й┌м│AFramework ┌и┌Ф┌а┌д▌╘⌠╝⌠I┌и░щ▓Х┌Ё┌Й┌э┌╥│B
+// Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟Ц│╚Ф°─Е╟▐Е▄√Ц┐°Ц┌©Ц┐ЁЦ┌▓Х©╫Е┼═Ц│≥Ц┌▀Е═╢Е░┬Ц─│Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ┌▓Ф▐▐Г■╩Ц│≥Ц┌▀Ц│÷Ц┌│Ц│╝
+//  Д╦▀Ц│╝Ц┌ЁЦ┐╪Ц┐┴Ц│▄Е©┘Х╕│Ц│╖Ц│≥Ц─┌Ц┐┴Ц┌╜Ц┐╔Ц┐║Ц┐ЁЦ┐┬/Ц┐⌠Ц┐╔Ц┐╪ Ц┐╒Ц┐┤Ц┐╚Ц┌▓Д╫©Ц│├ MFC Ц┌╒Ц┐≈Ц┐╙Ц┌╠Ц┐╪Ц┌╥Ц┐╖Ц┐ЁЦ│╝Е═╢Е░┬Ц─│
+//  Ц│⌠Ц┌▄Ц│╞Ц─│Framework Ц│╚Ц┌┬Ц│ёЦ│╕Х┤╙Е▀∙Г └Ц│╚Х╗╜Е╝ Ц│∙Ц┌▄Ц│╬Ц│≥Ц─┌
 
 void CJointMovieDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ∙`┴Ф┌л┐f┐o┐C┐X ┐R┐⌠┐e┐L┐X┐g
+		CPaintDC dc(this); // Ф▐▐Г■╩Ц│╝Ц┐┤Ц┐░Ц┌╓Ц┌╧ Ц┌ЁЦ┐ЁЦ┐├Ц┌╜Ц┌╧Ц┐┬
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// ┐N┐┴┐C┐A┐⌠┐g┌л▌l┼p▄`≈л┬Ф⌠Ю┌л▓├┴⌡
+		// Ц┌╞Ц┐╘Ц┌╓Ц┌╒Ц┐ЁЦ┐┬Ц│╝Е⌡⌡Х╖▓Е╫╒И═≤Е÷÷Е├┘Ц│╝Д╦╜Е╓╝
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -141,7 +141,7 @@ void CJointMovieDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ┐A┐C┐R┐⌠┌л∙`┴Ф
+		// Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ│╝Ф▐▐Г■╩
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -150,8 +150,8 @@ void CJointMovieDlg::OnPaint()
 	}
 }
 
-// ┐├│[┐U│[┌╙█е▐╛┴╩┌╣┌╫┐E┐B┐⌠┐h┐E┌П┐h┐┴┐b┐O┌╣┌д┌╒┌И┌ф┌╚┌и∙\▌╕┌╥┌И┐J│[┐\┐▀┌П▌Ф⌠╬┌╥┌И┌╫┌ъ┌и│A
-//  ┐V┐X┐e┐─┌╙┌╠┌л┼ж░■┌П▄д┌я▐o┌╣┌э┌╥│B
+// Ц┐╕Ц┐╪Ц┌╤Ц┐╪Ц│▄Ф°─Е╟▐Е▄√Ц│≈Ц│÷Ц┌╕Ц┌ёЦ┐ЁЦ┐┴Ц┌╕Ц┌▓Ц┐┴Ц┐╘Ц┐┐Ц┌╟Ц│≈Ц│╕Ц│└Ц┌▀Ц│╗Ц│█Ц│╚Х║╗Г╓╨Ц│≥Ц┌▀Ц┌╚Ц┐╪Ц┌╫Ц┐╚Ц┌▓Е▐√Е╬≈Ц│≥Ц┌▀Ц│÷Ц┌│Ц│╚Ц─│
+//  Ц┌╥Ц┌╧Ц┐├Ц┐═Ц│▄Ц│⌠Ц│╝И√╒Ф∙╟Ц┌▓Е▒╪Ц│ЁЕ┤╨Ц│≈Ц│╬Ц│≥Ц─┌
 HCURSOR CJointMovieDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -167,11 +167,11 @@ void CJointMovieDlg::OnBrowse()
 		CString	strFileType;
 		char	szFileNames[MAX_PATH]="\0";
 		int		idCtrl = LOWORD(pMsg->wParam);
-		int		idxCtrl = idCtrl - IDC_IN1_BROWSE;	// ┐I┐t┐Z┐b┐g▌Ф⌠╬
+		int		idxCtrl = idCtrl - IDC_IN1_BROWSE;	// Ц┌╙Ц┐∙Ц┌╩Ц┐┐Ц┐┬Е▐√Е╬≈
 
-		idxCtrl += IDC_INPUTFILE1;	// ░щ▓Х┌╥┌И┐G┐f┐B┐b┐g┐R┐⌠┐g┐█│[┐▀ID┌П▌Z▐o
+		idxCtrl += IDC_INPUTFILE1;	// Х╗╜Е╝ Ц│≥Ц┌▀Ц┌╗Ц┐┤Ц┌ёЦ┐┐Ц┐┬Ц┌ЁЦ┐ЁЦ┐┬Ц┐╜Ц┐╪Ц┐╚IDЦ┌▓Г╝≈Е┤╨
 
-		strFileType.Format("⌠╝┴Ф│i*.mpg; *.mpeg;│j|*.mpg; *.mpeg;|┌╥┌в┌д┌лл╖╡ы │i*.*│j|*.*||");
+		strFileType.Format("Е▀∙Г■╩О╪┬*.mpg; *.mpeg;О╪┴|*.mpg; *.mpeg;|Ц│≥Ц│╧Ц│╕Ц│╝О╬▄О╫╖О╫╡О╬≥ О╪┬*.*О╪┴|*.*||");
 		CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT, strFileType, this);
 		dlg.GetOFN().lpstrFile = szFileNames;
 		dlg.GetOFN().nMaxFile = sizeof(szFileNames) / sizeof(char);
@@ -206,11 +206,11 @@ void CJointMovieDlg::OnExecute()
 
 	if ( new_fname == "" )
 	{
-		MessageBox("▄▀█┤░Ф┐t┐@┐C┐▀√╪┌╙∙s░Ё");
+		MessageBox("Г╣░Е░┬Е┘┬Ц┐∙Ц┌║Ц┌╓Ц┐╚Е░█Ц│▄Д╦█Ф╜ё");
 	}
 	else if ( org_fname == "" )
 	{
-		MessageBox("▄Ё┐t┐@┐C┐▀√╪┌╙∙s░Ё");
+		MessageBox("Е┘┐Ц┐∙Ц┌║Ц┌╓Ц┐╚Е░█Ц│▄Д╦█Ф╜ё");
 	}
 	else
 	{
