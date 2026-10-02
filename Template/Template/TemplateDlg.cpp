@@ -102,14 +102,14 @@ void CTemplateDlg::OnBnClickedButton1()
 	char Msg[MAX_PATH] = "";
 	char AddStr[MAX_PATH] = "";
 
-	sprintf(AddStr, "%s + %s = %s\n", "ABC", "def", add<string>("ABC", "def"));	// stringを明示的に指定
-	sprintf(Msg, "%s%s", Msg, AddStr);
+	sprintf(AddStr, "%s + %s = %s\n", "ABC", "def", add<string>("ABC", "def").c_str());	// stringを明示的に指定
+	strcat(Msg, AddStr);
 
 	sprintf(AddStr, "%d + %d = %d\n", 12, 34, add<int>(12, 34));				// intを明示的に指定
-	sprintf(Msg, "%s%s", Msg, AddStr);
+	strcat(Msg, AddStr);
 
 	sprintf(AddStr, "%d + %d = %d\n", 5, 6, add(5, 6));							// intの場合、指定省略可能
-	sprintf(Msg, "%s%s", Msg, AddStr);
+	strcat(Msg, AddStr);
 
 	MessageBox(Msg);
 }
