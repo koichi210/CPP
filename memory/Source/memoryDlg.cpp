@@ -215,7 +215,7 @@ void CMemoryDlg::OnTimer(UINT nIDEvent)
 
 void CMemoryDlg::ViewText()
 {
-	char str[KETA_ANIKI_MAX] ;
+	char str[KETA_ANIKI_MAX+1] ;
 
 	::memset(&str,0,sizeof(str)) ;
 
@@ -411,11 +411,13 @@ void CMemoryDlg::KeyGen(char str[KETA_ANIKI_MAX])
 	::memset(&wk,0,sizeof(wk)) ;
 	::memset(&viewfont,0,sizeof(viewfont)) ;
 
-	//表示フォント作成
-	viewfont.lfCharSet = DEFAULT_CHARSET ;
-	viewfont.lfWeight = SHOW_WEIGHT ;
-	viewfont.lfHeight = SHOW_HEIGHT ;
-	font = CreateFontIndirect(&viewfont) ;
+	//表示フォント作成（最初の1回だけ作り、アプリ終了まで使い回す）
+	if(font == NULL){
+		viewfont.lfCharSet = DEFAULT_CHARSET ;
+		viewfont.lfWeight = SHOW_WEIGHT ;
+		viewfont.lfHeight = SHOW_HEIGHT ;
+		font = CreateFontIndirect(&viewfont) ;
+	}
 	SendDlgItemMessage(IDC_SHOW,WM_SETFONT,(WPARAM)font,MAKELPARAM(TRUE,0)) ;
 
 	//1秒に一回更新するみたいで、1秒より早く呼び出されると前回値と全く同じ値になってしまう。
@@ -431,9 +433,6 @@ void CMemoryDlg::KeyGen(char str[KETA_ANIKI_MAX])
 	sprintf(record[count],"%s",str) ;
 	count++ ;
 
-	// fontを削除しなきゃいけないんだけど、ココでやると作ったフォントが無効になってしまう。
-	// しかるべき場所でfontの作成&削除をする必要あり。
-	//DeleteObject(font) ;
 
 }
 
