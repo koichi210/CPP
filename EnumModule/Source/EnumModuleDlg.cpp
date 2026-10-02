@@ -136,6 +136,11 @@ CString PrintModuleName( DWORD processID )
 	// 指定されたプロセス内の各モジュールのハンドルを取得
 	if( EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
 	{
+		// モジュール数が配列より多いと cbNeeded は配列サイズを超えるので、配列の範囲で打ち切る
+		if ( cbNeeded > sizeof(hMods) )
+		{
+			cbNeeded = sizeof(hMods);
+		}
 		for ( i = 0; i < (cbNeeded / sizeof(HMODULE)); i++ )
 		{
 			TCHAR szModName[MAX_PATH];
