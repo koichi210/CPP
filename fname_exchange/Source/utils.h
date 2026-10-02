@@ -1,7 +1,7 @@
-#ifndef _UTILS_
+ï»¿#ifndef _UTILS_
 #define _UTILS_
 
-// ƒ}ƒNƒ’è‹`
+// ãƒã‚¯ãƒ­å®šç¾©
 #define STR_MIN_SIZE (10)
 #define splitpath_s _splitpath_s
 //#define splitpath() _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)
@@ -10,16 +10,16 @@
 		|| (0xe0 <= (unsigned char)(c&0xff) && (unsigned char)(c&0xff) <= 0xfc))
 
 
-// \‘¢‘Ì’è‹`
+// æ§‹é€ ä½“å®šç¾©
 typedef struct
 {
-	int		iCtrlId;			//ƒRƒ“ƒgƒ[ƒ‹ID
-	int		iStrId;				//•¶š—ñƒŠƒ\[ƒXID (Caption)
+	int		iCtrlId;			//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ID
+	int		iStrId;				//æ–‡å­—åˆ—ãƒªã‚½ãƒ¼ã‚¹ID (Caption)
 } TABLE;
 
 
 
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 void MergePath(CString *path, CString dir, CString file, CString ext);
 void SplitPath(CString path, CString *dir, CString *file, CString *ext);
 void AppendPath(CString *path, CString more);

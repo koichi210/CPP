@@ -1,4 +1,4 @@
-// fname_exchangeDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// fname_exchangeDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "utils.h"
@@ -12,7 +12,7 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// ’è‹`
+// å®šç¾©
 #define DEFAULT_ALERT BST_CHECKED
 
 #define ENUM	1
@@ -42,12 +42,12 @@
 typedef struct _EXCH{
 	CString ofname[FILE_MAX];	// org file name
 	CString nfname[FILE_MAX];	// new file name
-	int		num;				// ˆê“x‚É•ÏŠ·‚µ‚½ƒtƒ@ƒCƒ‹‚Ì”iÀsƒ{ƒ^ƒ“‰Ÿ‚µ‚½‚Æ‚«‚ÉÀs‚µ‚½ƒtƒ@ƒCƒ‹”j
+	int		num;				// ä¸€åº¦ã«å¤‰æ›ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®æ•°ï¼ˆå®Ÿè¡Œãƒœã‚¿ãƒ³æŠ¼ã—ãŸã¨ãã«å®Ÿè¡Œã—ãŸãƒ•ã‚¡ã‚¤ãƒ«æ•°ï¼‰
 }EXCH;
 
 typedef struct _UNDO{
-	int  maxnum;		// Àsƒ{ƒ^ƒ“‰Ÿ‚µ‚½”
-	int  curnum;	// Œ»İ‚Ì•œŒ³”Ô
+	int  maxnum;		// å®Ÿè¡Œãƒœã‚¿ãƒ³æŠ¼ã—ãŸæ•°
+	int  curnum;	// ç¾åœ¨ã®å¾©å…ƒç•ª
 	EXCH exch[UNDO_MAX];
 }UNDO;
 
@@ -83,7 +83,7 @@ const TABLE tbl[] =
 };
 
 const char sbcs[] =	("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!\"#$%&'()-+/*=?_<>,.;:[]{}");
-const char dbcs[] = _T("‚‚‚‚ƒ‚„‚…‚†‚‡‚ˆ‚‰‚Š‚‹‚Œ‚‚‚‚‚‘‚’‚“‚”‚•‚–‚—‚˜‚™‚š‚`‚a‚b‚c‚d‚e‚f‚g‚h‚i‚j‚k‚l‚m‚n‚o‚p‚q‚r‚s‚t‚u‚v‚w‚x‚y‚P‚Q‚R‚S‚T‚U‚V‚W‚X‚OIh”“•fij|{^–HQƒ„CDGFmnop");
+const char dbcs[] = _T("ï½ï½‚ï½ƒï½„ï½…ï½†ï½‡ï½ˆï½‰ï½Šï½‹ï½Œï½ï½ï½ï½ï½‘ï½’ï½“ï½”ï½•ï½–ï½—ï½˜ï½™ï½šï¼¡ï¼¢ï¼£ï¼¤ï¼¥ï¼¦ï¼§ï¼¨ï¼©ï¼ªï¼«ï¼¬ï¼­ï¼®ï¼¯ï¼°ï¼±ï¼²ï¼³ï¼´ï¼µï¼¶ï¼·ï¼¸ï¼¹ï¼ºï¼‘ï¼’ï¼“ï¼”ï¼•ï¼–ï¼—ï¼˜ï¼™ï¼ï¼ï¿¥â€ï¼ƒï¼„ï¼…ï¼†â€™ï¼ˆï¼‰ï¼ï¼‹ï¼ï¼Šï¼ï¼Ÿï¼¿ï¼œï¼ï¼Œï¼ï¼›ï¼šï¼»ï¼½ï½›ï½");
 //{
 //	("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
 //	"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
@@ -92,26 +92,26 @@ const char dbcs[] = _T("‚‚‚‚ƒ‚„‚…‚†‚‡‚ˆ‚‰‚Š‚‹‚Œ‚‚‚‚‚‘‚’‚“‚”‚•‚–‚—‚˜‚™‚š‚`‚a
 //};
 
 /////////////////////////////////////////////////////////////////////////////
-// CFname_exchangeDlg ƒ_ƒCƒAƒƒO
+// CFname_exchangeDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 class CFname_exchangeDlg : public CDialog
 {
-// \’z
+// æ§‹ç¯‰
 public:
-	CFname_exchangeDlg(CWnd* pParent = NULL);	// •W€‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	CFname_exchangeDlg(CWnd* pParent = NULL);	// æ¨™æº–ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	//{{AFX_DATA(CFname_exchangeDlg)
 	enum { IDD = IDD_FNAME_EXCHANGE_DIALOG };
 	CListBox	m_list;
 	//}}AFX_DATA
 
-	// ClassWizard ‚Í‰¼‘zŠÖ”‚ÌƒI[ƒo[ƒ‰ƒCƒh‚ğ¶¬‚µ‚Ü‚·B
+	// ClassWizard ã¯ä»®æƒ³é–¢æ•°ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 	//{{AFX_VIRTUAL(CFname_exchangeDlg)
 	public:
 	virtual BOOL DestroyWindow();
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ‚ÌƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã®ã‚µãƒãƒ¼ãƒˆ
 	//}}AFX_VIRTUAL
 	void Refresh();
 	void GetSetting();
@@ -126,35 +126,35 @@ public:
 	void RepProc();
 	void UndoProc();
 	void GetFileList();
-	int GetKeta(int number);	// ”’l‚ÌŒ…‚ğæ“¾
+	int GetKeta(int number);	// æ•°å€¤ã®æ¡ã‚’å–å¾—
 	void MoveFileProc();
 	void ReplaceString2(CString oname, CString *nname, BOOL bDB2SB);
 
 
 	CString m_oname;	// old name
 	CString m_nname;	// new name
-	int		m_Target;	// ‘ÎÛiƒtƒ@ƒCƒ‹ or ƒtƒHƒ‹ƒ_j
-	int		m_type;		// ƒ‰ƒWƒIƒ{ƒ^ƒ“‚Ì‘I‘ğ’l
-	DWORD	m_opt;		// ˆ—ƒIƒvƒVƒ‡ƒ“
-	UINT	m_first_num;	//y’Ê‚µ”Ô†•t‰ÁzÅ‰‚Ì”’l
-	UINT	m_cur_num;		//y’Ê‚µ”Ô†•t‰ÁzƒJƒŒƒ“ƒg‚Ì”’l
+	int		m_Target;	// å¯¾è±¡ï¼ˆãƒ•ã‚¡ã‚¤ãƒ« or ãƒ•ã‚©ãƒ«ãƒ€ï¼‰
+	int		m_type;		// ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³ã®é¸æŠå€¤
+	DWORD	m_opt;		// å‡¦ç†ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+	UINT	m_first_num;	//ã€é€šã—ç•ªå·ä»˜åŠ ã€‘æœ€åˆã®æ•°å€¤
+	UINT	m_cur_num;		//ã€é€šã—ç•ªå·ä»˜åŠ ã€‘ã‚«ãƒ¬ãƒ³ãƒˆã®æ•°å€¤
 	int		m_keta;
-	UINT 	m_Bef_Del_num;	//yw’è•¶š”íœzæ“ª‚©‚ç‚Ì’l
-	UINT 	m_Aft_Del_num;	//yw’è•¶š”íœzŒã•”‚©‚ç‚Ì’l
-	INT_PTR	m_list_cnt;		// ˆ—‘ÎÛ‚Ìƒtƒ@ƒCƒ‹”
-	BOOL	m_ignore_alert;	// Œx‚ğ–³‹‚·‚é
-	BOOL	m_comp;			// ‘å•¶š¬•¶š‚ğ‹æ•Ê‚·‚é
+	UINT 	m_Bef_Del_num;	//ã€æŒ‡å®šæ–‡å­—æ•°å‰Šé™¤ã€‘å…ˆé ­ã‹ã‚‰ã®å€¤
+	UINT 	m_Aft_Del_num;	//ã€æŒ‡å®šæ–‡å­—æ•°å‰Šé™¤ã€‘å¾Œéƒ¨ã‹ã‚‰ã®å€¤
+	INT_PTR	m_list_cnt;		// å‡¦ç†å¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«æ•°
+	BOOL	m_ignore_alert;	// è­¦å‘Šã‚’ç„¡è¦–ã™ã‚‹
+	BOOL	m_comp;			// å¤§æ–‡å­—å°æ–‡å­—ã‚’åŒºåˆ¥ã™ã‚‹
 	CString m_file_name[FILE_MAX];
 	char	m_dir[STR_BUFF];
 	char	m_name1[STR_BUFF];
 	char	m_name2[STR_BUFF];
 	UNDO	m_undo;
 
-// ƒCƒ“ƒvƒŠƒƒ“ƒe[ƒVƒ‡ƒ“
+// ã‚¤ãƒ³ãƒ—ãƒªãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³
 protected:
 	HICON m_hIcon;
 
-	// ¶¬‚³‚ê‚½ƒƒbƒZ[ƒW ƒ}ƒbƒvŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒƒãƒ—é–¢æ•°
 	//{{AFX_MSG(CFname_exchangeDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
@@ -186,6 +186,6 @@ protected:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ ‚Í‘Os‚Ì’¼‘O‚É’Ç‰Á‚ÌéŒ¾‚ğ‘}“ü‚µ‚Ü‚·B
+// Microsoft Visual C++ ã¯å‰è¡Œã®ç›´å‰ã«è¿½åŠ ã®å®£è¨€ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚
 
 #endif // !defined(AFX_FNAME_EXCHANGEDLG_H__DCB04DFD_CE1F_4735_947F_BDFD20365F38__INCLUDED_)

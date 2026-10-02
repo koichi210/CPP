@@ -1,4 +1,4 @@
-// fname_exchangeDlg.cpp : �C���v�������e�[�V���� �t�@�C��
+﻿// fname_exchangeDlg.cpp : インプリメンテーション ファイル
 //
 
 #include <afxtempl.h>
@@ -13,25 +13,25 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// �A�v���P�[�V�����̃o�[�W�������Ŏg���Ă��� CAboutDlg �_�C�A���O
+// アプリケーションのバージョン情報で使われている CAboutDlg ダイアログ
 
 class CAboutDlg : public CDialog
 {
 public:
 	CAboutDlg();
 
-// �_�C�A���O �f�[�^
+// ダイアログ データ
 	//{{AFX_DATA(CAboutDlg)
 	enum { IDD = IDD_ABOUTBOX };
 	//}}AFX_DATA
 
-	// ClassWizard �͉��z�֐��̃I�[�o�[���C�h�𐶐����܂�
+	// ClassWizard は仮想関数のオーバーライドを生成します
 	//{{AFX_VIRTUAL(CAboutDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV �̃T�|�[�g
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV のサポート
 	//}}AFX_VIRTUAL
 
-// �C���v�������e�[�V����
+// インプリメンテーション
 protected:
 	//{{AFX_MSG(CAboutDlg)
 	//}}AFX_MSG
@@ -53,19 +53,19 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
-		// ���b�Z�[�W �n���h��������܂���B
+		// メッセージ ハンドラがありません。
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CFname_exchangeDlg �_�C�A���O
+// CFname_exchangeDlg ダイアログ
 
 CFname_exchangeDlg::CFname_exchangeDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CFname_exchangeDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CFname_exchangeDlg)
 	//}}AFX_DATA_INIT
-	// ����: LoadIcon �� Win32 �� DestroyIcon �̃T�u�V�[�P���X��v�����܂���B
+	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_Target = TARGET_FILE;
 	m_ignore_alert = TRUE;
@@ -109,7 +109,7 @@ BEGIN_MESSAGE_MAP(CFname_exchangeDlg, CDialog)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CFname_exchangeDlg ���b�Z�[�W �n���h��
+// CFname_exchangeDlg メッセージ ハンドラ
 
 BOOL CFname_exchangeDlg::OnInitDialog()
 {
@@ -118,9 +118,9 @@ BOOL CFname_exchangeDlg::OnInitDialog()
 
 	CDialog::OnInitDialog();
 
-	// "�o�[�W�������..." ���j���[���ڂ��V�X�e�� ���j���[�֒ǉ����܂��B
+	// "バージョン情報..." メニュー項目をシステム メニューへ追加します。
 
-	// IDM_ABOUTBOX �̓R�}���h ���j���[�͈̔͂łȂ���΂Ȃ�܂���B
+	// IDM_ABOUTBOX はコマンド メニューの範囲でなければなりません。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -136,10 +136,10 @@ BOOL CFname_exchangeDlg::OnInitDialog()
 		}
 	}
 
-	// ���̃_�C�A���O�p�̃A�C�R����ݒ肵�܂��B�t���[�����[�N�̓A�v���P�[�V�����̃��C��
-	// �E�B���h�E���_�C�A���O�łȂ����͎����I�ɐݒ肵�܂���B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R����ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R����ݒ�
+	// このダイアログ用のアイコンを設定します。フレームワークはアプリケーションのメイン
+	// ウィンドウがダイアログでない時は自動的に設定しません。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンを設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンを設定
 
 	str.LoadString(IDSTR_FILE_EXCHANGE);
 	SetWindowText(str);
@@ -171,7 +171,7 @@ BOOL CFname_exchangeDlg::OnInitDialog()
 	InitUndo();
 	Refresh();
 
-	return TRUE;  // TRUE ��Ԃ��ƃR���g���[���ɐݒ肵���t�H�[�J�X�͎����܂���B
+	return TRUE;  // TRUE を返すとコントロールに設定したフォーカスは失われません。
 }
 
 void CFname_exchangeDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -187,19 +187,19 @@ void CFname_exchangeDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// �����_�C�A���O�{�b�N�X�ɍŏ����{�^����ǉ�����Ȃ�΁A�A�C�R����`�悷��
-// �R�[�h���ȉ��ɋL�q����K�v������܂��BMFC �A�v���P�[�V������ document/view
-// ���f�����g���Ă���̂ŁA���̏����̓t���[�����[�N�ɂ�莩���I�ɏ�������܂��B
+// もしダイアログボックスに最小化ボタンを追加するならば、アイコンを描画する
+// コードを以下に記述する必要があります。MFC アプリケーションは document/view
+// モデルを使っているので、この処理はフレームワークにより自動的に処理されます。
 
 void CFname_exchangeDlg::OnPaint() 
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��p�̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画用のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-		// �N���C�A���g�̋�`�̈���̒���
+		// クライアントの矩形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -207,7 +207,7 @@ void CFname_exchangeDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R����`�悵�܂��B
+		// アイコンを描画します。
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -216,8 +216,8 @@ void CFname_exchangeDlg::OnPaint()
 	}
 }
 
-// �V�X�e���́A���[�U�[���ŏ����E�B���h�E���h���b�O���Ă���ԁA
-// �J�[�\����\�����邽�߂ɂ������Ăяo���܂��B
+// システムは、ユーザーが最小化ウィンドウをドラッグしている間、
+// カーソルを表示するためにここを呼び出します。
 HCURSOR CFname_exchangeDlg::OnQueryDragIcon()
 {
 	return (HCURSOR) m_hIcon;
@@ -231,8 +231,8 @@ BOOL CFname_exchangeDlg::DestroyWindow()
 
 void CFname_exchangeDlg::OnSetfocus()
 {
-	// TODO: �����ɃR���g���[���ʒm�n���h�� �R�[�h��ǉ����܂��B
-	//TODO:�t�H�[�J�X������������A�I����Ԃ𔽓]������
+	// TODO: ここにコントロール通知ハンドラ コードを追加します。
+	//TODO:フォーカスが当たったら、選択状態を反転したい
 }
 
 void CFname_exchangeDlg::OnBrowse() 
@@ -255,7 +255,7 @@ void CFname_exchangeDlg::OnGetFile()
 	int szLen;
 	int nMax=0;
 
-	// �w��t�H���_���̃t�@�C����\������
+	// 指定フォルダ内のファイルを表示する
 	GetDlgItemText(IDET_DIR,pathName,sizeof(pathName));
 	if(lstrcmp(pathName,"") == 0)
 	{
@@ -266,18 +266,18 @@ void CFname_exchangeDlg::OnGetFile()
 	szPathLength++; // "\\"
 	strcat_s(pathName,sizeof(pathName), "\\*.*");
 
-	// �\�����e�����Z�b�g����
+	// 表示内容をリセットする
 	m_list.ResetContent();
 
 	if ( m_Target == TARGET_FILE )
 	{
-		// m_list.Dir �Ńt�@�C��
+		// m_list.Dir でファイル
 		m_list.Dir(DDL_READWRITE,pathName);
 //		m_list.Dir(DDL_DIRECTORY,pathName);
 	}
 	else // ( m_Target == TARGET_DIRECOTY )
 	{
-		// cFileFind �Ńt�H���_���擾
+		// cFileFind でフォルダを取得
 		CFileFind cFind;
 		CString strFolder;
 		BOOL bContinue = cFind.FindFile(pathName);
@@ -412,8 +412,8 @@ void CFname_exchangeDlg::OnRadioRep()
 
 void CFname_exchangeDlg::OnExecute() 
 {
-	// �ϐ���������
-	// ��ʏ�̐ݒ�l���擾
+	// 変数を初期化
+	// 画面上の設定値を取得
 	GetSetting();
 	GetFileList();
 	if( m_list_cnt == 0 )
@@ -425,15 +425,15 @@ void CFname_exchangeDlg::OnExecute()
 		return;
 	}
 
-	//�t�@�C�����ϊ�����
+	//ファイル名変換処理
 	ExChangeProc();
 
-	//���������X�V
+	//復元情報を更新
 	m_undo.curnum++;
 	m_undo.maxnum = m_undo.curnum;
 	OnGetFile();
 
-	//TODO : ����ȏ㕜���ł��Ȃ��ꍇ�ɂ�Disable�ɂ��Ȃ��ƁB�B
+	//TODO : これ以上復元できない場合にはDisableにしないと。。
 	GetDlgItem(IDBT_UNDO)->EnableWindow(TRUE);
 }
 
@@ -449,7 +449,7 @@ void CFname_exchangeDlg::Refresh()
 	BOOL bEnable=FALSE;
 	CString str;
 
-	//�ʂ��ԍ��t��
+	//通し番号付加
 	bEnable = FALSE;
 	if ( m_type == ENUM )
 	{
@@ -460,7 +460,7 @@ void CFname_exchangeDlg::Refresh()
 	GetDlgItem(IDCH_KEEP_NAME)->EnableWindow(bEnable);
 	GetDlgItem(IDCB_KETA)->EnableWindow(bEnable);
 
-	//�w�蕶�����̍폜
+	//指定文字数の削除
 	bEnable = FALSE;
 	if ( m_type == DELNUM )
 	{
@@ -471,7 +471,7 @@ void CFname_exchangeDlg::Refresh()
 	GetDlgItem(IDST_DEL_AFT_NUM)->EnableWindow(bEnable);
 	GetDlgItem(IDET_DEL_AFT_NUM)->EnableWindow(bEnable);
 
-	//�����̒ǉ�[�擪����][�㕔����]
+	//文字の追加[先頭から][後部から]
 	bEnable = FALSE;
 	if ( m_type == ADD )
 	{
@@ -480,7 +480,7 @@ void CFname_exchangeDlg::Refresh()
 	GetDlgItem(IDCH_ADD_BEF)->EnableWindow(bEnable);
 	GetDlgItem(IDCH_ADD_AFT)->EnableWindow(bEnable);
 
-	//����1
+	//名称1
 	bEnable = FALSE;
 	if(m_type == DEL || m_type == REP)
 	{
@@ -489,7 +489,7 @@ void CFname_exchangeDlg::Refresh()
 	GetDlgItem(IDST_NAME1)->EnableWindow(bEnable);
 	GetDlgItem(IDET_NAME1)->EnableWindow(bEnable);
 
-	//����2
+	//名称2
 	bEnable = FALSE;
 	if(m_type == ADD || m_type == REP)
 	{
@@ -498,7 +498,7 @@ void CFname_exchangeDlg::Refresh()
 	GetDlgItem(IDST_NAME2)->EnableWindow(bEnable);
 	GetDlgItem(IDET_NAME2)->EnableWindow(bEnable);
 
-	// ����1�A����2
+	// 名称1、名称2
 	switch(m_type)
 	{
 	case ADD :
@@ -518,7 +518,7 @@ void CFname_exchangeDlg::Refresh()
 	default :
 		break ;
 
-	// ����
+	// 復元
 	bEnable = FALSE;
 	if(m_undo.curnum > 0)
 	{
@@ -607,28 +607,28 @@ void CFname_exchangeDlg::GetSetting()
 
 void CFname_exchangeDlg::ExChangeProc()
 {
-	// ���X�g�R���g���[���őI�����ꂽ���������[�v
+	// リストコントロールで選択された数だけループ
 	for(int i=0; i < m_list_cnt; i++)
 	{
-		// �I���W�i���̃t�@�C����
+		// オリジナルのファイル名
 		m_oname = m_dir;
 		AppendPath(&m_oname, m_file_name[i]);
 
-		//�V�����t�@�C�����擾
+		//新しいファイル名取得
 		switch(m_type)
 		{
-		case ENUM:		EnumProc();		break;	// �ʂ��ԍ��t��
-		case ALLSBCS:	SbcsProc();		break;	// ���ׂĔ��p
-		case ALLDBCS:	DbcsProc();		break;	// ���ׂđS�p
-		case DELNUM:	DelNumProc();	break;	// �w�蕶�����폜
-		case DELDIST:	DelDistProc();	break;	// �g���q�폜
-		case ADD:		AddProc();		break;	// ������ǉ�
-		case DEL:		DelProc();		break;	// ������폜
-		case REP:		RepProc();		break;	// ������u��
+		case ENUM:		EnumProc();		break;	// 通し番号付加
+		case ALLSBCS:	SbcsProc();		break;	// すべて半角
+		case ALLDBCS:	DbcsProc();		break;	// すべて全角
+		case DELNUM:	DelNumProc();	break;	// 指定文字数削除
+		case DELDIST:	DelDistProc();	break;	// 拡張子削除
+		case ADD:		AddProc();		break;	// 文字列追加
+		case DEL:		DelProc();		break;	// 文字列削除
+		case REP:		RepProc();		break;	// 文字列置換
 		default :		break;
 		}
 
-		//�t�@�C�����ϊ�
+		//ファイル名変換
 		MoveFileProc();
 	}
 }
@@ -637,22 +637,22 @@ void CFname_exchangeDlg::EnumProc()
 {
 	CString dir;
 	CString file;	// file name
-	CString ext;	// �g���q
+	CString ext;	// 拡張子
 	CString num;
 	UINT number = m_first_num;
-	int dst_keta = GetKeta(m_first_num + m_list_cnt); //�ړI�̃P�^��
-	int cur_keta;	//�J�����g�̃P�^��
+	int dst_keta = GetKeta(m_first_num + m_list_cnt); //目的のケタ数
+	int cur_keta;	//カレントのケタ数
 
 	if ( dst_keta < m_keta )
 	{
 		dst_keta = m_keta;
 	}
 
-	// �ړI�̃t�@�C���p�X�i�f�B���N�g�����j
+	// 目的のファイルパス（ディレクトリ名）
 	m_nname = m_dir;
 	m_nname += "\\";
 
-	// ��������0���l�߂�
+	// 桁数だけ0を詰める
 	if ( m_cur_num == 0 )
 	{
 		cur_keta = 1;
@@ -667,15 +667,15 @@ void CFname_exchangeDlg::EnumProc()
 		m_nname += "0";
 	}
 
-	// �ړI�̃t�@�C���p�X�i�t�@�C�����j
+	// 目的のファイルパス（ファイル名）
 	num.Format("%d", m_cur_num);
 	m_nname += num;
 	m_cur_num++;
 
-	// �p�X�𕪉�
+	// パスを分解
 	SplitPath(m_oname,&dir,&file,&ext);
 
-	// �I���W�i���̃t�@�C�������c���ꍇ
+	// オリジナルのファイル名を残す場合
 	if ( m_opt == KEEP )
 	{
 		m_nname += " ";
@@ -691,19 +691,19 @@ void CFname_exchangeDlg::SbcsProc()
 	CString dir;
 	CString ofile;	// old file name
 	CString nfile;	// new file name
-	CString ext;	// �g���q
+	CString ext;	// 拡張子
 
 	LPSTR pfname = NULL;
 	int len = 0;
 
-	// �p�X�𕪉�
+	// パスを分解
 	SplitPath(m_oname,&dir,&ofile,&ext);
 
-	// �ړI�̃t�@�C���p�X
+	// 目的のファイルパス
 	m_nname = dir;
 	m_nname += "\\";
 
-	// ������̍폜
+	// 文字列の削除
 	ReplaceString2(ofile, &nfile, TRUE);
 	m_nname += nfile;
 
@@ -716,19 +716,19 @@ void CFname_exchangeDlg::DbcsProc()
 	CString dir;
 	CString ofile;	// old file name
 	CString nfile;	// new file name
-	CString ext;	// �g���q
+	CString ext;	// 拡張子
 
 	LPSTR pfname = NULL;
 	int len = 0;
 
-	// �p�X�𕪉�
+	// パスを分解
 	SplitPath(m_oname,&dir,&ofile,&ext);
 
-	// �ړI�̃t�@�C���p�X
+	// 目的のファイルパス
 	m_nname = dir;
 	m_nname += "\\";
 
-	// ������̍폜
+	// 文字列の削除
 	ReplaceString2(ofile, &nfile, FALSE);
 	m_nname += nfile;
 
@@ -740,7 +740,7 @@ void CFname_exchangeDlg::DelNumProc()
 {
 	CString dir;
 	CString file;	// file name
-	CString ext;	// �g���q
+	CString ext;	// 拡張子
 	UINT len;
 
 	if( ! (m_Bef_Del_num || m_Aft_Del_num) )
@@ -752,10 +752,10 @@ void CFname_exchangeDlg::DelNumProc()
 		return;
 	}
 
-	// �p�X�𕪉�
+	// パスを分解
 	SplitPath(m_oname,&dir,&file,&ext);
 
-	// �w�蕶�����폜�����Ƃ��̃t�@�C�������m�F
+	// 指定文字数削除したときのファイル長を確認
 	len = strlen(file);
 	if ( len < (m_Bef_Del_num + m_Aft_Del_num + DIST_MAX) )
 	{
@@ -769,13 +769,13 @@ void CFname_exchangeDlg::DelNumProc()
 		return;
 	}
 
-	// �㕔����n�����폜
+	// 後部からn文字削除
 	file.Delete(len-m_Aft_Del_num,m_Aft_Del_num);
 
-	// �擪����n�����폜
+	// 先頭からn文字削除
 	file.Delete(0,m_Bef_Del_num);
 
-	// �ړI�̃t�@�C���p�X�i�t�@�C�����j
+	// 目的のファイルパス（ファイル名）
 	m_nname = m_dir;
 	AppendPath(&m_nname,file);
 
@@ -787,12 +787,12 @@ void CFname_exchangeDlg::DelDistProc()
 {
 	CString dir;
 	CString file;	// file name
-	CString ext;	// �g���q
+	CString ext;	// 拡張子
 
-	// �p�X�𕪉�
+	// パスを分解
 	SplitPath(m_oname,&dir,&file,&ext);
 
-	//�ړI�̃t�@�C����
+	//目的のファイル名
 	m_nname = dir + file;
 }
 
@@ -800,9 +800,9 @@ void CFname_exchangeDlg::AddProc()
 {
 	CString dir;
 	CString file;	// file name
-	CString ext;	// �g���q
+	CString ext;	// 拡張子
 
-	// TODO : �x����GetSetting�ɂ����Ă�����
+	// TODO : 警告はGetSettingにもっていこう
 	if ( m_opt == 0 )
 	{
 		CString str,title;
@@ -820,23 +820,23 @@ void CFname_exchangeDlg::AddProc()
 		return;
 	}
 
-	// �p�X�𕪉�
+	// パスを分解
 	SplitPath(m_oname,&dir,&file,&ext);
 
-	// �ړI�̃t�@�C���p�X
+	// 目的のファイルパス
 	m_nname = dir;
 	m_nname += "\\";
 
-	// �擪�ɒǉ����镶����
+	// 先頭に追加する文字列
 	if( m_opt & BEF )
 	{
 		m_nname += m_name2;
 	}
 	
-	//�I���W�i���̕�����
+	//オリジナルの文字列
 	m_nname += file;
 
-	// �㕔�ɒǉ����镶����
+	// 後部に追加する文字列
 	if( m_opt & AFT )
 	{
 		m_nname += m_name2;
@@ -850,10 +850,10 @@ void CFname_exchangeDlg::DelProc()
 {
 	CString dir;
 	CString ofile;	// file name
-	CString nfile;	// �V�t�@�C����
-	CString ext;	// �g���q
+	CString nfile;	// 新ファイル名
+	CString ext;	// 拡張子
 
-	// TODO: �x���͂������ւ����Ă�����
+	// TODO: 警告はあっちへもっていこう
 	if(strlen(m_name1) == 0)
 	{
 		CString str,title;
@@ -863,14 +863,14 @@ void CFname_exchangeDlg::DelProc()
 		return;
 	}
 	
-	// �p�X�𕪉�
+	// パスを分解
 	SplitPath(m_oname,&dir,&ofile,&ext);
 
-	// �ړI�̃t�@�C���p�X
+	// 目的のファイルパス
 	m_nname = m_dir;
 	m_nname += "\\";
 
-	// ������̍폜
+	// 文字列の削除
 	ReplaceString(ofile, &nfile, m_name1, NULL, m_comp);
 	m_nname += nfile;
 
@@ -883,9 +883,9 @@ void CFname_exchangeDlg::RepProc()
 	CString dir;
 	CString ofile;	// old file name
 	CString nfile;	// new file name
-	CString ext;	// �g���q
+	CString ext;	// 拡張子
 
-	// TODO: �������ւ����Ă�����
+	// TODO: あっちへもっていこう
 	if(strlen(m_name1) == 0 || strlen(m_name2) == 0 )
 	{
 		CString str,title;
@@ -898,14 +898,14 @@ void CFname_exchangeDlg::RepProc()
 	LPSTR pfname = NULL;
 	int len = 0;
 
-	// �p�X�𕪉�
+	// パスを分解
 	SplitPath(m_oname,&dir,&ofile,&ext);
 
-	// �ړI�̃t�@�C���p�X
+	// 目的のファイルパス
 	m_nname = dir;
 	m_nname += "\\";
 
-	// ������̍폜
+	// 文字列の削除
 	ReplaceString(ofile, &nfile, m_name1, m_name2, m_comp);
 	m_nname += nfile;
 
@@ -961,15 +961,15 @@ void CFname_exchangeDlg::MoveFileProc()
 {
 	int bReturn;
 
-	// �啶������������ʂ���
+	// 大文字小文字を区別する
 	bReturn = m_oname.CompareNoCase(m_nname);
 	if ( bReturn )
 	{
 		bReturn = MoveFile(m_oname.GetString(), m_nname.GetString());
 		if ( bReturn )
 		{
-			int unum = m_undo.curnum;	// ���s�{�^����������
-			int fnum = m_undo.exch[m_undo.curnum].num; // 1�x�ɕύX�����t�@�C���̐�
+			int unum = m_undo.curnum;	// 実行ボタン押した数
+			int fnum = m_undo.exch[m_undo.curnum].num; // 1度に変更したファイルの数
 
 			m_undo.exch[unum].ofname[fnum] = m_oname;
 			m_undo.exch[unum].nfname[fnum] = m_nname;
@@ -1032,14 +1032,14 @@ void CFname_exchangeDlg::ReplaceString2(CString oname, CString *nname, BOOL bDB2
 	char new_fname[MAX_PATH];
 	char tmp[MAX_PATH];
 	LPSTR pfname = NULL;
-	UINT cp_num=0;	//�R�s���鐔
-	UINT cp_start=0;//�R�s����擪�z��
+	UINT cp_num=0;	//コピする数
+	UINT cp_start=0;//コピする先頭配列
 	BOOL rt = FALSE;
 
 	memset(new_fname, 0, sizeof(new_fname));
 	memset(tmp, 0, sizeof(tmp));
 
-	strcpy_s(old_fname,sizeof(old_fname),(LPSTR)oname.GetString());	// �I���W�i���t�@�C�������R�s
+	strcpy_s(old_fname,sizeof(old_fname),(LPSTR)oname.GetString());	// オリジナルファイル名をコピ
 	if ( bDB2SB )
 	{
 		zen2han(old_fname);
@@ -1049,7 +1049,7 @@ void CFname_exchangeDlg::ReplaceString2(CString oname, CString *nname, BOOL bDB2
 		han2zen(old_fname);
 	}
 
-	strcat_s(new_fname, sizeof(new_fname), old_fname);	//�ŏI�I�ȖړI�̕�����
+	strcat_s(new_fname, sizeof(new_fname), old_fname);	//最終的な目的の文字列
 	*nname = new_fname;
 
 #if 0
@@ -1057,29 +1057,29 @@ void CFname_exchangeDlg::ReplaceString2(CString oname, CString *nname, BOOL bDB2
 	char new_fname[MAX_PATH];
 	char tmp[MAX_PATH];
 	LPSTR pfname = NULL;
-	UINT cp_num=0;	//�R�s���鐔
-	UINT cp_start=0;//�R�s����擪�z��
+	UINT cp_num=0;	//コピする数
+	UINT cp_start=0;//コピする先頭配列
 	BOOL rt = FALSE;
 
 	memset(new_fname, 0, sizeof(new_fname));
 	memset(tmp, 0, sizeof(tmp));
 
-	strcpy_s(old_fname,sizeof(old_fname),(LPSTR)oname.GetString());	// �I���W�i���t�@�C�������R�s
+	strcpy_s(old_fname,sizeof(old_fname),(LPSTR)oname.GetString());	// オリジナルファイル名をコピ
 	if ( bDB2SB )
 	{
-		for(UINT i=0; i<_tcslen(old_fname); i++)	// 1����������
+		for(UINT i=0; i<_tcslen(old_fname); i++)	// 1文字ずつ検索
 		{
-			for(UINT j=0; j<_tcslen(dbcs); j++)		// 1����������
+			for(UINT j=0; j<_tcslen(dbcs); j++)		// 1文字ずつ検索
 			{
-				rt = strncmp(&old_fname[i], &dbcs[j], 2);	// �w�蕶�����ŖړI�̕����������
+				rt = strncmp(&old_fname[i], &dbcs[j], 2);	// 指定文字数で目的の文字列を検索
 
-				if(rt == 0)	// �w�蕶�����ŖړI�̕����������
+				if(rt == 0)	// 指定文字数で目的の文字列を検索
 				{
-					strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//������O�܂ł̕�����
-					strcat_s(new_fname, sizeof(new_fname), tmp);	//�ŏI�I�ȖړI�̕�����
+					strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//見つかる前までの文字列
+					strcat_s(new_fname, sizeof(new_fname), tmp);	//最終的な目的の文字列
 					strcat_s(new_fname, sizeof(new_fname), &sbcs[j]);
 
-					cp_num=0;	//�L���b�V���̃J�E���g�����Z�b�g����
+					cp_num=0;	//キャッシュのカウントをリセットする
 					cp_start = i + 1;
 				}
 				else
@@ -1091,19 +1091,19 @@ void CFname_exchangeDlg::ReplaceString2(CString oname, CString *nname, BOOL bDB2
 	}
 	else // bDBCS
 	{
-		for(UINT i=0; i<_tcslen(old_fname); i++)	// 1����������
+		for(UINT i=0; i<_tcslen(old_fname); i++)	// 1文字ずつ検索
 		{
-			for(UINT j=0; j<_tcslen(sbcs); j++)		// 1����������
+			for(UINT j=0; j<_tcslen(sbcs); j++)		// 1文字ずつ検索
 			{
-				rt = strncmp(&old_fname[i], &sbcs[j], 1);	// �w�蕶�����ŖړI�̕����������
+				rt = strncmp(&old_fname[i], &sbcs[j], 1);	// 指定文字数で目的の文字列を検索
 
-				if(rt == 0)	// �w�蕶�����ŖړI�̕����������
+				if(rt == 0)	// 指定文字数で目的の文字列を検索
 				{
-					strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//������O�܂ł̕�����
-					strcat_s(new_fname, sizeof(new_fname), tmp);	//�ŏI�I�ȖړI�̕�����
+					strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//見つかる前までの文字列
+					strcat_s(new_fname, sizeof(new_fname), tmp);	//最終的な目的の文字列
 					strcat_s(new_fname, sizeof(new_fname), &dbcs[j]);
 
-					cp_num=0;	//�L���b�V���̃J�E���g�����Z�b�g����
+					cp_num=0;	//キャッシュのカウントをリセットする
 					cp_start = i + 1;
 				}
 				else
@@ -1114,28 +1114,28 @@ void CFname_exchangeDlg::ReplaceString2(CString oname, CString *nname, BOOL bDB2
 		}
 	}
 
-	//for(UINT i=0; i<strlen(old_fname); i++)	// 1����������
+	//for(UINT i=0; i<strlen(old_fname); i++)	// 1文字ずつ検索
 	//{
 	//	if ( bDiff )
 	//	{
-	//		rt = strncmp(&old_fname[i], srch, strlen(srch));	// �w�蕶�����ŖړI�̕����������
+	//		rt = strncmp(&old_fname[i], srch, strlen(srch));	// 指定文字数で目的の文字列を検索
 	//	}
 	//	else
 	//	{
-	//		rt = _strnicmp(&old_fname[i], srch, strlen(srch));	// �w�蕶�����ŖړI�̕����������
+	//		rt = _strnicmp(&old_fname[i], srch, strlen(srch));	// 指定文字数で目的の文字列を検索
 	//	}
 
-	//	if(rt == 0)	// �w�蕶�����ŖړI�̕����������
+	//	if(rt == 0)	// 指定文字数で目的の文字列を検索
 	//	{
-	//		strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//������O�܂ł̕�����
-	//		strcat_s(new_fname, sizeof(new_fname), tmp);	//�ŏI�I�ȖړI�̕�����
+	//		strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//見つかる前までの文字列
+	//		strcat_s(new_fname, sizeof(new_fname), tmp);	//最終的な目的の文字列
 	//		if(rep != NULL)
 	//		{
-	//			// �u���Ώە���������Ȃ�A�����Ŏ��s
+	//			// 置換対象文字があるなら、ここで実行
 	//			strcat_s(new_fname, sizeof(new_fname), rep);
 	//		}
-	//		i += strlen(srch) - 1; //�݂����������񕪂̌����͔�΂�
-	//		cp_num=0;	//�L���b�V���̃J�E���g�����Z�b�g����
+	//		i += strlen(srch) - 1; //みつかった文字列分の検索は飛ばす
+	//		cp_num=0;	//キャッシュのカウントをリセットする
 	//		cp_start = i + 1;
 	//	}
 	//	else
@@ -1144,11 +1144,11 @@ void CFname_exchangeDlg::ReplaceString2(CString oname, CString *nname, BOOL bDB2
 	//	}
 	//}
 
-	//// �Ώە�����ȍ~�̕�����A��
+	//// 対象文字列以降の文字を連結
 	//if ( cp_num )
 	//{
-	//	strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//������O�܂ł̕�����
-	//	strcat_s(new_fname, sizeof(new_fname), tmp);	//�ŏI�I�ȖړI�̕�����
+	//	strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//見つかる前までの文字列
+	//	strcat_s(new_fname, sizeof(new_fname), tmp);	//最終的な目的の文字列
 	//}
 	//*nname = new_fname;
 #endif
