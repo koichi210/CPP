@@ -1,42 +1,35 @@
-﻿
-// PointerDlg.h : ヘッダー ファイル
-//
+﻿// PointerDlg.h : メインダイアログ
 
 #pragma once
 
+struct TEST_T
+{
+	UINT param1;
+	UINT param2;
+	UINT param3;
+};
 
-typedef struct TEST {
-    UINT param1;
-    UINT param2;
-    UINT param3;
-}TEST_T;
-
-
-// CPointerDlg ダイアログ
 class CPointerDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CPointerDlg(CWnd* pParent = NULL);	// 標準コンストラクター
-	void GetParam(TEST_T** p );
-	TEST_T* GetParam();
+	explicit CPointerDlg(CWnd* pParent = nullptr);
 
-	TEST_T m_test;
-
-// ダイアログ データ
 	enum { IDD = IDD_POINTER_DIALOG };
 
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
+	// ポインタの受け取り方の比較用：引数（ポインタのポインタ）で返す版と戻り値で返す版
+	void GetParam(TEST_T** pp);
+	TEST_T* GetParam();
 
-// 実装
 protected:
-	HICON m_hIcon;
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedButton1();
 	DECLARE_MESSAGE_MAP()
+
+private:
+	HICON m_hIcon;
+	TEST_T m_test;
 };

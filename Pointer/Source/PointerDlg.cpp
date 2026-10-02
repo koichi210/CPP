@@ -1,6 +1,4 @@
-﻿
-// PointerDlg.cpp : 実装ファイル
-//
+﻿// PointerDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "Pointer.h"
@@ -11,14 +9,9 @@
 #define new DEBUG_NEW
 #endif
 
-
-// CPointerDlg ダイアログ
-
-
-
-
-CPointerDlg::CPointerDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CPointerDlg::IDD, pParent)
+CPointerDlg::CPointerDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD, pParent)
+	, m_test{}
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -34,39 +27,29 @@ BEGIN_MESSAGE_MAP(CPointerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CPointerDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-
-// CPointerDlg メッセージ ハンドラー
-
 BOOL CPointerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
 	m_test.param1 = 1;
 	m_test.param2 = 20;
 	m_test.param3 = 300;
 
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
 void CPointerDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -74,7 +57,6 @@ void CPointerDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -83,18 +65,16 @@ void CPointerDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CPointerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
+// どちらの受け取り方でも m_test 本体を指すこと、
+// ポインタ変数自体は別々の場所にあることを表示して確かめる
 void CPointerDlg::OnBnClickedButton1()
 {
-	TEST_T*	pTest = NULL;
+	TEST_T*	pTest = nullptr;
 	TEST_T*	pTest2;
 
 	GetParam(&pTest);
@@ -108,7 +88,7 @@ void CPointerDlg::OnBnClickedButton1()
 		"Addr  pTest本体\t\t = %08x\n"
 		"Addr  pTest2本体\t\t = %08x\n\n"
 
-		"Data  m_test.param2\t = %08x\n" 
+		"Data  m_test.param2\t = %08x\n"
 		"Data  pTest->param2\t = %08x\n"
 		"Data  pTest2->param2\t = %08x\n" ,
 		&m_test,
@@ -125,12 +105,12 @@ void CPointerDlg::OnBnClickedButton1()
 	MessageBox(AddrStr);
 }
 
-void CPointerDlg::GetParam(TEST_T** p )
+void CPointerDlg::GetParam(TEST_T** pp)
 {
-	*p = &m_test;
+	*pp = &m_test;
 }
 
-TEST_T* CPointerDlg::GetParam( )
+TEST_T* CPointerDlg::GetParam()
 {
 	return &m_test;
 }
