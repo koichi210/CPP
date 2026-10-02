@@ -171,7 +171,7 @@ void CFileCompareDlg::GetFile()
 	{
 		if ( m_FolderList[i].IsEmpty() )
 		{
-			break;
+			continue;
 		}
 
 		// 検索対象フォルダのパス
@@ -193,15 +193,12 @@ void CFileCompareDlg::GetFile()
 			}
 			else // ファイルという認識で良い？
 			{
-				m_FileList[m_FileNum].strFileName = cFind.GetFilePath();
-				if ( m_FileNum < MAX_FILE_NUM )
-				{
-					m_FileNum++;
-				}
-				else
+				if ( m_FileNum >= MAX_FILE_NUM )
 				{
 					break;
 				}
+				m_FileList[m_FileNum].strFileName = cFind.GetFilePath();
+				m_FileNum++;
 			}
 		}
 	}
