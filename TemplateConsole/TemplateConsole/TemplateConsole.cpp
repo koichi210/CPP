@@ -1,58 +1,54 @@
-﻿// TemplateConsole.cpp : コンソール アプリケーションのエントリ ポイントを定義します。
-//
+﻿// TemplateConsole.cpp : 関数テンプレート・クラステンプレートの確認用コンソールアプリ
 
 #include "stdafx.h"
 #include <iostream>
 #include <string>
- 
-using namespace std;
- 
-//  テンプレート関数
+
+// 関数テンプレート
 template <typename T>
 T FuncAdd(T x, T y)
 {
-    return x + y;
+	return x + y;
 }
 
-//  テンプレート関数（複数引数）
-template<typename T, typename S>
+// 関数テンプレート（型引数が複数）
+template <typename T, typename S>
 S FuncMul(T x, S y)
 {
-    return x * y;
+	return x * y;
 }
 
-//  テンプレートクラス
-template<typename T> class CCalc
+// クラステンプレート
+template <typename T>
+class CCalc
 {
 public:
-    T m_n1;
-    T m_n2;
+	T m_n1;
+	T m_n2;
 
-    T add() const
+	T add() const
 	{
-        return m_n1 + m_n2;
-    }
+		return m_n1 + m_n2;
+	}
 };
 
-
-int _tmain(int argc, _TCHAR* argv[])
+int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 {
-    cout << FuncAdd<string>("ABC", "def") << endl;	// stringを明示的に指定
-    cout << FuncAdd<int>(12, 34) << endl;			// intを明示的に指定
-    cout << FuncAdd(5, 6) << endl;					// intの場合、指定省略可能
+	std::cout << FuncAdd<std::string>("ABC", "def") << std::endl;	// string を明示的に指定
+	std::cout << FuncAdd<int>(12, 34) << std::endl;				// int を明示的に指定
+	std::cout << FuncAdd(5, 6) << std::endl;						// 引数から推論できるので省略可能
 
-    cout << FuncMul<int, double>(20, 1.5) << endl;	// 複数引数を指定
+	std::cout << FuncMul<int, double>(20, 1.5) << std::endl;		// 型引数を複数指定
 
 	CCalc<int> calc1;
 	calc1.m_n1 = 7;
 	calc1.m_n2 = 8;
-	cout << calc1.add() << endl;
+	std::cout << calc1.add() << std::endl;
 
-    CCalc<string> calc2;
+	CCalc<std::string> calc2;
 	calc2.m_n1 = "GHI";
 	calc2.m_n2 = "jkl";
-	cout << calc2.add() << endl;
+	std::cout << calc2.add() << std::endl;
 
 	return 0;
 }
-
