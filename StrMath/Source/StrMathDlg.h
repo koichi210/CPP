@@ -1,4 +1,4 @@
-// StrMathDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// StrMathDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #if !defined(AFX_STRMATHDLG_H__4BEDFCF0_EC9E_47F9_968D_AC1AA9E3ED68__INCLUDED_)
@@ -9,54 +9,54 @@
 #endif // _MSC_VER > 1000
 
 /////////////////////////////////////////////////////////////////////////////
-// ’è‹`
-#define DEF1	"‚¢‚¿"
-#define DEF2	"‚É"
-#define DEF3	"‚³‚ñ"
-#define DEF4	"‚æ‚ñ"
-#define DEF5	"‚²"
-#define DEF6A	"‚ë‚­"
-#define DEF6B	"‚ë‚Á"
-#define DEF7	"‚È‚È"
-#define DEF8A	"‚Í‚¿"
-#define DEF8B	"‚Í‚Á"
-#define DEF9	"‚«‚ã‚¤"
-#define DEF10	"‚¶‚ã‚¤"
-#define DEF100A	"‚Ğ‚á‚­"
-#define DEF100B	"‚Ñ‚á‚­"
-#define DEF100C	"‚Ò‚á‚­"
+// å®šç¾©
+#define DEF1	"ã„ã¡"
+#define DEF2	"ã«"
+#define DEF3	"ã•ã‚“"
+#define DEF4	"ã‚ˆã‚“"
+#define DEF5	"ã”"
+#define DEF6A	"ã‚ã"
+#define DEF6B	"ã‚ã£"
+#define DEF7	"ãªãª"
+#define DEF8A	"ã¯ã¡"
+#define DEF8B	"ã¯ã£"
+#define DEF9	"ãã‚…ã†"
+#define DEF10	"ã˜ã‚…ã†"
+#define DEF100A	"ã²ã‚ƒã"
+#define DEF100B	"ã³ã‚ƒã"
+#define DEF100C	"ã´ã‚ƒã"
 
 #define SUM		1
 #define SUB		2
 #define STR_BUFF	256
-#define SHOW_WEIGHT	16				//•\¦•¶š—ñ‚Ì•
-#define SHOW_HEIGHT	(SHOW_WEIGHT)	//•\¦•¶š—ñ‚Ì‚‚³
+#define SHOW_WEIGHT	16				//è¡¨ç¤ºæ–‡å­—åˆ—ã®å¹…
+#define SHOW_HEIGHT	(SHOW_WEIGHT)	//è¡¨ç¤ºæ–‡å­—åˆ—ã®é«˜ã•
 
 void GetString(int num, LPSTR str);
 void GetString2(int num, LPSTR str, BOOL flg);
 
 /////////////////////////////////////////////////////////////////////////////
-// CStrMathDlg ƒ_ƒCƒAƒƒO
+// CStrMathDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 class CStrMathDlg : public CDialog
 {
-// \’z
+// æ§‹ç¯‰
 public:
-	CStrMathDlg(CWnd* pParent = NULL);	// •W€‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	CStrMathDlg(CWnd* pParent = NULL);	// æ¨™æº–ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	//{{AFX_DATA(CStrMathDlg)
 	enum { IDD = IDD_STRMATH_DIALOG };
-		// ƒƒ‚: ‚±‚ÌˆÊ’u‚É ClassWizard ‚É‚æ‚Á‚Äƒf[ƒ^ ƒƒ“ƒo‚ª’Ç‰Á‚³‚ê‚Ü‚·B
+		// ãƒ¡ãƒ¢: ã“ã®ä½ç½®ã« ClassWizard ã«ã‚ˆã£ã¦ãƒ‡ãƒ¼ã‚¿ ãƒ¡ãƒ³ãƒãŒè¿½åŠ ã•ã‚Œã¾ã™ã€‚
 	//}}AFX_DATA
 
-	// ClassWizard ‚Í‰¼‘zŠÖ”‚ÌƒI[ƒo[ƒ‰ƒCƒh‚ğ¶¬‚µ‚Ü‚·B
+	// ClassWizard ã¯ä»®æƒ³é–¢æ•°ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 	//{{AFX_VIRTUAL(CStrMathDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ‚ÌƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã®ã‚µãƒãƒ¼ãƒˆ
 	//}}AFX_VIRTUAL
 
-// ƒCƒ“ƒvƒŠƒƒ“ƒe[ƒVƒ‡ƒ“
+// ã‚¤ãƒ³ãƒ—ãƒªãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³
 protected:
 	HICON m_hIcon;
 
@@ -67,7 +67,7 @@ protected:
 	int keta;
 	int mark;
 
-	// ¶¬‚³‚ê‚½ƒƒbƒZ[ƒW ƒ}ƒbƒvŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒƒãƒ—é–¢æ•°
 	//{{AFX_MSG(CStrMathDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -85,6 +85,6 @@ protected:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ ‚Í‘Os‚Ì’¼‘O‚É’Ç‰Á‚ÌéŒ¾‚ğ‘}“ü‚µ‚Ü‚·B
+// Microsoft Visual C++ ã¯å‰è¡Œã®ç›´å‰ã«è¿½åŠ ã®å®£è¨€ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚
 
 #endif // !defined(AFX_STRMATHDLG_H__4BEDFCF0_EC9E_47F9_968D_AC1AA9E3ED68__INCLUDED_)

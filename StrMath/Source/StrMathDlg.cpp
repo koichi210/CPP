@@ -1,4 +1,4 @@
-// StrMathDlg.cpp : ƒCƒ“ƒvƒŠƒƒ“ƒe[ƒVƒ‡ƒ“ ƒtƒ@ƒCƒ‹
+ï»¿// StrMathDlg.cpp : ã‚¤ãƒ³ãƒ—ãƒªãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "stdafx.h"
@@ -12,15 +12,15 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// CStrMathDlg ƒ_ƒCƒAƒƒO
+// CStrMathDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 CStrMathDlg::CStrMathDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CStrMathDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CStrMathDlg)
-		// ƒƒ‚: ‚±‚ÌˆÊ’u‚É ClassWizard ‚É‚æ‚Á‚Äƒƒ“ƒo‚Ì‰Šú‰»‚ª’Ç‰Á‚³‚ê‚Ü‚·B
+		// ãƒ¡ãƒ¢: ã“ã®ä½ç½®ã« ClassWizard ã«ã‚ˆã£ã¦ãƒ¡ãƒ³ãƒã®åˆæœŸåŒ–ãŒè¿½åŠ ã•ã‚Œã¾ã™ã€‚
 	//}}AFX_DATA_INIT
-	// ƒƒ‚: LoadIcon ‚Í Win32 ‚Ì DestroyIcon ‚ÌƒTƒuƒV[ƒPƒ“ƒX‚ð—v‹‚µ‚Ü‚¹‚ñB
+	// ãƒ¡ãƒ¢: LoadIcon ã¯ Win32 ã® DestroyIcon ã®ã‚µãƒ–ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’è¦æ±‚ã—ã¾ã›ã‚“ã€‚
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
@@ -28,7 +28,7 @@ void CStrMathDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CStrMathDlg)
-		// ƒƒ‚: ‚±‚ÌêŠ‚É‚Í ClassWizard ‚É‚æ‚Á‚Ä DDX ‚Æ DDV ‚ÌŒÄ‚Ño‚µ‚ª’Ç‰Á‚³‚ê‚Ü‚·B
+		// ãƒ¡ãƒ¢: ã“ã®å ´æ‰€ã«ã¯ ClassWizard ã«ã‚ˆã£ã¦ DDX ã¨ DDV ã®å‘¼ã³å‡ºã—ãŒè¿½åŠ ã•ã‚Œã¾ã™ã€‚
 	//}}AFX_DATA_MAP
 }
 
@@ -47,16 +47,16 @@ BEGIN_MESSAGE_MAP(CStrMathDlg, CDialog)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CStrMathDlg ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰
+// CStrMathDlg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©
 
 BOOL CStrMathDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// ‚±‚Ìƒ_ƒCƒAƒƒO—p‚ÌƒAƒCƒRƒ“‚ðÝ’è‚µ‚Ü‚·BƒtƒŒ[ƒ€ƒ[ƒN‚ÍƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒƒCƒ“
-	// ƒEƒBƒ“ƒhƒE‚ªƒ_ƒCƒAƒƒO‚Å‚È‚¢Žž‚ÍŽ©“®“I‚ÉÝ’è‚µ‚Ü‚¹‚ñB
-	SetIcon(m_hIcon, TRUE);			// ‘å‚«‚¢ƒAƒCƒRƒ“‚ðÝ’è
-	SetIcon(m_hIcon, FALSE);		// ¬‚³‚¢ƒAƒCƒRƒ“‚ðÝ’è
+	// ã“ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ç”¨ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®šã—ã¾ã™ã€‚ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ¡ã‚¤ãƒ³
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§ãªã„æ™‚ã¯è‡ªå‹•çš„ã«è¨­å®šã—ã¾ã›ã‚“ã€‚
+	SetIcon(m_hIcon, TRUE);			// å¤§ãã„ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®š
+	SetIcon(m_hIcon, FALSE);		// å°ã•ã„ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®š
 	
 	CheckDlgButton(IDC_2KETA, BST_CHECKED);
 	CheckDlgButton(IDC_SUM, BST_CHECKED);
@@ -67,11 +67,11 @@ BOOL CStrMathDlg::OnInitDialog()
 	srand((unsigned)time(NULL));
 
 	{
-		static HFONT font;	//•\Ž¦•¶Žš\‘¢‘Ì
-		LOGFONT viewfont;	//•\Ž¦•¶Žš\‘¢‘Ì
+		static HFONT font;	//è¡¨ç¤ºæ–‡å­—æ§‹é€ ä½“
+		LOGFONT viewfont;	//è¡¨ç¤ºæ–‡å­—æ§‹é€ ä½“
 
 		::memset(&viewfont, 0, sizeof(viewfont));
-		//•\Ž¦ƒtƒHƒ“ƒgì¬
+		//è¡¨ç¤ºãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 		viewfont.lfCharSet = DEFAULT_CHARSET;
 		viewfont.lfWeight = SHOW_WEIGHT;
 		viewfont.lfHeight = SHOW_HEIGHT;
@@ -81,22 +81,22 @@ BOOL CStrMathDlg::OnInitDialog()
 		SendDlgItemMessage(IDC_MARK, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
 	}
 
-	return TRUE;  // TRUE ‚ð•Ô‚·‚ÆƒRƒ“ƒgƒ[ƒ‹‚ÉÝ’è‚µ‚½ƒtƒH[ƒJƒX‚ÍŽ¸‚í‚ê‚Ü‚¹‚ñB
+	return TRUE;  // TRUE ã‚’è¿”ã™ã¨ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«è¨­å®šã—ãŸãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã¯å¤±ã‚ã‚Œã¾ã›ã‚“ã€‚
 }
 
-// ‚à‚µƒ_ƒCƒAƒƒOƒ{ƒbƒNƒX‚ÉÅ¬‰»ƒ{ƒ^ƒ“‚ð’Ç‰Á‚·‚é‚È‚ç‚ÎAƒAƒCƒRƒ“‚ð•`‰æ‚·‚é
-// ƒR[ƒh‚ðˆÈ‰º‚É‹Lq‚·‚é•K—v‚ª‚ ‚è‚Ü‚·BMFC ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Í document/view
-// ƒ‚ƒfƒ‹‚ðŽg‚Á‚Ä‚¢‚é‚Ì‚ÅA‚±‚Ìˆ—‚ÍƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚èŽ©“®“I‚Éˆ—‚³‚ê‚Ü‚·B
+// ã‚‚ã—ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ã«æœ€å°åŒ–ãƒœã‚¿ãƒ³ã‚’è¿½åŠ ã™ã‚‹ãªã‚‰ã°ã€ã‚¢ã‚¤ã‚³ãƒ³ã‚’æç”»ã™ã‚‹
+// ã‚³ãƒ¼ãƒ‰ã‚’ä»¥ä¸‹ã«è¨˜è¿°ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚MFC ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã¯ document/view
+// ãƒ¢ãƒ‡ãƒ«ã‚’ä½¿ã£ã¦ã„ã‚‹ã®ã§ã€ã“ã®å‡¦ç†ã¯ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã‚Šè‡ªå‹•çš„ã«å‡¦ç†ã•ã‚Œã¾ã™ã€‚
 
 void CStrMathDlg::OnPaint() 
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // •`‰æ—p‚ÌƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
+		CPaintDC dc(this); // æç”»ç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 
 		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-		// ƒNƒ‰ƒCƒAƒ“ƒg‚Ì‹éŒ`—Ìˆæ“à‚Ì’†‰›
+		// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®çŸ©å½¢é ˜åŸŸå†…ã®ä¸­å¤®
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -104,7 +104,7 @@ void CStrMathDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ƒAƒCƒRƒ“‚ð•`‰æ‚µ‚Ü‚·B
+		// ã‚¢ã‚¤ã‚³ãƒ³ã‚’æç”»ã—ã¾ã™ã€‚
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -113,8 +113,8 @@ void CStrMathDlg::OnPaint()
 	}
 }
 
-// ƒVƒXƒeƒ€‚ÍAƒ†[ƒU[‚ªÅ¬‰»ƒEƒBƒ“ƒhƒE‚ðƒhƒ‰ƒbƒO‚µ‚Ä‚¢‚éŠÔA
-// ƒJ[ƒ\ƒ‹‚ð•\Ž¦‚·‚é‚½‚ß‚É‚±‚±‚ðŒÄ‚Ño‚µ‚Ü‚·B
+// ã‚·ã‚¹ãƒ†ãƒ ã¯ã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒæœ€å°åŒ–ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ãƒ‰ãƒ©ãƒƒã‚°ã—ã¦ã„ã‚‹é–“ã€
+// ã‚«ãƒ¼ã‚½ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹ãŸã‚ã«ã“ã“ã‚’å‘¼ã³å‡ºã—ã¾ã™ã€‚
 HCURSOR CStrMathDlg::OnQueryDragIcon()
 {
 	return (HCURSOR) m_hIcon;
@@ -314,24 +314,24 @@ void CStrMathDlg::OnAns()
 	memset(str, 0, sizeof(str));
 
 	if(num1 && num2){
-		// “š‚¦
+		// ç­”ãˆ
 		if(mark == SUM){
 			ans = num1 + num2;
 		}else{
 			ans = num1 - num2;
 		}
 
-		// “ü—Í’l
+		// å…¥åŠ›å€¤
 		ians = GetDlgItemInt(IDC_IANS, NULL, 0);
 
 		if(ans == ians){
-			sprintf(str, "³‰ðII");
+			sprintf(str, "æ­£è§£ï¼ï¼");
 		}else{
-			sprintf(str, "Žc”OBB", ans);
+			sprintf(str, "æ®‹å¿µã€‚ã€‚", ans);
 		}
-		MessageBox(str, "‰ð“š", MB_OK);
+		MessageBox(str, "è§£ç­”", MB_OK);
 	}else{
-		MessageBox("ƒXƒ^[ƒg‚ð‰Ÿ‚µ‚Ä‰º‚³‚¢B", "Caution", MB_OK);
+		MessageBox("ã‚¹ã‚¿ãƒ¼ãƒˆã‚’æŠ¼ã—ã¦ä¸‹ã•ã„ã€‚", "Caution", MB_OK);
 	}
 }
 
@@ -340,10 +340,10 @@ void CStrMathDlg::OnHlp()
 	char str[STR_BUFF];
 
 	memset(str, 0, sizeof(str));
-	sprintf(str, "‚Ð‚ç‚ª‚È‚Å‘«‚µŽZ^ˆø‚«ŽZ‚ð‚µ‚Ü‚·\n\n"
-		"1 o‘èŒ…”‚ð‘I‘ð\n"
-		"2 ‰‰ŽZŽí•Ê‚ð‘I‘ð\n"
-		"3 ƒXƒ^[ƒg–t‰Ÿ‰º‚É‚æ‚èo‘è‚³‚ê‚é\n"
-		"‚±‚ê‚É‚æ‚è”]‚ª’b‚¦‚ç‚ê‚Ü‚·III\n");
-	MessageBox(str, "ƒwƒ‹ƒv", MB_OK);
+	sprintf(str, "ã²ã‚‰ãŒãªã§è¶³ã—ç®—ï¼å¼•ãç®—ã‚’ã—ã¾ã™\n\n"
+		"1 å‡ºé¡Œæ¡æ•°ã‚’é¸æŠž\n"
+		"2 æ¼”ç®—ç¨®åˆ¥ã‚’é¸æŠž\n"
+		"3 ã‚¹ã‚¿ãƒ¼ãƒˆé‡¦æŠ¼ä¸‹ã«ã‚ˆã‚Šå‡ºé¡Œã•ã‚Œã‚‹\n"
+		"ã“ã‚Œã«ã‚ˆã‚Šè„³ãŒé›ãˆã‚‰ã‚Œã¾ã™ï¼ï¼ï¼\n");
+	MessageBox(str, "ãƒ˜ãƒ«ãƒ—", MB_OK);
 }
