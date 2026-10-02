@@ -1,4 +1,4 @@
-// zodiacDlg.cpp : �C���v�������e�[�V���� �t�@�C��
+﻿// zodiacDlg.cpp : インプリメンテーション ファイル
 //
 
 #include "stdafx.h"
@@ -12,15 +12,15 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// CZodiacDlg �_�C�A���O
+// CZodiacDlg ダイアログ
 
 CZodiacDlg::CZodiacDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CZodiacDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CZodiacDlg)
-		// ����: ���̈ʒu�� ClassWizard �ɂ���ă����o�̏��������ǉ�����܂��B
+		// メモ: この位置に ClassWizard によってメンバの初期化が追加されます。
 	//}}AFX_DATA_INIT
-	// ����: LoadIcon �� Win32 �� DestroyIcon �̃T�u�V�[�P���X��v�����܂���B
+	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
@@ -28,7 +28,7 @@ void CZodiacDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CZodiacDlg)
-		// ����: ���̏ꏊ�ɂ� ClassWizard �ɂ���� DDX �� DDV �̌Ăяo�����ǉ�����܂��B
+		// メモ: この場所には ClassWizard によって DDX と DDV の呼び出しが追加されます。
 	//}}AFX_DATA_MAP
 }
 
@@ -46,15 +46,15 @@ BEGIN_MESSAGE_MAP(CZodiacDlg, CDialog)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CZodiacDlg ���b�Z�[�W �n���h��
+// CZodiacDlg メッセージ ハンドラ
 
 BOOL CZodiacDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	// ���̃_�C�A���O�p�̃A�C�R����ݒ肵�܂��B�t���[�����[�N�̓A�v���P�[�V�����̃��C��
-	// �E�B���h�E���_�C�A���O�łȂ����͎����I�ɐݒ肵�܂���B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R����ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R����ݒ�
+	// このダイアログ用のアイコンを設定します。フレームワークはアプリケーションのメイン
+	// ウィンドウがダイアログでない時は自動的に設定しません。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンを設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンを設定
 	
 	// make Year
 	int ind;
@@ -89,22 +89,22 @@ BOOL CZodiacDlg::OnInitDialog()
 	CheckDlgButton(IDC_AGE, BST_CHECKED);
 	OnAge();
 
-	return TRUE;  // TRUE ��Ԃ��ƃR���g���[���ɐݒ肵���t�H�[�J�X�͎����܂���B
+	return TRUE;  // TRUE を返すとコントロールに設定したフォーカスは失われません。
 }
 
-// �����_�C�A���O�{�b�N�X�ɍŏ����{�^����ǉ�����Ȃ�΁A�A�C�R����`�悷��
-// �R�[�h���ȉ��ɋL�q����K�v������܂��BMFC �A�v���P�[�V������ document/view
-// ���f�����g���Ă���̂ŁA���̏����̓t���[�����[�N�ɂ�莩���I�ɏ�������܂��B
+// もしダイアログボックスに最小化ボタンを追加するならば、アイコンを描画する
+// コードを以下に記述する必要があります。MFC アプリケーションは document/view
+// モデルを使っているので、この処理はフレームワークにより自動的に処理されます。
 
 void CZodiacDlg::OnPaint() 
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��p�̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画用のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-		// �N���C�A���g�̋�`�̈���̒���
+		// クライアントの矩形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -112,7 +112,7 @@ void CZodiacDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R����`�悵�܂��B
+		// アイコンを描画します。
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -121,8 +121,8 @@ void CZodiacDlg::OnPaint()
 	}
 }
 
-// �V�X�e���́A���[�U�[���ŏ����E�B���h�E���h���b�O���Ă���ԁA
-// �J�[�\����\�����邽�߂ɂ������Ăяo���܂��B
+// システムは、ユーザーが最小化ウィンドウをドラッグしている間、
+// カーソルを表示するためにここを呼び出します。
 HCURSOR CZodiacDlg::OnQueryDragIcon()
 {
 	return (HCURSOR) m_hIcon;
@@ -236,8 +236,8 @@ void CZodiacDlg::OnView()
 	if ( chk_states == FIX_ZODIAC )
 	{
 		GetDlgItemText(IDC_LIST, zod, sizeof (zod));
-		sprintf(str, "%s�N�̃q�g\r\n\r\n"
-					 "���܂ꂽ�N    �N��\r\n", zod);
+		sprintf(str, "%s年のヒト\r\n\r\n"
+					 "生まれた年    年齢\r\n", zod);
 
 		for( i=0; i < CHINEZODIAC_NUM; i++ )
 		{
@@ -266,31 +266,31 @@ void CZodiacDlg::OnView()
 	{
 		if ( chk_states == FIX_AGE )
 		{
-			// �N��
+			// 年齢
 			GetDlgItemText(IDC_LIST, wk, sizeof (wk));
 
-			// ���܂ꂽ�N
+			// 生まれた年
 			sscanf(wk, AGE_FORMAT, &age);
 			birth = year - age;
 
-			// ���x
+			// 干支
 			GetZodiac(birth, zod);
 		}
 		else if( chk_states == FIX_BIRTH )
 		{
-			// ���܂ꂽ�N
+			// 生まれた年
 			GetDlgItemText(IDC_LIST, wk, sizeof (wk));
 			sscanf(wk, BIRTH_FORMAT, &birth);
 
-			// ���x
+			// 干支
 			GetZodiac(birth, zod);
 
-			// �N��
+			// 年齢
 			age = year - birth;
 		}
-		sprintf(str,"%d�N���܂�\r\n"
-					"���N��%d��\r\n"
-					"%s�N�ł��B\r\n", birth, age, zod);
+		sprintf(str,"%d年生まれ\r\n"
+					"今年は%d才\r\n"
+					"%s年です。\r\n", birth, age, zod);
 	}
 	SetDlgItemText(IDC_PREVIEW, str);
 }
@@ -300,7 +300,7 @@ int CZodiacDlg::GetZodiac(int year, char * zod)
 {
 	if ( year < MIN_YEAR || year > m_year )
 	{
-		AfxMessageBox("�v���O�����G���[",MB_OK);
+		AfxMessageBox("プログラムエラー",MB_OK);
 		return -1;
 	}
 
@@ -337,9 +337,9 @@ void CZodiacDlg::OnAllView()
 		{
 			strcat(str, "\r\n");
 		}
-		sprintf(wk, "%11d�N", i);
+		sprintf(wk, "%11d年", i);
 		strcat(str, wk);
 	}
 
-	MessageBox(str, "�����\", MB_OK);
+	MessageBox(str, "早見表", MB_OK);
 }

@@ -1,4 +1,4 @@
-// zodiacDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// zodiacDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #if !defined(AFX_ZODIACDLG_H__6E535628_9651_4FD1_AE54_155DD1AE66CD__INCLUDED_)
@@ -27,44 +27,44 @@
 #define FIX_AGE		2
 #define FIX_ZODIAC	3
 
-#define AGE_FORMAT		"–ž%dË"
-#define BIRTH_FORMAT	"%d”N"
+#define AGE_FORMAT		"æº€%dæ‰"
+#define BIRTH_FORMAT	"%då¹´"
 
 
-static const char zod_name[CHINEZODIAC_NUM][MAX_PATH] = { "Žq(‚Ë‚¸‚Ý)", "‰N(‚¤‚µ)", "“Ð(‚Æ‚ç)", "‰K(‚¤‚³‚¬)", "’C(‚½‚Â)", "–¤(‚Ý)",
-												"Œß(‚¤‚Ü)", "–¢(‚Ð‚Â‚¶)", "\(‚³‚é)", "“Ñ(‚Æ‚è)", "œú(‚¢‚Ê)", "ˆå(‚¢‚Ì‚µ‚µ)"};
+static const char zod_name[CHINEZODIAC_NUM][MAX_PATH] = { "å­(ã­ãšã¿)", "ä¸‘(ã†ã—)", "å¯…(ã¨ã‚‰)", "å¯(ã†ã•ãŽ)", "è¾°(ãŸã¤)", "å·³(ã¿)",
+												"åˆ(ã†ã¾)", "æœª(ã²ã¤ã˜)", "ç”³(ã•ã‚‹)", "é…‰(ã¨ã‚Š)", "æˆŒ(ã„ã¬)", "äº¥(ã„ã®ã—ã—)"};
 
 /////////////////////////////////////////////////////////////////////////////
-// CZodiacDlg ƒ_ƒCƒAƒƒO
+// CZodiacDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 class CZodiacDlg : public CDialog
 {
-// \’z
+// æ§‹ç¯‰
 public:
-	CZodiacDlg(CWnd* pParent = NULL);	// •W€‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	CZodiacDlg(CWnd* pParent = NULL);	// æ¨™æº–ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	int GetZodiac(int year, char * zod);
 	void Refresh();
 	void SetListData(char *str, int idx);
 	int chk_states;
 	int m_year;
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	//{{AFX_DATA(CZodiacDlg)
 	enum { IDD = IDD_ZODIAC_DIALOG };
-		// ƒƒ‚: ‚±‚ÌˆÊ’u‚É ClassWizard ‚É‚æ‚Á‚Äƒf[ƒ^ ƒƒ“ƒo‚ª’Ç‰Á‚³‚ê‚Ü‚·B
+		// ãƒ¡ãƒ¢: ã“ã®ä½ç½®ã« ClassWizard ã«ã‚ˆã£ã¦ãƒ‡ãƒ¼ã‚¿ ãƒ¡ãƒ³ãƒãŒè¿½åŠ ã•ã‚Œã¾ã™ã€‚
 	//}}AFX_DATA
 
-	// ClassWizard ‚Í‰¼‘zŠÖ”‚ÌƒI[ƒo[ƒ‰ƒCƒh‚ð¶¬‚µ‚Ü‚·B
+	// ClassWizard ã¯ä»®æƒ³é–¢æ•°ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 	//{{AFX_VIRTUAL(CZodiacDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ‚ÌƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã®ã‚µãƒãƒ¼ãƒˆ
 	//}}AFX_VIRTUAL
 
-// ƒCƒ“ƒvƒŠƒƒ“ƒe[ƒVƒ‡ƒ“
+// ã‚¤ãƒ³ãƒ—ãƒªãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³
 protected:
 	HICON m_hIcon;
 
-	// ¶¬‚³‚ê‚½ƒƒbƒZ[ƒW ƒ}ƒbƒvŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒžãƒƒãƒ—é–¢æ•°
 	//{{AFX_MSG(CZodiacDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -80,6 +80,6 @@ protected:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ ‚Í‘Os‚Ì’¼‘O‚É’Ç‰Á‚ÌéŒ¾‚ð‘}“ü‚µ‚Ü‚·B
+// Microsoft Visual C++ ã¯å‰è¡Œã®ç›´å‰ã«è¿½åŠ ã®å®£è¨€ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚
 
 #endif // !defined(AFX_ZODIACDLG_H__6E535628_9651_4FD1_AE54_155DD1AE66CD__INCLUDED_)
