@@ -60,3 +60,7 @@ dkms.conf
 *.log
 *.manifest
 *.lastbuildstate
+
+# Visual Studio のビルド中間ファイル・IntelliSense キャッシュ
+obj/
+ipch/
