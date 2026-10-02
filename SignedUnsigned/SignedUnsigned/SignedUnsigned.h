@@ -1,6 +1,4 @@
-﻿
-// SignedUnsigned.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
-//
+﻿// SignedUnsigned.h : アプリケーションクラス
 
 #pragma once
 
@@ -8,23 +6,14 @@
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
-
-
-// CSignedUnsignedApp:
-// このクラスの実装については、SignedUnsigned.cpp を参照してください。
-//
+#include "resource.h"
 
 class CSignedUnsignedApp : public CWinApp
 {
 public:
 	CSignedUnsignedApp();
 
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-
-// 実装
+	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };

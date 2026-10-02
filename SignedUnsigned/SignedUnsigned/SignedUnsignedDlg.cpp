@@ -1,6 +1,4 @@
-﻿
-// SignedUnsignedDlg.cpp : 実装ファイル
-//
+﻿// SignedUnsignedDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "SignedUnsigned.h"
@@ -11,14 +9,8 @@
 #define new DEBUG_NEW
 #endif
 
-
-// CSignedUnsignedDlg ダイアログ
-
-
-
-
-CSignedUnsignedDlg::CSignedUnsignedDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CSignedUnsignedDlg::IDD, pParent)
+CSignedUnsignedDlg::CSignedUnsignedDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -34,36 +26,25 @@ BEGIN_MESSAGE_MAP(CSignedUnsignedDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CSignedUnsignedDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-
-// CSignedUnsignedDlg メッセージ ハンドラー
-
 BOOL CSignedUnsignedDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
 void CSignedUnsignedDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -71,7 +52,6 @@ void CSignedUnsignedDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -80,15 +60,13 @@ void CSignedUnsignedDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CSignedUnsignedDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
+// 符号なし同士の引き算が負になる（ラップアラウンドする）と、その後の乗除算の結果が
+// 期待した負の値にならないことを確かめる。結果はわざと %d（符号付き）で表示している
 void CSignedUnsignedDlg::OnBnClickedButton1()
 {
 	UINT32	BitDepthValue		= 8;
