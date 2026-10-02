@@ -1,6 +1,4 @@
-﻿
-// VariableArgumentDlg.cpp : 実装ファイル
-//
+﻿// VariableArgumentDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "VariableArgument.h"
@@ -11,17 +9,8 @@
 #define new DEBUG_NEW
 #endif
 
-
-// CVariableArgumentDlg ダイアログ
-
-
-
-
-CVariableArgumentDlg::CVariableArgumentDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CVariableArgumentDlg::IDD, pParent)
-	, m_Input(_T(""))
-	, m_Replace(_T(""))
-	, m_Output(_T(""))
+CVariableArgumentDlg::CVariableArgumentDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -29,51 +18,41 @@ CVariableArgumentDlg::CVariableArgumentDlg(CWnd* pParent /*=NULL*/)
 void CVariableArgumentDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT_INPUT, m_Input);
-	DDX_Text(pDX, IDC_EDIT_REPLACE, m_Replace);
-	DDX_Text(pDX, IDC_EDIT_OUTPUT, m_Output);
+	DDX_Text(pDX, IDC_EDIT_INPUT, m_strInput);
+	DDX_Text(pDX, IDC_EDIT_REPLACE, m_strReplace);
+	DDX_Text(pDX, IDC_EDIT_OUTPUT, m_strOutput);
 }
 
 BEGIN_MESSAGE_MAP(CVariableArgumentDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON_EXEC_C, OnBnClickedButtonExecC)
-	ON_BN_CLICKED(IDC_BUTTON_EXE_CPP, OnBnClickedButtonExeCpp)
+	ON_BN_CLICKED(IDC_BUTTON_EXEC_C, &CVariableArgumentDlg::OnBnClickedButtonExecC)
+	ON_BN_CLICKED(IDC_BUTTON_EXE_CPP, &CVariableArgumentDlg::OnBnClickedButtonExeCpp)
 END_MESSAGE_MAP()
-
-
-// CVariableArgumentDlg メッセージ ハンドラー
 
 BOOL CVariableArgumentDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-	m_Input = "Filename_%d.bin";
-	m_Replace = "1";
+	m_strInput = "Filename_%d.bin";
+	m_strReplace = "1";
 	UpdateData(FALSE);
 
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
 void CVariableArgumentDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -81,7 +60,6 @@ void CVariableArgumentDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -90,13 +68,14 @@ void CVariableArgumentDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CVariableArgumentDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+// C言語風：入力文字列をそのまま書式として sprintf に渡す。
+// 比較用にあえて固定長バッファと可変長引数のまま残している
+// （%d 以外の書式や長い文字列を入れると壊れるのが C 版の弱点）
 void CVariableArgumentDlg::OnBnClickedButtonExecC()
 {
 	char Input[256] = "";
@@ -105,19 +84,19 @@ void CVariableArgumentDlg::OnBnClickedButtonExecC()
 
 	UpdateData(TRUE);
 
-	strcpy(Input, m_Input);
-	Replace = atoi(m_Replace);
-	strcpy(Output, m_Output);
+	strcpy(Input, m_strInput);
+	Replace = atoi(m_strReplace);
 	sprintf(Output, Input, Replace);
 
-	m_Output = Output;
+	m_strOutput = Output;
 	UpdateData(FALSE);
 }
 
+// C++風：CString の置換で "%d" を値の文字列に置き換える
 void CVariableArgumentDlg::OnBnClickedButtonExeCpp()
 {
 	UpdateData(TRUE);
-	m_Output = m_Input;
-	m_Output.Replace("%d", m_Replace);
+	m_strOutput = m_strInput;
+	m_strOutput.Replace("%d", m_strReplace);
 	UpdateData(FALSE);
 }

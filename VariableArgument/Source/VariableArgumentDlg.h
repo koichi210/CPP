@@ -1,36 +1,27 @@
-﻿
-// VariableArgumentDlg.h : ヘッダー ファイル
-//
+﻿// VariableArgumentDlg.h : メインダイアログ
 
 #pragma once
 
-
-// CVariableArgumentDlg ダイアログ
 class CVariableArgumentDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CVariableArgumentDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CVariableArgumentDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_VARIABLEARGUMENT_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
-	CString m_Input;
-	CString m_Replace;
-	CString m_Output;
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedButtonExecC();
 	afx_msg void OnBnClickedButtonExeCpp();
 	DECLARE_MESSAGE_MAP()
+
+private:
+	HICON m_hIcon;
+	CString m_strInput;
+	CString m_strReplace;
+	CString m_strOutput;
 };
