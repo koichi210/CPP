@@ -1,5 +1,5 @@
-
-// EnumModuleDlg.cpp : �����t�@�C��
+﻿
+// EnumModuleDlg.cpp : 実装ファイル
 //
 
 #include "stdafx.h"
@@ -20,7 +20,7 @@
 #endif
 
 
-// CEnumModuleDlg �_�C�A���O
+// CEnumModuleDlg ダイアログ
 CEnumModuleDlg::CEnumModuleDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CEnumModuleDlg::IDD, pParent)
 	, m_ProcessName(_T(""))
@@ -43,35 +43,35 @@ BEGIN_MESSAGE_MAP(CEnumModuleDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CEnumModuleDlg ���b�Z�[�W �n���h���[
+// CEnumModuleDlg メッセージ ハンドラー
 
 BOOL CEnumModuleDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ���̃_�C�A���O�̃A�C�R����ݒ肵�܂��B�A�v���P�[�V�����̃��C�� �E�B���h�E���_�C�A���O�łȂ��ꍇ�A
-	//  Framework �́A���̐ݒ�������I�ɍs���܂��B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R���̐ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R���̐ݒ�
+	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
+	//  Framework は、この設定を自動的に行います。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
-	// TODO: �������������ɒǉ����܂��B
+	// TODO: 初期化をここに追加します。
 
-	return TRUE;  // �t�H�[�J�X���R���g���[���ɐݒ肵���ꍇ�������ATRUE ��Ԃ��܂��B
+	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
-// �_�C�A���O�ɍŏ����{�^����ǉ�����ꍇ�A�A�C�R����`�悷�邽�߂�
-//  ���̃R�[�h���K�v�ł��B�h�L�������g/�r���[ ���f�����g�� MFC �A�v���P�[�V�����̏ꍇ�A
-//  ����́AFramework �ɂ���Ď����I�ɐݒ肳��܂��B
+// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
+//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
+//  これは、Framework によって自動的に設定されます。
 
 void CEnumModuleDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// �N���C�A���g�̎l�p�`�̈���̒���
+		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -79,7 +79,7 @@ void CEnumModuleDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R���̕`��
+		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -88,8 +88,8 @@ void CEnumModuleDlg::OnPaint()
 	}
 }
 
-// ���[�U�[���ŏ��������E�B���h�E���h���b�O���Ă���Ƃ��ɕ\������J�[�\�����擾���邽�߂ɁA
-//  �V�X�e�������̊֐����Ăяo���܂��B
+// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
+//  システムがこの関数を呼び出します。
 HCURSOR CEnumModuleDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -108,9 +108,9 @@ void CEnumModuleDlg::OnBnClickedGetModulename()
 	}
 	else
 	{
-		// TODO�F�v���Z�X������PID���擾
+		// TODO：プロセス名からPIDを取得
 		//ProcessID = GetCurrentProcessId();
-		MessageBox("�v���Z�X����C�ӂɎw�肷��@�\�͔�T�|�[�g");
+		MessageBox("プロセス名を任意に指定する機能は非サポート");
 		return;
 	}
 	m_Result = PrintModuleName(ProcessID);
@@ -133,13 +133,13 @@ CString PrintModuleName( DWORD processID )
 		return Result;
 	}
 
-	// �w�肳�ꂽ�v���Z�X���̊e���W���[���̃n���h�����擾
+	// 指定されたプロセス内の各モジュールのハンドルを取得
 	if( EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
 	{
 		for ( i = 0; i < (cbNeeded / sizeof(HMODULE)); i++ )
 		{
 			TCHAR szModName[MAX_PATH];
-			// �w�肳�ꂽ���W���[���̊��S�C���p�X�����擾
+			// 指定されたモジュールの完全修飾パス名を取得
 			if ( GetModuleFileNameEx( hProcess, hMods[i], szModName, sizeof(szModName)))
 			{
 				CString AddString;
@@ -182,7 +182,7 @@ BOOL GetPhysicalFileName(LPCTSTR szFileName, LPTSTR szRealFileName, SIZE_T nBufS
 		return FALSE;
 	}
 
-	// �w�肳�ꂽ�t�@�C���ɑ΂���A���O�t���܂��͖��O�Ȃ��̃t�@�C���}�b�s���O�I�u�W�F�N�g���쐬
+	// 指定されたファイルに対する、名前付きまたは名前なしのファイルマッピングオブジェクトを作成
 	HANDLE hFileMap;
 	hFileMap = CreateFileMapping(hFile, 
 		NULL, 
@@ -199,7 +199,7 @@ BOOL GetPhysicalFileName(LPCTSTR szFileName, LPTSTR szRealFileName, SIZE_T nBufS
 		return FALSE;
 	}
 
-	// �Ăяo�����v���Z�X�̃A�h���X��ԂɁA�t�@�C���̃r���[���}�b�s���O
+	// 呼び出し側プロセスのアドレス空間に、ファイルのビューをマッピング
 	void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
 	if (pMem == NULL)
 	{
@@ -210,7 +210,7 @@ BOOL GetPhysicalFileName(LPCTSTR szFileName, LPTSTR szRealFileName, SIZE_T nBufS
 		return FALSE;
 	}
 
-	// �w�肳�ꂽ�A�h���X���A�w�肳�ꂽ�v���Z�X�̃A�h���X��ԓ��̃������}�b�v�g�t�@�C���ɑ��݂��邩�ǂ������`�F�b�N
+	// 指定されたアドレスが、指定されたプロセスのアドレス空間内のメモリマップトファイルに存在するかどうかをチェック
 	TCHAR pszFilename[MAX_PATH+1];
 	BOOL bSuccess = FALSE;
 	if (GetMappedFileName (GetCurrentProcess(), pMem, pszFilename,MAX_PATH)) 
@@ -218,7 +218,7 @@ BOOL GetPhysicalFileName(LPCTSTR szFileName, LPTSTR szRealFileName, SIZE_T nBufS
 		TCHAR szTemp[MAX_PATH+1];
 		szTemp[0] = '\0';
 
-		// �V�X�e���ŗ��p�\�ȃh���C�u��\����������o�b�t�@�Ɋi�[
+		// システムで利用可能なドライブを表す文字列をバッファに格納
 		if (GetLogicalDriveStrings(MAX_PATH, szTemp)) 
 		{
 			TCHAR szName[MAX_PATH];
@@ -230,7 +230,7 @@ BOOL GetPhysicalFileName(LPCTSTR szFileName, LPTSTR szRealFileName, SIZE_T nBufS
 			{
 				*szDrive = *p;
 
-				// �A�v���P�[�V������ MS-DOS �f�o�C�X���Ɋւ�������擾
+				// アプリケーションで MS-DOS デバイス名に関する情報を取得
 				if (QueryDosDevice(szDrive, szName, MAX_PATH))
 				{
 					size_t uNameLen = _tcslen(szName);
@@ -253,13 +253,13 @@ BOOL GetPhysicalFileName(LPCTSTR szFileName, LPTSTR szRealFileName, SIZE_T nBufS
 					}
 				}
 
-				// NULL�܂ŉ�
+				// NULLまで回す
 				while (*p++);
-			} while (!bFound && *p); // ������̍Ō�
+			} while (!bFound && *p); // 文字列の最後
 		}
 	}
 
-	// �㏈��
+	// 後処理
 	UnmapViewOfFile(pMem);
 	CloseHandle(hFileMap);
 	CloseHandle(hFile);
