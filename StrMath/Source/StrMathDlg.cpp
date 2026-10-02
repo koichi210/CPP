@@ -1,102 +1,103 @@
-﻿// StrMathDlg.cpp : インプリメンテーション ファイル
-//
+﻿// StrMathDlg.cpp : メインダイアログ（ひらがなで足し算／引き算）
 
 #include "stdafx.h"
 #include "StrMath.h"
 #include "StrMathDlg.h"
+#include <ctime>
+#include <utility>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// CStrMathDlg ダイアログ
-
-CStrMathDlg::CStrMathDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CStrMathDlg::IDD, pParent)
+namespace
 {
-	//{{AFX_DATA_INIT(CStrMathDlg)
-		// メモ: この位置に ClassWizard によってメンバの初期化が追加されます。
-	//}}AFX_DATA_INIT
-	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
+	constexpr LONG FONT_WEIGHT = 16;
+	constexpr LONG FONT_HEIGHT = FONT_WEIGHT;
+
+	// 百の位の読み。さんびゃく（連濁）・ろっぴゃく／はっぴゃく（促音）があるので桁ごとに持つ
+	constexpr const char* HUNDREDS_READING[10] = {
+		"", "ひゃく", "にひゃく", "さんびゃく", "よんひゃく",
+		"ごひゃく", "ろっぴゃく", "ななひゃく", "はっぴゃく", "きゅうひゃく" };
+
+	constexpr const char* TENS_READING[10] = {
+		"", "じゅう", "にじゅう", "さんじゅう", "よんじゅう",
+		"ごじゅう", "ろくじゅう", "ななじゅう", "はちじゅう", "きゅうじゅう" };
+
+	// 一の位の 0 は読まない
+	constexpr const char* ONES_READING[10] = {
+		"", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう" };
+
+	// 0〜999 をひらがなの読みにする
+	CString NumberToHiragana(int num)
+	{
+		CString str;
+		str += HUNDREDS_READING[num / 100];
+		str += TENS_READING[num % 100 / 10];
+		str += ONES_READING[num % 10];
+		return str;
+	}
+}
+
+CStrMathDlg::CStrMathDlg(CWnd* pParent /*=nullptr*/)
+	: CDialog(IDD, pParent)
+{
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 void CStrMathDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CStrMathDlg)
-		// メモ: この場所には ClassWizard によって DDX と DDV の呼び出しが追加されます。
-	//}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CStrMathDlg, CDialog)
-	//{{AFX_MSG_MAP(CStrMathDlg)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_START, OnStart)
-	ON_BN_CLICKED(IDC_SUM, OnSum)
-	ON_BN_CLICKED(IDC_SUB, OnSub)
-	ON_BN_CLICKED(IDC_2KETA, On2keta)
-	ON_BN_CLICKED(IDC_3KETA, On3keta)
-	ON_BN_CLICKED(IDC_ANS, OnAns)
-	ON_BN_CLICKED(IDC_HLP, OnHlp)
-	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_START, &CStrMathDlg::OnStart)
+	ON_BN_CLICKED(IDC_SUM, &CStrMathDlg::OnSum)
+	ON_BN_CLICKED(IDC_SUB, &CStrMathDlg::OnSub)
+	ON_BN_CLICKED(IDC_2KETA, &CStrMathDlg::On2keta)
+	ON_BN_CLICKED(IDC_3KETA, &CStrMathDlg::On3keta)
+	ON_BN_CLICKED(IDC_ANS, &CStrMathDlg::OnAns)
+	ON_BN_CLICKED(IDC_HLP, &CStrMathDlg::OnHlp)
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CStrMathDlg メッセージ ハンドラ
 
 BOOL CStrMathDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// このダイアログ用のアイコンを設定します。フレームワークはアプリケーションのメイン
-	// ウィンドウがダイアログでない時は自動的に設定しません。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンを設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンを設定
-	
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
+
 	CheckDlgButton(IDC_2KETA, BST_CHECKED);
 	CheckDlgButton(IDC_SUM, BST_CHECKED);
-	keta = 2;
-	mark = SUM;
-	num1 = 0;
-	num2 = 0;
-	srand((unsigned)time(NULL));
+	m_digits = 2;
+	m_operation = Operation::Sum;
+	m_num1 = 0;
+	m_num2 = 0;
+	srand(static_cast<unsigned>(time(nullptr)));
 
-	{
-		static HFONT font;	//表示文字構造体
-		LOGFONT viewfont;	//表示文字構造体
+	LOGFONT viewFont = {};
+	viewFont.lfCharSet = DEFAULT_CHARSET;
+	viewFont.lfWeight = FONT_WEIGHT;
+	viewFont.lfHeight = FONT_HEIGHT;
+	m_font.CreateFontIndirect(&viewFont);
+	GetDlgItem(IDC_VALUE1)->SetFont(&m_font);
+	GetDlgItem(IDC_VALUE2)->SetFont(&m_font);
+	GetDlgItem(IDC_MARK)->SetFont(&m_font);
 
-		::memset(&viewfont, 0, sizeof(viewfont));
-		//表示フォント作成
-		viewfont.lfCharSet = DEFAULT_CHARSET;
-		viewfont.lfWeight = SHOW_WEIGHT;
-		viewfont.lfHeight = SHOW_HEIGHT;
-		font = CreateFontIndirect(&viewfont);
-		SendDlgItemMessage(IDC_VALUE1, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
-		SendDlgItemMessage(IDC_VALUE2, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
-		SendDlgItemMessage(IDC_MARK, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
-	}
-
-	return TRUE;  // TRUE を返すとコントロールに設定したフォーカスは失われません。
+	return TRUE;
 }
 
-// もしダイアログボックスに最小化ボタンを追加するならば、アイコンを描画する
-// コードを以下に記述する必要があります。MFC アプリケーションは document/view
-// モデルを使っているので、この処理はフレームワークにより自動的に処理されます。
-
-void CStrMathDlg::OnPaint() 
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
+void CStrMathDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画用のデバイス コンテキスト
+		CPaintDC dc(this);
 
-		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの矩形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -104,7 +105,6 @@ void CStrMathDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンを描画します。
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -113,239 +113,89 @@ void CStrMathDlg::OnPaint()
 	}
 }
 
-// システムは、ユーザーが最小化ウィンドウをドラッグしている間、
-// カーソルを表示するためにここを呼び出します。
 HCURSOR CStrMathDlg::OnQueryDragIcon()
 {
-	return (HCURSOR) m_hIcon;
+	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CStrMathDlg::OnOK() 
+void CStrMathDlg::OnStart()
 {
-	CDialog::OnOK();
-}
-
-void CStrMathDlg::OnStart() 
-{
-	int num;
-	char  str[STR_BUFF];
-	num = 345;
-	memset(str, 0, sizeof(str));
-
-	if(mark == SUM){
-		GetDlgItem(IDC_MARK)->SetWindowText("+");
-	}else if(mark == SUB){
-		GetDlgItem(IDC_MARK)->SetWindowText("-");
-	}
-
+	SetDlgItemText(IDC_MARK, (m_operation == Operation::Sum) ? "+" : "-");
 	SetDlgItemText(IDC_IANS, "");
 
-	BuiltNumber(&num1);
-	BuiltNumber(&num2);
+	m_num1 = BuildNumber();
+	m_num2 = BuildNumber();
 
-	if(mark == SUB && num1 < num2){
-		int tmp;
-		tmp = num1;
-		num1 = num2;
-		num2 = tmp;
-	}
-
-	GetString(num1, str);
-	SetDlgItemText(IDC_VALUE1, str);
-	GetString(num2, str);
-	SetDlgItemText(IDC_VALUE2, str);
-}
-
-void CStrMathDlg::BuiltNumber(int * num)
-{
-	*num = rand();
-
-	if(*num < 1000){
-		BuiltNumber(num);
-	}else{
-		if(keta == 2){
-			*num %= 100;
-		}else if(keta == 3){
-			*num %= 1000;
-		}
-	}
-}
-
-void GetString(int num, LPSTR str)
-{
-	int val;
-	memset(str, 0, sizeof(str));
-
-	// 100
+	// 引き算の答えが負にならないよう、大きい方を先にする
+	if (m_operation == Operation::Sub && m_num1 < m_num2)
 	{
-		val = num / 100;
-		if(val != 1){
-			GetString2(val, str, TRUE);
-		}
-
-		switch(val){
-		case 1:
-			// no braek
-		case 2:
-			// no braek
-		case 4:
-			// no braek
-		case 5:
-			// no braek
-		case 7:
-			// no braek
-		case 9:
-			strcat(str, DEF100A);
-			break;
-
-		case 3:
-			strcat(str, DEF100B);
-			break;
-
-		case 6:
-			// no braek
-		case 8:
-			strcat(str, DEF100C);
-			break;
-
-		default :
-			break;
-		}
+		std::swap(m_num1, m_num2);
 	}
 
-	// 10
+	SetDlgItemText(IDC_VALUE1, NumberToHiragana(m_num1));
+	SetDlgItemText(IDC_VALUE2, NumberToHiragana(m_num2));
+}
+
+int CStrMathDlg::BuildNumber() const
+{
+	// 下位桁だけを使うので、桁数に満たない小さい乱数は引き直す
+	int num;
+	do
+	{
+		num = rand();
+	} while (num < 1000);
+
+	if (m_digits == 2)
 	{
 		num %= 100;
-		val = num / 10;
-
-		if(val != 1){
-			GetString2(val, str, FALSE);
-		}
-
-		if(val != 0){
-			strcat(str, DEF10);
-		}
 	}
-
-	// 1
+	else if (m_digits == 3)
 	{
-		val = num % 10;
+		num %= 1000;
 	}
-
-	GetString2(val, str, FALSE);
+	return num;
 }
 
-void GetString2(int num, LPSTR str, BOOL flg)
+void CStrMathDlg::OnSum()
 {
-	switch(num){
-	case 1:
-		strcat(str, DEF1);
-		break;
+	m_operation = Operation::Sum;
+}
 
-	case 2:
-		strcat(str, DEF2);
-		break;
+void CStrMathDlg::OnSub()
+{
+	m_operation = Operation::Sub;
+}
 
-	case 3:
-		strcat(str, DEF3);
-		break;
+void CStrMathDlg::On2keta()
+{
+	m_digits = 2;
+}
 
-	case 4:
-		strcat(str, DEF4);
-		break;
+void CStrMathDlg::On3keta()
+{
+	m_digits = 3;
+}
 
-	case 5:
-		strcat(str, DEF5);
-		break;
+void CStrMathDlg::OnAns()
+{
+	if (m_num1 && m_num2)
+	{
+		int ans = (m_operation == Operation::Sum) ? m_num1 + m_num2 : m_num1 - m_num2;
+		int input = GetDlgItemInt(IDC_IANS, nullptr, FALSE);
 
-	case 6:
-		if(flg){
-			strcat(str, DEF6B);
-		}else{
-			strcat(str, DEF6A);
-		}
-		break;
-
-	case 7:
-		strcat(str, DEF7);
-		break;
-
-	case 8:
-		if(flg){
-			strcat(str, DEF8B);
-		}else{
-			strcat(str, DEF8A);
-		}
-		break;
-
-	case 9:
-		strcat(str, DEF9);
-		break;
-
-	default:
-		break;
+		MessageBox((ans == input) ? "正解！！" : "残念。。", "解答", MB_OK);
 	}
-}	
-
-void CStrMathDlg::OnSum() 
-{
-	mark = SUM;
-}
-
-void CStrMathDlg::OnSub() 
-{
-	mark = SUB;
-}
-
-void CStrMathDlg::On2keta() 
-{
-	keta = 2;
-}
-
-void CStrMathDlg::On3keta() 
-{
-	keta = 3;	
-}
-
-void CStrMathDlg::OnAns() 
-{
-	int ans;
-	int ians;
-	char str[STR_BUFF];
-
-	memset(str, 0, sizeof(str));
-
-	if(num1 && num2){
-		// 答え
-		if(mark == SUM){
-			ans = num1 + num2;
-		}else{
-			ans = num1 - num2;
-		}
-
-		// 入力値
-		ians = GetDlgItemInt(IDC_IANS, NULL, 0);
-
-		if(ans == ians){
-			sprintf(str, "正解！！");
-		}else{
-			sprintf(str, "残念。。", ans);
-		}
-		MessageBox(str, "解答", MB_OK);
-	}else{
+	else
+	{
 		MessageBox("スタートを押して下さい。", "Caution", MB_OK);
 	}
 }
 
-void CStrMathDlg::OnHlp() 
+void CStrMathDlg::OnHlp()
 {
-	char str[STR_BUFF];
-
-	memset(str, 0, sizeof(str));
-	sprintf(str, "ひらがなで足し算／引き算をします\n\n"
+	MessageBox("ひらがなで足し算／引き算をします\n\n"
 		"1 出題桁数を選択\n"
 		"2 演算種別を選択\n"
 		"3 スタート釦押下により出題される\n"
-		"これにより脳が鍛えられます！！！\n");
-	MessageBox(str, "ヘルプ", MB_OK);
+		"これにより脳が鍛えられます！！！\n", "ヘルプ", MB_OK);
 }
