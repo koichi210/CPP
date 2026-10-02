@@ -1,5 +1,5 @@
-
-// TemplateDlg.cpp : À‘•ƒtƒ@ƒCƒ‹
+ï»¿
+// TemplateDlg.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "stdafx.h"
@@ -18,13 +18,13 @@
 
 using namespace std;
  
-//  ƒeƒ“ƒvƒŒ[ƒgŠÖ”
+//  ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆé–¢æ•°
 template <typename T>
 T add(T x, T y){
     return x + y;
 }
 
-// CTemplateDlg ƒ_ƒCƒAƒƒO
+// CTemplateDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 CTemplateDlg::CTemplateDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CTemplateDlg::IDD, pParent)
 {
@@ -43,35 +43,35 @@ BEGIN_MESSAGE_MAP(CTemplateDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CTemplateDlg ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// CTemplateDlg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
 
 BOOL CTemplateDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ‚±‚Ìƒ_ƒCƒAƒƒO‚ÌƒAƒCƒRƒ“‚ğİ’è‚µ‚Ü‚·BƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒƒCƒ“ ƒEƒBƒ“ƒhƒE‚ªƒ_ƒCƒAƒƒO‚Å‚È‚¢ê‡A
-	//  Framework ‚ÍA‚±‚Ìİ’è‚ğ©“®“I‚És‚¢‚Ü‚·B
-	SetIcon(m_hIcon, TRUE);			// ‘å‚«‚¢ƒAƒCƒRƒ“‚Ìİ’è
-	SetIcon(m_hIcon, FALSE);		// ¬‚³‚¢ƒAƒCƒRƒ“‚Ìİ’è
+	// ã“ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®šã—ã¾ã™ã€‚ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ¡ã‚¤ãƒ³ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§ãªã„å ´åˆã€
+	//  Framework ã¯ã€ã“ã®è¨­å®šã‚’è‡ªå‹•çš„ã«è¡Œã„ã¾ã™ã€‚
+	SetIcon(m_hIcon, TRUE);			// å¤§ãã„ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
+	SetIcon(m_hIcon, FALSE);		// å°ã•ã„ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
 
-	// TODO: ‰Šú‰»‚ğ‚±‚±‚É’Ç‰Á‚µ‚Ü‚·B
+	// TODO: åˆæœŸåŒ–ã‚’ã“ã“ã«è¿½åŠ ã—ã¾ã™ã€‚
 
-	return TRUE;  // ƒtƒH[ƒJƒX‚ğƒRƒ“ƒgƒ[ƒ‹‚Éİ’è‚µ‚½ê‡‚ğœ‚«ATRUE ‚ğ•Ô‚µ‚Ü‚·B
+	return TRUE;  // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«è¨­å®šã—ãŸå ´åˆã‚’é™¤ãã€TRUE ã‚’è¿”ã—ã¾ã™ã€‚
 }
 
-// ƒ_ƒCƒAƒƒO‚ÉÅ¬‰»ƒ{ƒ^ƒ“‚ğ’Ç‰Á‚·‚éê‡AƒAƒCƒRƒ“‚ğ•`‰æ‚·‚é‚½‚ß‚Ì
-//  ‰º‚ÌƒR[ƒh‚ª•K—v‚Å‚·BƒhƒLƒ…ƒƒ“ƒg/ƒrƒ…[ ƒ‚ƒfƒ‹‚ğg‚¤ MFC ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìê‡A
-//  ‚±‚ê‚ÍAFramework ‚É‚æ‚Á‚Ä©“®“I‚Éİ’è‚³‚ê‚Ü‚·B
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã«æœ€å°åŒ–ãƒœã‚¿ãƒ³ã‚’è¿½åŠ ã™ã‚‹å ´åˆã€ã‚¢ã‚¤ã‚³ãƒ³ã‚’æç”»ã™ã‚‹ãŸã‚ã®
+//  ä¸‹ã®ã‚³ãƒ¼ãƒ‰ãŒå¿…è¦ã§ã™ã€‚ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ/ãƒ“ãƒ¥ãƒ¼ ãƒ¢ãƒ‡ãƒ«ã‚’ä½¿ã† MFC ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®å ´åˆã€
+//  ã“ã‚Œã¯ã€Framework ã«ã‚ˆã£ã¦è‡ªå‹•çš„ã«è¨­å®šã•ã‚Œã¾ã™ã€‚
 
 void CTemplateDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // •`‰æ‚ÌƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
+		CPaintDC dc(this); // æç”»ã®ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// ƒNƒ‰ƒCƒAƒ“ƒg‚ÌlŠpŒ`—Ìˆæ“à‚Ì’†‰›
+		// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®å››è§’å½¢é ˜åŸŸå†…ã®ä¸­å¤®
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -79,7 +79,7 @@ void CTemplateDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ƒAƒCƒRƒ“‚Ì•`‰æ
+		// ã‚¢ã‚¤ã‚³ãƒ³ã®æç”»
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -88,8 +88,8 @@ void CTemplateDlg::OnPaint()
 	}
 }
 
-// ƒ†[ƒU[‚ªÅ¬‰»‚µ‚½ƒEƒBƒ“ƒhƒE‚ğƒhƒ‰ƒbƒO‚µ‚Ä‚¢‚é‚Æ‚«‚É•\¦‚·‚éƒJ[ƒ\ƒ‹‚ğæ“¾‚·‚é‚½‚ß‚ÉA
-//  ƒVƒXƒeƒ€‚ª‚±‚ÌŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·B
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒæœ€å°åŒ–ã—ãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ãƒ‰ãƒ©ãƒƒã‚°ã—ã¦ã„ã‚‹ã¨ãã«è¡¨ç¤ºã™ã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚’å–å¾—ã™ã‚‹ãŸã‚ã«ã€
+//  ã‚·ã‚¹ãƒ†ãƒ ãŒã“ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™ã€‚
 HCURSOR CTemplateDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -98,17 +98,17 @@ HCURSOR CTemplateDlg::OnQueryDragIcon()
 
 void CTemplateDlg::OnBnClickedButton1()
 {
-	// ŠÖ”‚ÌŒã‚ë‚ÉŒ^‚ğ‹LÚ
+	// é–¢æ•°ã®å¾Œã‚ã«å‹ã‚’è¨˜è¼‰
 	char Msg[MAX_PATH] = "";
 	char AddStr[MAX_PATH] = "";
 
-	sprintf(AddStr, "%s + %s = %s\n", "ABC", "def", add<string>("ABC", "def"));	// string‚ğ–¾¦“I‚Éw’è
+	sprintf(AddStr, "%s + %s = %s\n", "ABC", "def", add<string>("ABC", "def"));	// stringã‚’æ˜ç¤ºçš„ã«æŒ‡å®š
 	sprintf(Msg, "%s%s", Msg, AddStr);
 
-	sprintf(AddStr, "%d + %d = %d\n", 12, 34, add<int>(12, 34));				// int‚ğ–¾¦“I‚Éw’è
+	sprintf(AddStr, "%d + %d = %d\n", 12, 34, add<int>(12, 34));				// intã‚’æ˜ç¤ºçš„ã«æŒ‡å®š
 	sprintf(Msg, "%s%s", Msg, AddStr);
 
-	sprintf(AddStr, "%d + %d = %d\n", 5, 6, add(5, 6));							// int‚Ìê‡Aw’èÈ—ª‰Â”\
+	sprintf(AddStr, "%d + %d = %d\n", 5, 6, add(5, 6));							// intã®å ´åˆã€æŒ‡å®šçœç•¥å¯èƒ½
 	sprintf(Msg, "%s%s", Msg, AddStr);
 
 	MessageBox(Msg);
