@@ -1,44 +1,29 @@
-﻿
+﻿// FileView.cpp : ファイル ビュー（ドッキングペイン）
+
 #include "stdafx.h"
-#include "mainfrm.h"
+#include "MainFrm.h"
 #include "FileView.h"
 #include "Resource.h"
 #include "BinaryEdit_Mfc.h"
 
 #ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
-
-/////////////////////////////////////////////////////////////////////////////
-// CFileView
-
-CFileView::CFileView()
-{
-}
-
-CFileView::~CFileView()
-{
-}
 
 BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
 	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_PROPERTIES, OnProperties)
-	ON_COMMAND(ID_OPEN, OnFileOpen)
-	ON_COMMAND(ID_OPEN_WITH, OnFileOpenWith)
-	ON_COMMAND(ID_DUMMY_COMPILE, OnDummyCompile)
-	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
-	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
-	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
+	ON_COMMAND(ID_PROPERTIES, &CFileView::OnProperties)
+	ON_COMMAND(ID_OPEN, &CFileView::OnNotImplemented)
+	ON_COMMAND(ID_OPEN_WITH, &CFileView::OnNotImplemented)
+	ON_COMMAND(ID_DUMMY_COMPILE, &CFileView::OnNotImplemented)
+	ON_COMMAND(ID_EDIT_CUT, &CFileView::OnNotImplemented)
+	ON_COMMAND(ID_EDIT_COPY, &CFileView::OnNotImplemented)
+	ON_COMMAND(ID_EDIT_CLEAR, &CFileView::OnNotImplemented)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CWorkspaceBar メッセージ ハンドラー
 
 int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -48,34 +33,31 @@ int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rectDummy;
 	rectDummy.SetRectEmpty();
 
-	// ビューの作成:
 	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS;
 
 	if (!m_wndFileView.Create(dwViewStyle, rectDummy, this, 4))
 	{
 		TRACE0("ファイル ビューを作成できませんでした\n");
-		return -1;      // 作成できない場合
+		return -1;
 	}
 
-	// ビューのイメージの読み込み:
 	m_FileViewImages.Create(IDB_FILE_VIEW, 16, 0, RGB(255, 0, 255));
 	m_wndFileView.SetImageList(&m_FileViewImages, TVSIL_NORMAL);
 
 	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_EXPLORER);
-	m_wndToolBar.LoadToolBar(IDR_EXPLORER, 0, 0, TRUE /* ロックされています*/);
+	m_wndToolBar.LoadToolBar(IDR_EXPLORER, 0, 0, TRUE /* ロック */);
 
 	OnChangeVisualStyle();
 
 	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
-
 	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
 
 	m_wndToolBar.SetOwner(this);
 
-	// すべてのコマンドが、親フレーム経由ではなくこのコントロール経由で渡されます:
+	// コマンドを親フレーム経由ではなくこのペインで受ける
 	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
 
-	// 静的ツリー ビュー データ (ダミー コード) を入力します
+	// 表示確認用のダミーデータ
 	FillFileView();
 	AdjustLayout();
 
@@ -125,7 +107,7 @@ void CFileView::FillFileView()
 
 void CFileView::OnContextMenu(CWnd* pWnd, CPoint point)
 {
-	CTreeCtrl* pWndTree = (CTreeCtrl*) &m_wndFileView;
+	CTreeCtrl* pWndTree = &m_wndFileView;
 	ASSERT_VALID(pWndTree);
 
 	if (pWnd != pWndTree)
@@ -134,15 +116,15 @@ void CFileView::OnContextMenu(CWnd* pWnd, CPoint point)
 		return;
 	}
 
+	// キーボード（Shift+F10 等）から開いたときは (-1, -1) が来る
 	if (point != CPoint(-1, -1))
 	{
-		// クリックされた項目の選択:
 		CPoint ptTree = point;
 		pWndTree->ScreenToClient(&ptTree);
 
 		UINT flags = 0;
 		HTREEITEM hTreeItem = pWndTree->HitTest(ptTree, &flags);
-		if (hTreeItem != NULL)
+		if (hTreeItem != nullptr)
 		{
 			pWndTree->SelectItem(hTreeItem);
 		}
@@ -154,7 +136,7 @@ void CFileView::OnContextMenu(CWnd* pWnd, CPoint point)
 
 void CFileView::AdjustLayout()
 {
-	if (GetSafeHwnd() == NULL)
+	if (GetSafeHwnd() == nullptr)
 	{
 		return;
 	}
@@ -164,49 +146,23 @@ void CFileView::AdjustLayout()
 
 	int cyTlb = m_wndToolBar.CalcFixedLayout(FALSE, TRUE).cy;
 
-	m_wndToolBar.SetWindowPos(NULL, rectClient.left, rectClient.top, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
-	m_wndFileView.SetWindowPos(NULL, rectClient.left + 1, rectClient.top + cyTlb + 1, rectClient.Width() - 2, rectClient.Height() - cyTlb - 2, SWP_NOACTIVATE | SWP_NOZORDER);
+	m_wndToolBar.SetWindowPos(nullptr, rectClient.left, rectClient.top, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
+	m_wndFileView.SetWindowPos(nullptr, rectClient.left + 1, rectClient.top + cyTlb + 1, rectClient.Width() - 2, rectClient.Height() - cyTlb - 2, SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
 void CFileView::OnProperties()
 {
 	AfxMessageBox(_T("プロパティ..."));
-
 }
 
-void CFileView::OnFileOpen()
+// 未実装のメニュー項目。ハンドラーが無いとメニューが灰色になるため空で受ける
+void CFileView::OnNotImplemented()
 {
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CFileView::OnFileOpenWith()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CFileView::OnDummyCompile()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CFileView::OnEditCut()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CFileView::OnEditCopy()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CFileView::OnEditClear()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
 }
 
 void CFileView::OnPaint()
 {
-	CPaintDC dc(this); // 描画のデバイス コンテキスト
+	CPaintDC dc(this);
 
 	CRect rectTree;
 	m_wndFileView.GetWindowRect(rectTree);
@@ -226,7 +182,7 @@ void CFileView::OnSetFocus(CWnd* pOldWnd)
 void CFileView::OnChangeVisualStyle()
 {
 	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_EXPLORER_24 : IDR_EXPLORER, 0, 0, TRUE /* ロックされました*/);
+	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_EXPLORER_24 : IDR_EXPLORER, 0, 0, TRUE /* ロック */);
 
 	m_FileViewImages.DeleteImageList();
 
@@ -243,14 +199,10 @@ void CFileView::OnChangeVisualStyle()
 	BITMAP bmpObj;
 	bmp.GetBitmap(&bmpObj);
 
-	UINT nFlags = ILC_MASK;
-
-	nFlags |= (theApp.m_bHiColorIcons) ? ILC_COLOR24 : ILC_COLOR4;
+	UINT nFlags = ILC_MASK | (theApp.m_bHiColorIcons ? ILC_COLOR24 : ILC_COLOR4);
 
 	m_FileViewImages.Create(16, bmpObj.bmHeight, nFlags, 0, 0);
 	m_FileViewImages.Add(&bmp, RGB(255, 0, 255));
 
 	m_wndFileView.SetImageList(&m_FileViewImages, TVSIL_NORMAL);
 }
-
-

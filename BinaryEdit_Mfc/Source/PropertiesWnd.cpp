@@ -1,54 +1,35 @@
-﻿
-#include "stdafx.h"
+﻿// PropertiesWnd.cpp : プロパティ ウィンドウ（ドッキングペイン）
 
+#include "stdafx.h"
 #include "PropertiesWnd.h"
 #include "Resource.h"
 #include "MainFrm.h"
 #include "BinaryEdit_Mfc.h"
 
 #ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
-
-/////////////////////////////////////////////////////////////////////////////
-// CResourceViewBar
-
-CPropertiesWnd::CPropertiesWnd()
-{
-}
-
-CPropertiesWnd::~CPropertiesWnd()
-{
-}
 
 BEGIN_MESSAGE_MAP(CPropertiesWnd, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
-	ON_COMMAND(ID_EXPAND_ALL, OnExpandAllProperties)
-	ON_UPDATE_COMMAND_UI(ID_EXPAND_ALL, OnUpdateExpandAllProperties)
-	ON_COMMAND(ID_SORTPROPERTIES, OnSortProperties)
-	ON_UPDATE_COMMAND_UI(ID_SORTPROPERTIES, OnUpdateSortProperties)
-	ON_COMMAND(ID_PROPERTIES1, OnProperties1)
-	ON_UPDATE_COMMAND_UI(ID_PROPERTIES1, OnUpdateProperties1)
-	ON_COMMAND(ID_PROPERTIES2, OnProperties2)
-	ON_UPDATE_COMMAND_UI(ID_PROPERTIES2, OnUpdateProperties2)
+	ON_COMMAND(ID_EXPAND_ALL, &CPropertiesWnd::OnExpandAllProperties)
+	ON_COMMAND(ID_SORTPROPERTIES, &CPropertiesWnd::OnSortProperties)
+	ON_UPDATE_COMMAND_UI(ID_SORTPROPERTIES, &CPropertiesWnd::OnUpdateSortProperties)
+	ON_COMMAND(ID_PROPERTIES1, &CPropertiesWnd::OnNotImplemented)
+	ON_COMMAND(ID_PROPERTIES2, &CPropertiesWnd::OnNotImplemented)
 	ON_WM_SETFOCUS()
 	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// CResourceViewBar メッセージ ハンドラー
-
 void CPropertiesWnd::AdjustLayout()
 {
-	if (GetSafeHwnd() == NULL)
+	if (GetSafeHwnd() == nullptr)
 	{
 		return;
 	}
 
-	CRect rectClient,rectCombo;
+	CRect rectClient, rectCombo;
 	GetClientRect(rectClient);
 
 	m_wndObjectCombo.GetWindowRect(&rectCombo);
@@ -56,9 +37,9 @@ void CPropertiesWnd::AdjustLayout()
 	int cyCmb = rectCombo.Size().cy;
 	int cyTlb = m_wndToolBar.CalcFixedLayout(FALSE, TRUE).cy;
 
-	m_wndObjectCombo.SetWindowPos(NULL, rectClient.left, rectClient.top, rectClient.Width(), 200, SWP_NOACTIVATE | SWP_NOZORDER);
-	m_wndToolBar.SetWindowPos(NULL, rectClient.left, rectClient.top + cyCmb, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
-	m_wndPropList.SetWindowPos(NULL, rectClient.left, rectClient.top + cyCmb + cyTlb, rectClient.Width(), rectClient.Height() -(cyCmb+cyTlb), SWP_NOACTIVATE | SWP_NOZORDER);
+	m_wndObjectCombo.SetWindowPos(nullptr, rectClient.left, rectClient.top, rectClient.Width(), 200, SWP_NOACTIVATE | SWP_NOZORDER);
+	m_wndToolBar.SetWindowPos(nullptr, rectClient.left, rectClient.top + cyCmb, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
+	m_wndPropList.SetWindowPos(nullptr, rectClient.left, rectClient.top + cyCmb + cyTlb, rectClient.Width(), rectClient.Height() - (cyCmb + cyTlb), SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
 int CPropertiesWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -69,13 +50,12 @@ int CPropertiesWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rectDummy;
 	rectDummy.SetRectEmpty();
 
-	// コンボ ボックスの作成:
 	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_BORDER | CBS_SORT | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
 	if (!m_wndObjectCombo.Create(dwViewStyle, rectDummy, this, 1))
 	{
 		TRACE0("プロパティ コンボ ボックスを作成できませんでした\n");
-		return -1;      // 作成できない場合
+		return -1;
 	}
 
 	m_wndObjectCombo.AddString(_T("アプリケーション"));
@@ -85,21 +65,21 @@ int CPropertiesWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (!m_wndPropList.Create(WS_VISIBLE | WS_CHILD, rectDummy, this, 2))
 	{
 		TRACE0("プロパティ グリッドを作成できませんでした\n");
-		return -1;      // 作成できない場合
+		return -1;
 	}
 
 	InitPropList();
 
 	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_PROPERTIES);
-	m_wndToolBar.LoadToolBar(IDR_PROPERTIES, 0, 0, TRUE /* ロックされています*/);
+	m_wndToolBar.LoadToolBar(IDR_PROPERTIES, 0, 0, TRUE /* ロック */);
 	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_PROPERTIES_HC : IDR_PROPERTIES, 0, 0, TRUE /* ロックされました*/);
+	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_PROPERTIES_HC : IDR_PROPERTIES, 0, 0, TRUE /* ロック */);
 
 	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
 	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
 	m_wndToolBar.SetOwner(this);
 
-	// すべてのコマンドが、親フレーム経由ではなくこのコントロール経由で渡されます:
+	// コマンドを親フレーム経由ではなくこのペインで受ける
 	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
 
 	AdjustLayout();
@@ -117,10 +97,6 @@ void CPropertiesWnd::OnExpandAllProperties()
 	m_wndPropList.ExpandAll();
 }
 
-void CPropertiesWnd::OnUpdateExpandAllProperties(CCmdUI* /* pCmdUI */)
-{
-}
-
 void CPropertiesWnd::OnSortProperties()
 {
 	m_wndPropList.SetAlphabeticMode(!m_wndPropList.IsAlphabeticMode());
@@ -131,30 +107,16 @@ void CPropertiesWnd::OnUpdateSortProperties(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(m_wndPropList.IsAlphabeticMode());
 }
 
-void CPropertiesWnd::OnProperties1()
+// 未実装のボタン。ハンドラーが無いと灰色になるため空で受ける
+void CPropertiesWnd::OnNotImplemented()
 {
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CPropertiesWnd::OnUpdateProperties1(CCmdUI* /*pCmdUI*/)
-{
-	// TODO: ここにコマンド更新 UI ハンドラー コードを追加します
-}
-
-void CPropertiesWnd::OnProperties2()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CPropertiesWnd::OnUpdateProperties2(CCmdUI* /*pCmdUI*/)
-{
-	// TODO: ここにコマンド更新 UI ハンドラー コードを追加します
 }
 
 void CPropertiesWnd::InitPropList()
 {
 	SetPropListFont();
 
+	// 表示確認用のダミーデータ
 	m_wndPropList.EnableHeaderCtrl(FALSE);
 	m_wndPropList.EnableDescriptionArea();
 	m_wndPropList.SetVSDotNetLook();
@@ -206,7 +168,7 @@ void CPropertiesWnd::InitPropList()
 	pProp->Enable(FALSE);
 	pGroup3->AddSubItem(pProp);
 
-	CMFCPropertyGridColorProperty* pColorProp = new CMFCPropertyGridColorProperty(_T("ウィンドウの色"), RGB(210, 192, 254), NULL, _T("ウィンドウの既定の色を指定します"));
+	CMFCPropertyGridColorProperty* pColorProp = new CMFCPropertyGridColorProperty(_T("ウィンドウの色"), RGB(210, 192, 254), nullptr, _T("ウィンドウの既定の色を指定します"));
 	pColorProp->EnableOtherButton(_T("その他..."));
 	pColorProp->EnableAutomaticButton(_T("既定値"), ::GetSysColor(COLOR_3DFACE));
 	pGroup3->AddSubItem(pColorProp);

@@ -1,38 +1,26 @@
-﻿
-// BinaryEdit_Mfc.h : BinaryEdit_Mfc アプリケーションのメイン ヘッダー ファイル
-//
+﻿// BinaryEdit_Mfc.h : アプリケーションクラス
+
 #pragma once
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"       // メイン シンボル
-
-
-// CBinaryEdit_MfcApp:
-// このクラスの実装については、BinaryEdit_Mfc.cpp を参照してください。
-//
+#include "resource.h"
 
 class CBinaryEdit_MfcApp : public CWinAppEx
 {
 public:
 	CBinaryEdit_MfcApp();
 
+	virtual BOOL InitInstance() override;
+	virtual int ExitInstance() override;
+	virtual void PreLoadState() override;
 
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-	virtual int ExitInstance();
+	UINT	m_nAppLook = 0;			// 選択中の外観（ID_VIEW_APPLOOK_*）
+	BOOL	m_bHiColorIcons = TRUE;	// 24bit カラーのアイコン・ツールバーを使う
 
-// 実装
-	UINT  m_nAppLook;
-	BOOL  m_bHiColorIcons;
-
-	virtual void PreLoadState();
-	virtual void LoadCustomState();
-	virtual void SaveCustomState();
-
+protected:
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
 };

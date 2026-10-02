@@ -1,19 +1,10 @@
-﻿
+﻿// OutputWnd.h : 出力ウィンドウ（ドッキングペイン）
+
 #pragma once
 
-/////////////////////////////////////////////////////////////////////////////
-// COutputList ウィンドウ
-
+// 出力タブ1枚分のリスト
 class COutputList : public CListBox
 {
-// コンストラクション
-public:
-	COutputList();
-
-// 実装
-public:
-	virtual ~COutputList();
-
 protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg void OnEditCopy();
@@ -25,35 +16,20 @@ protected:
 
 class COutputWnd : public CDockablePane
 {
-// コンストラクション
 public:
-	COutputWnd();
-
 	void UpdateFonts();
 
-// 属性
 protected:
 	CMFCTabCtrl	m_wndTabs;
 
-	COutputList m_wndOutputBuild;
-	COutputList m_wndOutputDebug;
-	COutputList m_wndOutputFind;
+	COutputList	m_wndOutputBuild;
+	COutputList	m_wndOutputDebug;
+	COutputList	m_wndOutputFind;
 
-protected:
-	void FillBuildWindow();
-	void FillDebugWindow();
-	void FillFindWindow();
+	void FillWindow(COutputList& wndList, LPCTSTR kind);
 
-	void AdjustHorzScroll(CListBox& wndListBox);
-
-// 実装
-public:
-	virtual ~COutputWnd();
-
-protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 
 	DECLARE_MESSAGE_MAP()
 };
-

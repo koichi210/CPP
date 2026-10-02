@@ -1,10 +1,16 @@
-﻿
+﻿// ClassView.cpp : クラス ビュー（ドッキングペイン）
+
 #include "stdafx.h"
 #include "MainFrm.h"
 #include "ClassView.h"
 #include "Resource.h"
 #include "BinaryEdit_Mfc.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
+// 並べ替えメニュー付きのツールバーボタン
 class CClassViewMenuButton : public CMFCToolBarMenuButton
 {
 	friend class CClassView;
@@ -12,13 +18,14 @@ class CClassViewMenuButton : public CMFCToolBarMenuButton
 	DECLARE_SERIAL(CClassViewMenuButton)
 
 public:
-	CClassViewMenuButton(HMENU hMenu = NULL) : CMFCToolBarMenuButton((UINT)-1, hMenu, -1)
+	CClassViewMenuButton(HMENU hMenu = nullptr) : CMFCToolBarMenuButton(static_cast<UINT>(-1), hMenu, -1)
 	{
 	}
 
 	virtual void OnDraw(CDC* pDC, const CRect& rect, CMFCToolBarImages* pImages, BOOL bHorz = TRUE,
 		BOOL bCustomizeMode = FALSE, BOOL bHighlight = FALSE, BOOL bDrawBorder = TRUE, BOOL bGrayDisabledButtons = TRUE)
 	{
+		// ペインのツールバーではなく共通のコマンドイメージで描く
 		pImages = CMFCToolBar::GetImages();
 
 		CAfxDrawState ds;
@@ -32,16 +39,8 @@ public:
 
 IMPLEMENT_SERIAL(CClassViewMenuButton, CMFCToolBarMenuButton, 1)
 
-//////////////////////////////////////////////////////////////////////
-// コンストラクション/デストラクション
-//////////////////////////////////////////////////////////////////////
-
 CClassView::CClassView()
-{
-	m_nCurrSort = ID_SORTING_GROUPBYTYPE;
-}
-
-CClassView::~CClassView()
+	: m_nCurrSort(ID_SORTING_GROUPBYTYPE)
 {
 }
 
@@ -49,19 +48,16 @@ BEGIN_MESSAGE_MAP(CClassView, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
 	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_CLASS_ADD_MEMBER_FUNCTION, OnClassAddMemberFunction)
-	ON_COMMAND(ID_CLASS_ADD_MEMBER_VARIABLE, OnClassAddMemberVariable)
-	ON_COMMAND(ID_CLASS_DEFINITION, OnClassDefinition)
-	ON_COMMAND(ID_CLASS_PROPERTIES, OnClassProperties)
-	ON_COMMAND(ID_NEW_FOLDER, OnNewFolder)
+	ON_COMMAND(ID_CLASS_ADD_MEMBER_FUNCTION, &CClassView::OnClassAddMemberFunction)
+	ON_COMMAND(ID_CLASS_ADD_MEMBER_VARIABLE, &CClassView::OnNotImplemented)
+	ON_COMMAND(ID_CLASS_DEFINITION, &CClassView::OnNotImplemented)
+	ON_COMMAND(ID_CLASS_PROPERTIES, &CClassView::OnNotImplemented)
+	ON_COMMAND(ID_NEW_FOLDER, &CClassView::OnNewFolder)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
-	ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnSort)
-	ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, OnUpdateSort)
+	ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, &CClassView::OnSort)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, &CClassView::OnUpdateSort)
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CClassView メッセージ ハンドラー
 
 int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -71,18 +67,16 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rectDummy;
 	rectDummy.SetRectEmpty();
 
-	// ビューの作成:
 	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
 	if (!m_wndClassView.Create(dwViewStyle, rectDummy, this, 2))
 	{
 		TRACE0("クラス ビューを作成できませんでした\n");
-		return -1;      // 作成できない場合
+		return -1;
 	}
 
-	// イメージの読み込み:
 	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_SORT);
-	m_wndToolBar.LoadToolBar(IDR_SORT, 0, 0, TRUE /* ロックされています*/);
+	m_wndToolBar.LoadToolBar(IDR_SORT, 0, 0, TRUE /* ロック */);
 
 	OnChangeVisualStyle();
 
@@ -91,7 +85,7 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndToolBar.SetOwner(this);
 
-	// すべてのコマンドが、親フレーム経由ではなくこのコントロール経由で渡されます:
+	// コマンドを親フレーム経由ではなくこのペインで受ける
 	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
 
 	CMenu menuSort;
@@ -99,9 +93,8 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndToolBar.ReplaceButton(ID_SORT_MENU, CClassViewMenuButton(menuSort.GetSubMenu(0)->GetSafeHmenu()));
 
-	CClassViewMenuButton* pButton =  DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
-
-	if (pButton != NULL)
+	CClassViewMenuButton* pButton = DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
+	if (pButton != nullptr)
 	{
 		pButton->m_bText = FALSE;
 		pButton->m_bImage = TRUE;
@@ -109,7 +102,7 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		pButton->SetMessageWnd(this);
 	}
 
-	// 静的ツリー ビュー データ (ダミー コード) を入力します
+	// 表示確認用のダミーデータ
 	FillClassView();
 
 	return 0;
@@ -161,7 +154,7 @@ void CClassView::FillClassView()
 
 void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 {
-	CTreeCtrl* pWndTree = (CTreeCtrl*)&m_wndClassView;
+	CTreeCtrl* pWndTree = &m_wndClassView;
 	ASSERT_VALID(pWndTree);
 
 	if (pWnd != pWndTree)
@@ -170,15 +163,15 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 		return;
 	}
 
+	// キーボード（Shift+F10 等）から開いたときは (-1, -1) が来る
 	if (point != CPoint(-1, -1))
 	{
-		// クリックされた項目の選択:
 		CPoint ptTree = point;
 		pWndTree->ScreenToClient(&ptTree);
 
 		UINT flags = 0;
 		HTREEITEM hTreeItem = pWndTree->HitTest(ptTree, &flags);
-		if (hTreeItem != NULL)
+		if (hTreeItem != nullptr)
 		{
 			pWndTree->SelectItem(hTreeItem);
 		}
@@ -192,19 +185,20 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 
 	if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CMDIFrameWndEx)))
 	{
+		// CMFCPopupMenu は閉じたときに自分自身を delete する
 		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
 
-		if (!pPopupMenu->Create(this, point.x, point.y, (HMENU)pSumMenu->m_hMenu, FALSE, TRUE))
+		if (!pPopupMenu->Create(this, point.x, point.y, pSumMenu->GetSafeHmenu(), FALSE, TRUE))
 			return;
 
-		((CMDIFrameWndEx*)AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
+		static_cast<CMDIFrameWndEx*>(AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
 		UpdateDialogControls(this, FALSE);
 	}
 }
 
 void CClassView::AdjustLayout()
 {
-	if (GetSafeHwnd() == NULL)
+	if (GetSafeHwnd() == nullptr)
 	{
 		return;
 	}
@@ -214,13 +208,8 @@ void CClassView::AdjustLayout()
 
 	int cyTlb = m_wndToolBar.CalcFixedLayout(FALSE, TRUE).cy;
 
-	m_wndToolBar.SetWindowPos(NULL, rectClient.left, rectClient.top, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
-	m_wndClassView.SetWindowPos(NULL, rectClient.left + 1, rectClient.top + cyTlb + 1, rectClient.Width() - 2, rectClient.Height() - cyTlb - 2, SWP_NOACTIVATE | SWP_NOZORDER);
-}
-
-BOOL CClassView::PreTranslateMessage(MSG* pMsg)
-{
-	return CDockablePane::PreTranslateMessage(pMsg);
+	m_wndToolBar.SetWindowPos(nullptr, rectClient.left, rectClient.top, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
+	m_wndClassView.SetWindowPos(nullptr, rectClient.left + 1, rectClient.top + cyTlb + 1, rectClient.Width() - 2, rectClient.Height() - cyTlb - 2, SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
 void CClassView::OnSort(UINT id)
@@ -232,9 +221,8 @@ void CClassView::OnSort(UINT id)
 
 	m_nCurrSort = id;
 
-	CClassViewMenuButton* pButton =  DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
-
-	if (pButton != NULL)
+	CClassViewMenuButton* pButton = DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
+	if (pButton != nullptr)
 	{
 		pButton->SetImage(GetCmdMgr()->GetCmdImage(id));
 		m_wndToolBar.Invalidate();
@@ -252,29 +240,19 @@ void CClassView::OnClassAddMemberFunction()
 	AfxMessageBox(_T("メンバー関数の追加..."));
 }
 
-void CClassView::OnClassAddMemberVariable()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CClassView::OnClassDefinition()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
-void CClassView::OnClassProperties()
-{
-	// TODO: ここにコマンド ハンドラー コードを追加します
-}
-
 void CClassView::OnNewFolder()
 {
 	AfxMessageBox(_T("新しいフォルダー..."));
 }
 
+// 未実装のメニュー項目。ハンドラーが無いとメニューが灰色になるため空で受ける
+void CClassView::OnNotImplemented()
+{
+}
+
 void CClassView::OnPaint()
 {
-	CPaintDC dc(this); // 描画のデバイス コンテキスト
+	CPaintDC dc(this);
 
 	CRect rectTree;
 	m_wndClassView.GetWindowRect(rectTree);
@@ -308,9 +286,7 @@ void CClassView::OnChangeVisualStyle()
 	BITMAP bmpObj;
 	bmp.GetBitmap(&bmpObj);
 
-	UINT nFlags = ILC_MASK;
-
-	nFlags |= (theApp.m_bHiColorIcons) ? ILC_COLOR24 : ILC_COLOR4;
+	UINT nFlags = ILC_MASK | (theApp.m_bHiColorIcons ? ILC_COLOR24 : ILC_COLOR4);
 
 	m_ClassViewImages.Create(16, bmpObj.bmHeight, nFlags, 0, 0);
 	m_ClassViewImages.Add(&bmp, RGB(255, 0, 0));
@@ -318,5 +294,5 @@ void CClassView::OnChangeVisualStyle()
 	m_wndClassView.SetImageList(&m_ClassViewImages, TVSIL_NORMAL);
 
 	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* ロックされました*/);
+	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* ロック */);
 }

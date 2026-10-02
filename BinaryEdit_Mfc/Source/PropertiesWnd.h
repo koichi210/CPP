@@ -1,12 +1,14 @@
-﻿
+﻿// PropertiesWnd.h : プロパティ ウィンドウ（ドッキングペイン）
+
 #pragma once
 
 class CPropertiesToolBar : public CMFCToolBar
 {
 public:
-	virtual void OnUpdateCmdUI(CFrameWnd* /*pTarget*/, BOOL bDisableIfNoHndler)
+	// コマンドの更新を親フレームではなくペインに回す
+	virtual void OnUpdateCmdUI(CFrameWnd* /*pTarget*/, BOOL bDisableIfNoHndler) override
 	{
-		CMFCToolBar::OnUpdateCmdUI((CFrameWnd*) GetOwner(), bDisableIfNoHndler);
+		CMFCToolBar::OnUpdateCmdUI(static_cast<CFrameWnd*>(GetOwner()), bDisableIfNoHndler);
 	}
 
 	virtual BOOL AllowShowOnList() const { return FALSE; }
@@ -14,14 +16,9 @@ public:
 
 class CPropertiesWnd : public CDockablePane
 {
-// コンストラクション
 public:
-	CPropertiesWnd();
-
 	void AdjustLayout();
 
-// 属性
-public:
 	void SetVSDotNetLook(BOOL bSet)
 	{
 		m_wndPropList.SetVSDotNetLook(bSet);
@@ -34,21 +31,12 @@ protected:
 	CPropertiesToolBar m_wndToolBar;
 	CMFCPropertyGridCtrl m_wndPropList;
 
-// 実装
-public:
-	virtual ~CPropertiesWnd();
-
-protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnExpandAllProperties();
-	afx_msg void OnUpdateExpandAllProperties(CCmdUI* pCmdUI);
 	afx_msg void OnSortProperties();
 	afx_msg void OnUpdateSortProperties(CCmdUI* pCmdUI);
-	afx_msg void OnProperties1();
-	afx_msg void OnUpdateProperties1(CCmdUI* pCmdUI);
-	afx_msg void OnProperties2();
-	afx_msg void OnUpdateProperties2(CCmdUI* pCmdUI);
+	afx_msg void OnNotImplemented();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
 
@@ -57,4 +45,3 @@ protected:
 	void InitPropList();
 	void SetPropListFont();
 };
-
