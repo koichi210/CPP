@@ -7,12 +7,12 @@
 //    opengl32.lib
 
 
-#include <iostream>
 #include <windows.h>
 #include <GL/gl.h>
 #include <GL/glut.h>
 
-void dispMonocrhome(void) {
+// 描画関数は glutDisplayFunc に渡すものを差し替えて見比べる
+void dispMonochrome(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glBegin(GL_TRIANGLES);

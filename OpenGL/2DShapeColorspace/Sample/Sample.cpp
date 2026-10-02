@@ -1,41 +1,46 @@
-﻿#include <windows.h>
+﻿// 色空間：縦方向に赤（と補色の青）、横方向に緑を変化させた画像を glDrawPixels で描く
+
+#include <windows.h>
 #include <GL/gl.h>
 #include <GL/glut.h>
 
-GLubyte* bits;
-GLuint width, height;
+#include <vector>
 
-void disp(void) {
-	glClear(GL_COLOR_BUFFER_BIT);
-	glRasterPos2i(-1, -1);
-	glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_BYTE, bits);
-	glFlush();
+namespace
+{
+	constexpr GLsizei kWidth = 500;
+	constexpr GLsizei kHeight = 300;
+
+	// RGB 各1バイトのピクセル列（左下から右上へ）
+	std::vector<GLubyte> g_bits;
+
+	void disp(void) {
+		glClear(GL_COLOR_BUFFER_BIT);
+		glRasterPos2i(-1, -1);
+		glDrawPixels(kWidth, kHeight, GL_RGB, GL_UNSIGNED_BYTE, g_bits.data());
+		glFlush();
+	}
 }
 
 int main(int argc, char** argv) {
-	unsigned int i, j, index = 0;
-	width = 500;
-	height = 300;
-	bits = (GLubyte* )malloc(3 * (width * height));
-
-	for (i = 0; i < height; i++) {
-		int r = (i * 0xFF) / height;
-		for (j = 0; j < width; j++) {
-			bits[index++] = r;
-			bits[index++] = ((j * 0xFF) / width);
-			bits[index++] = ~r;
+	g_bits.reserve(3 * kWidth * kHeight);
+	for (GLsizei i = 0; i < kHeight; i++) {
+		const int r = (i * 0xFF) / kHeight;
+		for (GLsizei j = 0; j < kWidth; j++) {
+			g_bits.push_back(static_cast<GLubyte>(r));
+			g_bits.push_back(static_cast<GLubyte>((j * 0xFF) / kWidth));
+			g_bits.push_back(static_cast<GLubyte>(~r));
 		}
 	}
 
 	glutInit(&argc, argv);
-	glutInitWindowSize(width, height);
+	glutInitWindowSize(kWidth, kHeight);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);
 
 	glutCreateWindow("色空間");
 	glutDisplayFunc(disp);
 
 	glutMainLoop();
-	free(bits);
 
 	return 0;
 }

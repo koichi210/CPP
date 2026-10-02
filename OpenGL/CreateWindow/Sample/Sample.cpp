@@ -7,7 +7,6 @@
 //    opengl32.lib
 
 
-#include <iostream>
 #include <windows.h>
 #include <GL/gl.h>
 #include <GL/glut.h>
@@ -30,7 +29,6 @@ int main(int argc, char** argv)
 	// ディスプレイモード（RGBやバッファ）
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
 
-	//glutCreateWindow(argv[0]);
 	glutCreateWindow("Kitty on your lap");
 
 	// ウィンドウの再描画が必要なときに呼ばれるコールバック
@@ -43,4 +41,3 @@ int main(int argc, char** argv)
 	glutMainLoop();
 	return 0;
 }
-
