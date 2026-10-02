@@ -56,8 +56,8 @@ BOOL CSendSpoolFileDlg::OnInitDialog()
 void CSendSpoolFileDlg::AddMyPrinter(DWORD PrinterEnumId)
 {
 	PRINTER_INFO_4	*ppi4;
-	DWORD			dwNeeded;
-	DWORD			dwNum;
+	DWORD			dwNeeded = 0;
+	DWORD			dwNum = 0;
 
 	EnumPrinters(PrinterEnumId, NULL, 4, NULL, 0, &dwNeeded, &dwNum);
 	ppi4 = (PRINTER_INFO_4 *) new BYTE [dwNeeded];
@@ -72,7 +72,7 @@ void CSendSpoolFileDlg::AddMyPrinter(DWORD PrinterEnumId)
 		{
 			SendDlgItemMessage(IDCB_PRINTER_NAME, CB_SETCURSEL, 0, 0);
 		}
-		delete ppi4;
+		delete [] (BYTE *)ppi4;
 	}
 }
 
@@ -213,7 +213,11 @@ BOOL SpoolJob(HANDLE hPrinter, LPSTR SpoolName)
 
 			while( Total != FileSize )
 			{
-				ReadFile(hFile, buff, sizeof(buff), &ReadSize, NULL);
+				if ( ! ReadFile(hFile, buff, sizeof(buff), &ReadSize, NULL) || ReadSize == 0 )
+				{
+					bRtn = FALSE;
+					break;
+				}
 //				bStartPagePrinter = StartPagePrinter(hPrinter);
 				bWritePrinter = WritePrinter(hPrinter, buff, ReadSize, &WriteSize);
 				if ( ! bWritePrinter )
