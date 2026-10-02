@@ -1,5 +1,4 @@
-﻿// EnumTokenDlg.cpp : インプリメンテーション ファイル
-//
+﻿// EnumTokenDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "EnumToken.h"
@@ -7,100 +6,42 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// アプリケーションのバージョン情報で使われている CAboutDlg ダイアログ
-
-class CAboutDlg : public CDialog
+namespace
 {
-public:
-	CAboutDlg();
-
-// ダイアログ データ
-	//{{AFX_DATA(CAboutDlg)
-	enum { IDD = IDD_ABOUTBOX };
-	//}}AFX_DATA
-
-	// ClassWizard は仮想関数のオーバーライドを生成します
-	//{{AFX_VIRTUAL(CAboutDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV のサポート
-	//}}AFX_VIRTUAL
-
-// インプリメンテーション
-protected:
-	//{{AFX_MSG(CAboutDlg)
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-};
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
-{
-	//{{AFX_DATA_INIT(CAboutDlg)
-	//}}AFX_DATA_INIT
+	// バージョン情報ダイアログ（システムメニューから開く）
+	class CAboutDlg : public CDialog
+	{
+	public:
+		CAboutDlg() : CDialog(IDD_ABOUTBOX) {}
+	};
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
+CEnumTokenDlg::CEnumTokenDlg(CWnd* pParent /*=nullptr*/)
+	: CDialog(CEnumTokenDlg::IDD, pParent)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CAboutDlg)
-	//}}AFX_DATA_MAP
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-	//{{AFX_MSG_MAP(CAboutDlg)
-		// メッセージ ハンドラがありません。
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CSecurityDlg ダイアログ
-
-CSecurityDlg::CSecurityDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CSecurityDlg::IDD, pParent)
-{
-	//{{AFX_DATA_INIT(CSecurityDlg)
-		// メモ: この位置に ClassWizard によってメンバの初期化が追加されます。
-	//}}AFX_DATA_INIT
-	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CSecurityDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CSecurityDlg)
-		// メモ: この場所には ClassWizard によって DDX と DDV の呼び出しが追加されます。
-	//}}AFX_DATA_MAP
-}
-
-BEGIN_MESSAGE_MAP(CSecurityDlg, CDialog)
-	//{{AFX_MSG_MAP(CSecurityDlg)
+BEGIN_MESSAGE_MAP(CEnumTokenDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_GETPROC, OnGetproc)
-	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_GETPROC, &CEnumTokenDlg::OnGetproc)
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// CSecurityDlg メッセージ ハンドラ
-
-BOOL CSecurityDlg::OnInitDialog()
+BOOL CEnumTokenDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// "バージョン情報..." メニュー項目をシステム メニューへ追加します。
-
-	// IDM_ABOUTBOX はコマンド メニューの範囲でなければなりません。
+	// システムメニューに「バージョン情報」を追加する
+	// （IDM_ABOUTBOX はシステムコマンドの範囲内でなければならない）
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
+	if (pSysMenu != nullptr)
 	{
 		CString strAboutMenu;
 		strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -111,17 +52,13 @@ BOOL CSecurityDlg::OnInitDialog()
 		}
 	}
 
-	// このダイアログ用のアイコンを設定します。フレームワークはアプリケーションのメイン
-	// ウィンドウがダイアログでない時は自動的に設定しません。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンを設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンを設定
-	
-	// TODO: 特別な初期化を行う時はこの場所に追加してください。
-	
-	return TRUE;  // TRUE を返すとコントロールに設定したフォーカスは失われません。
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
+
+	return TRUE;
 }
 
-void CSecurityDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CEnumTokenDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -134,27 +71,22 @@ void CSecurityDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// もしダイアログボックスに最小化ボタンを追加するならば、アイコンを描画する
-// コードを以下に記述する必要があります。MFC アプリケーションは document/view
-// モデルを使っているので、この処理はフレームワークにより自動的に処理されます。
-
-void CSecurityDlg::OnPaint() 
+// 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
+void CEnumTokenDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画用のデバイス コンテキスト
+		CPaintDC dc(this);
 
-		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの矩形領域内の中央
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int cxIcon = GetSystemMetrics(SM_CXICON);
+		const int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - cxIcon + 1) / 2;
+		const int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンを描画します。
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -163,70 +95,62 @@ void CSecurityDlg::OnPaint()
 	}
 }
 
-// システムは、ユーザーが最小化ウィンドウをドラッグしている間、
-// カーソルを表示するためにここを呼び出します。
-HCURSOR CSecurityDlg::OnQueryDragIcon()
+HCURSOR CEnumTokenDlg::OnQueryDragIcon()
 {
-	return (HCURSOR) m_hIcon;
+	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CSecurityDlg::OnGetproc() 
+// 自プロセスのアクセストークンが属するグループの名前とドメインを表示する
+void CEnumTokenDlg::OnGetproc()
 {
-	// TODO: この位置にコントロール通知ハンドラ用のコードを追加してください
-	HANDLE	hProcess;
-	HANDLE	hToken;
-	DWORD	dwSize;
-	TOKEN_GROUPS	*pTokenGroups;
-	TOKEN_INFORMATION_CLASS tic = TokenGroups;
-	BOOL bReturn;
-
-	CString name;
-	CString domain;
-	hProcess = GetCurrentProcess();
-	bReturn = OpenProcessToken(hProcess, TOKEN_QUERY, &hToken);
-	if ( bReturn )
+	HANDLE hToken = nullptr;
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
 	{
-		bReturn = GetTokenInformation(hToken, tic, NULL, 0, &dwSize);
-
-		if ( ! bReturn && GetLastError() == ERROR_INSUFFICIENT_BUFFER )
-		{
-			pTokenGroups = (TOKEN_GROUPS *)malloc(dwSize);
-			if ( pTokenGroups )
-			{
-				bReturn = GetTokenInformation(hToken, tic, (VOID *)pTokenGroups, dwSize, &dwSize);
-				if ( bReturn )
-				{
-					for(DWORD i=0; i < pTokenGroups->GroupCount; i++ )
-					{
-						char Name[256];
-						DWORD szName = sizeof(Name);
-						char Domain[256];
-						DWORD szDomain = sizeof(Domain);
-						SID_NAME_USE use;
-
-						bReturn = LookupAccountSid(NULL,pTokenGroups->Groups[i].Sid,Name,&szName,Domain,&szDomain,&use);
-						if ( ! bReturn )
-						{
-							// 名前を引けない SID（ログオン SID など）は空欄扱い
-							Name[0] = '\0';
-							Domain[0] = '\0';
-						}
-						name += Name;
-						name += "\n";
-						if( strcmp(Domain,"") == 0){
-							domain += "(not available name)";
-						}else{
-							domain += Domain;
-						}
-						domain += "\n";
-					}
-					GetDlgItem(IDC_PROCTOKEN_NAME)->SetWindowText(name) ;
-					GetDlgItem(IDC_PROCTOKEN_DOMAIN)->SetWindowText(domain) ;
-				}
-				free(pTokenGroups);
-			}
-		}
-		CloseHandle(hToken);
+		return;
 	}
-	
+
+	// 1回目はサイズ 0 で呼んで必要なバッファサイズを得る
+	DWORD size = 0;
+	if (!GetTokenInformation(hToken, TokenGroups, nullptr, 0, &size)
+		&& GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+	{
+		std::vector<BYTE> buffer(size);
+		auto* pGroups = reinterpret_cast<TOKEN_GROUPS*>(buffer.data());
+		if (GetTokenInformation(hToken, TokenGroups, pGroups, size, &size))
+		{
+			CString names;
+			CString domains;
+			for (DWORD i = 0; i < pGroups->GroupCount; i++)
+			{
+				TCHAR name[256];
+				DWORD nameLen = _countof(name);
+				TCHAR domain[256];
+				DWORD domainLen = _countof(domain);
+				SID_NAME_USE use;
+
+				if (!LookupAccountSid(nullptr, pGroups->Groups[i].Sid, name, &nameLen, domain, &domainLen, &use))
+				{
+					// 名前を引けない SID（ログオン SID など）は空欄扱い
+					name[0] = _T('\0');
+					domain[0] = _T('\0');
+				}
+
+				names += name;
+				names += _T("\n");
+				if (domain[0] == _T('\0'))
+				{
+					domains += _T("(not available name)");
+				}
+				else
+				{
+					domains += domain;
+				}
+				domains += _T("\n");
+			}
+			SetDlgItemText(IDC_PROCTOKEN_NAME, names);
+			SetDlgItemText(IDC_PROCTOKEN_DOMAIN, domains);
+		}
+	}
+
+	CloseHandle(hToken);
 }
