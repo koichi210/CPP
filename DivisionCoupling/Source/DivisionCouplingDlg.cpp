@@ -1,24 +1,43 @@
-﻿
-// DivisionCouplingDlg.cpp : 実装ファイル
-//
-
-#include <string>
-#include <climits>
+﻿// DivisionCouplingDlg.cpp : メインダイアログ（ファイルの分割と結合）
 
 #include "stdafx.h"
 #include "DivisionCoupling.h"
 #include "DivisionCouplingDlg.h"
-#include "afxdialogex.h"
-#include "StandardTemplate.h"
+
+#include <climits>
+#include <memory>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+namespace
+{
+	constexpr int KILOBYTE = 1024;
 
-// CDivisionCouplingDlg ダイアログ
-CDivisionCouplingDlg::CDivisionCouplingDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CDivisionCouplingDlg::IDD, pParent)
+	// calloc で確保した作業バッファを自動で解放する
+	struct FreeDeleter
+	{
+		void operator()(char* p) const	{ free(p); }
+	};
+	using CallocBuffer = std::unique_ptr<char, FreeDeleter>;
+
+	CallocBuffer AllocBuffer(size_t size)
+	{
+		return CallocBuffer(static_cast<char*>(calloc(size, sizeof(char))));
+	}
+
+	// 分割ファイル名（例: fname.jpg → fname.jpg.div001）
+	CString MakePartPath(const CString& path, int index)
+	{
+		CString partPath;
+		partPath.Format(_T("%s.div%03d"), static_cast<LPCTSTR>(path), index);
+		return partPath;
+	}
+}
+
+CDivisionCouplingDlg::CDivisionCouplingDlg(CWnd* pParent)
+	: CDialogEx(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -26,58 +45,43 @@ CDivisionCouplingDlg::CDivisionCouplingDlg(CWnd* pParent /*=NULL*/)
 void CDivisionCouplingDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDPR_SPLITMERGE, mdx_progress);
+	DDX_Control(pDX, IDPR_SPLITMERGE, m_progress);
 }
 
 BEGIN_MESSAGE_MAP(CDivisionCouplingDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_SPLIT, OnBnClickedSplit)
-	ON_BN_CLICKED(IDBT_MERGE, OnBnClickedMerge)
-	ON_BN_CLICKED(IDBT_SPLIT_BROWSE, OnBnClickedSplitBrowse)
-	ON_BN_CLICKED(IDBT_MERGE_BROWSE, OnBnClickedMergeBrowse)
-	ON_BN_CLICKED(IDBT_STOP, OnBnClickedStop)
+	ON_BN_CLICKED(IDBT_SPLIT, &CDivisionCouplingDlg::OnBnClickedSplit)
+	ON_BN_CLICKED(IDBT_MERGE, &CDivisionCouplingDlg::OnBnClickedMerge)
+	ON_BN_CLICKED(IDBT_SPLIT_BROWSE, &CDivisionCouplingDlg::OnBnClickedSplitBrowse)
+	ON_BN_CLICKED(IDBT_MERGE_BROWSE, &CDivisionCouplingDlg::OnBnClickedMergeBrowse)
+	ON_BN_CLICKED(IDBT_STOP, &CDivisionCouplingDlg::OnBnClickedStop)
 END_MESSAGE_MAP()
-
-
-// CDivisionCouplingDlg メッセージ ハンドラー
 
 BOOL CDivisionCouplingDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
-
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
 
 void CDivisionCouplingDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		// アイコンをクライアント領域の中央に描く
+		const int cxIcon = GetSystemMetrics(SM_CXICON);
+		const int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// アイコンの描画
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon((rect.Width() - cxIcon + 1) / 2, (rect.Height() - cyIcon + 1) / 2, m_hIcon);
 	}
 	else
 	{
@@ -85,8 +89,6 @@ void CDivisionCouplingDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CDivisionCouplingDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -94,294 +96,202 @@ HCURSOR CDivisionCouplingDlg::OnQueryDragIcon()
 
 void CDivisionCouplingDlg::OnBnClickedSplit()
 {
-	GetDlgItem(IDET_SPLIT_FNAME)->GetWindowText(m_fNameOrg);
-	int divSizeKB = (int)GetDlgItemInt(IDET_SIZE);
-	m_fDivSize = ( 0 < divSizeKB && divSizeKB <= INT_MAX / UNIT_VALUE ) ? divSizeKB * UNIT_VALUE : 0;
-	Initialize();
-	AfxBeginThread(SplitProcThread, this);
+	GetDlgItemText(IDET_SPLIT_FNAME, m_srcPath);
+
+	// KB → バイト。int に収まらない値は分割サイズエラーにする
+	const int divSizeKB = static_cast<int>(GetDlgItemInt(IDET_SIZE));
+	m_divSize = (0 < divSizeKB && divSizeKB <= INT_MAX / KILOBYTE) ? divSizeKB * KILOBYTE : 0;
+
+	StartProcess(&CDivisionCouplingDlg::SplitThreadProc);
 }
 
 void CDivisionCouplingDlg::OnBnClickedMerge()
 {
-	GetDlgItem(IDET_MERGE_FNAME)->GetWindowText(m_fNameNew);
-	Initialize();
-	AfxBeginThread(MergeProcThread, this);
-}
-
-void CDivisionCouplingDlg::Initialize()
-{
-	// GUIから設定値を取得
-	m_nIdx = 1;
-	m_Err = NO_ERROR;
-	m_bProc = TRUE;
-	EnableControl(m_bProc);
-}
-
-void CDivisionCouplingDlg::Result()
-{
-	m_bProc = FALSE;
-	EnableControl(m_bProc);
-
-	if ( m_Err != NO_ERROR )
-	{
-		// エラーメッセージ作成
-		CString msg;
-		switch(m_Err)
-		{
-		case ERR_OPEN_ORGFILE :
-			msg.Format("元ファイルオープンエラー");
-			break;
-
-		case ERR_OPEN_NEWFILE :
-			msg.Format("ファイルが作成できません\n\n%s" ,m_fNameNew);
-			break;
-
-		case ERR_CALLOC :
-			msg.Format("Workメモリ確保エラー");
-			break;
-
-		case ERR_DIV_SIZE :
-			msg.Format("分割サイズエラー");
-			break;
-
-		default :
-			break;
-		}
-
-		MessageBox(msg , "error", MB_OK);
-	}
-}
-
-void CDivisionCouplingDlg::SplitProc()
-{
-	if ( m_fDivSize <= 0 )
-	{
-		m_Err = ERR_DIV_SIZE;
-		return;
-	}
-
-	if ( ! m_cstOrgFile.Open(m_fNameOrg, CFile::typeBinary) )
-	{
-		m_Err = ERR_OPEN_ORGFILE;
-		return;
-	}
-
-	char *buff;	// 読み込みバッファ（分割最大サイズで確保）
-	buff = (char *)calloc(m_fDivSize, sizeof(char));
-	if ( ! buff )
-	{
-		m_Err = ERR_CALLOC;
-		m_cstOrgFile.Close();
-		return;
-	}
-
-	// 残りサイズの初期値は、元ファイルのサイズ
-	m_fRestSize = m_cstOrgFile.GetLength();
-
-	// プログレスバーセット
-	SetProgressSplitFileNum();
-	mdx_progress.SetRange32(0, GetProgressBarEnd());
-
-	int szDivSize;
-	while( m_fRestSize > 0 && m_bProc )
-	{
-		m_fNameNew.Format("%s.div%03d", m_fNameOrg, m_nIdx);
-		if ( ! m_cstNewFile.Open(m_fNameNew, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary) )
-		{
-			m_Err = ERR_OPEN_NEWFILE;
-			break;
-		}
-
-		// 今回の分割サイズを決定
-		if ( m_fRestSize > (ULONGLONG)m_fDivSize )
-		{
-			szDivSize = m_fDivSize;
-		}
-		else
-		{
-			szDivSize = (int)m_fRestSize;
-		}
-		m_fRestSize -= szDivSize;
-
-		// バイナリデータをRead&Write
-		m_cstOrgFile.Read(buff, szDivSize);
-		m_cstNewFile.Write(buff, szDivSize);
-		m_cstNewFile.Close();
-
-		// プログレスバーの更新
-		UpdateProgressBar(m_nIdx);
-
-		// ファイル名のインデックス
-		m_nIdx++;
-	}
-
-	free(buff);
-	m_cstOrgFile.Close();
-}
-
-void CDivisionCouplingDlg::MergeProc()
-{
-	std::string fullpath = m_fNameNew;
-
-	// ex) fname.jpg.div001　→　fname.jpg
-	int idx = fullpath.find_last_of(".");
-	std::string pathname = fullpath.substr(0, idx);
-	m_fNameNew = pathname.c_str();
-
-	if ( PathFileExists(m_fNameNew))
-	{
-		int MsgResult = MessageBox("すでにファイルが存在します。上書きしますか？\n" + m_fNameNew,"Warning", MB_YESNO);
-		if ( MsgResult == IDNO)
-		{
-			MessageBox("処理を中断しました。");
-			return;
-		}
-	}
-
-	if ( ! m_cstNewFile.Open(m_fNameNew, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary) )
-	{
-		m_Err = ERR_OPEN_NEWFILE;
-		return;
-	}
-
-	char *buff;	// 読み込みバッファ
-	int szDivSize;
-	while( m_bProc )
-	{
-		m_fNameOrg.Format("%s.div%03d", m_fNameNew, m_nIdx);
-		if ( ! m_cstOrgFile.Open(m_fNameOrg, CFile::typeBinary) )
-		{
-			// 読み込むファイルが無くなったら終了
-			break;
-		}
-
-		szDivSize = (size_t)m_cstOrgFile.GetLength();
-		buff = (char *)calloc(szDivSize, sizeof(char));
-		if ( ! buff )
-		{
-			m_Err = ERR_CALLOC;
-			m_cstOrgFile.Close();
-			break;
-		}
-
-		// バイナリデータをRead&Write
-		m_cstOrgFile.Read(buff, szDivSize);
-		m_cstNewFile.Write(buff, szDivSize);
-		m_cstOrgFile.Close();
-
-		// TODO：結合するファイル全数を取得する必要がある
-		// プログレスバーの更新
-		//UpdateProgressBar(m_nIdx);
-
-		m_nIdx++;
-		free(buff);
-	}
-
-	m_cstNewFile.Close();
+	GetDlgItemText(IDET_MERGE_FNAME, m_srcPath);
+	StartProcess(&CDivisionCouplingDlg::MergeThreadProc);
 }
 
 void CDivisionCouplingDlg::OnBnClickedSplitBrowse()
 {
-	OnBrowse(IDET_SPLIT_FNAME, TRUE);
+	BrowseFile(IDET_SPLIT_FNAME);
 }
 
 void CDivisionCouplingDlg::OnBnClickedMergeBrowse()
 {
-	OnBrowse(IDET_MERGE_FNAME, TRUE);
-}
-
-void CDivisionCouplingDlg::OnBrowse(UINT nID, BOOL bIsFileOpen)
-{
-	// ファイルを開く
-	CFileDialog dlgFile(bIsFileOpen, "*.*", NULL, OFN_CREATEPROMPT, "*.*|*.*|全て(*.*)|*.*||");
-	if ( dlgFile.DoModal() == IDOK )
-	{
-		CString strFileName;
-		strFileName = dlgFile.GetPathName();
-		GetDlgItem(nID)->SetWindowText(strFileName);
-	}
-}
-
-void CDivisionCouplingDlg::EnableControl(BOOL bEnable)
-{
-	GetDlgItem(IDBT_SPLIT)->EnableWindow(!bEnable);
-	GetDlgItem(IDBT_MERGE)->EnableWindow(!bEnable);
-	GetDlgItem(IDBT_STOP)->EnableWindow(bEnable);
-}
-
-void CDivisionCouplingDlg::UpdateProgressBar(int nPos)
-{
-	// Start位置、End位置を設定
-	int start,end;
-	switch(nPos)
-	{
-	case POS_INIT :
-		start = 0;
-		end = 0;
-		break;
-
-	case POS_END :
-		start = GetProgressBarEnd();
-		end = GetProgressBarEnd();
-		break;
-
-	default :
-		start = nPos;
-		end = GetProgressBarEnd();
-		break;
-	}
-
-	// プログレスバーの現在位置設定
-	mdx_progress.SetPos(start);
-}
-
-int CDivisionCouplingDlg::GetProgressBarEnd()
-{
-	return m_MaxNum;
-}
-
-void CDivisionCouplingDlg::SetProgressSplitFileNum()
-{
-	m_MaxNum = (int)(m_fRestSize / m_fDivSize);
-	if ( m_fRestSize % m_fDivSize)
-	{
-		m_MaxNum++;
-	}
-}
-
-void CDivisionCouplingDlg::SetProgressMergeFileNum()
-{
-	m_MaxNum = 1;
-	while( TRUE )
-	{
-		m_fNameOrg.Format("%s.div%03d" ,m_fNameNew, m_MaxNum);
-		if ( ! m_cstOrgFile.Open(m_fNameOrg, CFile::typeBinary) )
-		{
-			break;
-		}
-		m_cstOrgFile.Close();
-		m_MaxNum++;
-	}
-}
-
-UINT SplitProcThread(LPVOID pParam)
-{
-	CDivisionCouplingDlg *pDlg = (CDivisionCouplingDlg*)pParam;
-	pDlg->SplitProc();
-	pDlg->Result();
-	return TRUE;
-}
-
-UINT MergeProcThread(LPVOID pParam)
-{
-	CDivisionCouplingDlg *pDlg = (CDivisionCouplingDlg*)pParam;
-	pDlg->MergeProc();
-	pDlg->Result();
-	return TRUE;
+	BrowseFile(IDET_MERGE_FNAME);
 }
 
 void CDivisionCouplingDlg::OnBnClickedStop()
 {
-	m_bProc = FALSE;
-	EnableControl(m_bProc);
+	m_running = false;
+	EnableControls(false);
+}
+
+UINT CDivisionCouplingDlg::SplitThreadProc(LPVOID pParam)
+{
+	auto pDlg = static_cast<CDivisionCouplingDlg*>(pParam);
+	pDlg->Split();
+	pDlg->FinishProcess();
+	return TRUE;
+}
+
+UINT CDivisionCouplingDlg::MergeThreadProc(LPVOID pParam)
+{
+	auto pDlg = static_cast<CDivisionCouplingDlg*>(pParam);
+	pDlg->Merge();
+	pDlg->FinishProcess();
+	return TRUE;
+}
+
+void CDivisionCouplingDlg::StartProcess(AFX_THREADPROC pfnThreadProc)
+{
+	m_error = Error::None;
+	m_running = true;
+	EnableControls(true);
+	AfxBeginThread(pfnThreadProc, this);
+}
+
+void CDivisionCouplingDlg::FinishProcess()
+{
+	m_running = false;
+	EnableControls(false);
+
+	CString msg;
+	switch (m_error)
+	{
+	case Error::None:
+		return;
+	case Error::OpenSource:
+		msg = _T("元ファイルオープンエラー");
+		break;
+	case Error::OpenDest:
+		msg.Format(_T("ファイルが作成できません\n\n%s"), static_cast<LPCTSTR>(m_destPath));
+		break;
+	case Error::Alloc:
+		msg = _T("Workメモリ確保エラー");
+		break;
+	case Error::DivSize:
+		msg = _T("分割サイズエラー");
+		break;
+	}
+	MessageBox(msg, _T("error"), MB_OK);
+}
+
+void CDivisionCouplingDlg::Split()
+{
+	if (m_divSize <= 0)
+	{
+		m_error = Error::DivSize;
+		return;
+	}
+
+	CFile srcFile;
+	if (!srcFile.Open(m_srcPath, CFile::modeRead))
+	{
+		m_error = Error::OpenSource;
+		return;
+	}
+
+	// 読み込みバッファは分割サイズで1回だけ確保する
+	CallocBuffer buffer = AllocBuffer(m_divSize);
+	if (!buffer)
+	{
+		m_error = Error::Alloc;
+		return;
+	}
+
+	ULONGLONG restSize = srcFile.GetLength();
+	int partCount = static_cast<int>(restSize / m_divSize);
+	if (restSize % m_divSize)
+	{
+		partCount++;
+	}
+	m_progress.SetRange32(0, partCount);
+
+	for (int index = 1; restSize > 0 && m_running; index++)
+	{
+		m_destPath = MakePartPath(m_srcPath, index);
+		CFile destFile;
+		if (!destFile.Open(m_destPath, CFile::modeCreate | CFile::modeWrite))
+		{
+			m_error = Error::OpenDest;
+			break;
+		}
+
+		const UINT size = (restSize > static_cast<ULONGLONG>(m_divSize))
+			? static_cast<UINT>(m_divSize) : static_cast<UINT>(restSize);
+		restSize -= size;
+
+		srcFile.Read(buffer.get(), size);
+		destFile.Write(buffer.get(), size);
+		destFile.Close();
+
+		m_progress.SetPos(index);
+	}
+
+	srcFile.Close();
+}
+
+void CDivisionCouplingDlg::Merge()
+{
+	// 選んだ分割ファイルから最後の拡張子を外したものが結合後のファイル名
+	// 例: fname.jpg.div001 → fname.jpg
+	const int dot = m_srcPath.ReverseFind(_T('.'));
+	m_destPath = (dot >= 0) ? m_srcPath.Left(dot) : m_srcPath;
+
+	if (PathFileExists(m_destPath))
+	{
+		if (MessageBox(_T("すでにファイルが存在します。上書きしますか？\n") + m_destPath, _T("Warning"), MB_YESNO) == IDNO)
+		{
+			MessageBox(_T("処理を中断しました。"));
+			return;
+		}
+	}
+
+	CFile destFile;
+	if (!destFile.Open(m_destPath, CFile::modeCreate | CFile::modeWrite))
+	{
+		m_error = Error::OpenDest;
+		return;
+	}
+
+	// .div001 から番号順に、ファイルが無くなるまで連結する
+	for (int index = 1; m_running; index++)
+	{
+		CFile partFile;
+		if (!partFile.Open(MakePartPath(m_destPath, index), CFile::modeRead))
+		{
+			break;
+		}
+
+		const UINT size = static_cast<UINT>(partFile.GetLength());
+		CallocBuffer buffer = AllocBuffer(size);
+		if (!buffer)
+		{
+			m_error = Error::Alloc;
+			break;
+		}
+
+		partFile.Read(buffer.get(), size);
+		destFile.Write(buffer.get(), size);
+		partFile.Close();
+	}
+
+	destFile.Close();
+}
+
+void CDivisionCouplingDlg::BrowseFile(UINT editId)
+{
+	CFileDialog dlg(TRUE, _T("*.*"), nullptr, OFN_CREATEPROMPT, _T("*.*|*.*|全て(*.*)|*.*||"));
+	if (dlg.DoModal() == IDOK)
+	{
+		SetDlgItemText(editId, dlg.GetPathName());
+	}
+}
+
+void CDivisionCouplingDlg::EnableControls(bool running)
+{
+	GetDlgItem(IDBT_SPLIT)->EnableWindow(!running);
+	GetDlgItem(IDBT_MERGE)->EnableWindow(!running);
+	GetDlgItem(IDBT_STOP)->EnableWindow(running);
 }

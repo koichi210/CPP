@@ -1,6 +1,4 @@
-﻿
-// DivisionCoupling.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
-//
+﻿// DivisionCoupling.h : アプリケーションクラス
 
 #pragma once
 
@@ -8,25 +6,12 @@
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
-
-
-// CDivisionCouplingApp:
-// このクラスの実装については、DivisionCoupling.cpp を参照してください。
-//
+#include "resource.h"
 
 class CDivisionCouplingApp : public CWinApp
 {
 public:
-	CDivisionCouplingApp();
-
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-
-// 実装
+	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
-
-extern CDivisionCouplingApp theApp;
