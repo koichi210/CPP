@@ -1,4 +1,4 @@
-// EnumTokenDlg.h : �w�b�_�[ �t�@�C��
+﻿// EnumTokenDlg.h : ヘッダー ファイル
 //
 
 #if !defined(AFX_SECURITYDLG_H__A699A18B_2757_4552_B7EE_1256C77BF9FC__INCLUDED_)
@@ -9,31 +9,31 @@
 #endif // _MSC_VER > 1000
 
 /////////////////////////////////////////////////////////////////////////////
-// CSecurityDlg �_�C�A���O
+// CSecurityDlg ダイアログ
 
 class CSecurityDlg : public CDialog
 {
-// �\�z
+// 構築
 public:
-	CSecurityDlg(CWnd* pParent = NULL);	// �W���̃R���X�g���N�^
+	CSecurityDlg(CWnd* pParent = NULL);	// 標準のコンストラクタ
 
-// �_�C�A���O �f�[�^
+// ダイアログ データ
 	//{{AFX_DATA(CSecurityDlg)
 	enum { IDD = IDD_SECURITY_DIALOG };
-		// ����: ���̈ʒu�� ClassWizard �ɂ���ăf�[�^ �����o���ǉ�����܂��B
+		// メモ: この位置に ClassWizard によってデータ メンバが追加されます。
 	//}}AFX_DATA
 
-	// ClassWizard �͉��z�֐��̃I�[�o�[���C�h�𐶐����܂��B
+	// ClassWizard は仮想関数のオーバーライドを生成します。
 	//{{AFX_VIRTUAL(CSecurityDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV �̃T�|�[�g
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV のサポート
 	//}}AFX_VIRTUAL
 
-// �C���v�������e�[�V����
+// インプリメンテーション
 protected:
 	HICON m_hIcon;
 
-	// �������ꂽ���b�Z�[�W �}�b�v�֐�
+	// 生成されたメッセージ マップ関数
 	//{{AFX_MSG(CSecurityDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
@@ -45,6 +45,6 @@ protected:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ �͑O�s�̒��O�ɒǉ��̐錾��}�����܂��B
+// Microsoft Visual C++ は前行の直前に追加の宣言を挿入します。
 
 #endif // !defined(AFX_SECURITYDLG_H__A699A18B_2757_4552_B7EE_1256C77BF9FC__INCLUDED_)
