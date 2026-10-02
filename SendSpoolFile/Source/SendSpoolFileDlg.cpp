@@ -1,19 +1,84 @@
-﻿// SendSpoolFileDlg.cpp : 実装ファイル
-//
+﻿// SendSpoolFileDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "SendSpoolFile.h"
 #include "SendSpoolFileDlg.h"
 #include <winspool.h>
+#include <vector>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+namespace
+{
+	constexpr DWORD READ_BUFFER_SIZE = 4096;
 
-// CSendSpoolFileDlg ダイアログ
-CSendSpoolFileDlg::CSendSpoolFileDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CSendSpoolFileDlg::IDD, pParent)
+	// EMF スプールファイルの中身をそのままプリンタへ流し込む
+	BOOL SpoolJob(HANDLE hPrinter, const CString& spoolName)
+	{
+		// DOC_INFO_1 のメンバは非 const の LPSTR なので、書き換え可能なバッファを渡す
+		CString docName = spoolName;
+		char dataType[] = "NT EMF 1.008";
+
+		DOC_INFO_1 docInfo = {};
+		docInfo.pDocName = docName.GetBuffer();
+		docInfo.pOutputFile = nullptr;
+		docInfo.pDatatype = dataType;
+
+		BOOL bRtn = TRUE;
+		DWORD jobId = StartDocPrinter(hPrinter, 1, reinterpret_cast<LPBYTE>(&docInfo));
+		if (!jobId)
+		{
+			bRtn = FALSE;
+		}
+		else
+		{
+			HANDLE hFile = CreateFile(
+				spoolName,
+				GENERIC_READ,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				nullptr,
+				OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL,
+				nullptr);
+			if (hFile == INVALID_HANDLE_VALUE)
+			{
+				bRtn = FALSE;
+			}
+			else
+			{
+				DWORD fileSize = GetFileSize(hFile, nullptr);
+				DWORD total = 0;
+				CHAR buff[READ_BUFFER_SIZE];
+
+				while (total != fileSize)
+				{
+					DWORD readSize = 0;
+					if (!ReadFile(hFile, buff, sizeof(buff), &readSize, nullptr) || readSize == 0)
+					{
+						bRtn = FALSE;
+						break;
+					}
+					DWORD writeSize = 0;
+					if (!WritePrinter(hPrinter, buff, readSize, &writeSize))
+					{
+						::MessageBox(nullptr, "WritePrinter error\n", "Warning!!", MB_OK);
+					}
+					total += readSize;
+				}
+				CloseHandle(hFile);
+			}
+			EndDocPrinter(hPrinter);
+		}
+		docName.ReleaseBuffer();
+
+		return bRtn;
+	}
+}
+
+CSendSpoolFileDlg::CSendSpoolFileDlg(CWnd* pParent /*=nullptr*/)
+	: CDialog(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -26,70 +91,56 @@ void CSendSpoolFileDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CSendSpoolFileDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	//}}AFX_MSG_MAP
-	ON_BN_CLICKED(IDC_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_EXE, OnExecute)
+	ON_BN_CLICKED(IDC_BROWSE, &CSendSpoolFileDlg::OnBrowse)
+	ON_BN_CLICKED(IDC_EXE, &CSendSpoolFileDlg::OnExecute)
 END_MESSAGE_MAP()
-
-
-// CSendSpoolFileDlg メッセージ ハンドラ
 
 BOOL CSendSpoolFileDlg::OnInitDialog()
 {
-
 	CDialog::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
+	AddPrinters(PRINTER_ENUM_LOCAL);
+	AddPrinters(PRINTER_ENUM_FAVORITE);
 
-	// プリンタ名称を列挙
-	AddMyPrinter(PRINTER_ENUM_LOCAL);
-	AddMyPrinter(PRINTER_ENUM_FAVORITE);
-
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-void CSendSpoolFileDlg::AddMyPrinter(DWORD PrinterEnumId)
+void CSendSpoolFileDlg::AddPrinters(DWORD enumFlags)
 {
-	PRINTER_INFO_4	*ppi4;
-	DWORD			dwNeeded = 0;
-	DWORD			dwNum = 0;
+	DWORD dwNeeded = 0;
+	DWORD dwNum = 0;
 
-	EnumPrinters(PrinterEnumId, NULL, 4, NULL, 0, &dwNeeded, &dwNum);
-	ppi4 = (PRINTER_INFO_4 *) new BYTE [dwNeeded];
-	if ( ppi4 )
+	// 1回目で必要サイズを得て、2回目で実際に取得する
+	EnumPrinters(enumFlags, nullptr, 4, nullptr, 0, &dwNeeded, &dwNum);
+	std::vector<BYTE> buffer(dwNeeded);
+	auto* ppi4 = reinterpret_cast<PRINTER_INFO_4*>(buffer.data());
+	if (!EnumPrinters(enumFlags, nullptr, 4, buffer.data(), dwNeeded, &dwNeeded, &dwNum))
 	{
-		EnumPrinters(PrinterEnumId, NULL, 4, (LPBYTE)ppi4, dwNeeded, &dwNeeded, &dwNum);
-		for( DWORD i=0; i < dwNum; i++ )
-		{
-			SendDlgItemMessage(IDCB_PRINTER_NAME, CB_INSERTSTRING, i, (LPARAM)ppi4[i].pPrinterName);
-		}
-		if ( dwNum > 0 )
-		{
-			SendDlgItemMessage(IDCB_PRINTER_NAME, CB_SETCURSEL, 0, 0);
-		}
-		delete [] (BYTE *)ppi4;
+		dwNum = 0;
+	}
+
+	for (DWORD i = 0; i < dwNum; i++)
+	{
+		SendDlgItemMessage(IDCB_PRINTER_NAME, CB_INSERTSTRING, i, reinterpret_cast<LPARAM>(ppi4[i].pPrinterName));
+	}
+	if (dwNum > 0)
+	{
+		SendDlgItemMessage(IDCB_PRINTER_NAME, CB_SETCURSEL, 0, 0);
 	}
 }
 
-
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
 void CSendSpoolFileDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -97,7 +148,6 @@ void CSendSpoolFileDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -106,25 +156,20 @@ void CSendSpoolFileDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CSendSpoolFileDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
 void CSendSpoolFileDlg::OnBrowse()
 {
-	CString	strFileType;
-	char	szFileNames[MAX_PATH]="\0";
+	char szFileNames[MAX_PATH] = "";
 
-	//スプールファイル名を選択する画面表示
-	strFileType.Format("スプールファイル（*.SPL）|*.spl;|すべてのﾌｧｲﾙ （*.*）|*.*||");
-	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT, strFileType, this);
+	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT,
+		"スプールファイル（*.SPL）|*.spl;|すべてのﾌｧｲﾙ （*.*）|*.*||", this);
 	dlg.GetOFN().lpstrFile = szFileNames;
-	dlg.GetOFN().nMaxFile = sizeof(szFileNames) / sizeof(char);
-	if ( dlg.DoModal() == IDOK )
+	dlg.GetOFN().nMaxFile = _countof(szFileNames);
+	if (dlg.DoModal() == IDOK)
 	{
 		SetDlgItemText(IDC_SPOOL_NAME, szFileNames);
 	}
@@ -132,112 +177,31 @@ void CSendSpoolFileDlg::OnBrowse()
 
 void CSendSpoolFileDlg::OnExecute()
 {
-	char				szPrinterName[MAX_PATH]="\0";
-	char				szSpoolFileName[MAX_PATH]="\0";
+	CString strPrinterName;
+	CString strSpoolFileName;
+	GetDlgItemText(IDCB_PRINTER_NAME, strPrinterName);
+	GetDlgItemText(IDC_SPOOL_NAME, strSpoolFileName);
 
-	GetDlgItem(IDCB_PRINTER_NAME)->GetWindowText(szPrinterName,sizeof(szPrinterName));
-	GetDlgItem(IDC_SPOOL_NAME)->GetWindowText(szSpoolFileName,sizeof(szSpoolFileName));
-
-	if( strcmp(szPrinterName,"") && strcmp(szSpoolFileName,"") )
-	{
-		HANDLE				hPrinter=NULL;
-		PRINTER_DEFAULTS	printer_defaults;
-
-		ZeroMemory(&printer_defaults, sizeof(PRINTER_DEFAULTS));
-		printer_defaults.DesiredAccess = PRINTER_ALL_ACCESS;
-
-		if(OpenPrinter((LPSTR)szPrinterName, &hPrinter, &printer_defaults))
-		{
-			//EMFファイルをスプーラに投げる
-			SpoolJob(hPrinter, szSpoolFileName);
-			ClosePrinter(hPrinter);
-		}
-		else
-		{
-			MessageBox("OpenPrinter() - error");
-		}
-	}
-	else
+	if (strPrinterName.IsEmpty() || strSpoolFileName.IsEmpty())
 	{
 		MessageBox("Illegal input parameter");
+		return;
 	}
 
-}
+	HANDLE hPrinter = nullptr;
+	PRINTER_DEFAULTS printerDefaults = {};
+	printerDefaults.DesiredAccess = PRINTER_ALL_ACCESS;
 
-BOOL SpoolJob(HANDLE hPrinter, LPSTR SpoolName)
-{
-	BOOL		bRtn = TRUE;
-	DWORD		JobId;
-	DOC_INFO_1	DocInfo;
-
-	DocInfo.pDocName = SpoolName;
-	DocInfo.pOutputFile = NULL;
-//	DocInfo.pDatatype = "RAW";
-	DocInfo.pDatatype = "NT EMF 1.008";
-
-	// StartDoc
-	JobId = StartDocPrinter(hPrinter, 1, (LPBYTE)&DocInfo);
-	if ( ! JobId )
+	// OpenPrinter の第1引数は非 const の LPSTR
+	BOOL bOpened = OpenPrinter(strPrinterName.GetBuffer(), &hPrinter, &printerDefaults);
+	strPrinterName.ReleaseBuffer();
+	if (bOpened)
 	{
-		bRtn = FALSE;
+		SpoolJob(hPrinter, strSpoolFileName);
+		ClosePrinter(hPrinter);
 	}
 	else
 	{
-		HANDLE	hFile;
-
-		// EMFファイルを開く
-		hFile = CreateFile(
-							SpoolName,
-							GENERIC_READ,
-							FILE_SHARE_READ | FILE_SHARE_WRITE,
-							(LPSECURITY_ATTRIBUTES)NULL,
-							OPEN_EXISTING,
-							FILE_ATTRIBUTE_NORMAL,
-							NULL);
-		if ( hFile == INVALID_HANDLE_VALUE )
-		{
-			bRtn = FALSE;
-		}
-		else
-		{
-			DWORD		FileSize, ReadSize, WriteSize;
-			DWORD		Total = 0;
-
-//			BOOL		bStartPagePrinter;
-//			BOOL		bEndPagePrinter;
-			BOOL		bWritePrinter;
-			DWORD		cnt = 0;
-			CHAR		buff[MAX_BUFF];
-
-			FileSize = GetFileSize(hFile, NULL);
-
-			while( Total != FileSize )
-			{
-				if ( ! ReadFile(hFile, buff, sizeof(buff), &ReadSize, NULL) || ReadSize == 0 )
-				{
-					bRtn = FALSE;
-					break;
-				}
-//				bStartPagePrinter = StartPagePrinter(hPrinter);
-				bWritePrinter = WritePrinter(hPrinter, buff, ReadSize, &WriteSize);
-				if ( ! bWritePrinter )
-				{
-					MessageBox(NULL,"WritePrinter error\n","Warning!!",MB_OK);
-				}
-//				bEndPagePrinter = EndPagePrinter(hPrinter);
-				Total += ReadSize;
-				cnt++;
-
-				//TODO：必要？
-				if ( cnt%30 == 0 )
-				{
-					ReadSize = 0;
-				}
-			}
-			CloseHandle(hFile);
-		}
-		EndDocPrinter(hPrinter);
+		MessageBox("OpenPrinter() - error");
 	}
-
-	return bRtn;
 }

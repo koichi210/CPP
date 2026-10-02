@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="spooljob2.cpp">
+    <ClCompile Include="SendSpoolFile.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="spooljob2Dlg.cpp">
+    <ClCompile Include="SendSpoolFileDlg.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -29,10 +29,10 @@
     <ClInclude Include="Resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="spooljob2.h">
+    <ClInclude Include="SendSpoolFile.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="spooljob2Dlg.h">
+    <ClInclude Include="SendSpoolFileDlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -40,16 +40,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\spooljob2.ico">
+    <None Include="res\SendSpoolFile.ico">
       <Filter>リソース ファイル</Filter>
     </None>
-    <None Include="res\spooljob2.rc2">
-      <Filter>リソース ファイル</Filter>
-    </None>
-    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="spooljob2.rc">
+    <ResourceCompile Include="SendSpoolFile.rc">
       <Filter>リソース ファイル</Filter>
     </ResourceCompile>
   </ItemGroup>
