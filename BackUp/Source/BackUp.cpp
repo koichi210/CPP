@@ -1,4 +1,4 @@
-// BackUp.cpp : �A�v���P�[�V�����̃N���X������`���܂��B
+﻿// BackUp.cpp : アプリケーションのクラス動作を定義します。
 //
 
 #include "stdafx.h"
@@ -17,31 +17,31 @@ BEGIN_MESSAGE_MAP(CBackUpApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CBackUpApp �R���X�g���N�V����
+// CBackUpApp コンストラクション
 
 CBackUpApp::CBackUpApp()
 {
-	// TODO: ���̈ʒu�ɍ\�z�p�R�[�h��ǉ����Ă��������B
-	// ������ InitInstance ���̏d�v�ȏ��������������ׂċL�q���Ă��������B
+	// TODO: この位置に構築用コードを追加してください。
+	// ここに InitInstance 中の重要な初期化処理をすべて記述してください。
 }
 
 
-// �B��� CBackUpApp �I�u�W�F�N�g�ł��B
+// 唯一の CBackUpApp オブジェクトです。
 
 CBackUpApp theApp;
 
 
-// CBackUpApp ������
+// CBackUpApp 初期化
 
 BOOL CBackUpApp::InitInstance()
 {
-	// �A�v���P�[�V���� �}�j�t�F�X�g�� visual �X�^�C����L���ɂ��邽�߂ɁA
-	// ComCtl32.dll Version 6 �ȍ~�̎g�p���w�肷��ꍇ�́A
-	// Windows XP �� InitCommonControlsEx() ���K�v�ł��B�����Ȃ���΁A�E�B���h�E�쐬�͂��ׂĎ��s���܂��B
+	// アプリケーション マニフェストが visual スタイルを有効にするために、
+	// ComCtl32.dll Version 6 以降の使用を指定する場合は、
+	// Windows XP に InitCommonControlsEx() が必要です。さもなければ、ウィンドウ作成はすべて失敗します。
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
-	// �A�v���P�[�V�����Ŏg�p���邷�ׂẴR���� �R���g���[�� �N���X���܂߂�ɂ́A
-	// �����ݒ肵�܂��B
+	// アプリケーションで使用するすべてのコモン コントロール クラスを含めるには、
+	// これを設定します。
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
@@ -49,30 +49,30 @@ BOOL CBackUpApp::InitInstance()
 
 	AfxEnableControlContainer();
 
-	// �W��������
-	// �����̋@�\���g�킸�ɍŏI�I�Ȏ��s�\�t�@�C����
-	// �T�C�Y���k���������ꍇ�́A�ȉ�����s�v�ȏ�����
-	// ���[�`�����폜���Ă��������B
-	// �ݒ肪�i�[����Ă��郌�W�X�g�� �L�[��ύX���܂��B
-	// TODO: ��Ж��܂��͑g�D���Ȃǂ̓K�؂ȕ������
-	// ���̕������ύX���Ă��������B
-	SetRegistryKey(_T("�A�v���P�[�V���� �E�B�U�[�h�Ő������ꂽ���[�J�� �A�v���P�[�V����"));
+	// 標準初期化
+	// これらの機能を使わずに最終的な実行可能ファイルの
+	// サイズを縮小したい場合は、以下から不要な初期化
+	// ルーチンを削除してください。
+	// 設定が格納されているレジストリ キーを変更します。
+	// TODO: 会社名または組織名などの適切な文字列に
+	// この文字列を変更してください。
+	SetRegistryKey(_T("アプリケーション ウィザードで生成されたローカル アプリケーション"));
 
 	CBackUpDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{
-		// TODO: �_�C�A���O�� <OK> �ŏ����ꂽ���̃R�[�h��
-		//  �L�q���Ă��������B
+		// TODO: ダイアログが <OK> で消された時のコードを
+		//  記述してください。
 	}
 	else if (nResponse == IDCANCEL)
 	{
-		// TODO: �_�C�A���O�� <�L�����Z��> �ŏ����ꂽ���̃R�[�h��
-		//  �L�q���Ă��������B
+		// TODO: ダイアログが <キャンセル> で消された時のコードを
+		//  記述してください。
 	}
 
-	// �_�C�A���O�͕����܂����B�A�v���P�[�V�����̃��b�Z�[�W �|���v���J�n���Ȃ���
-	//  �A�v���P�[�V�������I�����邽�߂� FALSE ��Ԃ��Ă��������B
+	// ダイアログは閉じられました。アプリケーションのメッセージ ポンプを開始しないで
+	//  アプリケーションを終了するために FALSE を返してください。
 	return FALSE;
 }

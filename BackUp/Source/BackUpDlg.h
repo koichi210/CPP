@@ -1,4 +1,4 @@
-// BackUpDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// BackUpDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #pragma once
@@ -7,8 +7,8 @@
 
 #define CURRENT_IDX				(-1)
 #define MAXNUM_IDX				(50)
-#define LC_VAL_WIDTH			(25)	//ƒŠƒXƒgƒRƒ“ƒgƒ[ƒ‹‚Ì•(No)
-#define LC_STR_WIDTH			(170)	//ƒŠƒXƒgƒRƒ“ƒgƒ[ƒ‹‚Ì•(path)
+#define LC_VAL_WIDTH			(25)	//ãƒªã‚¹ãƒˆã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®å¹…(No)
+#define LC_STR_WIDTH			(170)	//ãƒªã‚¹ãƒˆã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®å¹…(path)
 
 #define SUBDIR_MASK				(0x1)
 #define DIFF_MASK				(0x2)
@@ -28,19 +28,19 @@
 #define SUBITEM_DIFF_FILE		(5)
 #define SUBITEM_OVERWRITE		(6)
 
-#define STR_ENABLE_BK			"ƒoƒbƒNƒAƒbƒv—LŒø"
+#define STR_ENABLE_BK			"ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—æœ‰åŠ¹"
 #define STR_NUMBER				"No"
-#define STR_ORG_PATH			"Œ³ƒtƒHƒ‹ƒ_"
-#define STR_NEW_PATH			"æƒtƒHƒ‹ƒ_"
-#define STR_SUBDIRECTORY		"ƒTƒuƒfƒBƒŒƒNƒgƒŠ‚à‘ÎÛ"
-#define STR_DIFF_FILE			"·•ªƒtƒ@ƒCƒ‹‚Ì‚İ‘ÎÛ"
-#define STR_OVERWRITE			"ã‘‚«‚ÌŠm”F‚ğ•\¦"
-#define STR_ON					"—L"
-#define STR_OFF					"–³"
-#define STR_ENABLE				"›"
-#define STR_DISABLE				"~"
-#define	STR_SAVE_SET_SUCCESS	"İ’è’l‚ğ•Û‘¶‚µ‚Ü‚µ‚½B"
-#define	STR_SAVE_SET_ERROR		"İ’è’l•Û‘¶‚É¸”s‚µ‚Ü‚µ‚½B"
+#define STR_ORG_PATH			"å…ƒãƒ•ã‚©ãƒ«ãƒ€"
+#define STR_NEW_PATH			"å…ˆãƒ•ã‚©ãƒ«ãƒ€"
+#define STR_SUBDIRECTORY		"ã‚µãƒ–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚‚å¯¾è±¡"
+#define STR_DIFF_FILE			"å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿å¯¾è±¡"
+#define STR_OVERWRITE			"ä¸Šæ›¸ãã®ç¢ºèªã‚’è¡¨ç¤º"
+#define STR_ON					"æœ‰"
+#define STR_OFF					"ç„¡"
+#define STR_ENABLE				"â—‹"
+#define STR_DISABLE				"Ã—"
+#define	STR_SAVE_SET_SUCCESS	"è¨­å®šå€¤ã‚’ä¿å­˜ã—ã¾ã—ãŸã€‚"
+#define	STR_SAVE_SET_ERROR		"è¨­å®šå€¤ä¿å­˜ã«å¤±æ•—ã—ã¾ã—ãŸã€‚"
 
 #define SET_FILE_NAME			"\\BackUp.dat"
 #define BAT_FILE_NAME			"\\BackUp.bat"
@@ -56,14 +56,14 @@ typedef struct tagBACKUP
 
 } BACKUP;
 
-// CBackUpDlg ƒ_ƒCƒAƒƒO
+// CBackUpDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class CBackUpDlg : public CDialog
 {
-// ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 public:
-	CBackUpDlg(CWnd* pParent = NULL);	// •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	CBackUpDlg(CWnd* pParent = NULL);	// æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_BACKUP_DIALOG };
 
 private:
@@ -77,11 +77,11 @@ private:
 	BACKUP m_bkDefault;
 
 
-// À‘•
+// å®Ÿè£…
 protected:
 	HICON m_hIcon;
 
-	// ¶¬‚³‚ê‚½AƒƒbƒZ[ƒWŠ„‚è“–‚ÄŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²ã‚Šå½“ã¦é–¢æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
@@ -105,7 +105,7 @@ protected:
 	afx_msg void OnBnClickedEndApp();
 	DECLARE_MESSAGE_MAP()
 
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 	BOOL GetDirectory(TCHAR * dir);
 	BOOL BackUpProc();
 	void LCSetData();

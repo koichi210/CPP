@@ -1,4 +1,4 @@
-// BackUpDlg.cpp : À‘•ƒtƒ@ƒCƒ‹
+ï»¿// BackUpDlg.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include <shlwapi.h>
@@ -12,20 +12,20 @@
 #endif
 
 
-// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚Ég‚í‚ê‚é CAboutDlg ƒ_ƒCƒAƒƒO
+// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã«ä½¿ã‚ã‚Œã‚‹ CAboutDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 class CAboutDlg : public CDialog
 {
 public:
 	CAboutDlg();
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_ABOUTBOX };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 
-// À‘•
+// å®Ÿè£…
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -43,7 +43,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CBackUpDlg ƒ_ƒCƒAƒƒO
+// CBackUpDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 
 
@@ -92,15 +92,15 @@ BEGIN_MESSAGE_MAP(CBackUpDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CBackUpDlg ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰
+// CBackUpDlg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©
 
 BOOL CBackUpDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// "ƒo[ƒWƒ‡ƒ“î•ñ..." ƒƒjƒ…[‚ğƒVƒXƒeƒ€ ƒƒjƒ…[‚É’Ç‰Á‚µ‚Ü‚·B
+	// "ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±..." ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ã‚·ã‚¹ãƒ†ãƒ  ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«è¿½åŠ ã—ã¾ã™ã€‚
 
-	// IDM_ABOUTBOX ‚ÍAƒVƒXƒeƒ€ ƒRƒ}ƒ“ƒh‚Ì”ÍˆÍ“à‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+	// IDM_ABOUTBOX ã¯ã€ã‚·ã‚¹ãƒ†ãƒ  ã‚³ãƒãƒ³ãƒ‰ã®ç¯„å›²å†…ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -116,17 +116,17 @@ BOOL CBackUpDlg::OnInitDialog()
 		}
 	}
 
-	// ‚±‚Ìƒ_ƒCƒAƒƒO‚ÌƒAƒCƒRƒ“‚ğİ’è‚µ‚Ü‚·BƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒƒCƒ“ ƒEƒBƒ“ƒhƒE‚ªƒ_ƒCƒAƒƒO‚Å‚È‚¢ê‡A
-	//  Framework ‚ÍA‚±‚Ìİ’è‚ğ©“®“I‚És‚¢‚Ü‚·B
-	SetIcon(m_hIcon, TRUE);			// ‘å‚«‚¢ƒAƒCƒRƒ“‚Ìİ’è
-	SetIcon(m_hIcon, FALSE);		// ¬‚³‚¢ƒAƒCƒRƒ“‚Ìİ’è
+	// ã“ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®šã—ã¾ã™ã€‚ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ¡ã‚¤ãƒ³ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§ãªã„å ´åˆã€
+	//  Framework ã¯ã€ã“ã®è¨­å®šã‚’è‡ªå‹•çš„ã«è¡Œã„ã¾ã™ã€‚
+	SetIcon(m_hIcon, TRUE);			// å¤§ãã„ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
+	SetIcon(m_hIcon, FALSE);		// å°ã•ã„ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	CheckRadioButton( IDC_END_NONE, IDC_END_SHUTDOWN, IDC_END_NONE );
 	LCSetData();
 	Refresh();
 
-	return TRUE;  // ƒtƒH[ƒJƒX‚ğƒRƒ“ƒgƒ[ƒ‹‚Éİ’è‚µ‚½ê‡‚ğœ‚«ATRUE ‚ğ•Ô‚µ‚Ü‚·B
+	return TRUE;  // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«è¨­å®šã—ãŸå ´åˆã‚’é™¤ãã€TRUE ã‚’è¿”ã—ã¾ã™ã€‚
 }
 
 void CBackUpDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -142,19 +142,19 @@ void CBackUpDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// ƒ_ƒCƒAƒƒO‚ÉÅ¬‰»ƒ{ƒ^ƒ“‚ğ’Ç‰Á‚·‚éê‡AƒAƒCƒRƒ“‚ğ•`‰æ‚·‚é‚½‚ß‚Ì
-//  ‰º‚ÌƒR[ƒh‚ª•K—v‚Å‚·BƒhƒLƒ…ƒƒ“ƒg/ƒrƒ…[ ƒ‚ƒfƒ‹‚ğg‚¤ MFC ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìê‡A
-//  ‚±‚ê‚ÍAFramework ‚É‚æ‚Á‚Ä©“®“I‚Éİ’è‚³‚ê‚Ü‚·B
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã«æœ€å°åŒ–ãƒœã‚¿ãƒ³ã‚’è¿½åŠ ã™ã‚‹å ´åˆã€ã‚¢ã‚¤ã‚³ãƒ³ã‚’æç”»ã™ã‚‹ãŸã‚ã®
+//  ä¸‹ã®ã‚³ãƒ¼ãƒ‰ãŒå¿…è¦ã§ã™ã€‚ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ/ãƒ“ãƒ¥ãƒ¼ ãƒ¢ãƒ‡ãƒ«ã‚’ä½¿ã† MFC ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®å ´åˆã€
+//  ã“ã‚Œã¯ã€Framework ã«ã‚ˆã£ã¦è‡ªå‹•çš„ã«è¨­å®šã•ã‚Œã¾ã™ã€‚
 
 void CBackUpDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // •`‰æ‚ÌƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
+		CPaintDC dc(this); // æç”»ã®ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// ƒNƒ‰ƒCƒAƒ“ƒg‚ÌlŠpŒ`—Ìˆæ“à‚Ì’†‰›
+		// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®å››è§’å½¢é ˜åŸŸå†…ã®ä¸­å¤®
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -162,7 +162,7 @@ void CBackUpDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ƒAƒCƒRƒ“‚Ì•`‰æ
+		// ã‚¢ã‚¤ã‚³ãƒ³ã®æç”»
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -171,8 +171,8 @@ void CBackUpDlg::OnPaint()
 	}
 }
 
-// ƒ†[ƒU[‚ªÅ¬‰»‚µ‚½ƒEƒBƒ“ƒhƒE‚ğƒhƒ‰ƒbƒO‚µ‚Ä‚¢‚é‚Æ‚«‚É•\¦‚·‚éƒJ[ƒ\ƒ‹‚ğæ“¾‚·‚é‚½‚ß‚ÉA
-//  ƒVƒXƒeƒ€‚ª‚±‚ÌŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·B
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒæœ€å°åŒ–ã—ãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ãƒ‰ãƒ©ãƒƒã‚°ã—ã¦ã„ã‚‹ã¨ãã«è¡¨ç¤ºã™ã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚’å–å¾—ã™ã‚‹ãŸã‚ã«ã€
+//  ã‚·ã‚¹ãƒ†ãƒ ãŒã“ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™ã€‚
 HCURSOR CBackUpDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -201,16 +201,16 @@ void CBackUpDlg::LCSetData()
 	LV_ITEM		lvItem;
 	char		str[MAX_PATH];
 
-	// Column‹¤’Êİ’è
+	// Columnå…±é€šè¨­å®š
 	lvCol.mask = LVCF_FMT | LVCF_WIDTH | LVCF_SUBITEM | LVCF_TEXT;
 	lvCol.fmt  = LVCFMT_LEFT;
 
-	// Item‹¤’Êİ’è
+	// Itemå…±é€šè¨­å®š
 	lvItem.mask      = LVIF_TEXT | LVIF_STATE;
 	lvItem.stateMask = LVIS_FOCUSED | LVIS_SELECTED;
 	lvItem.state     = 0;
 
-	// ƒ‰ƒxƒ‹‘}“ü
+	// ãƒ©ãƒ™ãƒ«æŒ¿å…¥
 	lvCol.cx   = LC_VAL_WIDTH;
 	InsertListCtrl(lvCol,SUBITEM_ENABLE_BK,STR_ENABLE_BK);
 	InsertListCtrl(lvCol,SUBITEM_NUMBER,STR_NUMBER);
@@ -228,7 +228,7 @@ void CBackUpDlg::LCSetData()
 	{
 		lvItem.iItem = idx;
 
-		//ƒoƒbƒNƒAƒbƒv—LŒø
+		//ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—æœ‰åŠ¹
 		if ( m_bkStruct[i].bBkEnable )
 			sprintf_s(str,sizeof(str),STR_ENABLE);
 		else
@@ -243,17 +243,17 @@ void CBackUpDlg::LCSetData()
 		lvItem.pszText   = str;
 		m_listctl.SetItem(&lvItem);
 
-		//Œ³ƒpƒX
+		//å…ƒãƒ‘ã‚¹
 		lvItem.iSubItem  = SUBITEM_SRC_PATH;
 		lvItem.pszText   = (LPSTR)m_bkStruct[i].strSrcPath.GetString();
 		m_listctl.SetItem(&lvItem);
 
-		//æƒpƒX
+		//å…ˆãƒ‘ã‚¹
 		lvItem.iSubItem  = SUBITEM_DST_PATH;
 		lvItem.pszText   = (LPSTR)m_bkStruct[i].strDstPath.GetString();
 		m_listctl.SetItem(&lvItem);
 
-		// ƒTƒuƒfƒBƒŒƒNƒgƒŠ‚à‘ÎÛ
+		// ã‚µãƒ–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚‚å¯¾è±¡
 		if ( m_bkStruct[i].opt & SUBDIR_MASK )
 			sprintf_s(str,sizeof(str),STR_ON);
 		else
@@ -262,7 +262,7 @@ void CBackUpDlg::LCSetData()
 		lvItem.pszText   = str;
 		m_listctl.SetItem(&lvItem);
 
-		//·•ª‚Ì‚İ‘ÎÛ
+		//å·®åˆ†ã®ã¿å¯¾è±¡
 		if ( m_bkStruct[i].opt & DIFF_MASK )
 			sprintf_s(str,sizeof(str),STR_ON);
 		else
@@ -271,7 +271,7 @@ void CBackUpDlg::LCSetData()
 		lvItem.pszText   = str;
 		m_listctl.SetItem(&lvItem);
 
-		//ã‘‚«Šm”F‚·‚é
+		//ä¸Šæ›¸ãç¢ºèªã™ã‚‹
 		if ( m_bkStruct[i].opt & OVERWRITE_MASK )
 			sprintf_s(str,sizeof(str),STR_ON);
 		else
@@ -283,7 +283,7 @@ void CBackUpDlg::LCSetData()
 		idx++;
 	}
 
-	m_listctl.SetExtendedStyle(LVS_EX_FULLROWSELECT); //s‚Å‘I‘ğ‚·‚é‚æ‚¤‚Éw’è
+	m_listctl.SetExtendedStyle(LVS_EX_FULLROWSELECT); //è¡Œã§é¸æŠã™ã‚‹ã‚ˆã†ã«æŒ‡å®š
 	m_listctl.SetItemState(m_idx, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 }
 
@@ -299,17 +299,17 @@ void CBackUpDlg::OnBackupStart()
 	char str[MAX_PATH];
 	BOOL bErrFind = FALSE;
 
-	strcpy_s(str,sizeof(str),"ƒoƒbƒNƒAƒbƒv’†");
+	strcpy_s(str,sizeof(str),"ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ä¸­");
 	SetDlgItemText(IDC_LABEL, str);
 	
 	bErrFind = BackUpProc();
 	if ( bErrFind == FALSE )
 	{
-		strcpy_s(str,sizeof(str),"ƒoƒbƒNƒAƒbƒv³íI—¹");
+		strcpy_s(str,sizeof(str),"ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—æ­£å¸¸çµ‚äº†");
 	}
 	else
 	{
-		strcpy_s(str,sizeof(str),"ƒoƒbƒNƒAƒbƒv‚É¸”s‚µ‚Ü‚µ‚½");
+		strcpy_s(str,sizeof(str),"ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã«å¤±æ•—ã—ã¾ã—ãŸ");
 	}
 	SetDlgItemText(IDC_LABEL, str);
 
@@ -338,7 +338,7 @@ BOOL CBackUpDlg::GetDirectory(TCHAR * dir)
 	browseInfo.pidlRoot = NULL;
 	browseInfo.pszDisplayName = folderName;
 	CString title;
-	title="–Ú“I‚ÌƒtƒHƒ‹ƒ_‚ğ‘I‘ğ‚µ‚Ä‰º‚¿‚¡BB";
+	title="ç›®çš„ã®ãƒ•ã‚©ãƒ«ãƒ€ã‚’é¸æŠã—ã¦ä¸‹ã¡ãƒã€‚ã€‚";
 	browseInfo.lpszTitle = title.GetBuffer(10);
 	browseInfo.ulFlags = 0;
 	browseInfo.lpfn = NULL;
@@ -378,32 +378,32 @@ BOOL CBackUpDlg::BackUpProc()
 		strcpy_s(cmdName,sizeof(cmdName), "xcopy");
 		if(m_bkStruct[idx].opt & SUBDIR_MASK)
 		{
-			strcat_s(cmdName,sizeof(cmdName)," /E");	//	/E@ƒfƒBƒŒƒNƒgƒŠ‚²‚ÆƒRƒs[
+			strcat_s(cmdName,sizeof(cmdName)," /E");	//	/Eã€€ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã”ã¨ã‚³ãƒ”ãƒ¼
 		}
 
 		if(m_bkStruct[idx].opt & DIFF_MASK)
 		{
-			strcat_s(cmdName,sizeof(cmdName)," /D");	//	/D@V‚µ‚¢ƒtƒ@ƒCƒ‹‚Ì‚İƒRƒs[
+			strcat_s(cmdName,sizeof(cmdName)," /D");	//	/Dã€€æ–°ã—ã„ãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿ã‚³ãƒ”ãƒ¼
 		}
 
 		if(m_bkStruct[idx].opt & OVERWRITE_MASK)
 		{
-			strcat_s(cmdName,sizeof(cmdName)," /-Y");	//	/-Y@ã‘‚«‚ÌŠm”F‚ğ•\¦
+			strcat_s(cmdName,sizeof(cmdName)," /-Y");	//	/-Yã€€ä¸Šæ›¸ãã®ç¢ºèªã‚’è¡¨ç¤º
 		}
 		else
 		{
-			strcat_s(cmdName,sizeof(cmdName)," /Y");	//	/-Y@ã‘‚«‚ÌŠm”F‚ğ•\¦‚µ‚È‚¢
+			strcat_s(cmdName,sizeof(cmdName)," /Y");	//	/-Yã€€ä¸Šæ›¸ãã®ç¢ºèªã‚’è¡¨ç¤ºã—ãªã„
 		}
 
-		strcat_s(cmdName,sizeof(cmdName)," /I");	//	/I@ó‚¯‘¤ƒfƒBƒŒƒNƒgƒŠ‚ğV‹Kì¬
+		strcat_s(cmdName,sizeof(cmdName)," /I");	//	/Iã€€å—ã‘å´ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æ–°è¦ä½œæˆ
 
-		strcat_s(cmdName,sizeof(cmdName)," /H");	//	/H@‰B‚µƒtƒ@ƒCƒ‹‚âƒVƒXƒeƒ€ƒtƒ@ƒCƒ‹‚à‘ÎÛ
+		strcat_s(cmdName,sizeof(cmdName)," /H");	//	/Hã€€éš ã—ãƒ•ã‚¡ã‚¤ãƒ«ã‚„ã‚·ã‚¹ãƒ†ãƒ ãƒ•ã‚¡ã‚¤ãƒ«ã‚‚å¯¾è±¡
 
-		strcat_s(cmdName,sizeof(cmdName)," /R");	//	/R	“Ç‚İæ‚èê—p‚Å‚àã‘‚«
+		strcat_s(cmdName,sizeof(cmdName)," /R");	//	/R	èª­ã¿å–ã‚Šå°‚ç”¨ã§ã‚‚ä¸Šæ›¸ã
 
-//		strcat_s(cmdName,sizeof(cmdName)," /Q");	//	/Q@ƒRƒs[’†Aƒtƒ@ƒCƒ‹–¼‚ğ•\¦‚µ‚È‚¢
-//		strcat_s(cmdName,sizeof(cmdName)," /F");	//	/F@ƒRƒs[’†A‘—‚è‘¤‚Æó‚¯‘¤‚Ì‘Sƒtƒ@ƒCƒ‹–¼•\¦
-//		strcat_s(cmdName,sizeof(cmdName)," /L");	//	/L@ƒRƒs[‘ÎÛ‚Ìƒtƒ@ƒCƒ‹–¼‚ğ•\¦ËƒRƒs[‚¹‚¸•\¦‚Ì‚İ
+//		strcat_s(cmdName,sizeof(cmdName)," /Q");	//	/Qã€€ã‚³ãƒ”ãƒ¼ä¸­ã€ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¡¨ç¤ºã—ãªã„
+//		strcat_s(cmdName,sizeof(cmdName)," /F");	//	/Fã€€ã‚³ãƒ”ãƒ¼ä¸­ã€é€ã‚Šå´ã¨å—ã‘å´ã®å…¨ãƒ•ã‚¡ã‚¤ãƒ«åè¡¨ç¤º
+//		strcat_s(cmdName,sizeof(cmdName)," /L");	//	/Lã€€ã‚³ãƒ”ãƒ¼å¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¡¨ç¤ºâ‡’ã‚³ãƒ”ãƒ¼ã›ãšè¡¨ç¤ºã®ã¿
 
 		sprintf_s(ExeName,sizeof(ExeName),"%s \"%s\" \"%s\"\n",cmdName,m_bkStruct[idx].strSrcPath,m_bkStruct[idx].strDstPath);
 
@@ -640,7 +640,7 @@ void CBackUpDlg::Refresh()
 
 void CBackUpDlg::OnBnClickedAllClear()
 {
-	// TODOFƒoƒO‚Á‚Ä‚éH
+	// TODOï¼šãƒã‚°ã£ã¦ã‚‹ï¼Ÿ
 	for(int i=0; i < MAXNUM_IDX; i++)
 	{
 		memcpy(&m_bkStruct[i], &m_bkDefault, sizeof(m_bkDefault));
