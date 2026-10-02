@@ -1,4 +1,4 @@
-// SendSpoolFileDlg.cpp : ▌ю▒∙┐t┐@┐C┐▀
+О╩©// SendSpoolFileDlg.cpp : Е╝÷Хё┘Ц┐∙Ц┌║Ц┌╓Ц┐╚
 //
 
 #include "stdafx.h"
@@ -11,7 +11,7 @@
 #endif
 
 
-// CSendSpoolFileDlg ┐_┐C┐A┐█┐O
+// CSendSpoolFileDlg Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟
 CSendSpoolFileDlg::CSendSpoolFileDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CSendSpoolFileDlg::IDD, pParent)
 {
@@ -32,25 +32,25 @@ BEGIN_MESSAGE_MAP(CSendSpoolFileDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CSendSpoolFileDlg ┐│┐b┐Z│[┐W ┐n┐⌠┐h┐┴
+// CSendSpoolFileDlg Ц┐║Ц┐┐Ц┌╩Ц┐╪Ц┌╦ Ц┐▐Ц┐ЁЦ┐┴Ц┐╘
 
 BOOL CSendSpoolFileDlg::OnInitDialog()
 {
 
 	CDialog::OnInitDialog();
 
-	// ┌╠┌л┐_┐C┐A┐█┐O┌л┐A┐C┐R┐⌠┌П░щ▓Х┌╣┌э┌╥│B┐A┐v┐┼┐P│[┐V┐┤┐⌠┌л┐│┐C┐⌠ ┐E┐B┐⌠┐h┐E┌╙┐_┐C┐A┐█┐O┌е┌х┌╒▐Й█┤│A
-	//  Framework ┌м│A┌╠┌л░щ▓Х┌П▌╘⌠╝⌠I┌и█s┌╒┌э┌╥│B
-	SetIcon(m_hIcon, TRUE);			// ▒Е┌╚┌╒┐A┐C┐R┐⌠┌л░щ▓Х
-	SetIcon(m_hIcon, FALSE);		// ▐╛┌Ё┌╒┐A┐C┐R┐⌠┌л░щ▓Х
+	// Ц│⌠Ц│╝Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟Ц│╝Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ┌▓Х╗╜Е╝ Ц│≈Ц│╬Ц│≥Ц─┌Ц┌╒Ц┐≈Ц┐╙Ц┌╠Ц┐╪Ц┌╥Ц┐╖Ц┐ЁЦ│╝Ц┐║Ц┌╓Ц┐Ё Ц┌╕Ц┌ёЦ┐ЁЦ┐┴Ц┌╕Ц│▄Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟Ц│╖Ц│╙Ц│└Е═╢Е░┬Ц─│
+	//  Framework Ц│╞Ц─│Ц│⌠Ц│╝Х╗╜Е╝ Ц┌▓Х┤╙Е▀∙Г └Ц│╚Х║▄Ц│└Ц│╬Ц│≥Ц─┌
+	SetIcon(m_hIcon, TRUE);			// Е╓╖Ц│█Ц│└Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ│╝Х╗╜Е╝ 
+	SetIcon(m_hIcon, FALSE);		// Е╟▐Ц│∙Ц│└Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ│╝Х╗╜Е╝ 
 
 
-	// ┐v┐┼┐⌠┐^√╪▐л┌П≈Я▀⌠
+	// Ц┐≈Ц┐╙Ц┐ЁЦ┌©Е░█Г╖╟Ц┌▓Е┬≈Ф▄≥
 	AddMyPrinter(PRINTER_ENUM_LOCAL);
 	AddMyPrinter(PRINTER_ENUM_FAVORITE);
 
 
-	return TRUE;  // ┐t┐H│[┐J┐X┌П┐R┐⌠┐g┐█│[┐▀┌и░щ▓Х┌╣┌╫▐Й█┤┌П▐°┌╚│ATRUE ┌П∙т┌╣┌э┌╥│B
+	return TRUE;  // Ц┐∙Ц┌╘Ц┐╪Ц┌╚Ц┌╧Ц┌▓Ц┌ЁЦ┐ЁЦ┐┬Ц┐╜Ц┐╪Ц┐╚Ц│╚Х╗╜Е╝ Ц│≈Ц│÷Е═╢Е░┬Ц┌▓И≥╓Ц│█Ц─│TRUE Ц┌▓Х©■Ц│≈Ц│╬Ц│≥Ц─┌
 }
 
 void CSendSpoolFileDlg::AddMyPrinter(DWORD PrinterEnumId)
@@ -77,19 +77,19 @@ void CSendSpoolFileDlg::AddMyPrinter(DWORD PrinterEnumId)
 }
 
 
-// ┐_┐C┐A┐█┐O┌и█е▐╛┴╩┐{┐^┐⌠┌П▓г┴а┌╥┌И▐Й█┤│A┐A┐C┐R┐⌠┌П∙`┴Ф┌╥┌И┌╫┌ъ┌л
-//  ┴╨┌л┐R│[┐h┌╙∙K≈v┌е┌╥│B┐h┐L┐┘┐│┐⌠┐g/┐r┐┘│[ ┐┌┐f┐▀┌П▌g┌╓ MFC ┐A┐v┐┼┐P│[┐V┐┤┐⌠┌л▐Й█┤│A
-//  ┌╠┌Й┌м│AFramework ┌и┌Ф┌а┌д▌╘⌠╝⌠I┌и░щ▓Х┌Ё┌Й┌э┌╥│B
+// Ц┐─Ц┌╓Ц┌╒Ц┐╜Ц┌╟Ц│╚Ф°─Е╟▐Е▄√Ц┐°Ц┌©Ц┐ЁЦ┌▓Х©╫Е┼═Ц│≥Ц┌▀Е═╢Е░┬Ц─│Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ┌▓Ф▐▐Г■╩Ц│≥Ц┌▀Ц│÷Ц┌│Ц│╝
+//  Д╦▀Ц│╝Ц┌ЁЦ┐╪Ц┐┴Ц│▄Е©┘Х╕│Ц│╖Ц│≥Ц─┌Ц┐┴Ц┌╜Ц┐╔Ц┐║Ц┐ЁЦ┐┬/Ц┐⌠Ц┐╔Ц┐╪ Ц┐╒Ц┐┤Ц┐╚Ц┌▓Д╫©Ц│├ MFC Ц┌╒Ц┐≈Ц┐╙Ц┌╠Ц┐╪Ц┌╥Ц┐╖Ц┐ЁЦ│╝Е═╢Е░┬Ц─│
+//  Ц│⌠Ц┌▄Ц│╞Ц─│Framework Ц│╚Ц┌┬Ц│ёЦ│╕Х┤╙Е▀∙Г └Ц│╚Х╗╜Е╝ Ц│∙Ц┌▄Ц│╬Ц│≥Ц─┌
 
 void CSendSpoolFileDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ∙`┴Ф┌л┐f┐o┐C┐X ┐R┐⌠┐e┐L┐X┐g
+		CPaintDC dc(this); // Ф▐▐Г■╩Ц│╝Ц┐┤Ц┐░Ц┌╓Ц┌╧ Ц┌ЁЦ┐ЁЦ┐├Ц┌╜Ц┌╧Ц┐┬
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// ┐N┐┴┐C┐A┐⌠┐g┌л▌l┼p▄`≈л┬Ф⌠Ю┌л▓├┴⌡
+		// Ц┌╞Ц┐╘Ц┌╓Ц┌╒Ц┐ЁЦ┐┬Ц│╝Е⌡⌡Х╖▓Е╫╒И═≤Е÷÷Е├┘Ц│╝Д╦╜Е╓╝
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -97,7 +97,7 @@ void CSendSpoolFileDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ┐A┐C┐R┐⌠┌л∙`┴Ф
+		// Ц┌╒Ц┌╓Ц┌ЁЦ┐ЁЦ│╝Ф▐▐Г■╩
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -106,8 +106,8 @@ void CSendSpoolFileDlg::OnPaint()
 	}
 }
 
-// ┐├│[┐U│[┌╙█е▐╛┴╩┌╣┌╫┐E┐B┐⌠┐h┐E┌П┐h┐┴┐b┐O┌╣┌д┌╒┌И┌ф┌╚┌и∙\▌╕┌╥┌И┐J│[┐\┐▀┌П▌Ф⌠╬┌╥┌И┌╫┌ъ┌и│A
-//  ┐V┐X┐e┐─┌╙┌╠┌л┼ж░■┌П▄д┌я▐o┌╣┌э┌╥│B
+// Ц┐╕Ц┐╪Ц┌╤Ц┐╪Ц│▄Ф°─Е╟▐Е▄√Ц│≈Ц│÷Ц┌╕Ц┌ёЦ┐ЁЦ┐┴Ц┌╕Ц┌▓Ц┐┴Ц┐╘Ц┐┐Ц┌╟Ц│≈Ц│╕Ц│└Ц┌▀Ц│╗Ц│█Ц│╚Х║╗Г╓╨Ц│≥Ц┌▀Ц┌╚Ц┐╪Ц┌╫Ц┐╚Ц┌▓Е▐√Е╬≈Ц│≥Ц┌▀Ц│÷Ц┌│Ц│╚Ц─│
+//  Ц┌╥Ц┌╧Ц┐├Ц┐═Ц│▄Ц│⌠Ц│╝И√╒Ф∙╟Ц┌▓Е▒╪Ц│ЁЕ┤╨Ц│≈Ц│╬Ц│≥Ц─┌
 HCURSOR CSendSpoolFileDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -119,8 +119,8 @@ void CSendSpoolFileDlg::OnBrowse()
 	CString	strFileType;
 	char	szFileNames[MAX_PATH]="\0";
 
-	//┐X┐v│[┐▀┐t┐@┐C┐▀√╪┌П▒I▒П┌╥┌И┴Ф√й∙\▌╕
-	strFileType.Format("┐X┐v│[┐▀┐t┐@┐C┐▀│i*.SPL│j|*.spl;|┌╥┌в┌д┌лл╖╡ы │i*.*│j|*.*||");
+	//Ц┌╧Ц┐≈Ц┐╪Ц┐╚Ц┐∙Ц┌║Ц┌╓Ц┐╚Е░█Ц┌▓И│╦Ф┼·Ц│≥Ц┌▀Г■╩И²╒Х║╗Г╓╨
+	strFileType.Format("Ц┌╧Ц┐≈Ц┐╪Ц┐╚Ц┐∙Ц┌║Ц┌╓Ц┐╚О╪┬*.SPLО╪┴|*.spl;|Ц│≥Ц│╧Ц│╕Ц│╝О╬▄О╫╖О╫╡О╬≥ О╪┬*.*О╪┴|*.*||");
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT, strFileType, this);
 	dlg.GetOFN().lpstrFile = szFileNames;
 	dlg.GetOFN().nMaxFile = sizeof(szFileNames) / sizeof(char);
@@ -148,7 +148,7 @@ void CSendSpoolFileDlg::OnExecute()
 
 		if(OpenPrinter((LPSTR)szPrinterName, &hPrinter, &printer_defaults))
 		{
-			//EMF┐t┐@┐C┐▀┌П┐X┐v│[┐┴┌и⌠┼┌╟┌И
+			//EMFЦ┐∙Ц┌║Ц┌╓Ц┐╚Ц┌▓Ц┌╧Ц┐≈Ц┐╪Ц┐╘Ц│╚Ф┼∙Ц│▓Ц┌▀
 			SpoolJob(hPrinter, szSpoolFileName);
 			ClosePrinter(hPrinter);
 		}
@@ -185,7 +185,7 @@ BOOL SpoolJob(HANDLE hPrinter, LPSTR SpoolName)
 	{
 		HANDLE	hFile;
 
-		// EMF┐t┐@┐C┐▀┌П┼J┌╜
+		// EMFЦ┐∙Ц┌║Ц┌╓Ц┐╚Ц┌▓И√▀Ц│▐
 		hFile = CreateFile(
 							SpoolName,
 							GENERIC_READ,
@@ -224,7 +224,7 @@ BOOL SpoolJob(HANDLE hPrinter, LPSTR SpoolName)
 				Total += ReadSize;
 				cnt++;
 
-				//TODO│F∙K≈v│H
+				//TODOО╪ Е©┘Х╕│О╪÷
 				if ( cnt%30 == 0 )
 				{
 					ReadSize = 0;

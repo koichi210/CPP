@@ -1,31 +1,31 @@
-// SendSpoolFileDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// SendSpoolFileDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 BOOL SpoolJob(HANDLE hPrinter, LPSTR SpoolName);
 
 #pragma once
 #define MAX_BUFF	(4096)
 
-// CSendSpoolFileDlg ƒ_ƒCƒAƒƒO
+// CSendSpoolFileDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class CSendSpoolFileDlg : public CDialog
 {
-// ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 public:
-	CSendSpoolFileDlg(CWnd* pParent = NULL);	// •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	CSendSpoolFileDlg(CWnd* pParent = NULL);	// æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-	void AddMyPrinter(DWORD PrinterEnumId);	// ƒvƒŠƒ“ƒ^’Ç‰Á
+	void AddMyPrinter(DWORD PrinterEnumId);	// ãƒ—ãƒªãƒ³ã‚¿è¿½åŠ 
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_SPOOLJOB2_DIALOG };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 
 
-// À‘•
+// å®Ÿè£…
 protected:
 	HICON m_hIcon;
 
-	// ¶¬‚³‚ê‚½AƒƒbƒZ[ƒWŠ„‚è“–‚ÄŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²ã‚Šå½“ã¦é–¢æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
