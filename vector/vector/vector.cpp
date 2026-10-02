@@ -1,4 +1,4 @@
-// vector.cpp : �R���\�[�� �A�v���P�[�V�����̃G���g�� �|�C���g���`���܂��B
+﻿// vector.cpp : コンソール アプリケーションのエントリ ポイントを定義します。
 //
 
 #include "stdafx.h"
@@ -10,11 +10,11 @@ using namespace std;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	// push_back()	�v�f�̒ǉ�
-	// clear()		�v�f�̃N���A
-	// size()		�z��̑傫���𓾂�֐�
-	// capacity()	���I�z��ɒǉ��ł���v�f�̋��e��
-	// empty()		�v�f���󂩂ǂ����𒲂ׂ�
+	// push_back()	要素の追加
+	// clear()		要素のクリア
+	// size()		配列の大きさを得る関数
+	// capacity()	動的配列に追加できる要素の許容量
+	// empty()		要素が空かどうかを調べる
 
 	vector<int> v1;
     vector<string> v2;
