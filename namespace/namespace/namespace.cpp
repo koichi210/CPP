@@ -1,30 +1,28 @@
-﻿// namespace.cpp : コンソール アプリケーションのエントリ ポイントを定義します。
-//
+﻿// namespace.cpp : 名前空間の使い方を確認するコンソールアプリ
 
 #include "stdafx.h"
-#include<iostream>
+#include <iostream>
 
-using namespace std;
-
+// クラス・変数・関数を名前空間に入れ、Greeting:: で修飾して使う
 namespace Greeting
 {
-	class Portugues{};
+	class Portugues {};
 
-	char *Spanish = "Hola\n";
+	const char* Spanish = "Hola\n";
 
 	void English()
 	{
-		cout << "Hello World\n";
+		std::cout << "Hello World\n";
 	}
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 {
-	Greeting::Portugues;
+	Greeting::Portugues portugues;
+	(void)portugues;
 
-	cout << Greeting::Spanish;
+	std::cout << Greeting::Spanish;
 	Greeting::English();
 
 	return 0;
 }
-
