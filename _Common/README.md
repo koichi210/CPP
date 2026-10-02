@@ -9,6 +9,7 @@ MFC（MBCS / Shift-JIS）アプリ向けの共通部品。各プロジェクト�
 | `CommonCtrl` | `CBitmapStatic` / `CRestrictedEdit` / `CPopupEdit` / `CPopupList` / `CEditableListCtrl` / `CIconComboBox` / `CSimpleListCtrl` |
 | `InputSimulator` | キーボード・マウス入力のエミュレート |
 | `FileComparer` | 2ファイルのバイナリ比較 |
+| `WorkerThreads` | ワーカースレッドの起動と、ウィンドウを閉じる前の終了待ち（メッセージを処理しながら待つのでデッドロックしない） |
 
 ## プロジェクトへの組み込み
 
