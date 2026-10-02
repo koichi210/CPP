@@ -1,376 +1,226 @@
-﻿// EventHookd.cpp : DLL アプリケーションのエントリ ポイントを定義します。
-//
-#include <stdio.h>
+﻿// EventHookd.cpp : マウス・キーボードのグローバルフック DLL
+
 #include "stdafx.h"
 #include "EventHookd.h"
 
-// 共有メモリ
+#include <cctype>
+#include <cstdio>
+
+// フックの登録状態と、前回イベントの時刻
+// （.shared セクションに置いているが、.def をリンクしていないため現状はプロセス間で共有されない）
 #pragma data_seg(".shared")
-HHOOK		ghKeyHook = NULL;
-HHOOK		ghMouseHook = NULL;
-SYSTEMTIME	gOld_tm = {0,0,0,0,0,0,0,0};
+HHOOK		g_hKeyHook = NULL;
+HHOOK		g_hMouseHook = NULL;
+SYSTEMTIME	g_lastEventTime = {0,0,0,0,0,0,0,0};
 #pragma data_seg()
-HINSTANCE	ghInst = NULL;
-BOOL		m_IsDebug = FALSE;
 
-BOOL APIENTRY DllMain( HANDLE hinstDLL, DWORD fdwReason, LPVOID lpvReserved )
+namespace
 {
-	switch( fdwReason )
+	HINSTANCE	g_hInstance = nullptr;
+	BOOL		g_isDebug = FALSE;
+
+	constexpr char LOG_FILE_NAME[] = "MacroLog.txt";
+
+	// MacroTool の設定ファイル1行と同じ並び
+	// 実行回数, 遅延(ms), イベント種別, X, Y, マウス操作, 修飾キー, キー種別, キー文字列, コメント
+	constexpr char LOG_FORMAT[] = "%3d,%8d,%2d,%4d,%4d,%2d,%2d,%2d,%s,%s\n";
+
+	constexpr int DEFAULT_EXECUTE_COUNT = 1;
+	constexpr int EVENT_MOUSE = 1;
+	constexpr int EVENT_KEY = 2;
+
+	constexpr DWORD MODIFIER_SHIFT = 0x0001;
+	constexpr DWORD MODIFIER_CTRL = 0x0002;
+
+	// MacroTool のマウス操作の番号
+	constexpr int MOUSEOP_LDOWN = 1;
+	constexpr int MOUSEOP_LUP = 2;
+	constexpr int MOUSEOP_RDOWN = 4;
+	constexpr int MOUSEOP_RUP = 5;
+	constexpr int MOUSEOP_NONE = -1;		// 記録しない
+
+	constexpr int HOURS_PER_DAY = 24;
+	constexpr int MINUTES_PER_HOUR = 60;
+	constexpr int SECONDS_PER_MINUTE = 60;
+	constexpr int MSEC_PER_SECOND = 1000;
+
+	bool IsPressed(int virtualKey)
 	{
-		case DLL_PROCESS_ATTACH:
-			ghInst = (HINSTANCE)hinstDLL;
-			break;
-		default :
-			break;
+		return (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
+	}
+
+	bool IsShiftPressed()	{ return IsPressed(VK_LSHIFT) || IsPressed(VK_RSHIFT); }
+	bool IsControlPressed()	{ return IsPressed(VK_LCONTROL) || IsPressed(VK_RCONTROL); }
+
+	// 前回のイベントからの経過時間(ms)
+	DWORD ElapsedTime()
+	{
+		DWORD msec = 0;
+		SYSTEMTIME now;
+
+		GetSystemTime(&now);
+		if (now.wYear != 0)	// まれに取得できないことがあった
+		{
+			msec += now.wDay - g_lastEventTime.wDay;
+			msec *= HOURS_PER_DAY;
+			msec += now.wHour - g_lastEventTime.wHour;
+			msec *= MINUTES_PER_HOUR;
+			msec += now.wMinute - g_lastEventTime.wMinute;
+			msec *= SECONDS_PER_MINUTE;
+			msec += now.wSecond - g_lastEventTime.wSecond;
+			msec *= MSEC_PER_SECOND;
+			msec += now.wMilliseconds - g_lastEventTime.wMilliseconds;
+
+			g_lastEventTime = now;
+		}
+		return msec;
+	}
+
+	void WriteLog(const char* text)
+	{
+		if (!g_isDebug)
+		{
+			return;
+		}
+
+		FILE* fp = fopen(LOG_FILE_NAME, "a");
+		if (fp)
+		{
+			fputs(text, fp);
+			fclose(fp);
+		}
+	}
+
+	// 押された英数字キーと修飾キーを取り出す（英数字以外・キーを離したときは false）
+	bool GetKeyParameter(WPARAM wParam, DWORD& modifiers, char& key)
+	{
+		int virtualKey = static_cast<int>(wParam);
+
+		// ファンクションキー等には未対応
+		if (!isalpha(virtualKey) && !isdigit(virtualKey))
+		{
+			return false;
+		}
+
+		// wParam だけではキーを押したときと離したとき両方が来るので、押されているかを確かめる
+		if (!IsPressed(virtualKey))
+		{
+			return false;
+		}
+
+		if (IsControlPressed())
+		{
+			modifiers |= MODIFIER_CTRL;
+		}
+		if (IsShiftPressed())
+		{
+			modifiers |= MODIFIER_SHIFT;
+		}
+		else if ('A' <= virtualKey && virtualKey <= 'Z')
+		{
+			// Shift が押されていなければ小文字にする
+			virtualKey += 'a' - 'A';
+		}
+		key = static_cast<char>(virtualKey);
+		return true;
+	}
+
+	// マウスのメッセージを MacroTool のマウス操作に変換する（移動などは記録しない）
+	int ToMouseOperation(WPARAM message)
+	{
+		switch (message)
+		{
+		case WM_LBUTTONDOWN:	return MOUSEOP_LDOWN;
+		case WM_LBUTTONUP:		return MOUSEOP_LUP;
+		case WM_RBUTTONDOWN:	return MOUSEOP_RDOWN;
+		case WM_RBUTTONUP:		return MOUSEOP_RUP;
+		default:				return MOUSEOP_NONE;
+		}
+	}
+
+	LRESULT CALLBACK KeyHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+	{
+		if (nCode == HC_ACTION)
+		{
+			DWORD modifiers = 0;
+			char key[2] = {};
+			if (GetKeyParameter(wParam, modifiers, key[0]))
+			{
+				char text[MAX_PATH];
+				sprintf_s(text, LOG_FORMAT,
+					DEFAULT_EXECUTE_COUNT, ElapsedTime(), EVENT_KEY,
+					0, 0, 0,
+					modifiers, 0, key, "");
+				WriteLog(text);
+			}
+		}
+		return CallNextHookEx(g_hKeyHook, nCode, wParam, lParam);
+	}
+
+	LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+	{
+		if (nCode == HC_ACTION)
+		{
+			const int operation = ToMouseOperation(wParam);
+			if (operation != MOUSEOP_NONE)
+			{
+				POINT pt;
+				GetCursorPos(&pt);
+
+				char text[MAX_PATH];
+				sprintf_s(text, LOG_FORMAT,
+					DEFAULT_EXECUTE_COUNT, ElapsedTime(), EVENT_MOUSE,
+					pt.x, pt.y, operation,
+					0, 0, "", "");
+				WriteLog(text);
+			}
+		}
+		return CallNextHookEx(g_hMouseHook, nCode, wParam, lParam);
+	}
+}
+
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
+{
+	if (reason == DLL_PROCESS_ATTACH)
+	{
+		g_hInstance = hModule;
 	}
 	return TRUE;
 }
 
-EXPORTS BOOL StartKeyHook()
+HOOKD_API BOOL StartKeyHook()
 {
-	ghKeyHook = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)KeyHookProc, ghInst, 0);
-	if ( ! ghKeyHook )
+	g_hKeyHook = SetWindowsHookEx(WH_KEYBOARD, KeyHookProc, g_hInstance, 0);
+	if (!g_hKeyHook)
 	{
 		return FALSE;
 	}
-	GetSystemTime(&gOld_tm);
+	GetSystemTime(&g_lastEventTime);
 	return TRUE;
 }
 
-EXPORTS BOOL StartMouseHook()
+HOOKD_API BOOL StartMouseHook()
 {
-	ghMouseHook = SetWindowsHookEx(WH_MOUSE, (HOOKPROC)MouseHookProc, ghInst, 0);
-	if ( ! ghMouseHook )
+	g_hMouseHook = SetWindowsHookEx(WH_MOUSE, MouseHookProc, g_hInstance, 0);
+	if (!g_hMouseHook)
 	{
 		return FALSE;
 	}
-	GetSystemTime(&gOld_tm);
+	GetSystemTime(&g_lastEventTime);
 	return TRUE;
 }
 
-EXPORTS BOOL StopKeyHook()
+HOOKD_API BOOL StopKeyHook()
 {
-	if ( ! UnhookWindowsHookEx(ghKeyHook) )
-	{
-		return FALSE;
-	}
-	return TRUE;
+	return UnhookWindowsHookEx(g_hKeyHook) ? TRUE : FALSE;
 }
 
-EXPORTS BOOL StopMouseHook()
+HOOKD_API BOOL StopMouseHook()
 {
-	if ( ! UnhookWindowsHookEx(ghMouseHook) )
-	{
-		return FALSE;
-	}
-	return TRUE;
+	return UnhookWindowsHookEx(g_hMouseHook) ? TRUE : FALSE;
 }
 
-EXPORTS void DebugMode(BOOL IsDebug)
+HOOKD_API void DebugMode(BOOL IsDebug)
 {
-	m_IsDebug = IsDebug;
+	g_isDebug = IsDebug;
 }
-
-LRESULT CALLBACK KeyHookProc(int nCode, WPARAM wParam, LPARAM lParam)
-{
-	if ( nCode == HC_ACTION )
-	{
-		DWORD dwCap = 0;
-		TCHAR key[2];
-
-		memset(&key, 0 , sizeof(key));
-		if ( GetKeyParameter(wParam, &dwCap, key) )
-		{
-			TCHAR str[MAX_PATH];
-
-			memset(&str, 0, sizeof(str));
-			sprintf(str, STR_LOG_FMT,
-				DEF_EXE_NUM,	//m_tmpEvent[i].nExe
-				ElapsedTime(),	//m_tmpEvent[i].sleep
-				EVENT_KEY,		//m_tmpEvent[i].nEvent
-				0,				//m_tmpEvent[i].evMouse.pt.x
-				0,				//m_tmpEvent[i].evMouse.pt.y
-				0,				//m_tmpEvent[i].evMouse.nOpe
-				dwCap,			//m_tmpEvent[i].evKey.dwCap
-				0,				//m_tmpEvent[i].evKey.keyEx
-				key,			//m_tmpEvent[i].evKey.key
-				""				//m_tmpEvent[i].evKey.comment
-				);
-			WriteLog(str);
-		}
-	}
-	return CallNextHookEx(ghKeyHook, nCode, wParam, lParam);
-}
-
-LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
-{
-	if ( nCode == HC_ACTION )
-	{
-		int nCap = 0;
-
-		// Mouse Move等はロギングしない。
-		if ( GetMouseParameter(wParam, &nCap) )
-		{
-			POINT pt;
-			TCHAR str[MAX_PATH];
-
-			GetCursorPos(&pt);
-			sprintf(str,STR_LOG_FMT,
-						DEF_EXE_NUM,	//m_tmpEvent[i].nExe
-						ElapsedTime(),	//m_tmpEvent[i].sleep
-						EVENT_MOUSE,	//m_tmpEvent[i].nEvent
-						pt.x,			//m_tmpEvent[i].evMouse.pt.x
-						pt.y,			//m_tmpEvent[i].evMouse.pt.y
-						nCap,			//m_tmpEvent[i].evMouse.nOpe
-						0,				//m_tmpEvent[i].evKey.dwCap
-						0,				//m_tmpEvent[i].evKey.keyEx
-						"",				//m_tmpEvent[i].evKey.key
-						""				//m_tmpEvent[i].evKey.comment
-						);
-			WriteLog(str);
-		}
-	}
-	return CallNextHookEx(ghMouseHook, nCode, wParam, lParam);
-}
-
-BOOL GetKeyParameter(WPARAM wParam, DWORD *dwCap, TCHAR *key)
-{
-	int nKey = (int)wParam;
-	BOOL bProc = TRUE;
-
-	if ( ! dwCap || ! key )
-	{
-		bProc = FALSE;
-	}
-
-	// 数値 or アルファベットでなければ何もしない
-	// Functionキー等の処理に対応していないため
-	if ( bProc )
-	{
-		if ( ! isalpha(nKey) && ! isdigit(nKey) )
-		{
-			bProc = FALSE;
-		}
-	}
-
-	// 対象のキーが押されているか判別
-	if ( bProc )
-	{
-		// 特定のキーを判別するだけなら GetAsyncKeyState(vk) でも良い
-		//BYTE bKey[MAX_PATH];
-		//if ( GetKeyboardState(bKey) ) 
-		//{
-		//	bProc = IsKeyDown(bKey[nKey]);
-		//}
-
-		// wParamだけでは、KEY_UPとKEY_DOWN両方のイベントが飛んできちゃうので、押されてるかどうかをちゃんとチェック
-		short sKey = GetAsyncKeyState(nKey);
-		bProc = IsKeyDown(sKey);
-	}
-
-	// 処理
-	if ( bProc )
-	{
-		if ( IsControlKeyDown() )
-		{
-			*dwCap |= BF_CAPS_KEY_CTRL;
-		}
-
-		if ( IsShiftKeyDown() )
-		{
-			*dwCap |= BF_CAPS_KEY_SHIFT;
-		}
-		else
-		{
-			// ShiftKeyが押されていなかったら、大文字を小文字に変換
-			MyTolower(&nKey);
-		}
-		*key = (TCHAR)nKey;
-	}
-
-	return bProc;
-}
-
-BOOL GetMouseParameter(WPARAM wParam, int *nCap)
-{
-	BOOL bProc = TRUE;
-
-	if ( ! nCap )
-	{
-		bProc = FALSE;
-	}
-
-	// wParam = イベント名
-	switch(wParam)
-	{
-		case WM_LBUTTONDOWN :		*nCap = MOUSE_OPERATION_LDOWN;	break;
-		case WM_LBUTTONUP :			*nCap = MOUSE_OPERATION_LUP;	break;
-		//case WM_LBUTTONDBLCLK :	*nCap = 0;						break;
-		case WM_RBUTTONDOWN :		*nCap = MOUSE_OPERATION_RDOWN;	break;
-		case WM_RBUTTONUP :			*nCap = MOUSE_OPERATION_RUP;	break;
-		case WM_MOUSEMOVE :			*nCap = MOUSE_OPERATION_MOVE;	// no break
-		default :					bProc = FALSE;					break;
-	}
-
-	return bProc;
-}
-
-void WriteLog(char *string)
-{
-	if ( !m_IsDebug)
-	{
-		return;
-	}
-
-	char fname[MAX_PATH];
-	//char TempDir[MAX_PATH];
-	//GetTempPath( sizeof(TempDir), TempDir);
-	//sprintf(fname, "%s\\%s",TempDir, DLL_LOG_FNAME);
-	strcpy(fname, DLL_LOG_FNAME);
-
-	FILE *fp = fopen(fname, "a");
-	if ( fp )
-	{
-		fputs(string, fp);
-		fclose(fp);
-	}
-}
-
-DWORD ElapsedTime()
-{
-	DWORD msec = 0;
-	SYSTEMTIME	new_tm;
-
-	GetSystemTime(&new_tm);
-	if ( new_tm.wYear != 0 ) //TODO：たまに取れないときがある	
-	{
-		int temp ;
-
-//		temp = new_tm.wYear - gOld_tm.wYear;
-//		temp = new_tm.wMonth - gOld_tm.wMonth;
-
-		// 日
-		temp = new_tm.wDay - gOld_tm.wDay;
-		msec += temp;
-		msec *= MAX_HOUR;
-
-		// 時間
-		temp = new_tm.wHour - gOld_tm.wHour;
-		msec += temp;
-		msec *= MAX_MINUTES;
-
-		// 分
-		temp = new_tm.wMinute - gOld_tm.wMinute;
-		msec += temp;
-		msec *= MAX_MINUTES;
-
-		// 秒
-		temp = new_tm.wSecond - gOld_tm.wSecond;
-		msec += temp;
-		msec *= MAX_MSEONDS;
-
-		// ミリ秒
-		temp = new_tm.wMilliseconds - gOld_tm.wMilliseconds;
-		msec += temp;
-
-		gOld_tm = new_tm;
-	}
-
-	return msec;
-}
-
-// utility に移動 +
-BOOL IsKeyDown(int nKey)
-{
-	BOOL bReturn = FALSE;
-
-#if 0 // 複数のキーを一括で確認する場合
-	BYTE bKey[MAX_PATH];
-	if ( GetKeyboardState(bKey) ) // 特定のキーを判別するだけなら GetAsyncKeyState(vk) でも良い
-	{
-		// KEY_UP（キーを離した）イベントであれば無視
-		if ( IsKeyDown(bKey[nKey] )
-		{
-			bReturn = TRUE;
-		}
-	}
-#else
-	short sKey = GetAsyncKeyState(nKey);
-
-	if ( IsKeyDown(sKey) )
-	{
-		bReturn = TRUE;
-	}
-#endif
-
-	return bReturn;
-}
-
-BOOL IsShiftKeyDown()
-{
-	BOOL bReturn = FALSE;
-	short sLkey = GetAsyncKeyState(VK_LSHIFT);
-	short sRkey = GetAsyncKeyState(VK_RSHIFT);
-
-	if ( IsKeyDown(sLkey) ||
-		 IsKeyDown(sRkey) )
-	{
-		bReturn = TRUE;
-	}
-
-	return bReturn;
-}
-
-BOOL IsControlKeyDown()
-{
-	BOOL bReturn = FALSE;
-	short sLkey = GetAsyncKeyState(VK_LCONTROL);
-	short sRkey = GetAsyncKeyState(VK_RCONTROL);
-
-	if ( IsKeyDown(sLkey) ||
-		 IsKeyDown(sRkey) )
-	{
-		bReturn = TRUE;
-	}
-
-	return bReturn;
-}
-
-BOOL IsKeyDown(short sKey)
-{
-	BOOL bReturn = FALSE;
-
-	if ( sKey & 0x8000 )
-	{
-		bReturn = TRUE;
-	}
-	return bReturn;
-}
-
-BOOL IsKeyDown(BYTE bKey)
-{
-	BOOL bReturn = FALSE;
-
-	if ( bKey & 0x80 )
-	{
-		bReturn = TRUE;
-	}
-	return bReturn;
-}
-
-void MyTolower(int *nKey)
-{
-	if ( ! nKey )
-	{
-		return;
-	}
-
-	if ( 'A' <= *nKey && *nKey <= 'Z' )
-	{
-		//tolower(*nKey);
-		*nKey += 'a' - 'A';
-	}
-}
-
-// utility に移動 -
- 

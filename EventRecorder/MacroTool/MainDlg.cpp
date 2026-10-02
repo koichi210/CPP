@@ -1,120 +1,190 @@
-﻿// MainDlg.cpp : 実装ファイル
-//
+﻿// MainDlg.cpp : メインダイアログ（マクロの実行・停止と設定画面の呼び出し）
 
-#include <process.h>
 #include "stdafx.h"
-#include "MainDlg.h"
 #include "MacroTool.h"
+#include "MainDlg.h"
 #include "MacroToolDlg.h"
+#include "InputSimulator.h"
+#include "CommonUtil.h"
 
-#define WM_ENDPROC	WM_USER+100
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
 
-typedef struct
+namespace
 {
-	HWND			hWnd;
-	CMacroToolDlg	*pParent;
-	BOOL			*bpProcFlg;
-	UINT			nRepeat;
-	UINT			nRepeatTime;
-	char			strTitle[MAX_PATH];
-	EVENT			strEvent[MAXNUM_CLOUMN];
-} sPROCSETTINGS;
+	constexpr UINT WM_PLAY_FINISHED = WM_USER + 100;	// 実行スレッドの終了通知
 
-UINT ProcThread(LPVOID pParam);
-unsigned __stdcall fnProc(PVOID param);
-void SleepCnt(int sleep, BOOL *bpProcFlg);
-void fnProcMouse(EVENTMOUSE evMouse);
-void fnProcKey(EVENTKEY	evKey);
+	constexpr UINT DEFAULT_REPEAT_COUNT = 1;
+	constexpr UINT DEFAULT_REPEAT_DELAY_MSEC = 100;
+	constexpr DWORD START_WAIT_MSEC = 1000;				// 「実行」を押してから動き出すまで
+	constexpr TCHAR DEFAULT_SETTING_FILE[] = _T("save.txt");
+	constexpr TCHAR START_TITLE[] = _T("[開始]");
 
+	// 待ち時間の間、1秒ごとに押すキー（画面のロック防止用。VK_CAPITAL 等を指定する）
+	constexpr int FLICKER_KEY = VK_NONE;
 
+	// 実行スレッドに渡す設定（スレッド側で解放する）
+	struct PLAYSETTINGS
+	{
+		HWND						hWnd;
+		const std::atomic<bool>*	pRunning;
+		UINT						repeatCount;
+		UINT						repeatDelayMsec;
+		std::vector<MACROEVENT>		events;
+	};
 
-// CMainDlg ダイアログ
-IMPLEMENT_DYNAMIC(CMainDlg, CDialog)
+	// 1秒ずつ待ちながら停止要求を確かめる
+	void SleepWithFlicker(int sleepMsec, const std::atomic<bool>& running)
+	{
+		// 1秒未満の端数を先に待つ
+		Sleep(sleepMsec % 1000);
 
-CMainDlg::CMainDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CMainDlg::IDD, pParent)
-{
-	m_nRepeatNum = DEF_REPEATNUM;
-	m_nRepeatDelayMsec = DEF_REPEATTIME;
-	m_hThread = NULL;
-	m_bProcFlg = FALSE;
-	memset(&m_strEvent, 0, sizeof(m_strEvent));
-	memset(&m_strTitle, 0, sizeof(m_strTitle));
+		int count = 0;
+		for (int i = 0; i < sleepMsec / 1000 && running; i++)
+		{
+			CInputSimulator::FunctionKeyAction(static_cast<BYTE>(FLICKER_KEY));
+			count++;
+			Sleep(1000);
+		}
+
+		// トグルするキーを元の状態に戻す
+		if (count % 2)
+		{
+			CInputSimulator::FunctionKeyAction(static_cast<BYTE>(FLICKER_KEY));
+		}
+	}
+
+	void PlayMouse(const MACROMOUSE& mouse)
+	{
+		CInputSimulator::MouseMove(mouse.pt);
+		switch (mouse.operation)
+		{
+		default:
+		case MOUSEOP_LCLICK:	CInputSimulator::MouseLButtonClick();	break;
+		case MOUSEOP_LDOWN:		CInputSimulator::MouseLButtonDown();	break;
+		case MOUSEOP_LUP:		CInputSimulator::MouseLButtonUp();		break;
+		case MOUSEOP_RCLICK:	CInputSimulator::MouseRButtonClick();	break;
+		case MOUSEOP_RDOWN:		CInputSimulator::MouseRButtonDown();	break;
+		case MOUSEOP_RUP:		CInputSimulator::MouseRButtonUp();		break;
+		case MOUSEOP_MOVE:												break;
+		}
+	}
+
+	void PlayKey(const MACROKEY& key)
+	{
+		// 修飾キーを押したまま入力する
+		if (key.modifiers & MODIFIER_SHIFT)	CInputSimulator::KeyAction(VK_SHIFT, TRUE);
+		if (key.modifiers & MODIFIER_CTRL)	CInputSimulator::KeyAction(VK_CONTROL, TRUE);
+		if (key.modifiers & MODIFIER_ALT)	CInputSimulator::KeyAction(VK_MENU, TRUE);
+
+		if (KEYKIND_F1 <= key.keyKind && key.keyKind <= KEYKIND_F12)
+		{
+			CInputSimulator::FunctionKeyAction(static_cast<BYTE>(VK_F1 + key.keyKind - KEYKIND_F1));
+		}
+		else
+		{
+			for (const char* p = key.text; *p != '\0'; p++)
+			{
+				CInputSimulator::KeyAction(static_cast<WORD>(*p));
+			}
+		}
+
+		if (key.modifiers & MODIFIER_SHIFT)	CInputSimulator::KeyAction(VK_SHIFT, FALSE);
+		if (key.modifiers & MODIFIER_CTRL)	CInputSimulator::KeyAction(VK_CONTROL, FALSE);
+		if (key.modifiers & MODIFIER_ALT)	CInputSimulator::KeyAction(VK_MENU, FALSE);
+	}
+
+	UINT PlayThreadProc(LPVOID pParam)
+	{
+		std::unique_ptr<PLAYSETTINGS> pSettings(static_cast<PLAYSETTINGS*>(pParam));
+		const std::atomic<bool>& running = *pSettings->pRunning;
+
+		for (UINT i = 0; i < pSettings->repeatCount && running; i++)
+		{
+			for (int j = 0; j < MAX_EVENT_COUNT && running; j++)
+			{
+				const MACROEVENT& ev = pSettings->events[j];
+				if (ev.kind == EventKind::None)
+				{
+					break;	// これ以降は未設定
+				}
+
+				for (int k = 0; k < ev.execCount; k++)
+				{
+					// タイトルに「何周目:何行目:何回目」を出す
+					CString title;
+					title.Format(_T("[(%d:%d:%d)]"), i + 1, j + 1, k + 1);
+					::SetWindowText(pSettings->hWnd, title);
+
+					// 待ってから、動かす前に停止要求を確かめる
+					SleepWithFlicker(static_cast<int>(ev.sleepMsec), running);
+					if (!running)
+					{
+						break;
+					}
+
+					if (ev.kind == EventKind::Mouse)
+					{
+						PlayMouse(ev.mouse);
+					}
+					else
+					{
+						PlayKey(ev.key);
+					}
+				}
+			}
+			SleepWithFlicker(static_cast<int>(pSettings->repeatDelayMsec), running);
+		}
+		::PostMessage(pSettings->hWnd, WM_PLAY_FINISHED, 0, 0);
+
+		return TRUE;
+	}
 }
 
-CMainDlg::~CMainDlg()
+CMainDlg::CMainDlg(CWnd* pParent)
+	: CDialog(IDD, pParent)
+	, m_events(MAX_EVENT_COUNT)
+	, m_repeatCount(DEFAULT_REPEAT_COUNT)
+	, m_repeatDelayMsec(DEFAULT_REPEAT_DELAY_MSEC)
 {
 }
-
-void CMainDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-}
-
 
 BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
-	ON_BN_CLICKED(IDBT_SETTING, OnSetting)
-	ON_BN_CLICKED(IDBT_EXEC, OnExec)
-    ON_MESSAGE(WM_ENDPROC, OnEndProc)
-	ON_BN_CLICKED(IDBT_STOP, OnStop)
-	ON_BN_CLICKED(IDCLOSE, OnClose)
+	ON_BN_CLICKED(IDBT_SETTING, &CMainDlg::OnSetting)
+	ON_BN_CLICKED(IDBT_EXEC, &CMainDlg::OnExec)
+	ON_BN_CLICKED(IDBT_STOP, &CMainDlg::OnStop)
+	ON_BN_CLICKED(IDCLOSE, &CMainDlg::OnBnClickedClose)
+	ON_MESSAGE(WM_PLAY_FINISHED, &CMainDlg::OnPlayFinished)
 END_MESSAGE_MAP()
 
-
-// CMainDlg メッセージ ハンドラ
 BOOL CMainDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	//初期表示
-	m_ver.LoadString(IDS_VERSION);
-	SetWindowText(m_ver);
+	m_version.LoadString(IDS_VERSION);
+	SetWindowText(m_version);
 
 	return TRUE;
 }
 
-
 void CMainDlg::OnSetting()
 {
-	CString str;
-	GetDlgItem(IDET_SAMPLE)->GetWindowText(str);
+	// 設定ファイルはカレントディレクトリに置く
+	CString name;
+	GetDlgItemText(IDET_SAMPLE, name);
+	CString path(_T(".\\"));
+	path += name.IsEmpty() ? CString(DEFAULT_SETTING_FILE) : name;
 
-	//カレントディレクトリを設定
-#if USER_DIRECTORY
-	char path[MAX_PATH];
-	if ( SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path) == S_OK )
+	CMacroToolDlg dlg(this, path, m_events, m_repeatCount, m_repeatDelayMsec);
+	if (dlg.DoModal() == IDOK)
 	{
-		m_fName.SetString(path);
-	}
-#else
-	m_fName.SetString(".");
-#endif
+		m_events = dlg.GetEvents();
 
-	//カレントファイル名を設定
-	m_fName.Append("\\");
-	if ( str.IsEmpty() )
-	{
-		m_fName.Append(STR_SAVE_FNAME);
-	}
-	else
-	{
-		m_fName.Append(str);
-	}
-
-	CMacroToolDlg gmpDlg(this, m_fName);
-	INT_PTR nResponse = gmpDlg.DoModal();
-	if ( nResponse == IDOK )
-	{
-		gmpDlg.GetSettings(m_strEvent, sizeof(m_strEvent));
-
-		char fname[MAX_PATH];
-		_splitpath_s(gmpDlg.GetSettingFileName(),
-			NULL, 0,
-			NULL, 0,
-			fname, sizeof(fname),
-			NULL, 0);
-		strcpy(m_strTitle, (LPCTSTR)fname);
-		GetDlgItem(IDET_SAMPLE)->SetWindowText(m_strTitle);
+		// 拡張子を除いたファイル名を表示する
+		CString fileTitle;
+		SplitPath(dlg.GetFileName(), nullptr, nullptr, &fileTitle, nullptr);
+		SetDlgItemText(IDET_SAMPLE, fileTitle);
 	}
 }
 
@@ -123,318 +193,44 @@ void CMainDlg::OnExec()
 	GetDlgItem(IDBT_EXEC)->EnableWindow(FALSE);
 	GetDlgItem(IDBT_SETTING)->EnableWindow(FALSE);
 
-	sPROCSETTINGS	*pProcSettings;
-	pProcSettings = (sPROCSETTINGS *) new sPROCSETTINGS;
+	CString title;
+	title.Format(_T("%s %s"), static_cast<LPCTSTR>(m_version), START_TITLE);
+	SetWindowText(title);
 
-	CString sTitle;
-	sTitle.Format("%s %s", m_ver, STR_START_PROC);
-	SetWindowText(sTitle);
+	Sleep(START_WAIT_MSEC);
 
-	Sleep(START_WAIT_TIME);
+	auto pSettings = std::make_unique<PLAYSETTINGS>();
+	pSettings->hWnd = m_hWnd;
+	pSettings->pRunning = &m_running;
+	pSettings->repeatCount = m_repeatCount;
+	pSettings->repeatDelayMsec = m_repeatDelayMsec;
+	pSettings->events = m_events;
 
-	if ( pProcSettings )
-	{
-		pProcSettings->hWnd = m_hWnd;
-		pProcSettings->pParent = (CMacroToolDlg *)GetParent();
-		pProcSettings->bpProcFlg = &m_bProcFlg;
-		pProcSettings->nRepeat = m_nRepeatNum;
-		pProcSettings->nRepeatTime = m_nRepeatDelayMsec;
-		strcpy(pProcSettings->strTitle, m_strTitle);
-
-		memcpy(pProcSettings->strEvent, m_strEvent, sizeof(pProcSettings->strEvent));
-
-		m_bProcFlg = TRUE;
-#ifdef BEGINTHREADEX
-		m_hThread = (HANDLE)_beginthreadex(NULL, 0, fnProc, pProcSettings, 0, NULL);
-#else
-		AfxBeginThread(ProcThread, pProcSettings);
-#endif
-	}
+	m_running = true;
+	AfxBeginThread(PlayThreadProc, pSettings.release());
 }
 
-LRESULT CMainDlg::OnEndProc(UINT wParam, LONG lParam)
+LRESULT CMainDlg::OnPlayFinished(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	if ( m_hThread != NULL )
-	{
-		CloseHandle(m_hThread);
-		m_hThread = NULL;
-	}
 	OnStop();
 	ShowWindow(SW_RESTORE);
-
 	return TRUE;
 }
 
 void CMainDlg::OnStop()
 {
-	if ( m_bProcFlg == TRUE )
+	if (m_running)
 	{
-		SetWindowText(m_ver);
-		m_bProcFlg = FALSE;
+		SetWindowText(m_version);
+		m_running = false;
 	}
 
 	GetDlgItem(IDBT_EXEC)->EnableWindow(TRUE);
 	GetDlgItem(IDBT_SETTING)->EnableWindow(TRUE);
 }
 
-void CMainDlg::OnClose()
+void CMainDlg::OnBnClickedClose()
 {
-	if ( m_bProcFlg == TRUE )
-	{
-		//CString sTitle;
-		//sTitle.Format("%s %s", m_strTitle, STR_STOP_PROC);
-		//SetWindowText(sTitle);
-
-		m_bProcFlg = FALSE;
-		for( int i=0; i<CLOSE_WAIT_TIME;i++ )
-		{
-			if ( m_hThread == NULL )
-			{
-				break;
-			}
-			Sleep(1);
-		}
-	}
+	m_running = false;
 	OnOK();
-}
-
-UINT ProcThread(LPVOID pParam)
-{
-	sPROCSETTINGS* p=(sPROCSETTINGS*)pParam;
-	CString			tmp;
-#ifdef TODO	//メモリリーク；；
-	CString			str;
-#else
-	char			str[MAX_PATH];
-#endif
-
-	if ( p == NULL )
-	{
-		return FALSE;
-	}
-
-	for (UINT i=0; i < p->nRepeat && *p->bpProcFlg; i++)
-	{
-		for (int j=0; j < MAXNUM_CLOUMN && *p->bpProcFlg; j++)
-		{
-			// これ以上定義がないので終了
-			if ( p->strEvent[j].nEvent == EVENT_UNDEFINE )
-			{
-				break;
-			}
-
-			for (int k=0; k < p->strEvent[j].nExe; k++)
-			{
-#ifdef TODO	//メモリリーク；；
-				str.Format(
-#else
-				sprintf(str,
-#endif
-					"[(%d:%d:%d)]",
-//					p->m_ver,
-					i+1,
-//					p->nRepeat,
-					j+1,
-					k+1);
-//					p->strEvent[j].nExe);
-				SetWindowText(p->hWnd, str);
-
-				// sleep後、動作する前にフラグをチェック
-				SleepCnt(p->strEvent[j].sleep, p->bpProcFlg);
-
-				if ( *p->bpProcFlg == FALSE )
-				{
-					break;
-				}
-
-				if ( p->strEvent[j].nEvent == EVENT_MOUSE )
-				{
-					fnProcMouse(p->strEvent[j].evMouse);
-				}
-				else // if ( p->strEvent[j].nEvent == EVENT_KEY )
-				{
-					fnProcKey(p->strEvent[j].evKey);
-				}
-			}
-		}
-		SleepCnt(p->nRepeatTime, p->bpProcFlg);	// 全体を対象としたsleep時間
-	}
-	PostMessage(p->hWnd, WM_ENDPROC, NULL, NULL);
-	delete p;
-
-	return TRUE;
-}
-
-unsigned __stdcall fnProc(PVOID param)
-{
-	sPROCSETTINGS	*p = (sPROCSETTINGS *)param;
-
-	PostMessage(p->hWnd, WM_ENDPROC, NULL, NULL);
-	_endthreadex(0);
-
-	return TRUE;
-}
-
-void SleepCnt(int sleep, BOOL *bpProcFlg)
-{
-	int sec = sleep / 1000;
-	int msec = sleep % 1000;
-	CMyEvent evt;
-
-	int cnt = 0;
-
-	// 1秒未満のsleepをここで補填
-	Sleep(msec);
-
-	//1秒ずつsleepして、bpProcfFlgを見る
-	for(int i=0; i<sec && *bpProcFlg; i++)
-	{
-		evt.FunctionKeyAction(FLICKA_KEY);
-		cnt++;
-		Sleep(1000);
-	}
-
-	if ( cnt % 2 )
-	{
-		evt.FunctionKeyAction(FLICKA_KEY);
-	}
-}
-
-void fnProcMouse(EVENTMOUSE evMouse)
-{
-	CMyEvent evt;
-
-	evt.MouseMove(evMouse.pt);
-	switch ( evMouse.nOpe )
-	{
-	default : // no break
-	case MOUSE_ARRAY_LCLICK :	evt.MouseLButtonClick();break;
-	case MOUSE_ARRAY_LDOWN :	evt.MouseLButtonDown();	break;
-	case MOUSE_ARRAY_LUP :		evt.MouseLButtonUp();	break;
-	case MOUSE_ARRAY_RCLICK :	evt.MouseRButtonClick();break;
-	case MOUSE_ARRAY_RDOWN :	evt.MouseRButtonDown();	break;
-	case MOUSE_ARRAY_RUP :		evt.MouseRButtonUp();	break;
-	case MOUSE_ARRAY_MOVE :		/*evt.MouseMove();*/	break;
-	}
-}
-
-void fnProcKey(EVENTKEY	evKey)
-{
-	#define VK_FUNCTIONKEY(k)	(VK_F1   + k - KEY_ARRAY_FUNC_START)
-	#define VK_CURSOL(k)		(VK_LEFT + k - KEY_ARRAY_CURSOR_START+1)
-
-	DWORD dwCap = evKey.dwCap;
-	CMyEvent evt;
-
-	if ( dwCap & BF_CAPS_KEY_SHIFT )
-	{
-		evt.KeyAction(VK_SHIFT, TRUE);
-	}
-	if ( dwCap & BF_CAPS_KEY_CTRL )
-	{
-		evt.KeyAction(VK_CONTROL, TRUE);
-	}
-	if ( dwCap & BF_CAPS_KEY_ALT )
-	{
-		evt.KeyAction(VK_MENU, TRUE);
-	}
-
-	if ( KEY_ARRAY_FUNC_START <= evKey.keyEx && evKey.keyEx <= KEY_ARRAY_FUNC_END )
-	{
-		// function
-		evt.FunctionKeyAction(VK_FUNCTIONKEY(evKey.keyEx));
-	}
-#ifdef TODO //カーソルが動かない
-	else if ( KEY_ARRAY_CURSOR_START <= evKey.keyEx && evKey.keyEx <= KEY_ARRAY_CURSOR_END )
-	{
-		// cursol
-		evt.FunctionKeyAction(VK_CURSOL(evKey.keyEx));
-	}
-#endif
-	else // if ( evKey.keyEx == KEY_ARRAY_USER )
-	{
-		// キー入力(a to z)
-		char *key = evKey.key;
-		size_t len = strlen(evKey.key);
-		for(size_t i=0; i<len; i++)
-		{
-			evt.KeyAction(key[i]);
-		}
-	}
-
-	if ( dwCap & BF_CAPS_KEY_SHIFT )
-	{
-		evt.KeyAction(VK_SHIFT, FALSE);
-	}
-	if ( dwCap & BF_CAPS_KEY_CTRL )
-	{
-		evt.KeyAction(VK_CONTROL, FALSE);
-	}
-	if ( dwCap & BF_CAPS_KEY_ALT )
-	{
-		evt.KeyAction(VK_MENU, FALSE);
-	}
-}
-
-CString GetControlDetail(EVENT evt)
-{
-	CString str;
-
-	//設定文字列
-	if ( evt.nEvent == EVENT_KEY )
-	{
-		if ( evt.evKey.keyEx == KEY_ARRAY_USER )
-		{
-			if ( strcmp(evt.evKey.key, "") != 0 )
-			{
-				str.Format(STR_KEY_FMT, evt.evKey.key);
-			}
-		}
-		else
-		{
-			str.Format(arKey[evt.evKey.keyEx]);
-		}
-
-		if ( evt.evKey.dwCap & BF_CAPS_KEY_SHIFT )
-		{
-			str += STR_KEY_SHIFT;
-		}
-
-		if ( evt.evKey.dwCap & BF_CAPS_KEY_CTRL )
-		{
-			str += STR_KEY_CTRL;
-		}
-
-		if ( evt.evKey.dwCap & BF_CAPS_KEY_ALT )
-		{
-			str += STR_KEY_ALT;
-		}
-	}
-	else if ( evt.nEvent == EVENT_MOUSE )
-	{
-		str.Format(STR_MOUSE_POINT,arMouse[evt.evMouse.nOpe], evt.evMouse.pt.x, evt.evMouse.pt.y);
-
-		//switch (evt.evMouse.nOpe)
-		//{
-		//case IDRB_MOUSE_POINT_MOVE :
-		//default :
-		//	str.Format(STR_MOUSE_MOVE);
-		//	break ;
-		//case IDRB_MOUSE_LCLICK :
-		//	str.SetString(STR_MOUSE_LCLICK);
-		//	break ;
-		//case IDRB_MOUSE_RCLICK :
-		//	str.SetString(STR_MOUSE_RCLICK);
-		//	break ;
-		//}
-		//CString tmp;
-		//tmp.Format(STR_MOUSE_POINT, evt.evMouse.pt.x, evt.evMouse.pt.y);
-		//str += tmp;
-	}
-	else
-	{
-		str.SetString("");
-	}
-
-	return str;
 }
