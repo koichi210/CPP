@@ -1,111 +1,108 @@
-﻿// BackUpDlg.cpp : 実装ファイル
-//
+﻿// BackUpDlg.cpp : メインダイアログ
 
-#include <shlwapi.h>
-#include <shlobj.h>
 #include "stdafx.h"
 #include "BackUp.h"
 #include "BackUpDlg.h"
+#include "CommonUtil.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+namespace
+{
+	// リストのカラム
+	enum
+	{
+		SUBITEM_ENABLE_BK,
+		SUBITEM_NUMBER,
+		SUBITEM_SRC_PATH,
+		SUBITEM_DST_PATH,
+		SUBITEM_SUBDIRECTORY,
+		SUBITEM_DIFF_FILE,
+		SUBITEM_OVERWRITE,
+	};
 
-// アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
+	constexpr int LC_VAL_WIDTH = 25;	// リストのカラム幅（No・オプション）
+	constexpr int LC_STR_WIDTH = 170;	// リストのカラム幅（パス）
+
+	constexpr LPCTSTR STR_ON		= _T("有");
+	constexpr LPCTSTR STR_OFF		= _T("無");
+	constexpr LPCTSTR STR_ENABLE	= _T("○");
+	constexpr LPCTSTR STR_DISABLE	= _T("×");
+
+	constexpr LPCTSTR SET_FILE_NAME	= _T("\\BackUp.dat");
+	constexpr LPCTSTR BAT_FILE_NAME	= _T("\\BackUp.bat");
+
+	constexpr LPCTSTR BROWSE_TITLE	= _T("目的のフォルダを選択して下ちぃ。。");
+
+	// マイドキュメント直下のファイルパス（取得できなければ空）
+	CString GetDocumentsFilePath(LPCTSTR fileName)
+	{
+		TCHAR path[MAX_PATH];
+		if (SHGetFolderPath(nullptr, CSIDL_PERSONAL, nullptr, 0, path) != S_OK)
+		{
+			return CString();
+		}
+		return CString(path) + fileName;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// バージョン情報ダイアログ
 
 class CAboutDlg : public CDialog
 {
 public:
-	CAboutDlg();
-
-// ダイアログ データ
 	enum { IDD = IDD_ABOUTBOX };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
-
-// 実装
-protected:
-	DECLARE_MESSAGE_MAP()
+	CAboutDlg() : CDialog(IDD) {}
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
-{
-}
+/////////////////////////////////////////////////////////////////////////////
+// CBackUpDlg
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-END_MESSAGE_MAP()
-
-
-// CBackUpDlg ダイアログ
-
-
-
-
-CBackUpDlg::CBackUpDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CBackUpDlg::IDD, pParent)
+CBackUpDlg::CBackUpDlg(CWnd* pParent)
+	: CDialog(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	m_idx = 0;
-	m_end = END_NONE;
-	m_FileOut = FALSE;
-
-	m_bkDefault.bBkEnable = TRUE;
-	m_bkDefault.opt = SUBDIR_MASK | DIFF_MASK;
-	m_bkDefault.strDstPath = "";
-	m_bkDefault.strSrcPath = "";
 }
 
 void CBackUpDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LISTCTRL, m_listctl);
+	DDX_Control(pDX, IDC_LISTCTRL, m_listCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CBackUpDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	//}}AFX_MSG_MAP
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTCTRL, OnLvnItemchangedList)
-	ON_BN_CLICKED(IDC_BACKUP_START, OnBackupStart)
-	ON_BN_CLICKED(IDC_DIFF, OnDiff)
-	ON_BN_CLICKED(IDC_BROWSE_SRC, OnBrowseSrc)
-	ON_BN_CLICKED(IDC_BROWSE_DEST, OnBrowseDest)
-	ON_BN_CLICKED(IDC_SAVE_SETTING, OnBnClickedSaveSetting)
-	ON_BN_CLICKED(IDC_SUBDIR, OnBnClickedSubdir)
-	ON_BN_CLICKED(IDC_OVERWRITE, OnBnClickedOverWrite)
-	ON_BN_CLICKED(IDC_SELECT_BACKUP, OnBnClickedEnableBK)
-	ON_EN_CHANGE(IDC_EDIT_SRC, OnEnChangeEditSrc)
-	ON_EN_CHANGE(IDC_EDIT_DST, OnEnChangeEditDst)
-	ON_BN_CLICKED(IDC_ALL_CLEAR, OnBnClickedAllClear)
-	ON_BN_CLICKED(IDC_END_NONE, OnBnClickedEndNone)
-	ON_BN_CLICKED(IDC_END_REBOOT, OnBnClickedEndReboot)
-	ON_BN_CLICKED(IDC_END_SHUTDOWN, OnBnClickedEndShutdown)
-	ON_BN_CLICKED(IDC_END_APP, OnBnClickedEndApp)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTCTRL, &CBackUpDlg::OnLvnItemchangedList)
+	ON_BN_CLICKED(IDC_BACKUP_START, &CBackUpDlg::OnBackupStart)
+	ON_BN_CLICKED(IDC_DIFF, &CBackUpDlg::OnDiff)
+	ON_BN_CLICKED(IDC_BROWSE_SRC, &CBackUpDlg::OnBrowseSrc)
+	ON_BN_CLICKED(IDC_BROWSE_DEST, &CBackUpDlg::OnBrowseDest)
+	ON_BN_CLICKED(IDC_SAVE_SETTING, &CBackUpDlg::OnBnClickedSaveSetting)
+	ON_BN_CLICKED(IDC_SUBDIR, &CBackUpDlg::OnBnClickedSubdir)
+	ON_BN_CLICKED(IDC_OVERWRITE, &CBackUpDlg::OnBnClickedOverWrite)
+	ON_BN_CLICKED(IDC_SELECT_BACKUP, &CBackUpDlg::OnBnClickedEnableBK)
+	ON_EN_CHANGE(IDC_EDIT_SRC, &CBackUpDlg::OnEnChangeEditSrc)
+	ON_EN_CHANGE(IDC_EDIT_DST, &CBackUpDlg::OnEnChangeEditDst)
+	ON_BN_CLICKED(IDC_ALL_CLEAR, &CBackUpDlg::OnBnClickedAllClear)
+	ON_CONTROL_RANGE(BN_CLICKED, IDC_END_NONE, IDC_END_SHUTDOWN, &CBackUpDlg::OnEndOption)
 END_MESSAGE_MAP()
-
-
-// CBackUpDlg メッセージ ハンドラ
 
 BOOL CBackUpDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// "バージョン情報..." メニューをシステム メニューに追加します。
-
-	// IDM_ABOUTBOX は、システム コマンドの範囲内になければなりません。
+	// IDM_ABOUTBOX はシステムコマンドの範囲内でなければならない
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
+	if (pSysMenu != nullptr)
 	{
 		CString strAboutMenu;
 		strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -116,17 +113,14 @@ BOOL CBackUpDlg::OnInitDialog()
 		}
 	}
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// 初期化
-	CheckRadioButton( IDC_END_NONE, IDC_END_SHUTDOWN, IDC_END_NONE );
-	LCSetData();
+	CheckRadioButton(IDC_END_NONE, IDC_END_SHUTDOWN, IDC_END_NONE);
+	InitListCtrl();
 	Refresh();
 
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
 void CBackUpDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -142,19 +136,15 @@ void CBackUpDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログがメインウィンドウのため自前で描く）
 void CBackUpDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -162,7 +152,6 @@ void CBackUpDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -171,638 +160,425 @@ void CBackUpDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CBackUpDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-void CBackUpDlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
+void CBackUpDlg::OnLvnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 
-	if ( pNMLV )
+	if (pNMLV && pNMLV->iItem != m_nCurIdx)
 	{
-		if ( pNMLV->iItem != m_idx )
-		{
-			m_idx = pNMLV->iItem;
-			Refresh();
-		}
+		m_nCurIdx = pNMLV->iItem;
+		Refresh();
 	}
 	*pResult = 0;
 }
 
-
-void CBackUpDlg::LCSetData()
+void CBackUpDlg::InitListCtrl()
 {
-	LV_COLUMN	lvCol;
-	LV_ITEM		lvItem;
-	char		str[MAX_PATH];
-
-	// Column共通設定
+	LVCOLUMN lvCol;
 	lvCol.mask = LVCF_FMT | LVCF_WIDTH | LVCF_SUBITEM | LVCF_TEXT;
 	lvCol.fmt  = LVCFMT_LEFT;
 
-	// Item共通設定
+	lvCol.cx = LC_VAL_WIDTH;
+	InsertListColumn(lvCol, SUBITEM_ENABLE_BK, _T("バックアップ有効"));
+	InsertListColumn(lvCol, SUBITEM_NUMBER, _T("No"));
+	lvCol.cx = LC_STR_WIDTH;
+	InsertListColumn(lvCol, SUBITEM_SRC_PATH, _T("元フォルダ"));
+	InsertListColumn(lvCol, SUBITEM_DST_PATH, _T("先フォルダ"));
+	lvCol.cx = LC_VAL_WIDTH;
+	InsertListColumn(lvCol, SUBITEM_SUBDIRECTORY, _T("サブディレクトリも対象"));
+	InsertListColumn(lvCol, SUBITEM_DIFF_FILE, _T("差分ファイルのみ対象"));
+	InsertListColumn(lvCol, SUBITEM_OVERWRITE, _T("上書きの確認を表示"));
+
+	m_nCurIdx = 0;
+	ReadSetting();
+
+	LVITEM lvItem;
 	lvItem.mask      = LVIF_TEXT | LVIF_STATE;
 	lvItem.stateMask = LVIS_FOCUSED | LVIS_SELECTED;
 	lvItem.state     = 0;
 
-	// ラベル挿入
-	lvCol.cx   = LC_VAL_WIDTH;
-	InsertListCtrl(lvCol,SUBITEM_ENABLE_BK,STR_ENABLE_BK);
-	InsertListCtrl(lvCol,SUBITEM_NUMBER,STR_NUMBER);
-	lvCol.cx   = LC_STR_WIDTH;
-	InsertListCtrl(lvCol,SUBITEM_SRC_PATH,STR_ORG_PATH);
-	InsertListCtrl(lvCol,SUBITEM_DST_PATH,STR_NEW_PATH);
-	lvCol.cx   = LC_VAL_WIDTH;
-	InsertListCtrl(lvCol,SUBITEM_SUBDIRECTORY,STR_SUBDIRECTORY);
-	InsertListCtrl(lvCol,SUBITEM_DIFF_FILE,STR_DIFF_FILE);
-	InsertListCtrl(lvCol,SUBITEM_OVERWRITE,STR_OVERWRITE);
-
-	m_idx = 0;
-	ReadSetting();
-	for( int i=0,idx=0; i < MAXNUM_IDX; i++ )
+	for (int i = 0; i < MAX_ENTRY; i++)
 	{
-		lvItem.iItem = idx;
+		// 行の追加・設定中に LVN_ITEMCHANGED → Refresh が走り得るため、値を複製して使う
+		const BACKUP entry = m_entries[i];
 
-		//バックアップ有効
-		if ( m_bkStruct[i].bBkEnable )
-			sprintf_s(str,sizeof(str),STR_ENABLE);
-		else
-			sprintf_s(str,sizeof(str),STR_DISABLE);
-		lvItem.iSubItem  = SUBITEM_ENABLE_BK;
-		lvItem.pszText   = str;
-		m_listctl.InsertItem(&lvItem);
+		CString number;
+		number.Format(_T("%d"), i + 1);
 
-		//No
-		sprintf_s(str,sizeof(str),"%d",i+1);
-		lvItem.iSubItem  = SUBITEM_NUMBER;
-		lvItem.pszText   = str;
-		m_listctl.SetItem(&lvItem);
+		const struct
+		{
+			int		nSubItem;
+			LPCTSTR	text;
+		} columns[] =
+		{
+			{ SUBITEM_ENABLE_BK,	entry.bBkEnable ? STR_ENABLE : STR_DISABLE },
+			{ SUBITEM_NUMBER,		number.GetString() },
+			{ SUBITEM_SRC_PATH,		entry.strSrcPath.GetString() },
+			{ SUBITEM_DST_PATH,		entry.strDstPath.GetString() },
+			{ SUBITEM_SUBDIRECTORY,	(entry.opt & BACKUP::OPT_SUBDIR) ? STR_ON : STR_OFF },
+			{ SUBITEM_DIFF_FILE,	(entry.opt & BACKUP::OPT_DIFF) ? STR_ON : STR_OFF },
+			{ SUBITEM_OVERWRITE,	(entry.opt & BACKUP::OPT_OVERWRITE) ? STR_ON : STR_OFF },
+		};
 
-		//元パス
-		lvItem.iSubItem  = SUBITEM_SRC_PATH;
-		lvItem.pszText   = (LPSTR)m_bkStruct[i].strSrcPath.GetString();
-		m_listctl.SetItem(&lvItem);
-
-		//先パス
-		lvItem.iSubItem  = SUBITEM_DST_PATH;
-		lvItem.pszText   = (LPSTR)m_bkStruct[i].strDstPath.GetString();
-		m_listctl.SetItem(&lvItem);
-
-		// サブディレクトリも対象
-		if ( m_bkStruct[i].opt & SUBDIR_MASK )
-			sprintf_s(str,sizeof(str),STR_ON);
-		else
-			sprintf_s(str,sizeof(str),STR_OFF);
-		lvItem.iSubItem  = SUBITEM_SUBDIRECTORY;
-		lvItem.pszText   = str;
-		m_listctl.SetItem(&lvItem);
-
-		//差分のみ対象
-		if ( m_bkStruct[i].opt & DIFF_MASK )
-			sprintf_s(str,sizeof(str),STR_ON);
-		else
-			sprintf_s(str,sizeof(str),STR_OFF);
-		lvItem.iSubItem  = SUBITEM_DIFF_FILE;
-		lvItem.pszText   = str;
-		m_listctl.SetItem(&lvItem);
-
-		//上書き確認する
-		if ( m_bkStruct[i].opt & OVERWRITE_MASK )
-			sprintf_s(str,sizeof(str),STR_ON);
-		else
-			sprintf_s(str,sizeof(str),STR_OFF);
-		lvItem.iSubItem  = SUBITEM_OVERWRITE;
-		lvItem.pszText   = str;
-		m_listctl.SetItem(&lvItem);
-
-		idx++;
+		lvItem.iItem = i;
+		for (const auto& column : columns)
+		{
+			lvItem.iSubItem = column.nSubItem;
+			lvItem.pszText  = const_cast<LPTSTR>(column.text);
+			// 先頭カラムで行を作り、残りはその行に設定する
+			if (column.nSubItem == SUBITEM_ENABLE_BK)
+				m_listCtrl.InsertItem(&lvItem);
+			else
+				m_listCtrl.SetItem(&lvItem);
+		}
 	}
 
-	m_listctl.SetExtendedStyle(LVS_EX_FULLROWSELECT); //行で選択するように指定
-	m_listctl.SetItemState(m_idx, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+	m_listCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT);
+	m_listCtrl.SetItemState(m_nCurIdx, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 }
 
-void CBackUpDlg::InsertListCtrl(LV_COLUMN lvCol, int idx, CString name)
+void CBackUpDlg::InsertListColumn(LVCOLUMN lvCol, int nSubItem, LPCTSTR name)
 {
-	lvCol.iSubItem = idx;
-	lvCol.pszText  = (LPSTR)name.GetString();
-	m_listctl.InsertColumn(idx, &lvCol);
+	lvCol.iSubItem = nSubItem;
+	lvCol.pszText  = const_cast<LPTSTR>(name);
+	m_listCtrl.InsertColumn(nSubItem, &lvCol);
 }
 
 void CBackUpDlg::OnBackupStart()
 {
-	char str[MAX_PATH];
-	BOOL bErrFind = FALSE;
+	SetDlgItemText(IDC_LABEL, _T("バックアップ中"));
 
-	strcpy_s(str,sizeof(str),"バックアップ中");
-	SetDlgItemText(IDC_LABEL, str);
-	
-	bErrFind = BackUpProc();
-	if ( bErrFind == FALSE )
+	if (RunBackup(false))
 	{
-		strcpy_s(str,sizeof(str),"バックアップ正常終了");
+		SetDlgItemText(IDC_LABEL, _T("バックアップ正常終了"));
 	}
 	else
 	{
-		strcpy_s(str,sizeof(str),"バックアップに失敗しました");
+		SetDlgItemText(IDC_LABEL, _T("バックアップに失敗しました"));
 	}
-	SetDlgItemText(IDC_LABEL, str);
 
-	if ( m_end == END_SHUTDOWN )
+	switch (m_endAction)
 	{
+	case EndAction::Shutdown:
 		system("shutdown -s -t 0");
-	}
-	else if ( m_end == END_REBOOT )
-	{
+		break;
+	case EndAction::Reboot:
 		system("shutdown -r -t 0");
-	}
-	else if ( m_end == END_APP )
-	{
+		break;
+	case EndAction::App:
 		CDialog::OnOK();
+		break;
+	default:
+		break;
 	}
 }
 
-BOOL CBackUpDlg::GetDirectory(TCHAR * dir) 
+// 有効な設定ごとに xcopy を実行する。bWriteBatchOnly なら実行せずバッチファイルに書き出す
+// 戻り値: すべての xcopy が成功したか
+bool CBackUpDlg::RunBackup(bool bWriteBatchOnly)
 {
-	LPITEMIDLIST pidlSelected = NULL;
-	BROWSEINFO browseInfo = { 0 };
-	char folderName[MAX_PATH] = { 0 };
-	BOOL rt = FALSE;
+	bool bSuccess = true;
+	CString batch;
 
-	browseInfo.hwndOwner = this->m_hWnd;
-	browseInfo.pidlRoot = NULL;
-	browseInfo.pszDisplayName = folderName;
-	CString title;
-	title="目的のフォルダを選択して下ちぃ。。";
-	browseInfo.lpszTitle = title.GetBuffer(10);
-	browseInfo.ulFlags = 0;
-	browseInfo.lpfn = NULL;
-	browseInfo.lParam = 0; 
-	browseInfo.ulFlags = 0x41;
-
-	title.ReleaseBuffer();
-
-	pidlSelected = SHBrowseForFolder(&browseInfo);
-	if (pidlSelected != NULL)
+	for (const BACKUP& entry : m_entries)
 	{
-		SHGetPathFromIDList(pidlSelected, dir);
-		rt = TRUE;
-	}
-	return rt;
-}
-
-BOOL CBackUpDlg::BackUpProc()
-{
-	BOOL bReturn = FALSE;
-	TCHAR cmdName[MAX_PATH];
-	TCHAR ExeName[MAX_PATH];
-	CString cmd;
-
-	for(int idx=0; idx < MAXNUM_IDX; idx++)
-	{
-		if(m_bkStruct[idx].bBkEnable == FALSE ||
-			m_bkStruct[idx].strSrcPath.Compare("") == 0 ||
-			m_bkStruct[idx].strDstPath.Compare("") == 0 )
+		if (entry.bBkEnable == FALSE || entry.strSrcPath.IsEmpty() || entry.strDstPath.IsEmpty())
 		{
 			continue;
 		}
 
-		memset(cmdName,0,sizeof(cmdName));
-		memset(ExeName,0,sizeof(ExeName));
-
-		strcpy_s(cmdName,sizeof(cmdName), "xcopy");
-		if(m_bkStruct[idx].opt & SUBDIR_MASK)
+		CString cmdName = _T("xcopy");
+		if (entry.opt & BACKUP::OPT_SUBDIR)
 		{
-			strcat_s(cmdName,sizeof(cmdName)," /E");	//	/E　ディレクトリごとコピー
+			cmdName += _T(" /E");		// ディレクトリごとコピー
 		}
-
-		if(m_bkStruct[idx].opt & DIFF_MASK)
+		if (entry.opt & BACKUP::OPT_DIFF)
 		{
-			strcat_s(cmdName,sizeof(cmdName)," /D");	//	/D　新しいファイルのみコピー
+			cmdName += _T(" /D");		// 新しいファイルのみコピー
 		}
-
-		if(m_bkStruct[idx].opt & OVERWRITE_MASK)
+		if (entry.opt & BACKUP::OPT_OVERWRITE)
 		{
-			strcat_s(cmdName,sizeof(cmdName)," /-Y");	//	/-Y　上書きの確認を表示
+			cmdName += _T(" /-Y");		// 上書きの確認を表示
 		}
 		else
 		{
-			strcat_s(cmdName,sizeof(cmdName)," /Y");	//	/-Y　上書きの確認を表示しない
+			cmdName += _T(" /Y");		// 上書きの確認を表示しない
 		}
+		cmdName += _T(" /I");			// 受け側ディレクトリを新規作成
+		cmdName += _T(" /H");			// 隠しファイルやシステムファイルも対象
+		cmdName += _T(" /R");			// 読み取り専用でも上書き
 
-		strcat_s(cmdName,sizeof(cmdName)," /I");	//	/I　受け側ディレクトリを新規作成
+		CString command;
+		command.Format(_T("%s \"%s\" \"%s\"\n"), cmdName.GetString(), entry.strSrcPath.GetString(), entry.strDstPath.GetString());
 
-		strcat_s(cmdName,sizeof(cmdName)," /H");	//	/H　隠しファイルやシステムファイルも対象
-
-		strcat_s(cmdName,sizeof(cmdName)," /R");	//	/R	読み取り専用でも上書き
-
-//		strcat_s(cmdName,sizeof(cmdName)," /Q");	//	/Q　コピー中、ファイル名を表示しない
-//		strcat_s(cmdName,sizeof(cmdName)," /F");	//	/F　コピー中、送り側と受け側の全ファイル名表示
-//		strcat_s(cmdName,sizeof(cmdName)," /L");	//	/L　コピー対象のファイル名を表示⇒コピーせず表示のみ
-
-		sprintf_s(ExeName,sizeof(ExeName),"%s \"%s\" \"%s\"\n",cmdName,m_bkStruct[idx].strSrcPath,m_bkStruct[idx].strDstPath);
-
-		if ( m_FileOut )
+		if (bWriteBatchOnly)
 		{
-			cmd.Append(ExeName);
+			batch += command;
 		}
-		else
+		else if (system(command) != 0)
 		{
-			int rt;
-			rt = system(ExeName);
-			if ( bReturn == FALSE && rt )
-			{
-				bReturn = rt;
-			}
+			bSuccess = false;
 		}
 	}
 
-	if ( m_FileOut )
+	if (bWriteBatchOnly)
 	{
-		WriteBatchFile(cmd);
+		WriteBatchFile(batch);
 	}
 
-	return bReturn ;
+	return bSuccess;
 }
-
 
 void CBackUpDlg::OnBrowseSrc()
 {
-	TCHAR pathName[MAX_PATH] = { 0 };
-
-	GetDlgItemText(IDC_EDIT_SRC, pathName,sizeof(pathName));
-	if(GetDirectory(pathName) == TRUE){
-		SetDlgItemText(IDC_EDIT_SRC, pathName);
-		m_bkStruct[m_idx].strSrcPath.SetString(pathName);
-		UpdateSrcPath(pathName);
+	CString path;
+	if (BrowseFolder(m_hWnd, BROWSE_TITLE, path))
+	{
+		m_entries[m_nCurIdx].strSrcPath = path;
+		UpdatePath(IDC_EDIT_SRC, SUBITEM_SRC_PATH, path);
 	}
 }
 
 void CBackUpDlg::OnBrowseDest()
 {
-	TCHAR pathName[MAX_PATH] = { 0 };
-
-	GetDlgItemText(IDC_EDIT_SRC, pathName,sizeof(pathName));
-	if(GetDirectory(pathName) == TRUE){
-		SetDlgItemText(IDC_EDIT_DST, pathName);
-		m_bkStruct[m_idx].strDstPath.SetString(pathName);
-		UpdateDstPath(pathName);
+	CString path;
+	if (BrowseFolder(m_hWnd, BROWSE_TITLE, path))
+	{
+		m_entries[m_nCurIdx].strDstPath = path;
+		UpdatePath(IDC_EDIT_DST, SUBITEM_DST_PATH, path);
 	}
 }
 
 void CBackUpDlg::OnEnChangeEditSrc()
 {
-	char str[MAX_PATH];
-
-	GetDlgItemText(IDC_EDIT_SRC, str, sizeof(str));
-	m_bkStruct[m_idx].strSrcPath.SetString(str);
-	m_listctl.SetItemText(m_idx, SUBITEM_SRC_PATH, str);
-
+	CString str;
+	GetDlgItemText(IDC_EDIT_SRC, str);
+	m_entries[m_nCurIdx].strSrcPath = str;
+	m_listCtrl.SetItemText(m_nCurIdx, SUBITEM_SRC_PATH, str);
 }
 
 void CBackUpDlg::OnEnChangeEditDst()
 {
-	char str[MAX_PATH];
-
-	GetDlgItemText(IDC_EDIT_DST, str, sizeof(str));
-	m_bkStruct[m_idx].strDstPath.SetString(str);
-	m_listctl.SetItemText(m_idx, SUBITEM_DST_PATH, str);
-
+	CString str;
+	GetDlgItemText(IDC_EDIT_DST, str);
+	m_entries[m_nCurIdx].strDstPath = str;
+	m_listCtrl.SetItemText(m_nCurIdx, SUBITEM_DST_PATH, str);
 }
 
 void CBackUpDlg::OnBnClickedEnableBK()
 {
-	BOOL bOn;
-		
-	bOn = (IsDlgButtonChecked(IDC_SELECT_BACKUP) == BST_CHECKED);
-	m_bkStruct[m_idx].bBkEnable = bOn;
+	BOOL bOn = (IsDlgButtonChecked(IDC_SELECT_BACKUP) == BST_CHECKED);
+	m_entries[m_nCurIdx].bBkEnable = bOn;
 	UpdateEnableBK(bOn);
 }
 
 void CBackUpDlg::OnBnClickedSubdir()
 {
-	BOOL bOn;
-		
-	bOn = (IsDlgButtonChecked(IDC_SUBDIR) == BST_CHECKED);
-	if ( bOn )
-		m_bkStruct[m_idx].opt |= SUBDIR_MASK;
-	else
-		m_bkStruct[m_idx].opt &= ~SUBDIR_MASK;
-	UpdateSubDirectory(m_bkStruct[m_idx].opt);
+	SetOption(BACKUP::OPT_SUBDIR, IsDlgButtonChecked(IDC_SUBDIR) == BST_CHECKED);
+	UpdateSubDirectory(m_entries[m_nCurIdx].opt);
 }
 
+// 差分コピー時は上書き確認を使わない
 void CBackUpDlg::OnDiff()
 {
-	BOOL bOn;
-		
-	bOn = (IsDlgButtonChecked(IDC_DIFF) == BST_CHECKED);
-	if ( bOn )
+	if (IsDlgButtonChecked(IDC_DIFF) == BST_CHECKED)
 	{
 		CheckDlgButton(IDC_OVERWRITE, BST_UNCHECKED);
 		GetDlgItem(IDC_OVERWRITE)->EnableWindow(FALSE);
-		m_bkStruct[m_idx].opt |= DIFF_MASK;
-		m_bkStruct[m_idx].opt &= ~OVERWRITE_MASK;
-		UpdateOverWrite(m_bkStruct[m_idx].opt);
+		SetOption(BACKUP::OPT_DIFF, true);
+		SetOption(BACKUP::OPT_OVERWRITE, false);
+		UpdateOverWrite(m_entries[m_nCurIdx].opt);
 	}
 	else
 	{
 		GetDlgItem(IDC_OVERWRITE)->EnableWindow(TRUE);
-		m_bkStruct[m_idx].opt &= ~DIFF_MASK;
+		SetOption(BACKUP::OPT_DIFF, false);
 	}
 
-	UpdateDiffFile(m_bkStruct[m_idx].opt);
+	UpdateDiffFile(m_entries[m_nCurIdx].opt);
 }
 
 void CBackUpDlg::OnBnClickedOverWrite()
 {
-	BOOL bOn;
-		
-	bOn = (IsDlgButtonChecked(IDC_OVERWRITE) == BST_CHECKED);
-	if ( bOn )
-	{
-		m_bkStruct[m_idx].opt |= OVERWRITE_MASK;
-	}
+	SetOption(BACKUP::OPT_OVERWRITE, IsDlgButtonChecked(IDC_OVERWRITE) == BST_CHECKED);
+	UpdateOverWrite(m_entries[m_nCurIdx].opt);
+}
+
+void CBackUpDlg::SetOption(DWORD mask, bool bOn)
+{
+	DWORD& opt = m_entries[m_nCurIdx].opt;
+	if (bOn)
+		opt |= mask;
 	else
-	{
-		m_bkStruct[m_idx].opt &= ~OVERWRITE_MASK;
-	}
-	UpdateOverWrite(m_bkStruct[m_idx].opt);
+		opt &= ~mask;
 }
 
-void CBackUpDlg::UpdateEnableBK(BOOL bChk, int idx)
+// チェックボックスとリストの表示をそろえる
+void CBackUpDlg::UpdateCheckItem(int nCtrlId, int nSubItem, bool bOn, LPCTSTR pszOn, LPCTSTR pszOff)
 {
-	CString str;
-	int nItem = GetIdx(idx);
-
-	if ( bChk == TRUE )
-	{
-		CheckDlgButton(IDC_SELECT_BACKUP, BST_CHECKED);
-		str.SetString(STR_ENABLE);
-	}
-	else
-	{
-		CheckDlgButton(IDC_SELECT_BACKUP, BST_UNCHECKED);
-		str.SetString(STR_DISABLE);
-	}
-
-	m_listctl.SetItemText(nItem, SUBITEM_ENABLE_BK, str);
+	CheckDlgButton(nCtrlId, bOn ? BST_CHECKED : BST_UNCHECKED);
+	m_listCtrl.SetItemText(m_nCurIdx, nSubItem, bOn ? pszOn : pszOff);
 }
 
-void CBackUpDlg::UpdateSubDirectory(DWORD opt, int idx)
+void CBackUpDlg::UpdateEnableBK(BOOL bChk)
 {
-	CString str;
-	int nItem = GetIdx(idx);
-
-	if ( opt & SUBDIR_MASK )
-	{
-		CheckDlgButton(IDC_SUBDIR, BST_CHECKED);
-		str.SetString(STR_ON);
-	}
-	else
-	{
-		CheckDlgButton(IDC_SUBDIR, BST_UNCHECKED);
-		str.SetString(STR_OFF);
-	}
-
-	m_listctl.SetItemText(nItem, SUBITEM_SUBDIRECTORY, str);
+	UpdateCheckItem(IDC_SELECT_BACKUP, SUBITEM_ENABLE_BK, bChk == TRUE, STR_ENABLE, STR_DISABLE);
 }
 
-void CBackUpDlg::UpdateDiffFile(DWORD opt, int idx)
+void CBackUpDlg::UpdateSubDirectory(DWORD opt)
 {
-	CString str;
-	int nItem = GetIdx(idx);
-
-	if ( opt & DIFF_MASK )
-	{
-		GetDlgItem(IDC_OVERWRITE)->EnableWindow(FALSE);
-		CheckDlgButton(IDC_DIFF, BST_CHECKED);
-		str.SetString(STR_ON);
-	}
-	else
-	{
-		GetDlgItem(IDC_OVERWRITE)->EnableWindow(TRUE);
-		CheckDlgButton(IDC_DIFF, BST_UNCHECKED);
-		str.SetString(STR_OFF);
-	}
-
-	m_listctl.SetItemText(nItem, SUBITEM_DIFF_FILE, str);
+	UpdateCheckItem(IDC_SUBDIR, SUBITEM_SUBDIRECTORY, (opt & BACKUP::OPT_SUBDIR) != 0, STR_ON, STR_OFF);
 }
 
-void CBackUpDlg::UpdateOverWrite(DWORD opt, int idx)
+void CBackUpDlg::UpdateDiffFile(DWORD opt)
 {
-	CString str;
-	int nItem = GetIdx(idx);
-
-	if ( opt & OVERWRITE_MASK )
-	{
-		CheckDlgButton(IDC_OVERWRITE, BST_CHECKED);
-		str.SetString(STR_ON);
-	}
-	else
-	{
-		CheckDlgButton(IDC_OVERWRITE, BST_UNCHECKED);
-		str.SetString(STR_OFF);
-	}
-
-	m_listctl.SetItemText(nItem, SUBITEM_OVERWRITE, str);
+	const bool bOn = (opt & BACKUP::OPT_DIFF) != 0;
+	GetDlgItem(IDC_OVERWRITE)->EnableWindow(bOn ? FALSE : TRUE);
+	UpdateCheckItem(IDC_DIFF, SUBITEM_DIFF_FILE, bOn, STR_ON, STR_OFF);
 }
 
-void CBackUpDlg::UpdateSrcPath(char *str, int idx)
+void CBackUpDlg::UpdateOverWrite(DWORD opt)
 {
-	int nItem = GetIdx(idx);
-
-	SetDlgItemText(IDC_EDIT_SRC, str);
-	m_listctl.SetItemText(nItem, SUBITEM_SRC_PATH, str);
+	UpdateCheckItem(IDC_OVERWRITE, SUBITEM_OVERWRITE, (opt & BACKUP::OPT_OVERWRITE) != 0, STR_ON, STR_OFF);
 }
 
-void CBackUpDlg::UpdateDstPath(char *str, int idx)
+void CBackUpDlg::UpdatePath(int nEditId, int nSubItem, LPCTSTR path)
 {
-	int nItem = GetIdx(idx);
-
-	SetDlgItemText(IDC_EDIT_DST, str);
-	m_listctl.SetItemText(nItem, SUBITEM_DST_PATH, str);
+	SetDlgItemText(nEditId, path);
+	m_listCtrl.SetItemText(m_nCurIdx, nSubItem, path);
 }
 
 void CBackUpDlg::Refresh()
 {
-	UpdateEnableBK(m_bkStruct[m_idx].bBkEnable);
-	UpdateSubDirectory(m_bkStruct[m_idx].opt);
-	UpdateDiffFile(m_bkStruct[m_idx].opt);
-	UpdateOverWrite(m_bkStruct[m_idx].opt);
-	UpdateSrcPath((LPSTR)m_bkStruct[m_idx].strSrcPath.GetString());
-	UpdateDstPath((LPSTR)m_bkStruct[m_idx].strDstPath.GetString());
+	// エディットへの設定で EN_CHANGE が走り m_entries に書き戻されるため、値を複製して使う
+	const BACKUP entry = m_entries[m_nCurIdx];
+
+	UpdateEnableBK(entry.bBkEnable);
+	UpdateSubDirectory(entry.opt);
+	UpdateDiffFile(entry.opt);
+	UpdateOverWrite(entry.opt);
+	UpdatePath(IDC_EDIT_SRC, SUBITEM_SRC_PATH, entry.strSrcPath);
+	UpdatePath(IDC_EDIT_DST, SUBITEM_DST_PATH, entry.strDstPath);
 }
 
 void CBackUpDlg::OnBnClickedAllClear()
 {
-	for(int i=0; i < MAXNUM_IDX; i++)
+	for (BACKUP& entry : m_entries)
 	{
-		m_bkStruct[i] = m_bkDefault;
+		entry = BACKUP();
 	}
 	Refresh();
 }
 
 void CBackUpDlg::OnBnClickedSaveSetting()
 {
-	BOOL bReturn = WriteSetting();
-
-	if ( bReturn == TRUE )
+	if (WriteSetting())
 	{
-		SetDlgItemText(IDC_LABEL, STR_SAVE_SET_SUCCESS);
+		SetDlgItemText(IDC_LABEL, _T("設定値を保存しました。"));
 	}
 	else
 	{
-		SetDlgItemText(IDC_LABEL, STR_SAVE_SET_ERROR);
+		SetDlgItemText(IDC_LABEL, _T("設定値保存に失敗しました。"));
 	}
 }
 
+// 書式: 有効,オプション,元フォルダ,先フォルダ（1行1件）
 BOOL CBackUpDlg::WriteSetting()
 {
-	char path[MAX_PATH];
-	BOOL bReturn = FALSE;
-
-	if ( SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path) == S_OK )
+	const CString path = GetDocumentsFilePath(SET_FILE_NAME);
+	if (path.IsEmpty())
 	{
-		CStdioFile	file;
-
-		strcat_s(path,sizeof(path),SET_FILE_NAME);
-		if ( file.Open(path, CFile::modeWrite | CFile::modeCreate | CFile::typeText) )
-		{
-			char str[MAX_PATH];
-
-			for(int i=0;i<MAXNUM_IDX;i++)
-			{
-				if( m_bkStruct[i].strSrcPath.Compare("") == 0 ||
-					m_bkStruct[i].strDstPath.Compare("") == 0 )
-				{
-					continue;
-				}
-
-				sprintf_s(str, sizeof(str),"%d,%d,%s,%s\n",
-					m_bkStruct[i].bBkEnable,
-					m_bkStruct[i].opt,
-					m_bkStruct[i].strSrcPath,
-					m_bkStruct[i].strDstPath);
-				file.WriteString(str);
-				bReturn = TRUE;
-			}
-			file.Close();
-		}
+		return FALSE;
 	}
+
+	CStdioFile file;
+	if (!file.Open(path, CFile::modeWrite | CFile::modeCreate | CFile::typeText))
+	{
+		return FALSE;
+	}
+
+	BOOL bReturn = FALSE;
+	for (const BACKUP& entry : m_entries)
+	{
+		if (entry.strSrcPath.IsEmpty() || entry.strDstPath.IsEmpty())
+		{
+			continue;
+		}
+
+		CString line;
+		line.Format(_T("%d,%d,%s,%s\n"), entry.bBkEnable, entry.opt, entry.strSrcPath.GetString(), entry.strDstPath.GetString());
+		file.WriteString(line);
+		bReturn = TRUE;
+	}
+	file.Close();
 
 	return bReturn;
 }
 
 BOOL CBackUpDlg::ReadSetting()
 {
-	char path[MAX_PATH];
 	BOOL bReturn = FALSE;
-	int idx=0;
+	int idx = 0;
 
-	if ( SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path) == S_OK )
+	const CString path = GetDocumentsFilePath(SET_FILE_NAME);
+	CStdioFile file;
+	if (!path.IsEmpty() && file.Open(path, CFile::modeRead | CFile::typeText))
 	{
-		CStdioFile	file;
-
-		strcat_s(path,sizeof(path),SET_FILE_NAME);
-		if ( file.Open(path, CFile::modeRead | CFile::typeText) )
+		CString str;
+		while (idx < MAX_ENTRY && file.ReadString(str))
 		{
-			CString str;
-			int curPos;
-
-			while( idx < MAXNUM_IDX && file.ReadString(str) )
-			{
-				curPos=0;
-				m_bkStruct[idx].bBkEnable = atoi(str.Tokenize(",",curPos));
-				m_bkStruct[idx].opt = atoi(str.Tokenize(",",curPos));
-				m_bkStruct[idx].strSrcPath = str.Tokenize(",",curPos);
-				m_bkStruct[idx].strDstPath = str.Tokenize(",",curPos);
-				idx++;
-			}
-
-			bReturn = TRUE;
-			file.Close();
+			int curPos = 0;
+			BACKUP& entry = m_entries[idx];
+			entry.bBkEnable  = _ttoi(str.Tokenize(_T(","), curPos));
+			entry.opt        = _ttoi(str.Tokenize(_T(","), curPos));
+			entry.strSrcPath = str.Tokenize(_T(","), curPos);
+			entry.strDstPath = str.Tokenize(_T(","), curPos);
+			idx++;
 		}
-	}
 
-	for(;idx<MAXNUM_IDX;idx++)
-	{
-		m_bkStruct[idx] = m_bkDefault;
-	}
-
-	return bReturn;
-}
-
-void CBackUpDlg::WriteBatchFile(CString cmd)
-{
-	char path[MAX_PATH];
-	BOOL bReturn = FALSE;
-
-	if ( SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path) == S_OK )
-	{
-		CStdioFile	file;
-
-		strcat_s(path,sizeof(path),BAT_FILE_NAME);
-		if ( file.Open(path, CFile::modeWrite | CFile::modeCreate | CFile::typeText) )
-		{
-			file.WriteString(cmd);
-			file.Close();
-		}
-	}
-}
-
-int CBackUpDlg::GetIdx(int idx)
-{
-	int nItem = idx;
-
-	if ( nItem == CURRENT_IDX )
-		nItem = m_idx;
-
-	return nItem;
-}
-
-BOOL CBackUpDlg::IsBlankData(BACKUP *BkStruct)
-{
-	BOOL bReturn = FALSE;
-
-	if ( BkStruct->strSrcPath.Compare("") == 0 &&
-		 BkStruct->strDstPath.Compare("") == 0 )
-	{
 		bReturn = TRUE;
+		file.Close();
+	}
+
+	for (; idx < MAX_ENTRY; idx++)
+	{
+		m_entries[idx] = BACKUP();
 	}
 
 	return bReturn;
 }
 
-void CBackUpDlg::OnBnClickedEndNone()
+void CBackUpDlg::WriteBatchFile(const CString& cmd)
 {
-	m_end = END_NONE;
+	const CString path = GetDocumentsFilePath(BAT_FILE_NAME);
+	if (path.IsEmpty())
+	{
+		return;
+	}
+
+	CStdioFile file;
+	if (file.Open(path, CFile::modeWrite | CFile::modeCreate | CFile::typeText))
+	{
+		file.WriteString(cmd);
+		file.Close();
+	}
 }
 
-void CBackUpDlg::OnBnClickedEndApp()
+// 終了オプションのラジオボタン（IDC_END_NONE からの並びが EndAction の順）
+void CBackUpDlg::OnEndOption(UINT nID)
 {
-	m_end = END_APP;
+	m_endAction = static_cast<EndAction>(nID - IDC_END_NONE);
 }
 
-void CBackUpDlg::OnBnClickedEndReboot()
-{
-	m_end = END_REBOOT;
-}
-
-void CBackUpDlg::OnBnClickedEndShutdown()
-{
-	m_end = END_SHUTDOWN;
-}
-
+// 閉じるとき（×・Esc）は、現在の設定を実行用バッチファイルにも書き出す
 void CBackUpDlg::OnCancel()
 {
-	m_FileOut = TRUE;
-	BackUpProc();
+	RunBackup(true);
 
 	CDialog::OnCancel();
 }
-
