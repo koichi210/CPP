@@ -1,5 +1,5 @@
-
-// BinaryEdit_MfcView.h : CBinaryEdit_MfcView ƒNƒ‰ƒX‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX
+ï»¿
+// BinaryEdit_MfcView.h : CBinaryEdit_MfcView ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹
 //
 
 #pragma once
@@ -7,27 +7,27 @@
 
 class CBinaryEdit_MfcView : public CView
 {
-protected: // ƒVƒŠƒAƒ‹‰»‚©‚ç‚Ì‚İì¬‚µ‚Ü‚·B
+protected: // ã‚·ãƒªã‚¢ãƒ«åŒ–ã‹ã‚‰ã®ã¿ä½œæˆã—ã¾ã™ã€‚
 	CBinaryEdit_MfcView();
 	DECLARE_DYNCREATE(CBinaryEdit_MfcView)
 
-// ‘®«
+// å±æ€§
 public:
 	CBinaryEdit_MfcDoc* GetDocument() const;
 
-// ‘€ì
+// æ“ä½œ
 public:
 
-// ƒI[ƒo[ƒ‰ƒCƒh
+// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 public:
-	virtual void OnDraw(CDC* pDC);  // ‚±‚Ìƒrƒ…[‚ğ•`‰æ‚·‚é‚½‚ß‚ÉƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚Ü‚·B
+	virtual void OnDraw(CDC* pDC);  // ã“ã®ãƒ“ãƒ¥ãƒ¼ã‚’æç”»ã™ã‚‹ãŸã‚ã«ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã¾ã™ã€‚
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
-// À‘•
+// å®Ÿè£…
 public:
 	virtual ~CBinaryEdit_MfcView();
 #ifdef _DEBUG
@@ -37,7 +37,7 @@ public:
 
 protected:
 
-// ¶¬‚³‚ê‚½AƒƒbƒZ[ƒWŠ„‚è“–‚ÄŠÖ”
+// ç”Ÿæˆã•ã‚ŒãŸã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²ã‚Šå½“ã¦é–¢æ•°
 protected:
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
@@ -45,7 +45,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // BinaryEdit_MfcView.cpp ‚ÌƒfƒoƒbƒO ƒo[ƒWƒ‡ƒ“
+#ifndef _DEBUG  // BinaryEdit_MfcView.cpp ã®ãƒ‡ãƒãƒƒã‚° ãƒãƒ¼ã‚¸ãƒ§ãƒ³
 inline CBinaryEdit_MfcDoc* CBinaryEdit_MfcView::GetDocument() const
    { return reinterpret_cast<CBinaryEdit_MfcDoc*>(m_pDocument); }
 #endif

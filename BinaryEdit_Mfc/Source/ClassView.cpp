@@ -1,4 +1,4 @@
-
+ï»¿
 #include "stdafx.h"
 #include "MainFrm.h"
 #include "ClassView.h"
@@ -33,7 +33,7 @@ public:
 IMPLEMENT_SERIAL(CClassViewMenuButton, CMFCToolBarMenuButton, 1)
 
 //////////////////////////////////////////////////////////////////////
-// ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“/ƒfƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³/ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 //////////////////////////////////////////////////////////////////////
 
 CClassView::CClassView()
@@ -61,7 +61,7 @@ BEGIN_MESSAGE_MAP(CClassView, CDockablePane)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CClassView ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// CClassView ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
 
 int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -71,18 +71,18 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rectDummy;
 	rectDummy.SetRectEmpty();
 
-	// ƒrƒ…[‚Ìì¬:
+	// ãƒ“ãƒ¥ãƒ¼ã®ä½œæˆ:
 	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
 	if (!m_wndClassView.Create(dwViewStyle, rectDummy, this, 2))
 	{
-		TRACE0("ƒNƒ‰ƒX ƒrƒ…[‚ğì¬‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½\n");
-		return -1;      // ì¬‚Å‚«‚È‚¢ê‡
+		TRACE0("ã‚¯ãƒ©ã‚¹ ãƒ“ãƒ¥ãƒ¼ã‚’ä½œæˆã§ãã¾ã›ã‚“ã§ã—ãŸ\n");
+		return -1;      // ä½œæˆã§ããªã„å ´åˆ
 	}
 
-	// ƒCƒ[ƒW‚Ì“Ç‚İ‚İ:
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ã®èª­ã¿è¾¼ã¿:
 	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_SORT);
-	m_wndToolBar.LoadToolBar(IDR_SORT, 0, 0, TRUE /* ƒƒbƒN‚³‚ê‚Ä‚¢‚Ü‚·*/);
+	m_wndToolBar.LoadToolBar(IDR_SORT, 0, 0, TRUE /* ãƒ­ãƒƒã‚¯ã•ã‚Œã¦ã„ã¾ã™*/);
 
 	OnChangeVisualStyle();
 
@@ -91,7 +91,7 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndToolBar.SetOwner(this);
 
-	// ‚·‚×‚Ä‚ÌƒRƒ}ƒ“ƒh‚ªAeƒtƒŒ[ƒ€Œo—R‚Å‚Í‚È‚­‚±‚ÌƒRƒ“ƒgƒ[ƒ‹Œo—R‚Å“n‚³‚ê‚Ü‚·:
+	// ã™ã¹ã¦ã®ã‚³ãƒãƒ³ãƒ‰ãŒã€è¦ªãƒ•ãƒ¬ãƒ¼ãƒ çµŒç”±ã§ã¯ãªãã“ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«çµŒç”±ã§æ¸¡ã•ã‚Œã¾ã™:
 	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
 
 	CMenu menuSort;
@@ -109,7 +109,7 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		pButton->SetMessageWnd(this);
 	}
 
-	// Ã“IƒcƒŠ[ ƒrƒ…[ ƒf[ƒ^ (ƒ_ƒ~[ ƒR[ƒh) ‚ğ“ü—Í‚µ‚Ü‚·
+	// é™çš„ãƒ„ãƒªãƒ¼ ãƒ“ãƒ¥ãƒ¼ ãƒ‡ãƒ¼ã‚¿ (ãƒ€ãƒŸãƒ¼ ã‚³ãƒ¼ãƒ‰) ã‚’å…¥åŠ›ã—ã¾ã™
 	FillClassView();
 
 	return 0;
@@ -123,7 +123,7 @@ void CClassView::OnSize(UINT nType, int cx, int cy)
 
 void CClassView::FillClassView()
 {
-	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("FakeApp ƒNƒ‰ƒX"), 0, 0);
+	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("FakeApp ã‚¯ãƒ©ã‚¹"), 0, 0);
 	m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
 
 	HTREEITEM hClass = m_wndClassView.InsertItem(_T("CFakeAboutDlg"), 1, 1, hRoot);
@@ -172,7 +172,7 @@ void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
 
 	if (point != CPoint(-1, -1))
 	{
-		// ƒNƒŠƒbƒN‚³‚ê‚½€–Ú‚Ì‘I‘ğ:
+		// ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸé …ç›®ã®é¸æŠ:
 		CPoint ptTree = point;
 		pWndTree->ScreenToClient(&ptTree);
 
@@ -249,32 +249,32 @@ void CClassView::OnUpdateSort(CCmdUI* pCmdUI)
 
 void CClassView::OnClassAddMemberFunction()
 {
-	AfxMessageBox(_T("ƒƒ“ƒo[ŠÖ”‚Ì’Ç‰Á..."));
+	AfxMessageBox(_T("ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã®è¿½åŠ ..."));
 }
 
 void CClassView::OnClassAddMemberVariable()
 {
-	// TODO: ‚±‚±‚ÉƒRƒ}ƒ“ƒh ƒnƒ“ƒhƒ‰[ ƒR[ƒh‚ğ’Ç‰Á‚µ‚Ü‚·
+	// TODO: ã“ã“ã«ã‚³ãƒãƒ³ãƒ‰ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ ã‚³ãƒ¼ãƒ‰ã‚’è¿½åŠ ã—ã¾ã™
 }
 
 void CClassView::OnClassDefinition()
 {
-	// TODO: ‚±‚±‚ÉƒRƒ}ƒ“ƒh ƒnƒ“ƒhƒ‰[ ƒR[ƒh‚ğ’Ç‰Á‚µ‚Ü‚·
+	// TODO: ã“ã“ã«ã‚³ãƒãƒ³ãƒ‰ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ ã‚³ãƒ¼ãƒ‰ã‚’è¿½åŠ ã—ã¾ã™
 }
 
 void CClassView::OnClassProperties()
 {
-	// TODO: ‚±‚±‚ÉƒRƒ}ƒ“ƒh ƒnƒ“ƒhƒ‰[ ƒR[ƒh‚ğ’Ç‰Á‚µ‚Ü‚·
+	// TODO: ã“ã“ã«ã‚³ãƒãƒ³ãƒ‰ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ ã‚³ãƒ¼ãƒ‰ã‚’è¿½åŠ ã—ã¾ã™
 }
 
 void CClassView::OnNewFolder()
 {
-	AfxMessageBox(_T("V‚µ‚¢ƒtƒHƒ‹ƒ_[..."));
+	AfxMessageBox(_T("æ–°ã—ã„ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼..."));
 }
 
 void CClassView::OnPaint()
 {
-	CPaintDC dc(this); // •`‰æ‚ÌƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
+	CPaintDC dc(this); // æç”»ã®ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 
 	CRect rectTree;
 	m_wndClassView.GetWindowRect(rectTree);
@@ -300,7 +300,7 @@ void CClassView::OnChangeVisualStyle()
 	CBitmap bmp;
 	if (!bmp.LoadBitmap(uiBmpId))
 	{
-		TRACE(_T("ƒrƒbƒgƒ}ƒbƒv‚ğ“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½: %x\n"), uiBmpId);
+		TRACE(_T("ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’èª­ã¿è¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸ: %x\n"), uiBmpId);
 		ASSERT(FALSE);
 		return;
 	}
@@ -318,5 +318,5 @@ void CClassView::OnChangeVisualStyle()
 	m_wndClassView.SetImageList(&m_ClassViewImages, TVSIL_NORMAL);
 
 	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* ƒƒbƒN‚³‚ê‚Ü‚µ‚½*/);
+	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* ãƒ­ãƒƒã‚¯ã•ã‚Œã¾ã—ãŸ*/);
 }

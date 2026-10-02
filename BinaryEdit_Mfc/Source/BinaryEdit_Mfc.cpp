@@ -1,5 +1,5 @@
-
-// BinaryEdit_Mfc.cpp : ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒNƒ‰ƒX“®ì‚ğ’è‹`‚µ‚Ü‚·B
+ï»¿
+// BinaryEdit_Mfc.cpp : ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¯ãƒ©ã‚¹å‹•ä½œã‚’å®šç¾©ã—ã¾ã™ã€‚
 //
 
 #include "stdafx.h"
@@ -21,60 +21,60 @@
 
 BEGIN_MESSAGE_MAP(CBinaryEdit_MfcApp, CWinAppEx)
 	ON_COMMAND(ID_APP_ABOUT, &CBinaryEdit_MfcApp::OnAppAbout)
-	// •W€‚Ìƒtƒ@ƒCƒ‹Šî–{ƒhƒLƒ…ƒƒ“ƒg ƒRƒ}ƒ“ƒh
+	// æ¨™æº–ã®ãƒ•ã‚¡ã‚¤ãƒ«åŸºæœ¬ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ ã‚³ãƒãƒ³ãƒ‰
 	ON_COMMAND(ID_FILE_NEW, &CWinAppEx::OnFileNew)
 	ON_COMMAND(ID_FILE_OPEN, &CWinAppEx::OnFileOpen)
-	// •W€‚ÌˆóüƒZƒbƒgƒAƒbƒv ƒRƒ}ƒ“ƒh
+	// æ¨™æº–ã®å°åˆ·ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ— ã‚³ãƒãƒ³ãƒ‰
 	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinAppEx::OnFilePrintSetup)
 END_MESSAGE_MAP()
 
 
-// CBinaryEdit_MfcApp ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// CBinaryEdit_MfcApp ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 
 CBinaryEdit_MfcApp::CBinaryEdit_MfcApp()
 {
 	m_bHiColorIcons = TRUE;
 
-	// Ä‹N“®ƒ}ƒl[ƒWƒƒ[‚ğƒTƒ|[ƒg‚µ‚Ü‚·
+	// å†èµ·å‹•ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã™
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_ALL_ASPECTS;
 #ifdef _MANAGED
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‹¤’ÊŒ¾Œêƒ‰ƒ“ƒ^ƒCƒ€ ƒTƒ|[ƒg (/clr) ‚ğg—p‚µ‚Äì¬‚³‚ê‚Ä‚¢‚éê‡:
-	//     1) ‚±‚Ì’Ç‰Áİ’è‚ÍAÄ‹N“®ƒ}ƒl[ƒWƒƒ[ ƒTƒ|[ƒg‚ª³í‚É‹@”\‚·‚é‚½‚ß‚É•K—v‚Å‚·B
-	//     2) ì¬‚·‚é‚É‚ÍAƒvƒƒWƒFƒNƒg‚É System.Windows.Forms ‚Ö‚ÌQÆ‚ğ’Ç‰Á‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒå…±é€šè¨€èªãƒ©ãƒ³ã‚¿ã‚¤ãƒ  ã‚µãƒãƒ¼ãƒˆ (/clr) ã‚’ä½¿ç”¨ã—ã¦ä½œæˆã•ã‚Œã¦ã„ã‚‹å ´åˆ:
+	//     1) ã“ã®è¿½åŠ è¨­å®šã¯ã€å†èµ·å‹•ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ ã‚µãƒãƒ¼ãƒˆãŒæ­£å¸¸ã«æ©Ÿèƒ½ã™ã‚‹ãŸã‚ã«å¿…è¦ã§ã™ã€‚
+	//     2) ä½œæˆã™ã‚‹ã«ã¯ã€ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã« System.Windows.Forms ã¸ã®å‚ç…§ã‚’è¿½åŠ ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	System::Windows::Forms::Application::SetUnhandledExceptionMode(System::Windows::Forms::UnhandledExceptionMode::ThrowException);
 #endif
 
-	// TODO: ‰º‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“ ID •¶š—ñ‚ğˆêˆÓ‚Ì ID •¶š—ñ‚Å’uŠ·‚µ‚Ü‚·B„§‚³‚ê‚é
-	// •¶š—ñ‚ÌŒ`®‚Í CompanyName.ProductName.SubProduct.VersionInformation ‚Å‚·
+	// TODO: ä¸‹ã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ ID æ–‡å­—åˆ—ã‚’ä¸€æ„ã® ID æ–‡å­—åˆ—ã§ç½®æ›ã—ã¾ã™ã€‚æ¨å¥¨ã•ã‚Œã‚‹
+	// æ–‡å­—åˆ—ã®å½¢å¼ã¯ CompanyName.ProductName.SubProduct.VersionInformation ã§ã™
 	SetAppID(_T("BinaryEdit_Mfc.AppID.NoVersion"));
 
-	// TODO: ‚±‚ÌˆÊ’u‚É\’z—pƒR[ƒh‚ğ’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B
-	// ‚±‚±‚É InitInstance ’†‚Ìd—v‚È‰Šú‰»ˆ—‚ğ‚·‚×‚Ä‹Lq‚µ‚Ä‚­‚¾‚³‚¢B
+	// TODO: ã“ã®ä½ç½®ã«æ§‹ç¯‰ç”¨ã‚³ãƒ¼ãƒ‰ã‚’è¿½åŠ ã—ã¦ãã ã•ã„ã€‚
+	// ã“ã“ã« InitInstance ä¸­ã®é‡è¦ãªåˆæœŸåŒ–å‡¦ç†ã‚’ã™ã¹ã¦è¨˜è¿°ã—ã¦ãã ã•ã„ã€‚
 }
 
-// —Bˆê‚Ì CBinaryEdit_MfcApp ƒIƒuƒWƒFƒNƒg‚Å‚·B
+// å”¯ä¸€ã® CBinaryEdit_MfcApp ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ã™ã€‚
 
 CBinaryEdit_MfcApp theApp;
 
 
-// CBinaryEdit_MfcApp ‰Šú‰»
+// CBinaryEdit_MfcApp åˆæœŸåŒ–
 
 BOOL CBinaryEdit_MfcApp::InitInstance()
 {
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ ƒ}ƒjƒtƒFƒXƒg‚ª visual ƒXƒ^ƒCƒ‹‚ğ—LŒø‚É‚·‚é‚½‚ß‚ÉA
-	// ComCtl32.dll Version 6 ˆÈ~‚Ìg—p‚ğw’è‚·‚éê‡‚ÍA
-	// Windows XP ‚É InitCommonControlsEx() ‚ª•K—v‚Å‚·B‚³‚à‚È‚¯‚ê‚ÎAƒEƒBƒ“ƒhƒEì¬‚Í‚·‚×‚Ä¸”s‚µ‚Ü‚·B
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ ãƒãƒ‹ãƒ•ã‚§ã‚¹ãƒˆãŒ visual ã‚¹ã‚¿ã‚¤ãƒ«ã‚’æœ‰åŠ¹ã«ã™ã‚‹ãŸã‚ã«ã€
+	// ComCtl32.dll Version 6 ä»¥é™ã®ä½¿ç”¨ã‚’æŒ‡å®šã™ã‚‹å ´åˆã¯ã€
+	// Windows XP ã« InitCommonControlsEx() ãŒå¿…è¦ã§ã™ã€‚ã•ã‚‚ãªã‘ã‚Œã°ã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆã¯ã™ã¹ã¦å¤±æ•—ã—ã¾ã™ã€‚
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Åg—p‚·‚é‚·‚×‚Ä‚ÌƒRƒ‚ƒ“ ƒRƒ“ƒgƒ[ƒ‹ ƒNƒ‰ƒX‚ğŠÜ‚ß‚é‚É‚ÍA
-	// ‚±‚ê‚ğİ’è‚µ‚Ü‚·B
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ä½¿ç”¨ã™ã‚‹ã™ã¹ã¦ã®ã‚³ãƒ¢ãƒ³ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« ã‚¯ãƒ©ã‚¹ã‚’å«ã‚ã‚‹ã«ã¯ã€
+	// ã“ã‚Œã‚’è¨­å®šã—ã¾ã™ã€‚
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinAppEx::InitInstance();
 
 
-	// OLE ƒ‰ƒCƒuƒ‰ƒŠ‚ğ‰Šú‰»‚µ‚Ü‚·B
+	// OLE ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’åˆæœŸåŒ–ã—ã¾ã™ã€‚
 	if (!AfxOleInit())
 	{
 		AfxMessageBox(IDP_OLE_INIT_FAILED);
@@ -85,18 +85,18 @@ BOOL CBinaryEdit_MfcApp::InitInstance()
 
 	EnableTaskbarInteraction(FALSE);
 
-	// RichEdit ƒRƒ“ƒgƒ[ƒ‹‚ğg—p‚·‚é‚É‚Í AfxInitRichEdit2() ‚ª•K—v‚Å‚·	
+	// RichEdit ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’ä½¿ç”¨ã™ã‚‹ã«ã¯ AfxInitRichEdit2() ãŒå¿…è¦ã§ã™	
 	// AfxInitRichEdit2();
 
-	// •W€‰Šú‰»
-	// ‚±‚ê‚ç‚Ì‹@”\‚ğg‚í‚¸‚ÉÅI“I‚ÈÀs‰Â”\ƒtƒ@ƒCƒ‹‚Ì
-	// ƒTƒCƒY‚ğk¬‚µ‚½‚¢ê‡‚ÍAˆÈ‰º‚©‚ç•s—v‚È‰Šú‰»
-	// ƒ‹[ƒ`ƒ“‚ğíœ‚µ‚Ä‚­‚¾‚³‚¢B
-	// İ’è‚ªŠi”[‚³‚ê‚Ä‚¢‚éƒŒƒWƒXƒgƒŠ ƒL[‚ğ•ÏX‚µ‚Ü‚·B
-	// TODO: ‰ïĞ–¼‚Ü‚½‚Í‘gD–¼‚È‚Ç‚Ì“KØ‚È•¶š—ñ‚É
-	// ‚±‚Ì•¶š—ñ‚ğ•ÏX‚µ‚Ä‚­‚¾‚³‚¢B
-	SetRegistryKey(_T("ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ ƒEƒBƒU[ƒh‚Å¶¬‚³‚ê‚½ƒ[ƒJƒ‹ ƒAƒvƒŠƒP[ƒVƒ‡ƒ“"));
-	LoadStdProfileSettings(4);  // •W€‚Ì INI ƒtƒ@ƒCƒ‹‚ÌƒIƒvƒVƒ‡ƒ“‚ğƒ[ƒh‚µ‚Ü‚· (MRU ‚ğŠÜ‚Ş)
+	// æ¨™æº–åˆæœŸåŒ–
+	// ã“ã‚Œã‚‰ã®æ©Ÿèƒ½ã‚’ä½¿ã‚ãšã«æœ€çµ‚çš„ãªå®Ÿè¡Œå¯èƒ½ãƒ•ã‚¡ã‚¤ãƒ«ã®
+	// ã‚µã‚¤ã‚ºã‚’ç¸®å°ã—ãŸã„å ´åˆã¯ã€ä»¥ä¸‹ã‹ã‚‰ä¸è¦ãªåˆæœŸåŒ–
+	// ãƒ«ãƒ¼ãƒãƒ³ã‚’å‰Šé™¤ã—ã¦ãã ã•ã„ã€‚
+	// è¨­å®šãŒæ ¼ç´ã•ã‚Œã¦ã„ã‚‹ãƒ¬ã‚¸ã‚¹ãƒˆãƒª ã‚­ãƒ¼ã‚’å¤‰æ›´ã—ã¾ã™ã€‚
+	// TODO: ä¼šç¤¾åã¾ãŸã¯çµ„ç¹”åãªã©ã®é©åˆ‡ãªæ–‡å­—åˆ—ã«
+	// ã“ã®æ–‡å­—åˆ—ã‚’å¤‰æ›´ã—ã¦ãã ã•ã„ã€‚
+	SetRegistryKey(_T("ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ ã‚¦ã‚£ã‚¶ãƒ¼ãƒ‰ã§ç”Ÿæˆã•ã‚ŒãŸãƒ­ãƒ¼ã‚«ãƒ« ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³"));
+	LoadStdProfileSettings(4);  // æ¨™æº–ã® INI ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™ (MRU ã‚’å«ã‚€)
 
 
 	InitContextMenuManager();
@@ -109,18 +109,18 @@ BOOL CBinaryEdit_MfcApp::InitInstance()
 	theApp.GetTooltipManager()->SetTooltipParams(AFX_TOOLTIP_TYPE_ALL,
 		RUNTIME_CLASS(CMFCToolTipCtrl), &ttParams);
 
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“—p‚ÌƒhƒLƒ…ƒƒ“ƒg ƒeƒ“ƒvƒŒ[ƒg‚ğ“o˜^‚µ‚Ü‚·BƒhƒLƒ…ƒƒ“ƒg ƒeƒ“ƒvƒŒ[ƒg
-	//  ‚ÍƒhƒLƒ…ƒƒ“ƒgAƒtƒŒ[ƒ€ ƒEƒBƒ“ƒhƒE‚Æƒrƒ…[‚ğŒ‹‡‚·‚é‚½‚ß‚É‹@”\‚µ‚Ü‚·B
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ç”¨ã®ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’ç™»éŒ²ã—ã¾ã™ã€‚ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+	//  ã¯ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã€ãƒ•ãƒ¬ãƒ¼ãƒ  ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¨ãƒ“ãƒ¥ãƒ¼ã‚’çµåˆã™ã‚‹ãŸã‚ã«æ©Ÿèƒ½ã—ã¾ã™ã€‚
 	CMultiDocTemplate* pDocTemplate;
 	pDocTemplate = new CMultiDocTemplate(IDR_BinaryEdit_MfcTYPE,
 		RUNTIME_CLASS(CBinaryEdit_MfcDoc),
-		RUNTIME_CLASS(CChildFrame), // ƒJƒXƒ^ƒ€ MDI qƒtƒŒ[ƒ€
+		RUNTIME_CLASS(CChildFrame), // ã‚«ã‚¹ã‚¿ãƒ  MDI å­ãƒ•ãƒ¬ãƒ¼ãƒ 
 		RUNTIME_CLASS(CBinaryEdit_MfcView));
 	if (!pDocTemplate)
 		return FALSE;
 	AddDocTemplate(pDocTemplate);
 
-	// ƒƒCƒ“ MDI ƒtƒŒ[ƒ€ ƒEƒBƒ“ƒhƒE‚ğì¬‚µ‚Ü‚·B
+	// ãƒ¡ã‚¤ãƒ³ MDI ãƒ•ãƒ¬ãƒ¼ãƒ  ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã—ã¾ã™ã€‚
 	CMainFrame* pMainFrame = new CMainFrame;
 	if (!pMainFrame || !pMainFrame->LoadFrame(IDR_MAINFRAME))
 	{
@@ -128,25 +128,25 @@ BOOL CBinaryEdit_MfcApp::InitInstance()
 		return FALSE;
 	}
 	m_pMainWnd = pMainFrame;
-	// Ú”ö«‚ª‘¶İ‚·‚éê‡‚É‚Ì‚İ DragAcceptFiles ‚ğŒÄ‚Ño‚µ‚Ü‚·B
-	//  MDI ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å‚ÍA‚±‚ÌŒÄ‚Ño‚µ‚ÍAm_pMainWnd ‚ğİ’è‚µ‚½’¼Œã‚É”­¶‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
-	// ƒhƒ‰ƒbƒO/ƒhƒƒbƒv ƒI[ƒvƒ“‚ğ‹–‰Â‚µ‚Ü‚·B
+	// æ¥å°¾è¾ãŒå­˜åœ¨ã™ã‚‹å ´åˆã«ã®ã¿ DragAcceptFiles ã‚’å‘¼ã³å‡ºã—ã¾ã™ã€‚
+	//  MDI ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ã¯ã€ã“ã®å‘¼ã³å‡ºã—ã¯ã€m_pMainWnd ã‚’è¨­å®šã—ãŸç›´å¾Œã«ç™ºç”Ÿã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
+	// ãƒ‰ãƒ©ãƒƒã‚°/ãƒ‰ãƒ­ãƒƒãƒ— ã‚ªãƒ¼ãƒ—ãƒ³ã‚’è¨±å¯ã—ã¾ã™ã€‚
 	m_pMainWnd->DragAcceptFiles();
 
-	// DDEAfile open ‚È‚Ç•W€‚ÌƒVƒFƒ‹ ƒRƒ}ƒ“ƒh‚ÌƒRƒ}ƒ“ƒh ƒ‰ƒCƒ“‚ğ‰ğÍ‚µ‚Ü‚·B
+	// DDEã€file open ãªã©æ¨™æº–ã®ã‚·ã‚§ãƒ« ã‚³ãƒãƒ³ãƒ‰ã®ã‚³ãƒãƒ³ãƒ‰ ãƒ©ã‚¤ãƒ³ã‚’è§£æã—ã¾ã™ã€‚
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
 
-	// DDE Execute open ‚ğg—p‰Â”\‚É‚µ‚Ü‚·B
+	// DDE Execute open ã‚’ä½¿ç”¨å¯èƒ½ã«ã—ã¾ã™ã€‚
 	EnableShellOpen();
 	RegisterShellFileTypes(TRUE);
 
 
-	// ƒRƒ}ƒ“ƒh ƒ‰ƒCƒ“‚Åw’è‚³‚ê‚½ƒfƒBƒXƒpƒbƒ` ƒRƒ}ƒ“ƒh‚Å‚·BƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª
-	// /RegServerA/RegisterA/Unregserver ‚Ü‚½‚Í /Unregister ‚Å‹N“®‚³‚ê‚½ê‡AFalse ‚ğ•Ô‚µ‚Ü‚·B
+	// ã‚³ãƒãƒ³ãƒ‰ ãƒ©ã‚¤ãƒ³ã§æŒ‡å®šã•ã‚ŒãŸãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒ ã‚³ãƒãƒ³ãƒ‰ã§ã™ã€‚ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒ
+	// /RegServerã€/Registerã€/Unregserver ã¾ãŸã¯ /Unregister ã§èµ·å‹•ã•ã‚ŒãŸå ´åˆã€False ã‚’è¿”ã—ã¾ã™ã€‚
 	if (!ProcessShellCommand(cmdInfo))
 		return FALSE;
-	// ƒƒCƒ“ ƒEƒBƒ“ƒhƒE‚ª‰Šú‰»‚³‚ê‚½‚Ì‚ÅA•\¦‚ÆXV‚ğs‚¢‚Ü‚·B
+	// ãƒ¡ã‚¤ãƒ³ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒåˆæœŸåŒ–ã•ã‚ŒãŸã®ã§ã€è¡¨ç¤ºã¨æ›´æ–°ã‚’è¡Œã„ã¾ã™ã€‚
 	pMainFrame->ShowWindow(m_nCmdShow);
 	pMainFrame->UpdateWindow();
 
@@ -155,29 +155,29 @@ BOOL CBinaryEdit_MfcApp::InitInstance()
 
 int CBinaryEdit_MfcApp::ExitInstance()
 {
-	//TODO: ’Ç‰Á‚µ‚½ƒŠƒ\[ƒX‚ª‚ ‚éê‡‚É‚Í‚»‚ê‚ç‚àˆ—‚µ‚Ä‚­‚¾‚³‚¢
+	//TODO: è¿½åŠ ã—ãŸãƒªã‚½ãƒ¼ã‚¹ãŒã‚ã‚‹å ´åˆã«ã¯ãã‚Œã‚‰ã‚‚å‡¦ç†ã—ã¦ãã ã•ã„
 	AfxOleTerm(FALSE);
 
 	return CWinAppEx::ExitInstance();
 }
 
-// CBinaryEdit_MfcApp ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// CBinaryEdit_MfcApp ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
 
 
-// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚Ég‚í‚ê‚é CAboutDlg ƒ_ƒCƒAƒƒO
+// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã«ä½¿ã‚ã‚Œã‚‹ CAboutDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_ABOUTBOX };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 
-// À‘•
+// å®Ÿè£…
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -194,14 +194,14 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-// ƒ_ƒCƒAƒƒO‚ğÀs‚·‚é‚½‚ß‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“ ƒRƒ}ƒ“ƒh
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’å®Ÿè¡Œã™ã‚‹ãŸã‚ã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ ã‚³ãƒãƒ³ãƒ‰
 void CBinaryEdit_MfcApp::OnAppAbout()
 {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
 
-// CBinaryEdit_MfcApp ‚ÌƒJƒXƒ^ƒ}ƒCƒY‚³‚ê‚½“Ç‚İ‚İƒƒ\ƒbƒh‚Æ•Û‘¶ƒƒ\ƒbƒh
+// CBinaryEdit_MfcApp ã®ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºã•ã‚ŒãŸèª­ã¿è¾¼ã¿ãƒ¡ã‚½ãƒƒãƒ‰ã¨ä¿å­˜ãƒ¡ã‚½ãƒƒãƒ‰
 
 void CBinaryEdit_MfcApp::PreLoadState()
 {
@@ -223,7 +223,7 @@ void CBinaryEdit_MfcApp::SaveCustomState()
 {
 }
 
-// CBinaryEdit_MfcApp ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// CBinaryEdit_MfcApp ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
 
 
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 class CPropertiesToolBar : public CMFCToolBar
@@ -14,13 +14,13 @@ public:
 
 class CPropertiesWnd : public CDockablePane
 {
-// ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 public:
 	CPropertiesWnd();
 
 	void AdjustLayout();
 
-// ‘®«
+// å±æ€§
 public:
 	void SetVSDotNetLook(BOOL bSet)
 	{
@@ -34,7 +34,7 @@ protected:
 	CPropertiesToolBar m_wndToolBar;
 	CMFCPropertyGridCtrl m_wndPropList;
 
-// À‘•
+// å®Ÿè£…
 public:
 	virtual ~CPropertiesWnd();
 

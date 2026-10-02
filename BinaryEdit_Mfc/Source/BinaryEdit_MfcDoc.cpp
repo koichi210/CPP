@@ -1,10 +1,10 @@
-
-// BinaryEdit_MfcDoc.cpp : CBinaryEdit_MfcDoc ƒNƒ‰ƒX‚ÌŽÀ‘•
+ï»¿
+// BinaryEdit_MfcDoc.cpp : CBinaryEdit_MfcDoc ã‚¯ãƒ©ã‚¹ã®å®Ÿè£…
 //
 
 #include "stdafx.h"
-// SHARED_HANDLERS ‚ÍAƒvƒŒƒrƒ…[AƒTƒ€ƒlƒCƒ‹A‚¨‚æ‚ÑŒŸõƒtƒBƒ‹ƒ^[ ƒnƒ“ƒhƒ‰[‚ðŽÀ‘•‚µ‚Ä‚¢‚é ATL ƒvƒƒWƒFƒNƒg‚Å’è‹`‚Å‚«A
-// ‚»‚ÌƒvƒƒWƒFƒNƒg‚Æ‚ÌƒhƒLƒ…ƒƒ“ƒg ƒR[ƒh‚Ì‹¤—L‚ð‰Â”\‚É‚µ‚Ü‚·B
+// SHARED_HANDLERS ã¯ã€ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã€ã‚µãƒ ãƒã‚¤ãƒ«ã€ãŠã‚ˆã³æ¤œç´¢ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å®Ÿè£…ã—ã¦ã„ã‚‹ ATL ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã§å®šç¾©ã§ãã€
+// ãã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã¨ã®ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ ã‚³ãƒ¼ãƒ‰ã®å…±æœ‰ã‚’å¯èƒ½ã«ã—ã¾ã™ã€‚
 #ifndef SHARED_HANDLERS
 #include "BinaryEdit_Mfc.h"
 #endif
@@ -25,11 +25,11 @@ BEGIN_MESSAGE_MAP(CBinaryEdit_MfcDoc, CDocument)
 END_MESSAGE_MAP()
 
 
-// CBinaryEdit_MfcDoc ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“/ƒfƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// CBinaryEdit_MfcDoc ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³/ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 
 CBinaryEdit_MfcDoc::CBinaryEdit_MfcDoc()
 {
-	// TODO: ‚±‚ÌˆÊ’u‚É 1 “x‚¾‚¯ŒÄ‚Î‚ê‚é\’z—p‚ÌƒR[ƒh‚ð’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B
+	// TODO: ã“ã®ä½ç½®ã« 1 åº¦ã ã‘å‘¼ã°ã‚Œã‚‹æ§‹ç¯‰ç”¨ã®ã‚³ãƒ¼ãƒ‰ã‚’è¿½åŠ ã—ã¦ãã ã•ã„ã€‚
 
 }
 
@@ -42,8 +42,8 @@ BOOL CBinaryEdit_MfcDoc::OnNewDocument()
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 
-	// TODO: ‚±‚ÌˆÊ’u‚ÉÄ‰Šú‰»ˆ—‚ð’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B
-	// (SDI ƒhƒLƒ…ƒƒ“ƒg‚Í‚±‚ÌƒhƒLƒ…ƒƒ“ƒg‚ðÄ—˜—p‚µ‚Ü‚·B)
+	// TODO: ã“ã®ä½ç½®ã«å†åˆæœŸåŒ–å‡¦ç†ã‚’è¿½åŠ ã—ã¦ãã ã•ã„ã€‚
+	// (SDI ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã¯ã“ã®ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã‚’å†åˆ©ç”¨ã—ã¾ã™ã€‚)
 
 	return TRUE;
 }
@@ -51,26 +51,26 @@ BOOL CBinaryEdit_MfcDoc::OnNewDocument()
 
 
 
-// CBinaryEdit_MfcDoc ƒVƒŠƒAƒ‹‰»
+// CBinaryEdit_MfcDoc ã‚·ãƒªã‚¢ãƒ«åŒ–
 
 void CBinaryEdit_MfcDoc::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{
-		// TODO: Ši”[‚·‚éƒR[ƒh‚ð‚±‚±‚É’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B
+		// TODO: æ ¼ç´ã™ã‚‹ã‚³ãƒ¼ãƒ‰ã‚’ã“ã“ã«è¿½åŠ ã—ã¦ãã ã•ã„ã€‚
 	}
 	else
 	{
-		// TODO: “Ç‚Ýž‚ÞƒR[ƒh‚ð‚±‚±‚É’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B
+		// TODO: èª­ã¿è¾¼ã‚€ã‚³ãƒ¼ãƒ‰ã‚’ã“ã“ã«è¿½åŠ ã—ã¦ãã ã•ã„ã€‚
 	}
 }
 
 #ifdef SHARED_HANDLERS
 
-// ƒTƒ€ƒlƒCƒ‹‚ÌƒTƒ|[ƒg
+// ã‚µãƒ ãƒã‚¤ãƒ«ã®ã‚µãƒãƒ¼ãƒˆ
 void CBinaryEdit_MfcDoc::OnDrawThumbnail(CDC& dc, LPRECT lprcBounds)
 {
-	// ‚±‚ÌƒR[ƒh‚ð•ÏX‚µ‚ÄƒhƒLƒ…ƒƒ“ƒg‚Ìƒf[ƒ^‚ð•`‰æ‚µ‚Ü‚·
+	// ã“ã®ã‚³ãƒ¼ãƒ‰ã‚’å¤‰æ›´ã—ã¦ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã®ãƒ‡ãƒ¼ã‚¿ã‚’æç”»ã—ã¾ã™
 	dc.FillSolidRect(lprcBounds, RGB(255, 255, 255));
 
 	CString strText = _T("TODO: implement thumbnail drawing here");
@@ -88,14 +88,14 @@ void CBinaryEdit_MfcDoc::OnDrawThumbnail(CDC& dc, LPRECT lprcBounds)
 	dc.SelectObject(pOldFont);
 }
 
-// ŒŸõƒnƒ“ƒhƒ‰[‚ÌƒTƒ|[ƒg
+// æ¤œç´¢ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã®ã‚µãƒãƒ¼ãƒˆ
 void CBinaryEdit_MfcDoc::InitializeSearchContent()
 {
 	CString strSearchContent;
-	// ƒhƒLƒ…ƒƒ“ƒg‚Ìƒf[ƒ^‚©‚çŒŸõƒRƒ“ƒeƒ“ƒc‚ðÝ’è‚µ‚Ü‚·B 
-	// ƒRƒ“ƒeƒ“ƒc‚ÌŠe•”•ª‚Í ";" ‚Å‹æØ‚é•K—v‚ª‚ ‚è‚Ü‚·
+	// ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã®ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æ¤œç´¢ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’è¨­å®šã—ã¾ã™ã€‚ 
+	// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®å„éƒ¨åˆ†ã¯ ";" ã§åŒºåˆ‡ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™
 
-	// —á:  strSearchContent = _T("point;rectangle;circle;ole object;");
+	// ä¾‹:  strSearchContent = _T("point;rectangle;circle;ole object;");
 	SetSearchContent(strSearchContent);
 }
 
@@ -119,7 +119,7 @@ void CBinaryEdit_MfcDoc::SetSearchContent(const CString& value)
 
 #endif // SHARED_HANDLERS
 
-// CBinaryEdit_MfcDoc f’f
+// CBinaryEdit_MfcDoc è¨ºæ–­
 
 #ifdef _DEBUG
 void CBinaryEdit_MfcDoc::AssertValid() const
@@ -134,4 +134,4 @@ void CBinaryEdit_MfcDoc::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CBinaryEdit_MfcDoc ƒRƒ}ƒ“ƒh
+// CBinaryEdit_MfcDoc ã‚³ãƒžãƒ³ãƒ‰

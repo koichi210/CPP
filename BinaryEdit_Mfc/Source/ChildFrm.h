@@ -1,5 +1,5 @@
-
-// ChildFrm.h : CChildFrame ƒNƒ‰ƒX‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX
+ï»¿
+// ChildFrm.h : CChildFrame ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹
 //
 
 #pragma once
@@ -10,16 +10,16 @@ class CChildFrame : public CMDIChildWndEx
 public:
 	CChildFrame();
 
-// ‘®«
+// å±æ€§
 public:
 
-// ‘€ì
+// æ“ä½œ
 public:
 
-// ƒI[ƒo[ƒ‰ƒCƒh
+// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
-// À‘•
+// å®Ÿè£…
 public:
 	virtual ~CChildFrame();
 #ifdef _DEBUG
@@ -27,7 +27,7 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-// ¶¬‚³‚ê‚½AƒƒbƒZ[ƒWŠ„‚è“–‚ÄŠÖ”
+// ç”Ÿæˆã•ã‚ŒãŸã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²ã‚Šå½“ã¦é–¢æ•°
 protected:
 	DECLARE_MESSAGE_MAP()
 };

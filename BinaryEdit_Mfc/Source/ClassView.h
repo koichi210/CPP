@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "ViewTree.h"
@@ -30,7 +30,7 @@ protected:
 
 	void FillClassView();
 
-// ƒI[ƒo[ƒ‰ƒCƒh
+// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 

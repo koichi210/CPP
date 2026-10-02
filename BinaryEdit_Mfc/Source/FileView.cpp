@@ -1,4 +1,4 @@
-
+﻿
 #include "stdafx.h"
 #include "mainfrm.h"
 #include "FileView.h"
@@ -38,7 +38,7 @@ BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CWorkspaceBar ���b�Z�[�W �n���h���[
+// CWorkspaceBar メッセージ ハンドラー
 
 int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -48,21 +48,21 @@ int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect rectDummy;
 	rectDummy.SetRectEmpty();
 
-	// �r���[�̍쐬:
+	// ビューの作成:
 	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS;
 
 	if (!m_wndFileView.Create(dwViewStyle, rectDummy, this, 4))
 	{
-		TRACE0("�t�@�C�� �r���[���쐬�ł��܂���ł���\n");
-		return -1;      // �쐬�ł��Ȃ��ꍇ
+		TRACE0("ファイル ビューを作成できませんでした\n");
+		return -1;      // 作成できない場合
 	}
 
-	// �r���[�̃C���[�W�̓ǂݍ���:
+	// ビューのイメージの読み込み:
 	m_FileViewImages.Create(IDB_FILE_VIEW, 16, 0, RGB(255, 0, 255));
 	m_wndFileView.SetImageList(&m_FileViewImages, TVSIL_NORMAL);
 
 	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_EXPLORER);
-	m_wndToolBar.LoadToolBar(IDR_EXPLORER, 0, 0, TRUE /* ���b�N����Ă��܂�*/);
+	m_wndToolBar.LoadToolBar(IDR_EXPLORER, 0, 0, TRUE /* ロックされています*/);
 
 	OnChangeVisualStyle();
 
@@ -72,10 +72,10 @@ int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndToolBar.SetOwner(this);
 
-	// ���ׂẴR�}���h���A�e�t���[���o�R�ł͂Ȃ����̃R���g���[���o�R�œn����܂�:
+	// すべてのコマンドが、親フレーム経由ではなくこのコントロール経由で渡されます:
 	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
 
-	// �ÓI�c���[ �r���[ �f�[�^ (�_�~�[ �R�[�h) ����͂��܂�
+	// 静的ツリー ビュー データ (ダミー コード) を入力します
 	FillFileView();
 	AdjustLayout();
 
@@ -90,10 +90,10 @@ void CFileView::OnSize(UINT nType, int cx, int cy)
 
 void CFileView::FillFileView()
 {
-	HTREEITEM hRoot = m_wndFileView.InsertItem(_T("FakeApp �t�@�C��"), 0, 0);
+	HTREEITEM hRoot = m_wndFileView.InsertItem(_T("FakeApp ファイル"), 0, 0);
 	m_wndFileView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
 
-	HTREEITEM hSrc = m_wndFileView.InsertItem(_T("FakeApp �\�[�X �t�@�C��"), 0, 0, hRoot);
+	HTREEITEM hSrc = m_wndFileView.InsertItem(_T("FakeApp ソース ファイル"), 0, 0, hRoot);
 
 	m_wndFileView.InsertItem(_T("FakeApp.cpp"), 1, 1, hSrc);
 	m_wndFileView.InsertItem(_T("FakeApp.rc"), 1, 1, hSrc);
@@ -102,7 +102,7 @@ void CFileView::FillFileView()
 	m_wndFileView.InsertItem(_T("MainFrm.cpp"), 1, 1, hSrc);
 	m_wndFileView.InsertItem(_T("StdAfx.cpp"), 1, 1, hSrc);
 
-	HTREEITEM hInc = m_wndFileView.InsertItem(_T("FakeApp �w�b�_�[ �t�@�C��"), 0, 0, hRoot);
+	HTREEITEM hInc = m_wndFileView.InsertItem(_T("FakeApp ヘッダー ファイル"), 0, 0, hRoot);
 
 	m_wndFileView.InsertItem(_T("FakeApp.h"), 2, 2, hInc);
 	m_wndFileView.InsertItem(_T("FakeAppDoc.h"), 2, 2, hInc);
@@ -111,7 +111,7 @@ void CFileView::FillFileView()
 	m_wndFileView.InsertItem(_T("MainFrm.h"), 2, 2, hInc);
 	m_wndFileView.InsertItem(_T("StdAfx.h"), 2, 2, hInc);
 
-	HTREEITEM hRes = m_wndFileView.InsertItem(_T("FakeApp ���\�[�X �t�@�C��"), 0, 0, hRoot);
+	HTREEITEM hRes = m_wndFileView.InsertItem(_T("FakeApp リソース ファイル"), 0, 0, hRoot);
 
 	m_wndFileView.InsertItem(_T("FakeApp.ico"), 2, 2, hRes);
 	m_wndFileView.InsertItem(_T("FakeApp.rc2"), 2, 2, hRes);
@@ -136,7 +136,7 @@ void CFileView::OnContextMenu(CWnd* pWnd, CPoint point)
 
 	if (point != CPoint(-1, -1))
 	{
-		// �N���b�N���ꂽ���ڂ̑I��:
+		// クリックされた項目の選択:
 		CPoint ptTree = point;
 		pWndTree->ScreenToClient(&ptTree);
 
@@ -170,43 +170,43 @@ void CFileView::AdjustLayout()
 
 void CFileView::OnProperties()
 {
-	AfxMessageBox(_T("�v���p�e�B..."));
+	AfxMessageBox(_T("プロパティ..."));
 
 }
 
 void CFileView::OnFileOpen()
 {
-	// TODO: �����ɃR�}���h �n���h���[ �R�[�h��ǉ����܂�
+	// TODO: ここにコマンド ハンドラー コードを追加します
 }
 
 void CFileView::OnFileOpenWith()
 {
-	// TODO: �����ɃR�}���h �n���h���[ �R�[�h��ǉ����܂�
+	// TODO: ここにコマンド ハンドラー コードを追加します
 }
 
 void CFileView::OnDummyCompile()
 {
-	// TODO: �����ɃR�}���h �n���h���[ �R�[�h��ǉ����܂�
+	// TODO: ここにコマンド ハンドラー コードを追加します
 }
 
 void CFileView::OnEditCut()
 {
-	// TODO: �����ɃR�}���h �n���h���[ �R�[�h��ǉ����܂�
+	// TODO: ここにコマンド ハンドラー コードを追加します
 }
 
 void CFileView::OnEditCopy()
 {
-	// TODO: �����ɃR�}���h �n���h���[ �R�[�h��ǉ����܂�
+	// TODO: ここにコマンド ハンドラー コードを追加します
 }
 
 void CFileView::OnEditClear()
 {
-	// TODO: �����ɃR�}���h �n���h���[ �R�[�h��ǉ����܂�
+	// TODO: ここにコマンド ハンドラー コードを追加します
 }
 
 void CFileView::OnPaint()
 {
-	CPaintDC dc(this); // �`��̃f�o�C�X �R���e�L�X�g
+	CPaintDC dc(this); // 描画のデバイス コンテキスト
 
 	CRect rectTree;
 	m_wndFileView.GetWindowRect(rectTree);
@@ -226,7 +226,7 @@ void CFileView::OnSetFocus(CWnd* pOldWnd)
 void CFileView::OnChangeVisualStyle()
 {
 	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_EXPLORER_24 : IDR_EXPLORER, 0, 0, TRUE /* ���b�N����܂���*/);
+	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_EXPLORER_24 : IDR_EXPLORER, 0, 0, TRUE /* ロックされました*/);
 
 	m_FileViewImages.DeleteImageList();
 
@@ -235,7 +235,7 @@ void CFileView::OnChangeVisualStyle()
 	CBitmap bmp;
 	if (!bmp.LoadBitmap(uiBmpId))
 	{
-		TRACE(_T("�r�b�g�}�b�v��ǂݍ��߂܂���ł���: %x\n"), uiBmpId);
+		TRACE(_T("ビットマップを読み込めませんでした: %x\n"), uiBmpId);
 		ASSERT(FALSE);
 		return;
 	}

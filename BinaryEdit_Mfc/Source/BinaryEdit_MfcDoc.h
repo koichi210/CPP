@@ -1,5 +1,5 @@
-
-// BinaryEdit_MfcDoc.h : CBinaryEdit_MfcDoc ƒNƒ‰ƒX‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX
+ï»¿
+// BinaryEdit_MfcDoc.h : CBinaryEdit_MfcDoc ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹
 //
 
 
@@ -8,17 +8,17 @@
 
 class CBinaryEdit_MfcDoc : public CDocument
 {
-protected: // ƒVƒŠƒAƒ‹‰»‚©‚ç‚Ì‚İì¬‚µ‚Ü‚·B
+protected: // ã‚·ãƒªã‚¢ãƒ«åŒ–ã‹ã‚‰ã®ã¿ä½œæˆã—ã¾ã™ã€‚
 	CBinaryEdit_MfcDoc();
 	DECLARE_DYNCREATE(CBinaryEdit_MfcDoc)
 
-// ‘®«
+// å±æ€§
 public:
 
-// ‘€ì
+// æ“ä½œ
 public:
 
-// ƒI[ƒo[ƒ‰ƒCƒh
+// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 public:
 	virtual BOOL OnNewDocument();
 	virtual void Serialize(CArchive& ar);
@@ -27,7 +27,7 @@ public:
 	virtual void OnDrawThumbnail(CDC& dc, LPRECT lprcBounds);
 #endif // SHARED_HANDLERS
 
-// À‘•
+// å®Ÿè£…
 public:
 	virtual ~CBinaryEdit_MfcDoc();
 #ifdef _DEBUG
@@ -37,12 +37,12 @@ public:
 
 protected:
 
-// ¶¬‚³‚ê‚½AƒƒbƒZ[ƒWŠ„‚è“–‚ÄŠÖ”
+// ç”Ÿæˆã•ã‚ŒãŸã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²ã‚Šå½“ã¦é–¢æ•°
 protected:
 	DECLARE_MESSAGE_MAP()
 
 #ifdef SHARED_HANDLERS
-	// ŒŸõƒnƒ“ƒhƒ‰[‚ÌŒŸõƒRƒ“ƒeƒ“ƒc‚ğİ’è‚·‚éƒwƒ‹ƒp[ŠÖ”
+	// æ¤œç´¢ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã®æ¤œç´¢ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’è¨­å®šã™ã‚‹ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°
 	void SetSearchContent(const CString& value);
 #endif // SHARED_HANDLERS
 };

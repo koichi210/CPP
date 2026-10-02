@@ -1,10 +1,10 @@
-
-// BinaryEdit_MfcView.cpp : CBinaryEdit_MfcView ƒNƒ‰ƒX‚ÌÀ‘•
+ï»¿
+// BinaryEdit_MfcView.cpp : CBinaryEdit_MfcView ã‚¯ãƒ©ã‚¹ã®å®Ÿè£…
 //
 
 #include "stdafx.h"
-// SHARED_HANDLERS ‚ÍAƒvƒŒƒrƒ…[AƒTƒ€ƒlƒCƒ‹A‚¨‚æ‚ÑŒŸõƒtƒBƒ‹ƒ^[ ƒnƒ“ƒhƒ‰[‚ğÀ‘•‚µ‚Ä‚¢‚é ATL ƒvƒƒWƒFƒNƒg‚Å’è‹`‚Å‚«A
-// ‚»‚ÌƒvƒƒWƒFƒNƒg‚Æ‚ÌƒhƒLƒ…ƒƒ“ƒg ƒR[ƒh‚Ì‹¤—L‚ğ‰Â”\‚É‚µ‚Ü‚·B
+// SHARED_HANDLERS ã¯ã€ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã€ã‚µãƒ ãƒã‚¤ãƒ«ã€ãŠã‚ˆã³æ¤œç´¢ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å®Ÿè£…ã—ã¦ã„ã‚‹ ATL ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã§å®šç¾©ã§ãã€
+// ãã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã¨ã®ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ ã‚³ãƒ¼ãƒ‰ã®å…±æœ‰ã‚’å¯èƒ½ã«ã—ã¾ã™ã€‚
 #ifndef SHARED_HANDLERS
 #include "BinaryEdit_Mfc.h"
 #endif
@@ -22,7 +22,7 @@
 IMPLEMENT_DYNCREATE(CBinaryEdit_MfcView, CView)
 
 BEGIN_MESSAGE_MAP(CBinaryEdit_MfcView, CView)
-	// •W€ˆóüƒRƒ}ƒ“ƒh
+	// æ¨™æº–å°åˆ·ã‚³ãƒãƒ³ãƒ‰
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CBinaryEdit_MfcView::OnFilePrintPreview)
@@ -30,11 +30,11 @@ BEGIN_MESSAGE_MAP(CBinaryEdit_MfcView, CView)
 	ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
 
-// CBinaryEdit_MfcView ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“/ƒfƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// CBinaryEdit_MfcView ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³/ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 
 CBinaryEdit_MfcView::CBinaryEdit_MfcView()
 {
-	// TODO: \’zƒR[ƒh‚ğ‚±‚±‚É’Ç‰Á‚µ‚Ü‚·B
+	// TODO: æ§‹ç¯‰ã‚³ãƒ¼ãƒ‰ã‚’ã“ã“ã«è¿½åŠ ã—ã¾ã™ã€‚
 
 }
 
@@ -44,13 +44,13 @@ CBinaryEdit_MfcView::~CBinaryEdit_MfcView()
 
 BOOL CBinaryEdit_MfcView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: ‚±‚ÌˆÊ’u‚Å CREATESTRUCT cs ‚ğC³‚µ‚Ä Window ƒNƒ‰ƒX‚Ü‚½‚ÍƒXƒ^ƒCƒ‹‚ğ
-	//  C³‚µ‚Ä‚­‚¾‚³‚¢B
+	// TODO: ã“ã®ä½ç½®ã§ CREATESTRUCT cs ã‚’ä¿®æ­£ã—ã¦ Window ã‚¯ãƒ©ã‚¹ã¾ãŸã¯ã‚¹ã‚¿ã‚¤ãƒ«ã‚’
+	//  ä¿®æ­£ã—ã¦ãã ã•ã„ã€‚
 
 	return CView::PreCreateWindow(cs);
 }
 
-// CBinaryEdit_MfcView •`‰æ
+// CBinaryEdit_MfcView æç”»
 
 void CBinaryEdit_MfcView::OnDraw(CDC* /*pDC*/)
 {
@@ -59,11 +59,11 @@ void CBinaryEdit_MfcView::OnDraw(CDC* /*pDC*/)
 	if (!pDoc)
 		return;
 
-	// TODO: ‚±‚ÌêŠ‚ÉƒlƒCƒeƒBƒu ƒf[ƒ^—p‚Ì•`‰æƒR[ƒh‚ğ’Ç‰Á‚µ‚Ü‚·B
+	// TODO: ã“ã®å ´æ‰€ã«ãƒã‚¤ãƒ†ã‚£ãƒ– ãƒ‡ãƒ¼ã‚¿ç”¨ã®æç”»ã‚³ãƒ¼ãƒ‰ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 }
 
 
-// CBinaryEdit_MfcView ˆóü
+// CBinaryEdit_MfcView å°åˆ·
 
 
 void CBinaryEdit_MfcView::OnFilePrintPreview()
@@ -75,18 +75,18 @@ void CBinaryEdit_MfcView::OnFilePrintPreview()
 
 BOOL CBinaryEdit_MfcView::OnPreparePrinting(CPrintInfo* pInfo)
 {
-	// Šù’è‚Ìˆóü€”õ
+	// æ—¢å®šã®å°åˆ·æº–å‚™
 	return DoPreparePrinting(pInfo);
 }
 
 void CBinaryEdit_MfcView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: ˆóü‘O‚Ì“Á•Ê‚È‰Šú‰»ˆ—‚ğ’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B
+	// TODO: å°åˆ·å‰ã®ç‰¹åˆ¥ãªåˆæœŸåŒ–å‡¦ç†ã‚’è¿½åŠ ã—ã¦ãã ã•ã„ã€‚
 }
 
 void CBinaryEdit_MfcView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: ˆóüŒã‚ÌŒãˆ—‚ğ’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B
+	// TODO: å°åˆ·å¾Œã®å¾Œå‡¦ç†ã‚’è¿½åŠ ã—ã¦ãã ã•ã„ã€‚
 }
 
 void CBinaryEdit_MfcView::OnRButtonUp(UINT /* nFlags */, CPoint point)
@@ -103,7 +103,7 @@ void CBinaryEdit_MfcView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 }
 
 
-// CBinaryEdit_MfcView f’f
+// CBinaryEdit_MfcView è¨ºæ–­
 
 #ifdef _DEBUG
 void CBinaryEdit_MfcView::AssertValid() const
@@ -116,7 +116,7 @@ void CBinaryEdit_MfcView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CBinaryEdit_MfcDoc* CBinaryEdit_MfcView::GetDocument() const // ƒfƒoƒbƒOˆÈŠO‚Ìƒo[ƒWƒ‡ƒ“‚ÍƒCƒ“ƒ‰ƒCƒ“‚Å‚·B
+CBinaryEdit_MfcDoc* CBinaryEdit_MfcView::GetDocument() const // ãƒ‡ãƒãƒƒã‚°ä»¥å¤–ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¯ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ã§ã™ã€‚
 {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CBinaryEdit_MfcDoc)));
 	return (CBinaryEdit_MfcDoc*)m_pDocument;
@@ -124,4 +124,4 @@ CBinaryEdit_MfcDoc* CBinaryEdit_MfcView::GetDocument() const // ƒfƒoƒbƒOˆÈŠO‚Ìƒo
 #endif //_DEBUG
 
 
-// CBinaryEdit_MfcView ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// CBinaryEdit_MfcView ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼

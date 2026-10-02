@@ -1,5 +1,5 @@
-
-// MainFrm.cpp : CMainFrame �N���X�̎���
+﻿
+// MainFrm.cpp : CMainFrame クラスの実装
 //
 
 #include "stdafx.h"
@@ -31,17 +31,17 @@ END_MESSAGE_MAP()
 
 static UINT indicators[] =
 {
-	ID_SEPARATOR,           // �X�e�[�^�X ���C�� �C���W�P�[�^�[
+	ID_SEPARATOR,           // ステータス ライン インジケーター
 	ID_INDICATOR_CAPS,
 	ID_INDICATOR_NUM,
 	ID_INDICATOR_SCRL,
 };
 
-// CMainFrame �R���X�g���N�V����/�f�X�g���N�V����
+// CMainFrame コンストラクション/デストラクション
 
 CMainFrame::CMainFrame()
 {
-	// TODO: �����o�[�������R�[�h�������ɒǉ����Ă��������B
+	// TODO: メンバー初期化コードをここに追加してください。
 	theApp.m_nAppLook = theApp.GetInt(_T("ApplicationLook"), ID_VIEW_APPLOOK_VS_2008);
 }
 
@@ -55,25 +55,25 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	BOOL bNameValid;
-	// �Œ�l�Ɋ�Â��ăr�W���A�� �}�l�[�W���[�� visual �X�^�C����ݒ肵�܂�
+	// 固定値に基づいてビジュアル マネージャーと visual スタイルを設定します
 	OnApplicationLook(theApp.m_nAppLook);
 
 	if (!m_wndMenuBar.Create(this))
 	{
-		TRACE0("���j���[ �o�[���쐬�ł��܂���ł���\n");
-		return -1;      // �쐬�ł��܂���ł����B
+		TRACE0("メニュー バーを作成できませんでした\n");
+		return -1;      // 作成できませんでした。
 	}
 
 	m_wndMenuBar.SetPaneStyle(m_wndMenuBar.GetPaneStyle() | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY);
 
-	// �A�N�e�B�u�ɂȂ����Ƃ����j���[ �o�[�Ƀt�H�[�J�X���ړ����Ȃ�
+	// アクティブになったときメニュー バーにフォーカスを移動しない
 	CMFCPopupMenu::SetForceMenuFocus(FALSE);
 
 	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
 		!m_wndToolBar.LoadToolBar(theApp.m_bHiColorIcons ? IDR_MAINFRAME_256 : IDR_MAINFRAME))
 	{
-		TRACE0("�c�[�� �o�[�̍쐬�Ɏ��s���܂����B\n");
-		return -1;      // �쐬�ł��܂���ł����B
+		TRACE0("ツール バーの作成に失敗しました。\n");
+		return -1;      // 作成できませんでした。
 	}
 
 	CString strToolBarName;
@@ -86,17 +86,17 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	ASSERT(bNameValid);
 	m_wndToolBar.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
 
-	// ���[�U�[��`�̃c�[�� �o�[�̑���������܂�:
+	// ユーザー定義のツール バーの操作を許可します:
 	InitUserToolbars(NULL, uiFirstUserToolBarId, uiLastUserToolBarId);
 
 	if (!m_wndStatusBar.Create(this))
 	{
-		TRACE0("�X�e�[�^�X �o�[�̍쐬�Ɏ��s���܂����B\n");
-		return -1;      // �쐬�ł��Ȃ��ꍇ
+		TRACE0("ステータス バーの作成に失敗しました。\n");
+		return -1;      // 作成できない場合
 	}
 	m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT));
 
-	// TODO: �c�[�� �o�[����у��j���[ �o�[���h�b�L���O�\�ɂ��Ȃ��ꍇ�́A���� 5 �̍s���폜���܂�
+	// TODO: ツール バーおよびメニュー バーをドッキング可能にしない場合は、この 5 つの行を削除します
 	m_wndMenuBar.EnableDocking(CBRS_ALIGN_ANY);
 	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
 	EnableDocking(CBRS_ALIGN_ANY);
@@ -104,18 +104,18 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockPane(&m_wndToolBar);
 
 
-	// Visual Studio 2005 �X�^�C���̃h�b�L���O �E�B���h�E�����L���ɂ��܂�
+	// Visual Studio 2005 スタイルのドッキング ウィンドウ動作を有効にします
 	CDockingManager::SetDockingMode(DT_SMART);
-	// Visual Studio 2005 �X�^�C���̃h�b�L���O �E�B���h�E�̎�����\�������L���ɂ��܂�
+	// Visual Studio 2005 スタイルのドッキング ウィンドウの自動非表示動作を有効にします
 	EnableAutoHidePanes(CBRS_ALIGN_ANY);
 
-	// ���j���[���ڃC���[�W (�ǂ̕W���c�[�� �o�[�ɂ��Ȃ��C���[�W) ��ǂݍ��݂܂�:
+	// メニュー項目イメージ (どの標準ツール バーにもないイメージ) を読み込みます:
 	CMFCToolBar::AddToolBarForImageCollection(IDR_MENU_IMAGES, theApp.m_bHiColorIcons ? IDB_MENU_IMAGES_24 : 0);
 
-	// �h�b�L���O �E�B���h�E���쐬���܂�
+	// ドッキング ウィンドウを作成します
 	if (!CreateDockingWindows())
 	{
-		TRACE0("�h�b�L���O �E�B���h�E���쐬�ł��܂���ł���\n");
+		TRACE0("ドッキング ウィンドウを作成できませんでした\n");
 		return -1;
 	}
 
@@ -130,26 +130,26 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockPane(&m_wndProperties);
 
 
-	// �g���E�B���h�E�Ǘ��_�C�A���O �{�b�N�X��L���ɂ��܂�
+	// 拡張ウィンドウ管理ダイアログ ボックスを有効にします
 	EnableWindowsDialog(ID_WINDOW_MANAGER, ID_WINDOW_MANAGER, TRUE);
 
-	// �c�[�� �o�[�ƃh�b�L���O �E�B���h�E ���j���[�̔z�u�ύX��L���ɂ��܂�
+	// ツール バーとドッキング ウィンドウ メニューの配置変更を有効にします
 	EnablePaneMenu(TRUE, ID_VIEW_CUSTOMIZE, strCustomize, ID_VIEW_TOOLBAR);
 
-	// �c�[�� �o�[�̃N�C�b�N (Alt �L�[�������Ȃ���h���b�O) �J�X�^�}�C�Y��L���ɂ��܂�
+	// ツール バーのクイック (Alt キーを押しながらドラッグ) カスタマイズを有効にします
 	CMFCToolBar::EnableQuickCustomization();
 
 	if (CMFCToolBar::GetUserImages() == NULL)
 	{
-		// ���[�U�[��`�̃c�[�� �o�[ �C���[�W��ǂݍ��݂܂�
+		// ユーザー定義のツール バー イメージを読み込みます
 		if (m_UserImages.Load(_T(".\\UserImages.bmp")))
 		{
 			CMFCToolBar::SetUserImages(&m_UserImages);
 		}
 	}
 
-	// ���j���[�̃p�[�\�i���� (�ŋߎg�p���ꂽ�R�}���h) ��L���ɂ��܂�
-	// TODO: ���[�U�[�ŗL�̊�{�R�}���h���`���A�e���j���[���N���b�N�����Ƃ��Ɋ�{�R�}���h�� 1 �ȏ�\�������悤�ɂ��܂��B
+	// メニューのパーソナル化 (最近使用されたコマンド) を有効にします
+	// TODO: ユーザー固有の基本コマンドを定義し、各メニューをクリックしたときに基本コマンドが 1 つ以上表示されるようにします。
 	CList<UINT, UINT> lstBasicCommands;
 
 	lstBasicCommands.AddTail(ID_FILE_NEW);
@@ -184,8 +184,8 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if( !CMDIFrameWndEx::PreCreateWindow(cs) )
 		return FALSE;
-	// TODO: ���̈ʒu�� CREATESTRUCT cs ���C������ Window �N���X�܂��̓X�^�C����
-	//  �C�����Ă��������B
+	// TODO: この位置で CREATESTRUCT cs を修正して Window クラスまたはスタイルを
+	//  修正してください。
 
 	return TRUE;
 }
@@ -194,44 +194,44 @@ BOOL CMainFrame::CreateDockingWindows()
 {
 	BOOL bNameValid;
 
-	// �N���X �r���[���쐬���܂�
+	// クラス ビューを作成します
 	CString strClassView;
 	bNameValid = strClassView.LoadString(IDS_CLASS_VIEW);
 	ASSERT(bNameValid);
 	if (!m_wndClassView.Create(strClassView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_CLASSVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI))
 	{
-		TRACE0("�N���X �r���[ �E�B���h�E���쐬�ł��܂���ł���\n");
-		return FALSE; // �쐬�ł��܂���ł���
+		TRACE0("クラス ビュー ウィンドウを作成できませんでした\n");
+		return FALSE; // 作成できませんでした
 	}
 
-	// �t�@�C�� �r���[���쐬���܂�
+	// ファイル ビューを作成します
 	CString strFileView;
 	bNameValid = strFileView.LoadString(IDS_FILE_VIEW);
 	ASSERT(bNameValid);
 	if (!m_wndFileView.Create(strFileView, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_FILEVIEW, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT| CBRS_FLOAT_MULTI))
 	{
-		TRACE0("�t�@�C�� �r���[ �E�B���h�E���쐬�ł��܂���ł���\n");
-		return FALSE; // �쐬�ł��܂���ł���
+		TRACE0("ファイル ビュー ウィンドウを作成できませんでした\n");
+		return FALSE; // 作成できませんでした
 	}
 
-	// �o�̓E�B���h�E���쐬���܂�
+	// 出力ウィンドウを作成します
 	CString strOutputWnd;
 	bNameValid = strOutputWnd.LoadString(IDS_OUTPUT_WND);
 	ASSERT(bNameValid);
 	if (!m_wndOutput.Create(strOutputWnd, this, CRect(0, 0, 100, 100), TRUE, ID_VIEW_OUTPUTWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
 	{
-		TRACE0("�o�̓E�B���h�E���쐬�ł��܂���ł���\n");
-		return FALSE; // �쐬�ł��܂���ł���
+		TRACE0("出力ウィンドウを作成できませんでした\n");
+		return FALSE; // 作成できませんでした
 	}
 
-	// �v���p�e�B �E�B���h�E���쐬���܂�
+	// プロパティ ウィンドウを作成します
 	CString strPropertiesWnd;
 	bNameValid = strPropertiesWnd.LoadString(IDS_PROPERTIES_WND);
 	ASSERT(bNameValid);
 	if (!m_wndProperties.Create(strPropertiesWnd, this, CRect(0, 0, 200, 200), TRUE, ID_VIEW_PROPERTIESWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI))
 	{
-		TRACE0("�v���p�e�B �E�B���h�E���쐬�ł��܂���ł���\n");
-		return FALSE; // �쐬�ł��܂���ł���
+		TRACE0("プロパティ ウィンドウを作成できませんでした\n");
+		return FALSE; // 作成できませんでした
 	}
 
 	SetDockingWindowIcons(theApp.m_bHiColorIcons);
@@ -254,7 +254,7 @@ void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
 
 }
 
-// CMainFrame �f�f
+// CMainFrame 診断
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const
@@ -269,7 +269,7 @@ void CMainFrame::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CMainFrame ���b�Z�[�W �n���h���[
+// CMainFrame メッセージ ハンドラー
 
 void CMainFrame::OnWindowManager()
 {
@@ -278,7 +278,7 @@ void CMainFrame::OnWindowManager()
 
 void CMainFrame::OnViewCustomize()
 {
-	CMFCToolBarsCustomizeDialog* pDlgCust = new CMFCToolBarsCustomizeDialog(this, TRUE /* ���j���[���X�L�������܂�*/);
+	CMFCToolBarsCustomizeDialog* pDlgCust = new CMFCToolBarsCustomizeDialog(this, TRUE /* メニューをスキャンします*/);
 	pDlgCust->EnableUserDefinedToolbars();
 	pDlgCust->Create();
 }
@@ -380,7 +380,7 @@ void CMainFrame::OnUpdateApplicationLook(CCmdUI* pCmdUI)
 
 BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParentWnd, CCreateContext* pContext) 
 {
-	// ��{�N���X�����ۂ̓�����s���܂��B
+	// 基本クラスが実際の動作を行います。
 
 	if (!CMDIFrameWndEx::LoadFrame(nIDResource, dwDefaultStyle, pParentWnd, pContext))
 	{
@@ -388,7 +388,7 @@ BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParent
 	}
 
 
-	// ���ׂẴ��[�U�[��`�c�[�� �o�[�̃{�^���̃J�X�^�}�C�Y��L���ɂ��܂�
+	// すべてのユーザー定義ツール バーのボタンのカスタマイズを有効にします
 	BOOL bNameValid;
 	CString strCustomize;
 	bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
