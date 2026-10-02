@@ -1,180 +1,199 @@
-﻿// fname_exchangeDlg.cpp : インプリメンテーション ファイル
-//
+﻿// fname_exchangeDlg.cpp : メインダイアログ（選んだファイル/フォルダの名前を一括で変換する）
 
-#include <afxtempl.h>
 #include "stdafx.h"
 #include "fname_exchange.h"
 #include "fname_exchangeDlg.h"
+#include "CommonUtil.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
+namespace
+{
+	constexpr bool		kDefaultIgnoreAlert	= true;
+	constexpr int		kMaxDigits			= 5;	// 桁数コンボの選択肢（1〜5桁）
+	constexpr UINT		kMinRemainLength	= 5;	// 指定文字数削除の後に残すべき最小のバイト数
+	constexpr size_t	kMaxUndoSteps		= 100;	// 復元できる実行回数
+	constexpr size_t	kMaxFilesPerStep	= 250;	// 1回の実行で復元情報に残せるファイル数
+	constexpr int		kListCharWidth		= 6;	// 一覧の横スクロール幅を決める1文字の幅(px)
+	constexpr LPCTSTR	kBrowseTitle		= _T("Select a destination folder");
+
+	const DLGITEMTEXT kItemTexts[] =
+	{
+		{ IDST_DIR,            IDSTR_DIR },
+		{ IDBT_BROWSE,         IDSTR_BROWSE },
+		{ IDST_FILE_LIST,      IDSTR_FILE_LIST },
+		{ IDBT_GET_FILE,       IDSTR_GET_FILE },
+		{ IDBT_ALL_CHECK,      IDSTR_ALL_CHECK },
+		{ IDBT_ALL_UNCHECK,    IDSTR_ALL_UNCHECK },
+		{ IDGR_SYSTEM_SET,     IDSTR_SYSTEM_SET },
+		{ IDCH_IGNORE_ALERT,   IDSTR_IGNORE_ALERT },
+		{ IDCH_COMP_BIG_SMALL, IDSTR_COMP_BIG_SMALL },
+		{ IDGR_HOWTO_CHANGE,   IDSTR_HOWTO_CHANGE },
+		{ IDRB_ENUM,           IDSTR_ENUM },
+		{ IDST_FIRST_NUM,      IDSTR_FIRST_NUM },
+		{ IDCH_KEEP_NAME,      IDSTR_KEEP_NAME },
+		{ IDRB_DEL_NUM,        IDSTR_DEL_NUM },
+		{ IDST_DEL_BEF_NUM,    IDSTR_DEL_BEF_NUM },
+		{ IDST_DEL_AFT_NUM,    IDSTR_DEL_AFT_NUM },
+		{ IDRB_DEL_DIST,       IDSTR_DEL_DIST },
+		{ IDRB_ADD,            IDSTR_ADD },
+		{ IDCH_ADD_BEF,        IDSTR_ADD_BEF },
+		{ IDCH_ADD_AFT,        IDSTR_ADD_AFT },
+		{ IDRB_DEL,            IDSTR_DEL },
+		{ IDRB_REP,            IDSTR_REP },
+		{ IDST_NAME1,          IDSTR_NAME_ADD },
+		{ IDST_NAME2,          IDSTR_NAME_REP_AFT },
+		{ IDBT_EXE,            IDSTR_EXE },
+		{ IDBT_UNDO,           IDSTR_UNDO },
+		{ IDBT_END,            IDSTR_END },
+	};
+
+	// 変換方法のラジオボタン（ID は IDRB_ENUM〜IDRB_ALL_SBCS の連番）
+	struct ConvertButton
+	{
+		UINT		id;
+		ConvertType	type;
+	};
+	const ConvertButton kConvertButtons[] =
+	{
+		{ IDRB_ENUM,     ConvertType::Enum },
+		{ IDRB_ALL_SBCS, ConvertType::AllSbcs },
+		{ IDRB_ALL_DBCS, ConvertType::AllDbcs },
+		{ IDRB_DEL_DIST, ConvertType::DeleteExt },
+		{ IDRB_DEL_NUM,  ConvertType::DeleteCount },
+		{ IDRB_ADD,      ConvertType::Add },
+		{ IDRB_DEL,      ConvertType::Delete },
+		{ IDRB_REP,      ConvertType::Replace },
+	};
+
+	UINT CountDigits(UINT number)
+	{
+		UINT digits = 0;
+		for (; number != 0; number /= 10)
+		{
+			digits++;
+		}
+		return digits;
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////
-// アプリケーションのバージョン情報で使われている CAboutDlg ダイアログ
+// バージョン情報ダイアログ
 
 class CAboutDlg : public CDialog
 {
 public:
-	CAboutDlg();
+	CAboutDlg() : CDialog(IDD) {}
 
-// ダイアログ データ
-	//{{AFX_DATA(CAboutDlg)
 	enum { IDD = IDD_ABOUTBOX };
-	//}}AFX_DATA
-
-	// ClassWizard は仮想関数のオーバーライドを生成します
-	//{{AFX_VIRTUAL(CAboutDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV のサポート
-	//}}AFX_VIRTUAL
-
-// インプリメンテーション
-protected:
-	//{{AFX_MSG(CAboutDlg)
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
-{
-	//{{AFX_DATA_INIT(CAboutDlg)
-	//}}AFX_DATA_INIT
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CAboutDlg)
-	//}}AFX_DATA_MAP
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-	//{{AFX_MSG_MAP(CAboutDlg)
-		// メッセージ ハンドラがありません。
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
 /////////////////////////////////////////////////////////////////////////////
-// CFname_exchangeDlg ダイアログ
+// CFnameExchangeDlg
 
-CFname_exchangeDlg::CFname_exchangeDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CFname_exchangeDlg::IDD, pParent)
+CFnameExchangeDlg::CFnameExchangeDlg(CWnd* pParent /*=nullptr*/)
+	: CDialog(IDD, pParent)
+	, m_hIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME))
+	, m_target(Target::File)
+	, m_type(ConvertType::Enum)
+	, m_ignoreAlert(kDefaultIgnoreAlert)
+	, m_caseSensitive(false)
+	, m_firstNumber(0)
+	, m_nextNumber(0)
+	, m_digits(0)
+	, m_keepName(false)
+	, m_deleteHead(0)
+	, m_deleteTail(0)
+	, m_addBefore(false)
+	, m_addAfter(false)
 {
-	//{{AFX_DATA_INIT(CFname_exchangeDlg)
-	//}}AFX_DATA_INIT
-	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	m_Target = TARGET_FILE;
-	m_ignore_alert = TRUE;
-	m_comp = FALSE;
 }
 
-void CFname_exchangeDlg::DoDataExchange(CDataExchange* pDX)
+void CFnameExchangeDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CFname_exchangeDlg)
 	DDX_Control(pDX, IDLB_FILE, m_list);
-	//}}AFX_DATA_MAP
 }
 
-BEGIN_MESSAGE_MAP(CFname_exchangeDlg, CDialog)
-	//{{AFX_MSG_MAP(CFname_exchangeDlg)
+BEGIN_MESSAGE_MAP(CFnameExchangeDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_EN_SETFOCUS(IDET_DIR, OnSetfocus)
-	ON_BN_CLICKED(IDBT_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDBT_GET_FILE, OnGetFile)
-	ON_BN_CLICKED(IDRB_FILE, OnFile)
-	ON_BN_CLICKED(IDRB_FOLDER, OnFolder)
-	ON_BN_CLICKED(IDBT_ALL_CHECK, OnAllCheck)
-	ON_BN_CLICKED(IDBT_ALL_UNCHECK, OnAllUncheck)
-	ON_BN_CLICKED(IDCH_IGNORE_ALERT, OnIgnoreAlert)
-	ON_BN_CLICKED(IDCH_COMP_BIG_SMALL, OnCompBigSmall)
-	ON_BN_CLICKED(IDRB_ENUM, OnRADIOEnum)
-	ON_BN_CLICKED(IDRB_ALL_DBCS, OnRADIOAllDbcs)
-	ON_BN_CLICKED(IDRB_ALL_SBCS, OnRADIOAllSbcs)
-	ON_BN_CLICKED(IDRB_DEL_NUM, OnRADIODelEnum)
-	ON_BN_CLICKED(IDRB_DEL_DIST, OnRADIODelDist)
-	ON_BN_CLICKED(IDRB_ADD, OnRadioAdd)
-	ON_BN_CLICKED(IDRB_DEL, OnRadioDel)
-	ON_BN_CLICKED(IDRB_REP, OnRadioRep)
-	ON_BN_CLICKED(IDBT_EXE, OnExecute)
-	ON_BN_CLICKED(IDBT_UNDO, OnUndo)
-	ON_BN_CLICKED(IDBT_END, OnEnd)
-	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDBT_BROWSE, &CFnameExchangeDlg::OnBrowse)
+	ON_BN_CLICKED(IDBT_GET_FILE, &CFnameExchangeDlg::OnGetFile)
+	ON_BN_CLICKED(IDRB_FILE, &CFnameExchangeDlg::OnTargetFile)
+	ON_BN_CLICKED(IDRB_FOLDER, &CFnameExchangeDlg::OnTargetFolder)
+	ON_BN_CLICKED(IDBT_ALL_CHECK, &CFnameExchangeDlg::OnAllCheck)
+	ON_BN_CLICKED(IDBT_ALL_UNCHECK, &CFnameExchangeDlg::OnAllUncheck)
+	ON_BN_CLICKED(IDCH_IGNORE_ALERT, &CFnameExchangeDlg::OnIgnoreAlert)
+	ON_BN_CLICKED(IDCH_COMP_BIG_SMALL, &CFnameExchangeDlg::OnCaseSensitive)
+	ON_CONTROL_RANGE(BN_CLICKED, IDRB_ENUM, IDRB_ALL_SBCS, &CFnameExchangeDlg::OnConvertType)
+	ON_BN_CLICKED(IDBT_EXE, &CFnameExchangeDlg::OnExecute)
+	ON_BN_CLICKED(IDBT_UNDO, &CFnameExchangeDlg::OnUndo)
+	ON_BN_CLICKED(IDBT_END, &CFnameExchangeDlg::OnEnd)
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// CFname_exchangeDlg メッセージ ハンドラ
-
-BOOL CFname_exchangeDlg::OnInitDialog()
+BOOL CFnameExchangeDlg::OnInitDialog()
 {
-	long ind;
-	CString str;
-
 	CDialog::OnInitDialog();
 
-	// "バージョン情報..." メニュー項目をシステム メニューへ追加します。
-
-	// IDM_ABOUTBOX はコマンド メニューの範囲でなければなりません。
+	// システムメニューに「バージョン情報」を追加（ID はシステムコマンドの範囲内である必要がある）
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
-
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
+	if (pSysMenu != nullptr)
 	{
-		CString strAboutMenu;
-		strAboutMenu.LoadString(IDS_ABOUTBOX);
-		if (!strAboutMenu.IsEmpty())
+		CString aboutMenu;
+		aboutMenu.LoadString(IDS_ABOUTBOX);
+		if (!aboutMenu.IsEmpty())
 		{
 			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, aboutMenu);
 		}
 	}
 
-	// このダイアログ用のアイコンを設定します。フレームワークはアプリケーションのメイン
-	// ウィンドウがダイアログでない時は自動的に設定しません。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンを設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンを設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	str.LoadString(IDSTR_FILE_EXCHANGE);
-	SetWindowText(str);
-	SetDlgItemTextAll(this->m_hWnd, tbl, sizeof(tbl) / sizeof(tbl[0]));
+	CString title;
+	title.LoadString(IDSTR_FILE_EXCHANGE);
+	SetWindowText(title);
+	SetDlgItemTextAll(m_hWnd, kItemTexts, static_cast<int>(_countof(kItemTexts)));
 
-    CheckRadioButton(IDRB_FILE, IDRB_FOLDER,IDRB_FILE);
-	SetDlgItemText(IDET_FIRST_NUM, "1");
-    CheckRadioButton(IDRB_ENUM,IDRB_REP,IDRB_ENUM);
+	CheckRadioButton(IDRB_FILE, IDRB_FOLDER, IDRB_FILE);
+	SetDlgItemText(IDET_FIRST_NUM, _T("1"));
+	CheckRadioButton(IDRB_ENUM, IDRB_REP, IDRB_ENUM);
 	CheckDlgButton(IDCH_KEEP_NAME, BST_CHECKED);
 	CheckDlgButton(IDCH_ADD_BEF, BST_CHECKED);
-	CheckDlgButton(IDCH_IGNORE_ALERT, DEFAULT_ALERT);
-	m_type = ENUM;
+	CheckDlgButton(IDCH_IGNORE_ALERT, kDefaultIgnoreAlert ? BST_CHECKED : BST_UNCHECKED);
+	m_type = ConvertType::Enum;
 
-	//makelist box
-	SendDlgItemMessage(IDCB_KETA, CB_RESETCONTENT, 0, 0L);
+	InitDigitsCombo();
+	m_undoSteps.clear();
+	UpdateControls();
 
-	str.LoadString(IDSTR_AUTO);
-	SendDlgItemMessage(IDCB_KETA, CB_RESETCONTENT, 0, 0L);
-	ind = SendDlgItemMessage(IDCB_KETA, CB_ADDSTRING, 0,(LPARAM)str.GetString());
-	SendDlgItemMessage(IDCB_KETA, CB_SETITEMDATA, (WPARAM)0, ind);
-	for (int i=1; i <= KETA_MAX; i++)
-	{
-		str.Format(IDSTR_KETA,i);
-		ind = SendDlgItemMessage(IDCB_KETA, CB_ADDSTRING, 0,(LPARAM)str.GetString());
-		SendDlgItemMessage(IDCB_KETA, CB_SETITEMDATA, (WPARAM)i, ind);
-	}
-    SendDlgItemMessage(IDCB_KETA,CB_SETCURSEL,0,0L);
-
-	InitUndo();
-	Refresh();
-
-	return TRUE;  // TRUE を返すとコントロールに設定したフォーカスは失われません。
+	return TRUE;
 }
 
-void CFname_exchangeDlg::OnSysCommand(UINT nID, LPARAM lParam)
+// 桁数の選択肢：「自動」「1 ケタ」〜「5 ケタ」。選択位置がそのまま桁数になる
+void CFnameExchangeDlg::InitDigitsCombo()
+{
+	SendDlgItemMessage(IDCB_KETA, CB_RESETCONTENT, 0, 0);
+
+	CString text;
+	text.LoadString(IDSTR_AUTO);
+	SendDlgItemMessage(IDCB_KETA, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(text.GetString()));
+	for (int i = 1; i <= kMaxDigits; i++)
+	{
+		text.Format(IDSTR_KETA, i);
+		SendDlgItemMessage(IDCB_KETA, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(text.GetString()));
+	}
+	SendDlgItemMessage(IDCB_KETA, CB_SETCURSEL, 0, 0);
+}
+
+void CFnameExchangeDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -187,27 +206,20 @@ void CFname_exchangeDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// もしダイアログボックスに最小化ボタンを追加するならば、アイコンを描画する
-// コードを以下に記述する必要があります。MFC アプリケーションは document/view
-// モデルを使っているので、この処理はフレームワークにより自動的に処理されます。
-
-void CFname_exchangeDlg::OnPaint() 
+// 最小化時のアイコン描画（ダイアログアプリでは自前で描く必要がある）
+void CFnameExchangeDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画用のデバイス コンテキスト
+		CPaintDC dc(this);
+		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
-
-		// クライアントの矩形領域内の中央
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int cxIcon = GetSystemMetrics(SM_CXICON);
+		const int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// アイコンを描画します。
+		const int x = (rect.Width() - cxIcon + 1) / 2;
+		const int y = (rect.Height() - cyIcon + 1) / 2;
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -216,959 +228,495 @@ void CFname_exchangeDlg::OnPaint()
 	}
 }
 
-// システムは、ユーザーが最小化ウィンドウをドラッグしている間、
-// カーソルを表示するためにここを呼び出します。
-HCURSOR CFname_exchangeDlg::OnQueryDragIcon()
+HCURSOR CFnameExchangeDlg::OnQueryDragIcon()
 {
-	return (HCURSOR) m_hIcon;
+	return static_cast<HCURSOR>(m_hIcon);
 }
 
-BOOL CFname_exchangeDlg::DestroyWindow() 
+void CFnameExchangeDlg::OnBrowse()
 {
-	return CDialog::DestroyWindow();
-}
-
-
-void CFname_exchangeDlg::OnSetfocus()
-{
-	// TODO: ここにコントロール通知ハンドラ コードを追加します。
-	//TODO:フォーカスが当たったら、選択状態を反転したい
-}
-
-void CFname_exchangeDlg::OnBrowse() 
-{
-	CString title,path;
-	title = "Select a destination folder";
-
-	BOOL rt = Browse(this->m_hWnd, title, &path);
-	if ( rt )
+	CString path;
+	if (BrowseFolder(m_hWnd, kBrowseTitle, path))
 	{
 		SetDlgItemText(IDET_DIR, path);
 		OnGetFile();
 	}
 }
 
-void CFname_exchangeDlg::OnGetFile() 
+// 対象ディレクトリ直下のファイル（またはフォルダ）を一覧に出す
+void CFnameExchangeDlg::OnGetFile()
 {
-	TCHAR pathName[MAX_PATH] = { 0 };
-	size_t szPathLength;
-	int szLen;
-	int nMax=0;
-
-	// 指定フォルダ内のファイルを表示する
-	GetDlgItemText(IDET_DIR,pathName,sizeof(pathName));
-	if(lstrcmp(pathName,"") == 0)
+	CString dir;
+	GetDlgItemText(IDET_DIR, dir);
+	if (dir.IsEmpty())
 	{
 		return;
 	}
+	const CString pattern = dir + _T("\\*.*");
 
-	szPathLength = strlen(pathName);
-	szPathLength++; // "\\"
-	strcat_s(pathName,sizeof(pathName), "\\*.*");
-
-	// 表示内容をリセットする
 	m_list.ResetContent();
 
-	if ( m_Target == TARGET_FILE )
+	int maxLength = 0;
+	if (m_target == Target::File)
 	{
-		// m_list.Dir でファイル
-		m_list.Dir(DDL_READWRITE,pathName);
-//		m_list.Dir(DDL_DIRECTORY,pathName);
+		m_list.Dir(DDL_READWRITE, pattern);
 	}
-	else // ( m_Target == TARGET_DIRECOTY )
+	else
 	{
-		// cFileFind でフォルダを取得
-		CFileFind cFind;
-		CString strFolder;
-		BOOL bContinue = cFind.FindFile(pathName);
-
-		while( bContinue )
+		CFileFind finder;
+		BOOL found = finder.FindFile(pattern);
+		while (found)
 		{
-			bContinue = cFind.FindNextFile();
-
-			if( cFind.IsDirectory() )
+			found = finder.FindNextFile();
+			if (!finder.IsDirectory() || finder.IsDots())
 			{
-				strFolder = cFind.GetFileName();
-				if ( (strcmp(strFolder, ".") == 0 ) ||
-					 (strcmp(strFolder, "..") == 0 ) )
-				{
-					continue;
-				}
+				continue;
+			}
 
-				m_list.AddString(strFolder);
-				szLen = strFolder.GetLength();
-				if ( nMax < szLen )
-				{
-					nMax = szLen;
-				}
+			const CString name = finder.GetFileName();
+			m_list.AddString(name);
+			if (maxLength < name.GetLength())
+			{
+				maxLength = name.GetLength();
 			}
 		}
 	}
-	m_list.SetHorizontalExtent(nMax * HORIZONTAIL_OFFSET);
+	m_list.SetHorizontalExtent(maxLength * kListCharWidth);
 }
 
-void CFname_exchangeDlg::OnFile()
+void CFnameExchangeDlg::OnTargetFile()
 {
-	m_Target = TARGET_FILE;
+	m_target = Target::File;
 	OnGetFile();
 }
 
-void CFname_exchangeDlg::OnFolder()
+void CFnameExchangeDlg::OnTargetFolder()
 {
-	m_Target = TARGET_DIRECTOY;
+	m_target = Target::Folder;
 	OnGetFile();
 }
 
-void CFname_exchangeDlg::OnAllCheck() 
+void CFnameExchangeDlg::OnAllCheck()
 {
-	m_list.SetSel(-1,TRUE);
+	m_list.SetSel(-1, TRUE);
 }
 
-void CFname_exchangeDlg::OnAllUncheck() 
+void CFnameExchangeDlg::OnAllUncheck()
 {
-	m_list.SetSel(-1,FALSE);
+	m_list.SetSel(-1, FALSE);
 }
 
-void CFname_exchangeDlg::OnIgnoreAlert()
+void CFnameExchangeDlg::OnIgnoreAlert()
 {
-	UINT check = IsDlgButtonChecked(IDCH_IGNORE_ALERT);
-	if( check == BST_CHECKED )
-	{
-		m_ignore_alert = TRUE;
-	}
-	else
-	{
-		m_ignore_alert = FALSE;
-	}
+	m_ignoreAlert = (IsDlgButtonChecked(IDCH_IGNORE_ALERT) == BST_CHECKED);
 }
 
-void CFname_exchangeDlg::OnCompBigSmall()
+void CFnameExchangeDlg::OnCaseSensitive()
 {
-	UINT check = IsDlgButtonChecked(IDCH_COMP_BIG_SMALL);
-	if( check == BST_CHECKED )
+	m_caseSensitive = (IsDlgButtonChecked(IDCH_COMP_BIG_SMALL) == BST_CHECKED);
+}
+
+void CFnameExchangeDlg::OnConvertType(UINT nID)
+{
+	for (const ConvertButton& button : kConvertButtons)
 	{
-		m_comp = TRUE;
-	}
-	else
-	{
-		m_comp = FALSE;
+		if (button.id == nID)
+		{
+			m_type = button.type;
+			UpdateControls();
+			return;
+		}
 	}
 }
 
-void CFname_exchangeDlg::OnEnd() 
+void CFnameExchangeDlg::OnEnd()
 {
 	CDialog::OnOK();
 }
 
-void CFname_exchangeDlg::OnRADIOEnum() 
+void CFnameExchangeDlg::OnExecute()
 {
-	m_type = ENUM;
-	Refresh();
-}
-
-void CFname_exchangeDlg::OnRADIOAllDbcs()
-{
-	m_type = ALLDBCS;
-	Refresh();
-}
-
-void CFname_exchangeDlg::OnRADIOAllSbcs()
-{
-	m_type = ALLSBCS;
-	Refresh();
-}
-
-void CFname_exchangeDlg::OnRADIODelEnum() 
-{
-	m_type = DELNUM;
-	Refresh();
-}
-
-void CFname_exchangeDlg::OnRADIODelDist() 
-{
-	m_type = DELDIST;
-	Refresh();
-	
-}
-
-void CFname_exchangeDlg::OnRadioAdd() 
-{
-	m_type = ADD;
-	Refresh();
-}
-
-void CFname_exchangeDlg::OnRadioDel() 
-{
-	m_type = DEL;
-	Refresh();
-}
-
-void CFname_exchangeDlg::OnRadioRep() 
-{
-	m_type = REP;
-	Refresh();
-}
-
-void CFname_exchangeDlg::OnExecute() 
-{
-	// 変数を初期化
-	// 画面上の設定値を取得
-	GetSetting();
-	GetFileList();
-	if( m_list_cnt == 0 )
+	ReadSettings();
+	const std::vector<CString> names = GetSelectedNames();
+	if (names.empty())
 	{
-		CString str,title;
-		str.LoadString(IDSTR_NO_SELECT);
-		title.LoadString(IDSTR_ERROR);
-		MessageBox(str,title,MB_OK);
+		ShowError(IDSTR_NO_SELECT);
 		return;
 	}
 
-	//復元情報が上限に達していたら、いちばん古いものを捨てる
-	if ( m_undo.curnum >= UNDO_MAX )
+	// 復元情報が上限に達していたら、いちばん古いものを捨てる
+	if (m_undoSteps.size() >= kMaxUndoSteps)
 	{
-		for ( int i=1; i < UNDO_MAX; i++ )
-		{
-			m_undo.exch[i-1] = m_undo.exch[i];
-		}
-		m_undo.curnum--;
+		m_undoSteps.erase(m_undoSteps.begin());
 	}
-	//復元した後の再実行で、前回の復元情報が残らないようにする
-	m_undo.exch[m_undo.curnum].num = 0;
+	m_undoSteps.emplace_back();
 
-	//ファイル名変換処理
-	ExChangeProc();
+	const int fileCount = static_cast<int>(names.size());
+	for (const CString& name : names)
+	{
+		CString oldPath = m_dir;
+		AppendPath(oldPath, name);
 
-	//復元情報を更新
-	m_undo.curnum++;
-	m_undo.maxnum = m_undo.curnum;
+		const CString newPath = MakeNewPath(oldPath, fileCount);
+		if (!newPath.IsEmpty())
+		{
+			RenameFile(oldPath, newPath);
+		}
+	}
+
 	OnGetFile();
-
-	//TODO : これ以上復元できない場合にはDisableにしないと。。
-	GetDlgItem(IDBT_UNDO)->EnableWindow(TRUE);
+	EnableItem(IDBT_UNDO, true);
 }
 
-void CFname_exchangeDlg::OnUndo() 
+void CFnameExchangeDlg::OnUndo()
 {
-	UndoProc();
+	Undo();
 	OnGetFile();
-	Refresh();
+	UpdateControls();
 }
 
-void CFname_exchangeDlg::Refresh() 
+void CFnameExchangeDlg::UpdateControls()
 {
-	BOOL bEnable=FALSE;
-	CString str;
+	const bool isEnum = (m_type == ConvertType::Enum);
+	EnableItem(IDST_FIRST_NUM, isEnum);
+	EnableItem(IDET_FIRST_NUM, isEnum);
+	EnableItem(IDCH_KEEP_NAME, isEnum);
+	EnableItem(IDCB_KETA, isEnum);
 
-	//通し番号付加
-	bEnable = FALSE;
-	if ( m_type == ENUM )
-	{
-		bEnable = TRUE;
-	}
-	GetDlgItem(IDST_FIRST_NUM)->EnableWindow(bEnable);
-	GetDlgItem(IDET_FIRST_NUM)->EnableWindow(bEnable);
-	GetDlgItem(IDCH_KEEP_NAME)->EnableWindow(bEnable);
-	GetDlgItem(IDCB_KETA)->EnableWindow(bEnable);
+	const bool isDeleteCount = (m_type == ConvertType::DeleteCount);
+	EnableItem(IDST_DEL_BEF_NUM, isDeleteCount);
+	EnableItem(IDET_DEL_BEF_NUM, isDeleteCount);
+	EnableItem(IDST_DEL_AFT_NUM, isDeleteCount);
+	EnableItem(IDET_DEL_AFT_NUM, isDeleteCount);
 
-	//指定文字数の削除
-	bEnable = FALSE;
-	if ( m_type == DELNUM )
-	{
-		bEnable = TRUE;
-	}
-	GetDlgItem(IDST_DEL_BEF_NUM)->EnableWindow(bEnable);
-	GetDlgItem(IDET_DEL_BEF_NUM)->EnableWindow(bEnable);
-	GetDlgItem(IDST_DEL_AFT_NUM)->EnableWindow(bEnable);
-	GetDlgItem(IDET_DEL_AFT_NUM)->EnableWindow(bEnable);
+	const bool isAdd = (m_type == ConvertType::Add);
+	EnableItem(IDCH_ADD_BEF, isAdd);
+	EnableItem(IDCH_ADD_AFT, isAdd);
 
-	//文字の追加[先頭から][後部から]
-	bEnable = FALSE;
-	if ( m_type == ADD )
-	{
-		bEnable = TRUE;
-	}
-	GetDlgItem(IDCH_ADD_BEF)->EnableWindow(bEnable);
-	GetDlgItem(IDCH_ADD_AFT)->EnableWindow(bEnable);
+	const bool useText1 = (m_type == ConvertType::Delete || m_type == ConvertType::Replace);
+	EnableItem(IDST_NAME1, useText1);
+	EnableItem(IDET_NAME1, useText1);
 
-	//名称1
-	bEnable = FALSE;
-	if(m_type == DEL || m_type == REP)
-	{
-		bEnable = TRUE;
-	}
-	GetDlgItem(IDST_NAME1)->EnableWindow(bEnable);
-	GetDlgItem(IDET_NAME1)->EnableWindow(bEnable);
+	const bool useText2 = (m_type == ConvertType::Add || m_type == ConvertType::Replace);
+	EnableItem(IDST_NAME2, useText2);
+	EnableItem(IDET_NAME2, useText2);
 
-	//名称2
-	bEnable = FALSE;
-	if(m_type == ADD || m_type == REP)
+	// 見出しは使う変換方法のときだけ差し替える（使わない欄は前の見出しのまま無効表示）
+	CString label;
+	switch (m_type)
 	{
-		bEnable = TRUE;
-	}
-	GetDlgItem(IDST_NAME2)->EnableWindow(bEnable);
-	GetDlgItem(IDET_NAME2)->EnableWindow(bEnable);
-
-	// 名称1、名称2
-	switch(m_type)
-	{
-	case ADD :
-		str.LoadString(IDSTR_NAME_ADD);
-		GetDlgItem(IDST_NAME2)->SetWindowText(str);
+	case ConvertType::Add:
+		label.LoadString(IDSTR_NAME_ADD);
+		SetDlgItemText(IDST_NAME2, label);
 		break;
-	case DEL :
-		str.LoadString(IDSTR_NAME_DEL);
-		GetDlgItem(IDST_NAME1)->SetWindowText(str);
+	case ConvertType::Delete:
+		label.LoadString(IDSTR_NAME_DEL);
+		SetDlgItemText(IDST_NAME1, label);
 		break;
-	case REP :
-		str.LoadString(IDSTR_REP_BEF);
-		GetDlgItem(IDST_NAME1)->SetWindowText(str);
-		str.LoadString(IDSTR_NAME_REP_AFT);
-		GetDlgItem(IDST_NAME2)->SetWindowText(str);
-		break ;
-	default :
-		break ;
+	case ConvertType::Replace:
+		label.LoadString(IDSTR_REP_BEF);
+		SetDlgItemText(IDST_NAME1, label);
+		label.LoadString(IDSTR_NAME_REP_AFT);
+		SetDlgItemText(IDST_NAME2, label);
+		break;
+	default:
+		break;
 	}
 
-	// 復元
-	bEnable = FALSE;
-	if(m_undo.curnum > 0)
-	{
-		bEnable = TRUE;
-	}
-	GetDlgItem(IDBT_UNDO)->EnableWindow(bEnable);
+	EnableItem(IDBT_UNDO, !m_undoSteps.empty());
 }
 
-void CFname_exchangeDlg::GetFileList() 
+void CFnameExchangeDlg::EnableItem(int id, bool enable)
 {
-	CArray <int, int> selections;
-
-	UpdateData(TRUE);
-
-	m_list_cnt = m_list.GetSelCount();
-	selections.SetSize(m_list_cnt);
-	m_list.GetSelItems((int) m_list_cnt, selections.GetData());
-
-	m_list_cnt = selections.GetSize();
-	m_file_name.SetSize(m_list_cnt);
-
-	for (int i=0; i < m_list_cnt; i++)
-	{
-		m_list.GetText(selections.GetAt(i), m_file_name[i]);
-	}
+	GetDlgItem(id)->EnableWindow(enable ? TRUE : FALSE);
 }
 
-
-void CFname_exchangeDlg::GetSetting() 
+// 選んでいる変換方法の設定だけ画面から読む
+void CFnameExchangeDlg::ReadSettings()
 {
-	m_first_num = 0;
-	m_cur_num = 0;
-	m_list_cnt = 0;
-	m_Bef_Del_num = 0;
-	m_Aft_Del_num = 0;
-	m_opt=0;
-	m_keta=0;
-	memset(m_dir,0,sizeof(m_dir));
-	memset(m_name1,0,sizeof(m_name1));
-	memset(m_name2,0,sizeof(m_name2));
+	m_firstNumber = 0;
+	m_nextNumber = 0;
+	m_digits = 0;
+	m_keepName = false;
+	m_deleteHead = 0;
+	m_deleteTail = 0;
+	m_addBefore = false;
+	m_addAfter = false;
+	m_text1.Empty();
+	m_text2.Empty();
 
-	GetDlgItemText(IDET_DIR, m_dir, sizeof(m_dir));
+	GetDlgItemText(IDET_DIR, m_dir);
 
-	switch(m_type)
+	switch (m_type)
 	{
-	case ENUM:
-		m_first_num = GetDlgItemInt(IDET_FIRST_NUM, NULL, 0);
-		m_cur_num = m_first_num;
-		if(IsDlgButtonChecked(IDCH_KEEP_NAME) == BST_CHECKED){
-			m_opt += KEEP;
-		}
-		m_keta = SendDlgItemMessage(IDCB_KETA, CB_GETCURSEL, 0, 0);
+	case ConvertType::Enum:
+		m_firstNumber = GetDlgItemInt(IDET_FIRST_NUM, nullptr, FALSE);
+		m_nextNumber = m_firstNumber;
+		m_keepName = (IsDlgButtonChecked(IDCH_KEEP_NAME) == BST_CHECKED);
+		m_digits = static_cast<int>(SendDlgItemMessage(IDCB_KETA, CB_GETCURSEL, 0, 0));
 		break;
 
-	case DELNUM:
-		m_Bef_Del_num = GetDlgItemInt(IDET_DEL_BEF_NUM, NULL, 0);
-		m_Aft_Del_num = GetDlgItemInt(IDET_DEL_AFT_NUM, NULL, 0);
+	case ConvertType::DeleteCount:
+		m_deleteHead = GetDlgItemInt(IDET_DEL_BEF_NUM, nullptr, FALSE);
+		m_deleteTail = GetDlgItemInt(IDET_DEL_AFT_NUM, nullptr, FALSE);
 		break;
 
-//	case DELDIST:
-//		break;
-
-	case ADD:
-		GetDlgItemText(IDET_NAME2, m_name2, sizeof(m_name2));
-		if(IsDlgButtonChecked(IDCH_ADD_BEF) == BST_CHECKED){
-			m_opt += BEF;
-		}
-		if(IsDlgButtonChecked(IDCH_ADD_AFT) == BST_CHECKED){
-			m_opt += AFT;
-		}
+	case ConvertType::Add:
+		GetDlgItemText(IDET_NAME2, m_text2);
+		m_addBefore = (IsDlgButtonChecked(IDCH_ADD_BEF) == BST_CHECKED);
+		m_addAfter = (IsDlgButtonChecked(IDCH_ADD_AFT) == BST_CHECKED);
 		break;
 
-	case DEL:
-		GetDlgItemText(IDET_NAME1, m_name1, sizeof(m_name1));
+	case ConvertType::Delete:
+		GetDlgItemText(IDET_NAME1, m_text1);
 		break;
 
-	case REP:
-		GetDlgItemText(IDET_NAME1, m_name1, sizeof(m_name1));
-		GetDlgItemText(IDET_NAME2, m_name2, sizeof(m_name2));
+	case ConvertType::Replace:
+		GetDlgItemText(IDET_NAME1, m_text1);
+		GetDlgItemText(IDET_NAME2, m_text2);
 		break;
 
-	default :
+	default:
 		break;
 	}
 }
 
-void CFname_exchangeDlg::ExChangeProc()
+std::vector<CString> CFnameExchangeDlg::GetSelectedNames()
 {
-	// リストコントロールで選択された数だけループ
-	for(int i=0; i < m_list_cnt; i++)
+	std::vector<CString> names;
+	const int count = m_list.GetSelCount();
+	if (count <= 0)
 	{
-		// オリジナルのファイル名
-		m_oname = m_dir;
-		AppendPath(&m_oname, m_file_name[i]);
+		return names;
+	}
 
-		//新しいファイル名取得（入力エラーなどで中断したら空のまま）
-		m_nname.Empty();
-		switch(m_type)
+	std::vector<int> indexes(count);
+	m_list.GetSelItems(count, indexes.data());
+	for (int index : indexes)
+	{
+		CString name;
+		m_list.GetText(index, name);
+		names.push_back(name);
+	}
+	return names;
+}
+
+CString CFnameExchangeDlg::MakeNewPath(const CString& oldPath, int fileCount)
+{
+	CString file;
+	CString ext;
+	SplitPath(oldPath, nullptr, nullptr, &file, &ext);
+
+	switch (m_type)
+	{
+	case ConvertType::Enum:
+		return BuildPath(MakeEnumName(file, fileCount), ext);
+
+	case ConvertType::AllSbcs:
+		return BuildPath(ZenkakuToHankaku(file), ext);
+
+	case ConvertType::AllDbcs:
+		return BuildPath(HankakuToZenkaku(file), ext);
+
+	case ConvertType::DeleteExt:
+		return BuildPath(file, CString());
+
+	case ConvertType::DeleteCount:
+	{
+		const CString name = MakeDeleteCountName(file);
+		return name.IsEmpty() ? CString() : BuildPath(name, ext);
+	}
+
+	case ConvertType::Add:
+	{
+		const CString name = MakeAddName(file);
+		return name.IsEmpty() ? CString() : BuildPath(name, ext);
+	}
+
+	case ConvertType::Delete:
+		if (m_text1.IsEmpty())
 		{
-		case ENUM:		EnumProc();		break;	// 通し番号付加
-		case ALLSBCS:	SbcsProc();		break;	// すべて半角
-		case ALLDBCS:	DbcsProc();		break;	// すべて全角
-		case DELNUM:	DelNumProc();	break;	// 指定文字数削除
-		case DELDIST:	DelDistProc();	break;	// 拡張子削除
-		case ADD:		AddProc();		break;	// 文字列追加
-		case DEL:		DelProc();		break;	// 文字列削除
-		case REP:		RepProc();		break;	// 文字列置換
-		default :		break;
+			ShowError(IDSTR_ERR_INPUT_DEL_STR);
+			return CString();
 		}
+		return BuildPath(ReplaceString(file, m_text1, nullptr, m_caseSensitive), ext);
 
-		if ( m_nname.IsEmpty() )
+	case ConvertType::Replace:
+		if (m_text1.IsEmpty() || m_text2.IsEmpty())
 		{
-			continue;
+			ShowError(IDSTR_ERR_INPUT_REP_STR);
+			return CString();
 		}
+		return BuildPath(ReplaceString(file, m_text1, m_text2, m_caseSensitive), ext);
 
-		//ファイル名変換
-		MoveFileProc();
+	default:
+		return CString();
 	}
 }
 
-void CFname_exchangeDlg::EnumProc()
+// 番号は「最初の値 + 件数」の桁数（または指定桁数の大きい方）まで 0 で埋める
+CString CFnameExchangeDlg::MakeEnumName(const CString& file, int fileCount)
 {
-	CString dir;
-	CString file;	// file name
-	CString ext;	// 拡張子
-	CString num;
-	UINT number = m_first_num;
-	int dst_keta = GetKeta(m_first_num + m_list_cnt); //目的のケタ数
-	int cur_keta;	//カレントのケタ数
-
-	if ( dst_keta < m_keta )
+	int digits = static_cast<int>(CountDigits(m_firstNumber + static_cast<UINT>(fileCount)));
+	if (digits < m_digits)
 	{
-		dst_keta = m_keta;
+		digits = m_digits;
 	}
+	const int currentDigits = (m_nextNumber == 0) ? 1 : static_cast<int>(CountDigits(m_nextNumber));
 
-	// 目的のファイルパス（ディレクトリ名）
-	m_nname = m_dir;
-	m_nname += "\\";
-
-	// 桁数だけ0を詰める
-	if ( m_cur_num == 0 )
+	CString name;
+	for (int i = currentDigits; i < digits; i++)
 	{
-		cur_keta = 1;
+		name += _T('0');
 	}
-	else
+	CString number;
+	number.Format(_T("%d"), m_nextNumber);
+	name += number;
+	m_nextNumber++;
+
+	if (m_keepName)
 	{
-		cur_keta = GetKeta(m_cur_num);
+		name += _T(' ');
+		name += file;
 	}
-
-	for(int j=0; j < dst_keta - cur_keta; j++)
-	{
-		m_nname += "0";
-	}
-
-	// 目的のファイルパス（ファイル名）
-	num.Format("%d", m_cur_num);
-	m_nname += num;
-	m_cur_num++;
-
-	// パスを分解
-	SplitPath(m_oname,&dir,&file,&ext);
-
-	// オリジナルのファイル名を残す場合
-	if ( m_opt == KEEP )
-	{
-		m_nname += " ";
-		m_nname += file;
-	}
-
-	// add distination
-	AppendExt(&m_nname, ext);
+	return name;
 }
 
-void CFname_exchangeDlg::SbcsProc()
+CString CFnameExchangeDlg::MakeDeleteCountName(const CString& file)
 {
-	CString dir;
-	CString ofile;	// old file name
-	CString nfile;	// new file name
-	CString ext;	// 拡張子
-
-	LPSTR pfname = NULL;
-	int len = 0;
-
-	// パスを分解
-	SplitPath(m_oname,&dir,&ofile,&ext);
-
-	// 目的のファイルパス
-	m_nname = dir;
-	m_nname += "\\";
-
-	// 文字列の削除
-	ReplaceString2(ofile, &nfile, TRUE);
-	m_nname += nfile;
-
-	// add distination
-	AppendExt(&m_nname,ext);
-}
-
-void CFname_exchangeDlg::DbcsProc()
-{
-	CString dir;
-	CString ofile;	// old file name
-	CString nfile;	// new file name
-	CString ext;	// 拡張子
-
-	LPSTR pfname = NULL;
-	int len = 0;
-
-	// パスを分解
-	SplitPath(m_oname,&dir,&ofile,&ext);
-
-	// 目的のファイルパス
-	m_nname = dir;
-	m_nname += "\\";
-
-	// 文字列の削除
-	ReplaceString2(ofile, &nfile, FALSE);
-	m_nname += nfile;
-
-	// add distination
-	AppendExt(&m_nname,ext);
-}
-
-void CFname_exchangeDlg::DelNumProc()
-{
-	CString dir;
-	CString file;	// file name
-	CString ext;	// 拡張子
-	UINT len;
-
-	if( ! (m_Bef_Del_num || m_Aft_Del_num) )
+	if (m_deleteHead == 0 && m_deleteTail == 0)
 	{
-		CString str,title;
-		str.LoadString(IDSTR_ERR_DEL_NUM);
-		title.LoadString(IDSTR_ERROR);
-		MessageBox(str,title,MB_OK);
-		return;
+		ShowError(IDSTR_ERR_DEL_NUM);
+		return CString();
 	}
 
-	// パスを分解
-	SplitPath(m_oname,&dir,&file,&ext);
-
-	// 指定文字数削除したときのファイル長を確認
-	len = strlen(file);
-	if ( len < (m_Bef_Del_num + m_Aft_Del_num + DIST_MAX) )
+	// 文字数はバイト単位で数える
+	const UINT length = static_cast<UINT>(file.GetLength());
+	if (length < m_deleteHead + m_deleteTail + kMinRemainLength)
 	{
-		if ( ! m_ignore_alert )
+		if (!m_ignoreAlert)
 		{
-			CString str,title;
-			str.LoadString(IDSTR_ERR_SHORT_NAME);
+			ShowError(IDSTR_ERR_SHORT_NAME);
+		}
+		return CString();
+	}
+
+	CString name = file;
+	name.Delete(static_cast<int>(length - m_deleteTail), static_cast<int>(m_deleteTail));
+	name.Delete(0, static_cast<int>(m_deleteHead));
+	return name;
+}
+
+CString CFnameExchangeDlg::MakeAddName(const CString& file)
+{
+	if (!m_addBefore && !m_addAfter)
+	{
+		ShowError(IDSTR_ERR_SEL_INSERT);
+		return CString();
+	}
+	if (m_text2.IsEmpty())
+	{
+		ShowError(IDSTR_ERR_INPUT_ADD_STR);
+		return CString();
+	}
+
+	CString name;
+	if (m_addBefore)
+	{
+		name += m_text2;
+	}
+	name += file;
+	if (m_addAfter)
+	{
+		name += m_text2;
+	}
+	return name;
+}
+
+// 対象ディレクトリ + 名前 + 拡張子（ext は SplitPath で得た "." 付きのもの）
+// 名前が空でも対象ディレクトリの外のパスにならないよう、名前と拡張子をつないでから連結する
+CString CFnameExchangeDlg::BuildPath(const CString& name, const CString& ext) const
+{
+	CString path = m_dir;
+	AppendPath(path, name + ext);
+	return path;
+}
+
+void CFnameExchangeDlg::RenameFile(const CString& oldPath, const CString& newPath)
+{
+	CString title;
+	CString message;
+
+	if (oldPath.CompareNoCase(newPath) == 0)
+	{
+		if (!m_ignoreAlert)
+		{
+			message.Format(IDSTR_ERR_FAIL_OVERLAP, oldPath.GetString(), newPath.GetString());
 			title.LoadString(IDSTR_ERROR);
-			MessageBox(str,title,MB_OK);
+			MessageBox(message, title, MB_OK);
 		}
 		return;
 	}
 
-	// 後部からn文字削除
-	file.Delete(len-m_Aft_Del_num,m_Aft_Del_num);
-
-	// 先頭からn文字削除
-	file.Delete(0,m_Bef_Del_num);
-
-	// 目的のファイルパス（ファイル名）
-	m_nname = m_dir;
-	AppendPath(&m_nname,file);
-
-	// add distination
-	AppendExt(&m_nname,ext);
-}
-
-void CFname_exchangeDlg::DelDistProc()
-{
-	CString dir;
-	CString file;	// file name
-	CString ext;	// 拡張子
-
-	// パスを分解
-	SplitPath(m_oname,&dir,&file,&ext);
-
-	//目的のファイル名
-	m_nname = dir + file;
-}
-
-void CFname_exchangeDlg::AddProc()
-{
-	CString dir;
-	CString file;	// file name
-	CString ext;	// 拡張子
-
-	// TODO : 警告はGetSettingにもっていこう
-	if ( m_opt == 0 )
+	if (!::MoveFile(oldPath, newPath))
 	{
-		CString str,title;
-		str.LoadString(IDSTR_ERR_SEL_INSERT);
-		title.LoadString(IDSTR_ERROR);
-		MessageBox(str,title,MB_OK);
-		return;
-	}
-	else if( strlen(m_name2) == 0 )
-	{
-		CString str,title;
-		str.LoadString(IDSTR_ERR_INPUT_ADD_STR);
-		title.LoadString(IDSTR_ERROR);
-		MessageBox(str,title,MB_OK);
+		const DWORD error = ::GetLastError();
+		if (!m_ignoreAlert)
+		{
+			message.Format(IDSTR_ERR_FAIL_CHANGE_NAME, static_cast<int>(error), oldPath.GetString(), newPath.GetString());
+			title.LoadString(IDSTR_ERROR);
+			MessageBox(message, title, MB_OK);
+		}
 		return;
 	}
 
-	// パスを分解
-	SplitPath(m_oname,&dir,&file,&ext);
-
-	// 目的のファイルパス
-	m_nname = dir;
-	m_nname += "\\";
-
-	// 先頭に追加する文字列
-	if( m_opt & BEF )
+	std::vector<RenameRecord>& step = m_undoSteps.back();
+	if (step.size() < kMaxFilesPerStep)
 	{
-		m_nname += m_name2;
-	}
-	
-	//オリジナルの文字列
-	m_nname += file;
-
-	// 後部に追加する文字列
-	if( m_opt & AFT )
-	{
-		m_nname += m_name2;
-	}
-
-	// add distination
-	AppendExt(&m_nname,ext);
-}
-
-void CFname_exchangeDlg::DelProc()
-{
-	CString dir;
-	CString ofile;	// file name
-	CString nfile;	// 新ファイル名
-	CString ext;	// 拡張子
-
-	// TODO: 警告はあっちへもっていこう
-	if(strlen(m_name1) == 0)
-	{
-		CString str,title;
-		str.LoadString(IDSTR_ERR_INPUT_DEL_STR);
-		title.LoadString(IDSTR_ERROR);
-		MessageBox(str,title,MB_OK);
-		return;
-	}
-	
-	// パスを分解
-	SplitPath(m_oname,&dir,&ofile,&ext);
-
-	// 目的のファイルパス
-	m_nname = m_dir;
-	m_nname += "\\";
-
-	// 文字列の削除
-	ReplaceString(ofile, &nfile, m_name1, NULL, m_comp);
-	m_nname += nfile;
-
-	// add distination
-	AppendExt(&m_nname,ext);
-}
-
-void CFname_exchangeDlg::RepProc()
-{
-	CString dir;
-	CString ofile;	// old file name
-	CString nfile;	// new file name
-	CString ext;	// 拡張子
-
-	// TODO: あっちへもっていこう
-	if(strlen(m_name1) == 0 || strlen(m_name2) == 0 )
-	{
-		CString str,title;
-		str.LoadString(IDSTR_ERR_INPUT_REP_STR);
-		title.LoadString(IDSTR_ERROR);
-		MessageBox(str,title,MB_OK);
+		step.push_back({ oldPath, newPath });
 		return;
 	}
 
-	LPSTR pfname = NULL;
-	int len = 0;
-
-	// パスを分解
-	SplitPath(m_oname,&dir,&ofile,&ext);
-
-	// 目的のファイルパス
-	m_nname = dir;
-	m_nname += "\\";
-
-	// 文字列の削除
-	ReplaceString(ofile, &nfile, m_name1, m_name2, m_comp);
-	m_nname += nfile;
-
-	// add distination
-	AppendExt(&m_nname,ext);
+	message.LoadString(IDSTR_WRN_CACHE_FULL);
+	title.LoadString(IDSTR_WRN);
+	if (MessageBox(message, title, MB_YESNO) == IDYES)
+	{
+		// 以降の変更は新しい1回分として記録する
+		m_undoSteps.clear();
+		m_undoSteps.emplace_back();
+	}
 }
 
-void CFname_exchangeDlg::UndoProc()
+void CFnameExchangeDlg::Undo()
 {
-	CString oname;
-	CString nname;
-	BOOL bReturn = TRUE;
-
-	if(m_undo.curnum <= 0)
+	if (m_undoSteps.empty())
 	{
-		CString str,title;
-		str.LoadString(IDSTR_ERR_NOT_UNDO);
-		title.LoadString(IDSTR_ERROR);
-		MessageBox(str,title,MB_OK);
+		ShowError(IDSTR_ERR_NOT_UNDO);
 		return;
 	}
 
-	m_undo.curnum--;
+	const std::vector<RenameRecord> step = std::move(m_undoSteps.back());
+	m_undoSteps.pop_back();
+
 	// 同じ名前を順に使い回した変換（例: 1→0, 2→1）も戻せるよう、後ろから戻す
-	for(int i=m_undo.exch[m_undo.curnum].num - 1; i >= 0; i--)
+	for (auto it = step.rbegin(); it != step.rend(); ++it)
 	{
-		oname = m_undo.exch[m_undo.curnum].ofname[i];
-		nname = m_undo.exch[m_undo.curnum].nfname[i];
-		bReturn = MoveFile(nname.GetString(), oname.GetString());
-		if ( ! bReturn )
+		if (!::MoveFile(it->newPath, it->oldPath) && !m_ignoreAlert)
 		{
-			if ( ! m_ignore_alert )
-			{
-				CString str,title;
-				str.Format(IDSTR_ERR_FAIL_UNDO,oname,nname);
-				title.LoadString(IDSTR_ERROR);
-				MessageBox(str,title,MB_OK);
-			}
-		}
-	}
-}
-
-int CFname_exchangeDlg::GetKeta(int number)
-{
-	int keta;
-	for( keta=0; number; keta++)
-	{
-		number /= 10;
-	}
-	return keta;
-}
-
-void CFname_exchangeDlg::MoveFileProc()
-{
-	int bReturn;
-
-	// 大文字小文字を区別する
-	bReturn = m_oname.CompareNoCase(m_nname);
-	if ( bReturn )
-	{
-		bReturn = MoveFile(m_oname.GetString(), m_nname.GetString());
-		if ( bReturn )
-		{
-			int unum = m_undo.curnum;	// 実行ボタン押した数
-			int fnum = m_undo.exch[m_undo.curnum].num; // 1度に変更したファイルの数
-
-			if ( fnum < FILE_MAX )
-			{
-				m_undo.exch[unum].ofname[fnum] = m_oname;
-				m_undo.exch[unum].nfname[fnum] = m_nname;
-				m_undo.exch[unum].num++;
-			}
-			else
-			{
-				CString str,title;
-				int rt;
-
-				str.LoadString(IDSTR_WRN_CACHE_FULL);
-				title.LoadString(IDSTR_WRN);
-				rt = MessageBox(str,title,MB_YESNO);
-				if ( rt == IDYES )
-				{
-					InitUndo();
-				}
-			}
-		}
-		else
-		{
-			if ( ! m_ignore_alert )
-			{
-				CString str,title;
-				int err = GetLastError();
-				str.Format(IDSTR_ERR_FAIL_CHANGE_NAME,err,m_oname,m_nname);
-				title.LoadString(IDSTR_ERROR);
-				MessageBox(str,title,MB_OK);
-			}
-		}
-	}
-	else
-	{
-		if ( ! m_ignore_alert )
-		{
-			CString str,title;
-			int err = GetLastError();
-			str.Format(IDSTR_ERR_FAIL_OVERLAP,m_oname,m_nname);
+			CString message;
+			CString title;
+			message.Format(IDSTR_ERR_FAIL_UNDO, it->oldPath.GetString(), it->newPath.GetString());
 			title.LoadString(IDSTR_ERROR);
-			MessageBox(str,title,MB_OK);
+			MessageBox(message, title, MB_OK);
 		}
 	}
 }
 
-void CFname_exchangeDlg::InitUndo()
+void CFnameExchangeDlg::ShowError(UINT messageId)
 {
-	m_undo.curnum=0;
-	m_undo.maxnum=0;
-	for(int i=0; i<UNDO_MAX;i++)
-	{
-		m_undo.exch[i].num=0;
-	}
-}
-
-void CFname_exchangeDlg::ReplaceString2(CString oname, CString *nname, BOOL bDB2SB)
-{
-	char old_fname[MAX_PATH];
-	char new_fname[MAX_PATH];
-	char tmp[MAX_PATH];
-	LPSTR pfname = NULL;
-	UINT cp_num=0;	//コピする数
-	UINT cp_start=0;//コピする先頭配列
-	BOOL rt = FALSE;
-
-	memset(new_fname, 0, sizeof(new_fname));
-	memset(tmp, 0, sizeof(tmp));
-
-	strcpy_s(old_fname,sizeof(old_fname),(LPSTR)oname.GetString());	// オリジナルファイル名をコピ
-	if ( bDB2SB )
-	{
-		zen2han(old_fname);
-	}
-	else
-	{
-		han2zen(old_fname);
-	}
-
-	strcat_s(new_fname, sizeof(new_fname), old_fname);	//最終的な目的の文字列
-	*nname = new_fname;
-
-#if 0
-	char old_fname[MAX_PATH];
-	char new_fname[MAX_PATH];
-	char tmp[MAX_PATH];
-	LPSTR pfname = NULL;
-	UINT cp_num=0;	//コピする数
-	UINT cp_start=0;//コピする先頭配列
-	BOOL rt = FALSE;
-
-	memset(new_fname, 0, sizeof(new_fname));
-	memset(tmp, 0, sizeof(tmp));
-
-	strcpy_s(old_fname,sizeof(old_fname),(LPSTR)oname.GetString());	// オリジナルファイル名をコピ
-	if ( bDB2SB )
-	{
-		for(UINT i=0; i<_tcslen(old_fname); i++)	// 1文字ずつ検索
-		{
-			for(UINT j=0; j<_tcslen(dbcs); j++)		// 1文字ずつ検索
-			{
-				rt = strncmp(&old_fname[i], &dbcs[j], 2);	// 指定文字数で目的の文字列を検索
-
-				if(rt == 0)	// 指定文字数で目的の文字列を検索
-				{
-					strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//見つかる前までの文字列
-					strcat_s(new_fname, sizeof(new_fname), tmp);	//最終的な目的の文字列
-					strcat_s(new_fname, sizeof(new_fname), &sbcs[j]);
-
-					cp_num=0;	//キャッシュのカウントをリセットする
-					cp_start = i + 1;
-				}
-				else
-				{
-					cp_num++;
-				}
-			}
-		}
-	}
-	else // bDBCS
-	{
-		for(UINT i=0; i<_tcslen(old_fname); i++)	// 1文字ずつ検索
-		{
-			for(UINT j=0; j<_tcslen(sbcs); j++)		// 1文字ずつ検索
-			{
-				rt = strncmp(&old_fname[i], &sbcs[j], 1);	// 指定文字数で目的の文字列を検索
-
-				if(rt == 0)	// 指定文字数で目的の文字列を検索
-				{
-					strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//見つかる前までの文字列
-					strcat_s(new_fname, sizeof(new_fname), tmp);	//最終的な目的の文字列
-					strcat_s(new_fname, sizeof(new_fname), &dbcs[j]);
-
-					cp_num=0;	//キャッシュのカウントをリセットする
-					cp_start = i + 1;
-				}
-				else
-				{
-					cp_num++;
-				}
-			}
-		}
-	}
-
-	//for(UINT i=0; i<strlen(old_fname); i++)	// 1文字ずつ検索
-	//{
-	//	if ( bDiff )
-	//	{
-	//		rt = strncmp(&old_fname[i], srch, strlen(srch));	// 指定文字数で目的の文字列を検索
-	//	}
-	//	else
-	//	{
-	//		rt = _strnicmp(&old_fname[i], srch, strlen(srch));	// 指定文字数で目的の文字列を検索
-	//	}
-
-	//	if(rt == 0)	// 指定文字数で目的の文字列を検索
-	//	{
-	//		strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//見つかる前までの文字列
-	//		strcat_s(new_fname, sizeof(new_fname), tmp);	//最終的な目的の文字列
-	//		if(rep != NULL)
-	//		{
-	//			// 置換対象文字があるなら、ここで実行
-	//			strcat_s(new_fname, sizeof(new_fname), rep);
-	//		}
-	//		i += strlen(srch) - 1; //みつかった文字列分の検索は飛ばす
-	//		cp_num=0;	//キャッシュのカウントをリセットする
-	//		cp_start = i + 1;
-	//	}
-	//	else
-	//	{
-	//		cp_num++;
-	//	}
-	//}
-
-	//// 対象文字列以降の文字を連結
-	//if ( cp_num )
-	//{
-	//	strncpy_s(tmp, sizeof(tmp), &old_fname[cp_start], cp_num);	//見つかる前までの文字列
-	//	strcat_s(new_fname, sizeof(new_fname), tmp);	//最終的な目的の文字列
-	//}
-	//*nname = new_fname;
-#endif
+	CString message;
+	CString title;
+	message.LoadString(messageId);
+	title.LoadString(IDSTR_ERROR);
+	MessageBox(message, title, MB_OK);
 }

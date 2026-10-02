@@ -13,6 +13,9 @@
       <UniqueIdentifier>{de8d5679-37c5-4b56-b71b-e18306021cf4}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="_Common">
+      <UniqueIdentifier>{3b9c2f4e-7d1a-4c6e-9f2b-5a8d0e1c7b43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fname_exchange.cpp">
@@ -24,8 +27,8 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utils.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\_Common\CommonUtil.cpp">
+      <Filter>_Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -40,26 +43,19 @@
     <ClInclude Include="fname_exchangeDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\_Common\CommonUtil.h">
+      <Filter>_Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="123.ico">
+    <Image Include="res\fname_exchange.ico">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\fname_exchange.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\icon1.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="ReadMe.txt" />
+    </Image>
   </ItemGroup>
 </Project>
