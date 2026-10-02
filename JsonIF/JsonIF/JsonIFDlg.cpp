@@ -1,6 +1,4 @@
-﻿
-// JsonIFDlg.cpp : 実装ファイル
-//
+﻿// JsonIFDlg.cpp : メインダイアログ
 
 #include "pch.h"
 #include "framework.h"
@@ -12,20 +10,10 @@
 #define new DEBUG_NEW
 #endif
 
-
-// CJsonIFDlg ダイアログ
-
-
-
 CJsonIFDlg::CJsonIFDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_JSONIF_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-}
-
-void CJsonIFDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialogEx::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CJsonIFDlg, CDialogEx)
@@ -36,44 +24,32 @@ BEGIN_MESSAGE_MAP(CJsonIFDlg, CDialogEx)
 	ON_BN_CLICKED(IBT_NLOMANNJSON, &CJsonIFDlg::OnBnClickedNlomannjson)
 END_MESSAGE_MAP()
 
-
-// CJsonIFDlg メッセージ ハンドラー
-
 BOOL CJsonIFDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
 void CJsonIFDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int cxIcon = GetSystemMetrics(SM_CXICON);
+		const int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - cxIcon + 1) / 2;
+		const int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -82,34 +58,28 @@ void CJsonIFDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CJsonIFDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
 void CJsonIFDlg::OnBnClickedPicojson()
 {
-	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+	// 未実装
 }
-
 
 void CJsonIFDlg::OnBnClickedRapidjson()
 {
-	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+	// 未実装
 }
-
 
 void CJsonIFDlg::OnBnClickedNlomannjson()
 {
-
 	nlohmann::json json_data;
 
 	json_data["top"] = "TOP_LAYER";
 	json_data["top"]["sub"] = "SUB_LAYER";
 
-	MessageBox("title", json_data.dump().c_str());
+	// dump() は UTF-8 の std::string。文字セットに依らずビルドできるよう CString に変換して渡す
+	MessageBox(_T("title"), CString(json_data.dump().c_str()));
 }

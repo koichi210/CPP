@@ -1,6 +1,4 @@
-﻿
-// JsonIF.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです
-//
+﻿// JsonIF.h : アプリケーションクラス
 
 #pragma once
 
@@ -8,25 +6,14 @@
 	#error "PCH に対してこのファイルをインクルードする前に 'pch.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
-
-
-// CJsonIFApp:
-// このクラスの実装については、JsonIF.cpp を参照してください
-//
+#include "resource.h"
 
 class CJsonIFApp : public CWinApp
 {
 public:
 	CJsonIFApp();
 
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-
-// 実装
+	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
-
-extern CJsonIFApp theApp;

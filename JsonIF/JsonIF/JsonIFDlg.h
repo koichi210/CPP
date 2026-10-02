@@ -1,6 +1,4 @@
-﻿
-// JsonIFDlg.h : ヘッダー ファイル
-//
+﻿// JsonIFDlg.h : メインダイアログ（JSON ライブラリの使い方を試す）
 
 #pragma once
 
@@ -8,33 +6,25 @@
 #include "External/rapidjson.h"
 #include "External/json.hpp"
 
-// CJsonIFDlg ダイアログ
 class CJsonIFDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CJsonIFDlg(CWnd* pParent = nullptr);	// 標準コンストラクター
+	explicit CJsonIFDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_JSONIF_DIALOG };
 #endif
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-public:
 	afx_msg void OnBnClickedPicojson();
 	afx_msg void OnBnClickedRapidjson();
 	afx_msg void OnBnClickedNlomannjson();
+	DECLARE_MESSAGE_MAP()
+
+private:
+	HICON m_hIcon;
 };
