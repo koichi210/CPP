@@ -200,7 +200,8 @@ void CJointMovieDlg::OnExecute()
 			{
 				org_fname += "+";
 			}
-			org_fname += tmp;
+			// 空白を含むパスでも copy に1つの引数として渡るよう引用符で囲む
+			org_fname += "\"" + tmp + "\"";
 		}
 	}
 
@@ -214,9 +215,9 @@ void CJointMovieDlg::OnExecute()
 	}
 	else
 	{
-		char command[MAX_PATH];
+		CString command;
 
-		sprintf_s(command, sizeof(command),"copy /B /-Y %s %s",org_fname,new_fname);
+		command.Format("copy /B /-Y %s \"%s\"", (LPCTSTR)org_fname, (LPCTSTR)new_fname);
 		rt = system(command);
 	}
 }
