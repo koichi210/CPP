@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CProgressBarDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_START, &CProgressBarDlg::OnBnClickedStart)
 	ON_BN_CLICKED(IDC_STOP, &CProgressBarDlg::OnBnClickedStop)
+	ON_WM_ENDSESSION()
 END_MESSAGE_MAP()
 
 BOOL CProgressBarDlg::OnInitDialog()
@@ -80,7 +81,7 @@ void CProgressBarDlg::OnBnClickedStart()
 	m_stopRequested = false;
 	m_strStatus = "Start が押されたよ";
 	UpdateData(FALSE);
-	AfxBeginThread(ProgressThread, this);
+	m_workers.Start(ProgressThread, this);
 }
 
 void CProgressBarDlg::OnBnClickedStop()
@@ -88,6 +89,37 @@ void CProgressBarDlg::OnBnClickedStop()
 	m_stopRequested = true;
 	m_strStatus = "Stop が押されたよ";
 	UpdateData(FALSE);
+}
+
+void CProgressBarDlg::OnOK()
+{
+	StopWorkers();
+	CDialogEx::OnOK();
+}
+
+void CProgressBarDlg::OnCancel()
+{
+	StopWorkers();
+	CDialogEx::OnCancel();
+}
+
+// シャットダウン・ログオフでは、この後すぐプロセスごと終了させられるので、その前に止める
+void CProgressBarDlg::OnEndSession(BOOL bEnding)
+{
+	if (bEnding)
+	{
+		StopWorkers();
+	}
+	CDialogEx::OnEndSession(bEnding);
+}
+
+// ワーカーはプログレスバーを触るので、閉じる（ダイアログが破棄される）前に止めて終了を待つ
+void CProgressBarDlg::StopWorkers()
+{
+	m_stopRequested = true;
+	EnableWindow(FALSE);	// 待っている間に Start を押させない
+	m_workers.WaitAll();
+	EnableWindow(TRUE);
 }
 
 UINT CProgressBarDlg::ProgressThread(LPVOID pParam)
