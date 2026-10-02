@@ -169,6 +169,7 @@ void CTurnMemoryDlg::OnTimer(UINT nIDEvent)
 void CTurnMemoryDlg::EndProc()
 {
 	m_cnt = 1;
+	m_wait = WAIT_MAX;
 	this->KillTimer(EVENT_SHOW);
 	this->SetTimer(EVENT_WAIT, WAIT_INVAL, NULL);
 }
@@ -206,27 +207,29 @@ void CTurnMemoryDlg::InitProc()
 
 void CTurnMemoryDlg::BuildNumber()
 {
-	int max = 0;
+	int max = -1;
 	int idx = 0;
 	int cell_cnt = CurCellMax(prb_num);
 	int i, j;
+	int randtbl[CELL_MAX*CELL_MAX];
 
 	// make
 	memset(&anstbl, 0, sizeof(anstbl));
 	for(i=0;i<CurCellMax(prb_num);i++){
-		anstbl[i] = rand();
+		randtbl[i] = rand();
 	}
 
-	// sort and build
+	// sort and build（番号を振ったマスは -1 にして、次からは選ばない）
 	for(i=0;i<CurCellMax(prb_num);i++){
 		for(j=0;j<CurCellMax(prb_num);j++){
-			if(anstbl[j] > max){
-				max = anstbl[j];
+			if(randtbl[j] > max){
+				max = randtbl[j];
 				idx = j;
 			}
 		}
 		anstbl[idx] = cell_cnt--;
-		max = 0 ;
+		randtbl[idx] = -1;
+		max = -1 ;
 	}
 }
 
@@ -285,18 +288,17 @@ void CTurnMemoryDlg::ShowProc()
 
 void CTurnMemoryDlg::WaitProc() 
 {
-	static int timer = WAIT_MAX;
 	char str[STR_BUFF];
 
 	memset(str, 0, sizeof(str));
 
-	sprintf(str, "%d%s", timer, CNT_REMEMBER_STR);
+	sprintf(str, "%d%s", m_wait, CNT_REMEMBER_STR);
 	GetDlgItem(IDC_TITLE)->SetWindowText(str);
-	timer --;
-	if(timer < 0){
+	m_wait --;
+	if(m_wait < 0){
 		states = END;
 		InitProc();
-		timer = WAIT_MAX ;
+		m_wait = WAIT_MAX ;
 		this->KillTimer(EVENT_WAIT);
 	}
 }

@@ -69,6 +69,7 @@ public:
 	int prb_num;
 	int states;
 	int m_cnt;
+	int m_wait;		// 記憶時間の残り秒数
 
 	void EndProc();
 	void ExitProc();
