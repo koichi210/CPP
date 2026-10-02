@@ -1,112 +1,104 @@
-﻿// zodiacDlg.cpp : インプリメンテーション ファイル
-//
+﻿// zodiacDlg.cpp : メインダイアログ（生まれた年・年齢・干支の早見）
 
 #include "stdafx.h"
 #include "zodiac.h"
 #include "zodiacDlg.h"
+#include <ctime>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// CZodiacDlg ダイアログ
-
-CZodiacDlg::CZodiacDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CZodiacDlg::IDD, pParent)
+namespace
 {
-	//{{AFX_DATA_INIT(CZodiacDlg)
-		// メモ: この位置に ClassWizard によってメンバの初期化が追加されます。
-	//}}AFX_DATA_INIT
-	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
+	constexpr int MIN_YEAR = 1900;
+	constexpr int MAX_YEAR = 2100;
+	constexpr int MIN_AGE = 0;
+	constexpr int MAX_AGE = 130;
+	constexpr int ZODIAC_COUNT = 12;
+
+	constexpr int DEFAULT_AGE = 20;
+	constexpr int DEFAULT_BIRTH = 1980;
+
+	constexpr const char* AGE_FORMAT = "満%d才";
+	constexpr const char* BIRTH_FORMAT = "%d年";
+
+	// MIN_YEAR（1900年）が子年なので、(年 - MIN_YEAR) % 12 で引ける並び
+	constexpr const char* ZODIAC_NAMES[ZODIAC_COUNT] = {
+		"子(ねずみ)", "丑(うし)", "寅(とら)", "卯(うさぎ)", "辰(たつ)", "巳(み)",
+		"午(うま)", "未(ひつじ)", "申(さる)", "酉(とり)", "戌(いぬ)", "亥(いのしし)" };
+}
+
+CZodiacDlg::CZodiacDlg(CWnd* pParent /*=nullptr*/)
+	: CDialog(IDD, pParent)
+{
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	chk_states = 0;
-	m_year = 0;
 }
 
 void CZodiacDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CZodiacDlg)
-		// メモ: この場所には ClassWizard によって DDX と DDV の呼び出しが追加されます。
-	//}}AFX_DATA_MAP
+	DDX_Control(pDX, IDC_YEAR, m_yearCombo);
+	DDX_Control(pDX, IDC_LIST, m_listCombo);
 }
 
 BEGIN_MESSAGE_MAP(CZodiacDlg, CDialog)
-	//{{AFX_MSG_MAP(CZodiacDlg)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_AGE, OnAge)
-	ON_BN_CLICKED(IDC_CHINEZODIAC, OnChineZodiac)
-	ON_BN_CLICKED(IDC_VIEW, OnView)
-	ON_BN_CLICKED(IDC_BIRTH, OnBirth)
-	ON_CBN_SELCHANGE(IDC_YEAR, OnSelchangeYear)
-	ON_BN_CLICKED(IDC_ALL_VIEW, OnAllView)
-	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_AGE, &CZodiacDlg::OnAge)
+	ON_BN_CLICKED(IDC_CHINEZODIAC, &CZodiacDlg::OnChineZodiac)
+	ON_BN_CLICKED(IDC_VIEW, &CZodiacDlg::OnView)
+	ON_BN_CLICKED(IDC_BIRTH, &CZodiacDlg::OnBirth)
+	ON_CBN_SELCHANGE(IDC_YEAR, &CZodiacDlg::OnSelchangeYear)
+	ON_BN_CLICKED(IDC_ALL_VIEW, &CZodiacDlg::OnAllView)
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CZodiacDlg メッセージ ハンドラ
 
 BOOL CZodiacDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	// このダイアログ用のアイコンを設定します。フレームワークはアプリケーションのメイン
-	// ウィンドウがダイアログでない時は自動的に設定しません。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンを設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンを設定
-	
-	// make Year
-	int ind;
-	char str[STR_BUFF];
-	time_t now_time;
-	struct tm * local;
+
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
+
+	// 年の選択肢を作り、今年を選んでおく
+	time_t now = time(nullptr);
+	const tm* local = localtime(&now);
+
+	m_yearCombo.ResetContent();
 	int idx = 0;
-
-	memset(str,0,sizeof(str));
-
-	time(&now_time);
-	local = localtime(&now_time);
-
-	SendDlgItemMessage(IDC_YEAR, CB_RESETCONTENT, 0L, 0L);
-	for( int i=MIN_YEAR; i <= MAX_YEAR; i++ )
+	for (int year = MIN_YEAR; year <= MAX_YEAR; year++)
 	{
-		_itoa_s(i, str, sizeof(str), 10);
-		ind = SendDlgItemMessage(IDC_YEAR, CB_INSERTSTRING, -1, (LPARAM)str);
-		SendDlgItemMessage(IDC_YEAR, CB_SETITEMDATA, (WPARAM)ind, i);
+		CString text;
+		text.Format("%d", year);
+		int ind = m_yearCombo.InsertString(-1, text);
+		m_yearCombo.SetItemData(ind, year);
 
-		if ( local->tm_year + MIN_YEAR == i )
+		if (local->tm_year + 1900 == year)
 		{
 			idx = ind;
 		}
 	}
-	SendDlgItemMessage(IDC_YEAR, CB_SETCURSEL, idx);
+	m_yearCombo.SetCurSel(idx);
 
-	GetDlgItemText(IDC_YEAR,str, sizeof (str));
-	m_year = atoi(str);
+	CString yearText;
+	m_yearCombo.GetWindowText(yearText);
+	m_year = atoi(yearText);
 
-	// default mode 
 	CheckDlgButton(IDC_AGE, BST_CHECKED);
 	OnAge();
 
-	return TRUE;  // TRUE を返すとコントロールに設定したフォーカスは失われません。
+	return TRUE;
 }
 
-// もしダイアログボックスに最小化ボタンを追加するならば、アイコンを描画する
-// コードを以下に記述する必要があります。MFC アプリケーションは document/view
-// モデルを使っているので、この処理はフレームワークにより自動的に処理されます。
-
-void CZodiacDlg::OnPaint() 
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
+void CZodiacDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画用のデバイス コンテキスト
+		CPaintDC dc(this);
 
-		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの矩形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -114,7 +106,6 @@ void CZodiacDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンを描画します。
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -123,225 +114,166 @@ void CZodiacDlg::OnPaint()
 	}
 }
 
-// システムは、ユーザーが最小化ウィンドウをドラッグしている間、
-// カーソルを表示するためにここを呼び出します。
 HCURSOR CZodiacDlg::OnQueryDragIcon()
 {
-	return (HCURSOR) m_hIcon;
+	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-void CZodiacDlg::OnSelchangeYear() 
+void CZodiacDlg::OnSelchangeYear()
 {
-	char str[STR_BUFF];
-
-	GetDlgItemText(IDC_YEAR, str, sizeof (str));
-	m_year = atoi(str);
+	CString yearText;
+	m_yearCombo.GetWindowText(yearText);
+	m_year = atoi(yearText);
 	Refresh();
 }
 
-
 void CZodiacDlg::OnBirth()
 {
-	if ( chk_states != FIX_BIRTH )
-	{
-		chk_states = FIX_BIRTH;
-		Refresh();
-	}	
+	ChangeMode(Mode::Birth);
 }
 
-
-void CZodiacDlg::OnAge() 
+void CZodiacDlg::OnAge()
 {
-	if ( chk_states != FIX_AGE )
+	ChangeMode(Mode::Age);
+}
+
+void CZodiacDlg::OnChineZodiac()
+{
+	ChangeMode(Mode::Zodiac);
+}
+
+void CZodiacDlg::ChangeMode(Mode mode)
+{
+	if (m_mode != mode)
 	{
-		chk_states = FIX_AGE;
+		m_mode = mode;
 		Refresh();
 	}
 }
 
-
-void CZodiacDlg::OnChineZodiac() 
-{
-	if ( chk_states != FIX_ZODIAC )
-	{
-		chk_states = FIX_ZODIAC;
-		Refresh();
-	}	
-}
-
-
+// 表示モードに合わせて下段のリストを作り直す
 void CZodiacDlg::Refresh()
 {
-	char str[STR_BUFF];
-	int nCurrent;
+	m_listCombo.ResetContent();
 
-	memset(str, 0, sizeof(str));
-	SendDlgItemMessage(IDC_LIST, CB_RESETCONTENT, 0L, 0L);
-
-	switch(chk_states){
-	case FIX_BIRTH :
-		for( int i=MIN_YEAR; i <= m_year; i++ )
+	CString text;
+	int current = 0;
+	switch (m_mode)
+	{
+	case Mode::Birth:
+		for (int year = MIN_YEAR; year <= m_year; year++)
 		{
-			sprintf(str, BIRTH_FORMAT, i);
-			SetListData(str, i);
+			text.Format(BIRTH_FORMAT, year);
+			AddListItem(text, year);
 		}
-		nCurrent = DEFAULT_BIRTH - MIN_YEAR;
-		break ;
+		current = DEFAULT_BIRTH - MIN_YEAR;
+		break;
 
-	case FIX_AGE :
-		for( int i=MIN_AGE; i <= MAX_AGE; i++ )
+	case Mode::Age:
+		for (int age = MIN_AGE; age <= MAX_AGE; age++)
 		{
-			sprintf(str, AGE_FORMAT, i);
-			SetListData(str, i);
+			text.Format(AGE_FORMAT, age);
+			AddListItem(text, age);
 		}
-		nCurrent = DEFAULT_AGE - MIN_AGE;
-		break ;
+		current = DEFAULT_AGE - MIN_AGE;
+		break;
 
-	case FIX_ZODIAC :
-		// no break
-	default :
-		for( int i=0; i < CHINEZODIAC_NUM; i++ )
+	case Mode::Zodiac:
+	default:
+		for (int i = 0; i < ZODIAC_COUNT; i++)
 		{
-			sprintf(str, "%s", zod_name[i]);
-			SetListData(str, i);
+			AddListItem(ZODIAC_NAMES[i], i);
 		}
-		nCurrent = 0;
-		break ;
-
+		current = 0;
+		break;
 	}
-	SendDlgItemMessage(IDC_LIST, CB_SETCURSEL, nCurrent);
+	m_listCombo.SetCurSel(current);
 }
 
-void CZodiacDlg::SetListData(char *str, int idx)
+// 項目データには年・年齢・干支の番号を持たせ、表示時に文字列を解析しなくて済むようにする
+void CZodiacDlg::AddListItem(LPCTSTR text, int data)
 {
-	int ind = SendDlgItemMessage(IDC_LIST, CB_INSERTSTRING, -1, (LPARAM)str);
-	SendDlgItemMessage(IDC_LIST, CB_SETITEMDATA, (WPARAM)ind, idx);
+	int ind = m_listCombo.InsertString(-1, text);
+	m_listCombo.SetItemData(ind, data);
 }
 
 void CZodiacDlg::OnView()
 {
-	char str[VIEW_BUFF];
-	char zod[STR_BUFF];
-	char wk[STR_BUFF];
-	int year;
-	int age;
-	int birth;
-	int i;
-
-	GetDlgItemText(IDC_YEAR,wk, sizeof (wk));
-	year = atoi(wk);
-
-	memset(str, 0, sizeof(str));
-	memset(zod, 0, sizeof(zod));
-	memset(wk, 0, sizeof(wk));
-	if ( chk_states == FIX_ZODIAC )
+	int sel = m_listCombo.GetCurSel();
+	if (sel == CB_ERR)
 	{
-		GetDlgItemText(IDC_LIST, zod, sizeof (zod));
-		sprintf(str, "%s年のヒト\r\n\r\n"
-					 "生まれた年    年齢\r\n", zod);
+		return;
+	}
+	int value = static_cast<int>(m_listCombo.GetItemData(sel));
 
-		for( i=0; i < CHINEZODIAC_NUM; i++ )
+	CString yearText;
+	m_yearCombo.GetWindowText(yearText);
+	int year = atoi(yearText);
+
+	CString view;
+	if (m_mode == Mode::Zodiac)
+	{
+		view.Format("%s年のヒト\r\n\r\n"
+					"生まれた年    年齢\r\n", ZODIAC_NAMES[value]);
+
+		for (int birth = MIN_YEAR + value; birth < m_year; birth += ZODIAC_COUNT)
 		{
-			if ( strcmp(zod, zod_name[i]) == 0 )
-			{
-				break ;
-			}
-		}
-
-		year = MIN_YEAR + i;
-		for( ; year<m_year; year += CHINEZODIAC_NUM )
-		{
-			age = m_year - year;
-
-			sprintf(wk, BIRTH_FORMAT, year);
-			strcat(str, wk);
-
-			strcat(str, "        ");
-
-			sprintf(wk, AGE_FORMAT, age);
-			strcat(str, wk);
-			strcat(str, "\r\n");
+			view.AppendFormat(BIRTH_FORMAT, birth);
+			view += "        ";
+			view.AppendFormat(AGE_FORMAT, m_year - birth);
+			view += "\r\n";
 		}
 	}
 	else
 	{
-		if ( chk_states == FIX_AGE )
+		int birth;
+		int age;
+		if (m_mode == Mode::Age)
 		{
-			// 年齢
-			GetDlgItemText(IDC_LIST, wk, sizeof (wk));
-
-			// 生まれた年
-			sscanf(wk, AGE_FORMAT, &age);
+			age = value;
 			birth = year - age;
-
-			// 干支
-			GetZodiac(birth, zod);
 		}
-		else if( chk_states == FIX_BIRTH )
+		else
 		{
-			// 生まれた年
-			GetDlgItemText(IDC_LIST, wk, sizeof (wk));
-			sscanf(wk, BIRTH_FORMAT, &birth);
-
-			// 干支
-			GetZodiac(birth, zod);
-
-			// 年齢
+			birth = value;
 			age = year - birth;
 		}
-		sprintf(str,"%d年生まれ\r\n"
+		CString zodiac = GetZodiac(birth);
+
+		view.Format("%d年生まれ\r\n"
 					"今年は%d才\r\n"
-					"%s年です。\r\n", birth, age, zod);
+					"%s年です。\r\n", birth, age, static_cast<LPCTSTR>(zodiac));
 	}
-	SetDlgItemText(IDC_PREVIEW, str);
+	SetDlgItemText(IDC_PREVIEW, view);
 }
 
-
-int CZodiacDlg::GetZodiac(int year, char * zod)
+CString CZodiacDlg::GetZodiac(int year) const
 {
-	if ( year < MIN_YEAR || year > m_year )
+	if (year < MIN_YEAR || year > m_year)
 	{
-		AfxMessageBox("プログラムエラー",MB_OK);
-		return -1;
+		AfxMessageBox("プログラムエラー", MB_OK);
+		return CString();
 	}
-
-	year -= MIN_YEAR;
-	year %= CHINEZODIAC_NUM;
-
-	strcpy(zod, zod_name[year]);
-	return 0;
+	return CString(ZODIAC_NAMES[(year - MIN_YEAR) % ZODIAC_COUNT]);
 }
 
-
-void CZodiacDlg::OnAllView() 
+void CZodiacDlg::OnAllView()
 {
-	char str[VIEW_ALL_BUFF];
-	char wk[STR_BUFF];
-	int year;
-	int i;
-
-	memset(str, 0, sizeof(str));
-
-	GetDlgItemText(IDC_YEAR, wk, sizeof (wk));
-	year = atoi(wk);
-
-	for( i=0; i < CHINEZODIAC_NUM; i++)
+	CString table;
+	for (int i = 0; i < ZODIAC_COUNT; i++)
 	{
-		sprintf(wk, "%14s", zod_name[i]);
-		strcat(str, wk);
+		table.AppendFormat("%14s", ZODIAC_NAMES[i]);
 	}
-	strcat(str, "\r\n");
+	table += "\r\n";
 
-	for( i=MIN_YEAR; i <= m_year; i++ )
+	for (int year = MIN_YEAR; year <= m_year; year++)
 	{
-		if ( (i-MIN_YEAR) % CHINEZODIAC_NUM == 0 )
+		if ((year - MIN_YEAR) % ZODIAC_COUNT == 0)
 		{
-			strcat(str, "\r\n");
+			table += "\r\n";
 		}
-		sprintf(wk, "%11d年", i);
-		strcat(str, wk);
+		table.AppendFormat("%11d年", year);
 	}
 
-	MessageBox(str, "早見表", MB_OK);
+	MessageBox(table, "早見表", MB_OK);
 }
