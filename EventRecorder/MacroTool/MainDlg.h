@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-#include "resource.h"		// ƒƒCƒ“ ƒVƒ“ƒ{ƒ‹
+#include "resource.h"		// ãƒ¡ã‚¤ãƒ³ ã‚·ãƒ³ãƒœãƒ«
 
 #define DEF_REPEATNUM		1
 #define DEF_REPEATTIME		100
@@ -10,18 +10,18 @@
 
 #define MAXNUM_CLOUMN		700
 #define START_WAIT_TIME		1000
-#define STR_MAIN_TITLE		"Ï¸Û"
-#define STR_SET_TITLE		"İ’è"
-#define STR_SLEEP_TITLE		"@i‘ŒvF %02dh %02dm %02ds %03dmsecj"
-#define STR_RUNNING_PROC		"ˆ—’†‚Å‚·"
-#define STR_START_PROC		"[ŠJn]"
-#define STR_STOP_PROC		"[’â~]"
+#define STR_MAIN_TITLE		"ï¾ï½¸ï¾›"
+#define STR_SET_TITLE		"è¨­å®š"
+#define STR_SLEEP_TITLE		"ã€€ï¼ˆç·è¨ˆï¼š %02dh %02dm %02ds %03dmsecï¼‰"
+#define STR_RUNNING_PROC		"å‡¦ç†ä¸­ã§ã™"
+#define STR_START_PROC		"[é–‹å§‹]"
+#define STR_STOP_PROC		"[åœæ­¢]"
 
 #define BF_CAPS_KEY_SHIFT	0x0001
 #define BF_CAPS_KEY_CTRL	0x0002
 #define BF_CAPS_KEY_ALT		0x0004
 
-#define CLOSE_WAIT_TIME		5	// •Â‚¶‚é‘O‚ÉÅ‘å5•b‚Ü‚Å‘Ò‚Â
+#define CLOSE_WAIT_TIME		5	// é–‰ã˜ã‚‹å‰ã«æœ€å¤§5ç§’ã¾ã§å¾…ã¤
 
 //#define FLICKA_KEY	VK_CAPITAL
 #define FLICKA_KEY	VK_NONE
@@ -53,13 +53,13 @@ typedef struct tagEVENT
 
 CString GetControlDetail(EVENT evt);
 
-// CMainDlg ƒ_ƒCƒAƒƒO
+// CMainDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class CMainDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CMainDlg)
 
 public:
-	CMainDlg(CWnd* pParent = NULL);   // •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	CMainDlg(CWnd* pParent = NULL);   // æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	virtual ~CMainDlg();
 
 	char		m_strTitle[MAX_PATH];
@@ -72,11 +72,11 @@ public:
 	CString		m_ver;
 
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_MAINDLG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 	virtual BOOL OnInitDialog();
 
 	DECLARE_MESSAGE_MAP()

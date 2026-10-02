@@ -1,10 +1,10 @@
-// EventHookd.cpp : DLL ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ ƒ|ƒCƒ“ƒg‚ğ’è‹`‚µ‚Ü‚·B
+ï»¿// EventHookd.cpp : DLL ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒª ãƒã‚¤ãƒ³ãƒˆã‚’å®šç¾©ã—ã¾ã™ã€‚
 //
 #include <stdio.h>
 #include "stdafx.h"
 #include "EventHookd.h"
 
-// ‹¤—Lƒƒ‚ƒŠ
+// å…±æœ‰ãƒ¡ãƒ¢ãƒª
 #pragma data_seg(".shared")
 HHOOK		ghKeyHook = NULL;
 HHOOK		ghMouseHook = NULL;
@@ -108,7 +108,7 @@ LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 	{
 		int nCap = 0;
 
-		// Mouse Move“™‚ÍƒƒMƒ“ƒO‚µ‚È‚¢B
+		// Mouse Moveç­‰ã¯ãƒ­ã‚®ãƒ³ã‚°ã—ãªã„ã€‚
 		if ( GetMouseParameter(wParam, &nCap) )
 		{
 			POINT pt;
@@ -143,8 +143,8 @@ BOOL GetKeyParameter(WPARAM wParam, DWORD *dwCap, TCHAR *key)
 		bProc = FALSE;
 	}
 
-	// ”’l or ƒAƒ‹ƒtƒ@ƒxƒbƒg‚Å‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
-	// FunctionƒL[“™‚Ìˆ—‚É‘Î‰‚µ‚Ä‚¢‚È‚¢‚½‚ß
+	// æ•°å€¤ or ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆã§ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
+	// Functionã‚­ãƒ¼ç­‰ã®å‡¦ç†ã«å¯¾å¿œã—ã¦ã„ãªã„ãŸã‚
 	if ( bProc )
 	{
 		if ( ! isalpha(nKey) && ! isdigit(nKey) )
@@ -153,22 +153,22 @@ BOOL GetKeyParameter(WPARAM wParam, DWORD *dwCap, TCHAR *key)
 		}
 	}
 
-	// ‘ÎÛ‚ÌƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚©”»•Ê
+	// å¯¾è±¡ã®ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹ã‹åˆ¤åˆ¥
 	if ( bProc )
 	{
-		// “Á’è‚ÌƒL[‚ğ”»•Ê‚·‚é‚¾‚¯‚È‚ç GetAsyncKeyState(vk) ‚Å‚à—Ç‚¢
+		// ç‰¹å®šã®ã‚­ãƒ¼ã‚’åˆ¤åˆ¥ã™ã‚‹ã ã‘ãªã‚‰ GetAsyncKeyState(vk) ã§ã‚‚è‰¯ã„
 		//BYTE bKey[MAX_PATH];
 		//if ( GetKeyboardState(bKey) ) 
 		//{
 		//	bProc = IsKeyDown(bKey[nKey]);
 		//}
 
-		// wParam‚¾‚¯‚Å‚ÍAKEY_UP‚ÆKEY_DOWN—¼•û‚ÌƒCƒxƒ“ƒg‚ª”ò‚ñ‚Å‚«‚¿‚á‚¤‚Ì‚ÅA‰Ÿ‚³‚ê‚Ä‚é‚©‚Ç‚¤‚©‚ğ‚¿‚á‚ñ‚Æƒ`ƒFƒbƒN
+		// wParamã ã‘ã§ã¯ã€KEY_UPã¨KEY_DOWNä¸¡æ–¹ã®ã‚¤ãƒ™ãƒ³ãƒˆãŒé£›ã‚“ã§ãã¡ã‚ƒã†ã®ã§ã€æŠ¼ã•ã‚Œã¦ã‚‹ã‹ã©ã†ã‹ã‚’ã¡ã‚ƒã‚“ã¨ãƒã‚§ãƒƒã‚¯
 		short sKey = GetAsyncKeyState(nKey);
 		bProc = IsKeyDown(sKey);
 	}
 
-	// ˆ—
+	// å‡¦ç†
 	if ( bProc )
 	{
 		if ( IsControlKeyDown() )
@@ -182,7 +182,7 @@ BOOL GetKeyParameter(WPARAM wParam, DWORD *dwCap, TCHAR *key)
 		}
 		else
 		{
-			// ShiftKey‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çA‘å•¶š‚ğ¬•¶š‚É•ÏŠ·
+			// ShiftKeyãŒæŠ¼ã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰ã€å¤§æ–‡å­—ã‚’å°æ–‡å­—ã«å¤‰æ›
 			MyTolower(&nKey);
 		}
 		*key = (TCHAR)nKey;
@@ -200,7 +200,7 @@ BOOL GetMouseParameter(WPARAM wParam, int *nCap)
 		bProc = FALSE;
 	}
 
-	// wParam = ƒCƒxƒ“ƒg–¼
+	// wParam = ã‚¤ãƒ™ãƒ³ãƒˆå
 	switch(wParam)
 	{
 		case WM_LBUTTONDOWN :		*nCap = MOUSE_OPERATION_LDOWN;	break;
@@ -242,34 +242,34 @@ DWORD ElapsedTime()
 	SYSTEMTIME	new_tm;
 
 	GetSystemTime(&new_tm);
-	if ( new_tm.wYear != 0 ) //TODOF‚½‚Ü‚Éæ‚ê‚È‚¢‚Æ‚«‚ª‚ ‚é	
+	if ( new_tm.wYear != 0 ) //TODOï¼šãŸã¾ã«å–ã‚Œãªã„ã¨ããŒã‚ã‚‹	
 	{
 		int temp ;
 
 //		temp = new_tm.wYear - gOld_tm.wYear;
 //		temp = new_tm.wMonth - gOld_tm.wMonth;
 
-		// “ú
+		// æ—¥
 		temp = new_tm.wDay - gOld_tm.wDay;
 		msec += temp;
 		msec *= MAX_HOUR;
 
-		// ŠÔ
+		// æ™‚é–“
 		temp = new_tm.wHour - gOld_tm.wHour;
 		msec += temp;
 		msec *= MAX_MINUTES;
 
-		// •ª
+		// åˆ†
 		temp = new_tm.wMinute - gOld_tm.wMinute;
 		msec += temp;
 		msec *= MAX_MINUTES;
 
-		// •b
+		// ç§’
 		temp = new_tm.wSecond - gOld_tm.wSecond;
 		msec += temp;
 		msec *= MAX_MSEONDS;
 
-		// ƒ~ƒŠ•b
+		// ãƒŸãƒªç§’
 		temp = new_tm.wMilliseconds - gOld_tm.wMilliseconds;
 		msec += temp;
 
@@ -279,16 +279,16 @@ DWORD ElapsedTime()
 	return msec;
 }
 
-// utility ‚ÉˆÚ“® +
+// utility ã«ç§»å‹• +
 BOOL IsKeyDown(int nKey)
 {
 	BOOL bReturn = FALSE;
 
-#if 0 // •¡”‚ÌƒL[‚ğˆêŠ‡‚ÅŠm”F‚·‚éê‡
+#if 0 // è¤‡æ•°ã®ã‚­ãƒ¼ã‚’ä¸€æ‹¬ã§ç¢ºèªã™ã‚‹å ´åˆ
 	BYTE bKey[MAX_PATH];
-	if ( GetKeyboardState(bKey) ) // “Á’è‚ÌƒL[‚ğ”»•Ê‚·‚é‚¾‚¯‚È‚ç GetAsyncKeyState(vk) ‚Å‚à—Ç‚¢
+	if ( GetKeyboardState(bKey) ) // ç‰¹å®šã®ã‚­ãƒ¼ã‚’åˆ¤åˆ¥ã™ã‚‹ã ã‘ãªã‚‰ GetAsyncKeyState(vk) ã§ã‚‚è‰¯ã„
 	{
-		// KEY_UPiƒL[‚ğ—£‚µ‚½jƒCƒxƒ“ƒg‚Å‚ ‚ê‚Î–³‹
+		// KEY_UPï¼ˆã‚­ãƒ¼ã‚’é›¢ã—ãŸï¼‰ã‚¤ãƒ™ãƒ³ãƒˆã§ã‚ã‚Œã°ç„¡è¦–
 		if ( IsKeyDown(bKey[nKey] )
 		{
 			bReturn = TRUE;
@@ -372,5 +372,5 @@ void MyTolower(int *nKey)
 	}
 }
 
-// utility ‚ÉˆÚ“® -
+// utility ã«ç§»å‹• -
  

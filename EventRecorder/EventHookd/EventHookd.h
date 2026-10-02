@@ -1,12 +1,12 @@
-#define EXPORTS extern "C" __declspec(dllexport)
+ï»¿#define EXPORTS extern "C" __declspec(dllexport)
 
-// Utility(common‚Á‚Ä–¼‘O‚É‚·‚éH)‚Ì‹¤’Êƒwƒbƒ_‚ÉˆÚ“® +
+// Utility(commonã£ã¦åå‰ã«ã™ã‚‹ï¼Ÿ)ã®å…±é€šãƒ˜ãƒƒãƒ€ã«ç§»å‹• +
 #ifndef MAX_PATH
 #define MAX_PATH	(256)
 #endif
 
-#define BKEY_PUSH	(0x80)		//ByteŒ^
-#define SKEY_PUSH	(0x8000)	//ShortŒ^
+#define BKEY_PUSH	(0x80)		//Byteå‹
+#define SKEY_PUSH	(0x8000)	//Shortå‹
 
 BOOL IsShiftKeyDown();
 BOOL IsControlKeyDown();
@@ -15,7 +15,7 @@ BOOL IsKeyDown(short sKey);
 BOOL IsKeyDown(BYTE bKey);
 void MyTolower(int *nKey);
 
-// Utility‚Ì‹¤’Êƒwƒbƒ_‚ÉˆÚ“® -
+// Utilityã®å…±é€šãƒ˜ãƒƒãƒ€ã«ç§»å‹• -
 
 
 #define DLL_LOG_FNAME	"MacroLog.txt"

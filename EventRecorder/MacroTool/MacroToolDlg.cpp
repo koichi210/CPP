@@ -1,4 +1,4 @@
-// MacroToolDlg.cpp : �����t�@�C��
+﻿// MacroToolDlg.cpp : 実装ファイル
 //
 #include "stdafx.h"
 #include "MainDlg.h"
@@ -11,20 +11,20 @@
 #endif
 
 
-// �A�v���P�[�V�����̃o�[�W�������Ɏg���� CAboutDlg �_�C�A���O /////////////////////////////////////////
+// アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ /////////////////////////////////////////
 class CAboutDlg : public CDialog
 {
 public:
 	CAboutDlg();
 
-// �_�C�A���O �f�[�^
+// ダイアログ データ
 	enum { IDD = IDD_ABOUTBOX };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV �T�|�[�g
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
 	virtual BOOL OnInitDialog();
 
-// ����
+// 実装
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -43,7 +43,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-// CMainDlg ���b�Z�[�W �n���h��
+// CMainDlg メッセージ ハンドラ
 BOOL CAboutDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
@@ -52,11 +52,11 @@ BOOL CAboutDlg::OnInitDialog()
 	ver.LoadString(IDS_VERSION);
 	GetDlgItem(IDC_VERSION)->SetWindowText(ver);
 
-	return TRUE;  // �t�H�[�J�X���R���g���[���ɐݒ肵���ꍇ�������ATRUE ��Ԃ��܂��B
+	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
 
-// CMacroToolDlg �_�C�A���O ////////////////////////////////////////////////////////////////////////////////
+// CMacroToolDlg ダイアログ ////////////////////////////////////////////////////////////////////////////////
 CMacroToolDlg::CMacroToolDlg(CWnd* pParent /*=NULL*/, CString fName) : CDialog(CMacroToolDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -84,7 +84,7 @@ CMacroToolDlg::CMacroToolDlg(CWnd* pParent /*=NULL*/, CString fName) : CDialog(C
 		DebugMode = (DebugModeFUNC *)GetProcAddress(m_hDLLInst, "DebugMode");
 	}
 
-	//�e����ݒ���p��
+	//親から設定を継承
 	RestoreDefault();
 	RestoreDefault(&m_CopyPaste);
 	for ( int i=0; i<MAXNUM_CLOUMN; i++ )
@@ -152,7 +152,7 @@ BEGIN_MESSAGE_MAP(CMacroToolDlg, CDialog)
 	ON_BN_CLICKED(IDOK, OnBnClickedOk)
 END_MESSAGE_MAP()
 
-// CMacroToolDlg ���b�Z�[�W �n���h��
+// CMacroToolDlg メッセージ ハンドラ
 void CMacroToolDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -166,19 +166,19 @@ void CMacroToolDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// �_�C�A���O�ɍŏ����{�^����ǉ�����ꍇ�A�A�C�R����`�悷�邽�߂�
-//  ���̃R�[�h���K�v�ł��B�h�L�������g/�r���[ ���f�����g�� MFC �A�v���P�[�V�����̏ꍇ�A
-//  ����́AFramework �ɂ���Ď����I�ɐݒ肳��܂��B
+// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
+//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
+//  これは、Framework によって自動的に設定されます。
 
 void CMacroToolDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// �N���C�A���g�̎l�p�`�̈���̒���
+		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -186,7 +186,7 @@ void CMacroToolDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R���̕`��
+		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -195,8 +195,8 @@ void CMacroToolDlg::OnPaint()
 	}
 }
 
-// ���[�U�[���ŏ��������E�B���h�E���h���b�O���Ă���Ƃ��ɕ\������J�[�\�����擾���邽�߂ɁA
-//  �V�X�e�������̊֐����Ăяo���܂��B
+// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
+//  システムがこの関数を呼び出します。
 HCURSOR CMacroToolDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -221,9 +221,9 @@ BOOL CMacroToolDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// "�o�[�W�������..." ���j���[���V�X�e�� ���j���[�ɒǉ����܂��B
+	// "バージョン情報..." メニューをシステム メニューに追加します。
 
-	// IDM_ABOUTBOX �́A�V�X�e�� �R�}���h�͈͓̔��ɂȂ���΂Ȃ�܂���B
+	// IDM_ABOUTBOX は、システム コマンドの範囲内になければなりません。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -239,14 +239,14 @@ BOOL CMacroToolDlg::OnInitDialog()
 		}
 	}
 
-	// ���̃_�C�A���O�̃A�C�R����ݒ肵�܂��B�A�v���P�[�V�����̃��C�� �E�B���h�E���_�C�A���O�łȂ��ꍇ�A
-	//  Framework �́A���̐ݒ�������I�ɍs���܂��B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R���̐ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R���̐ݒ�
+	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
+	//  Framework は、この設定を自動的に行います。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
 	Initialize();
 
-	return TRUE;  // �t�H�[�J�X���R���g���[���ɐݒ肵���ꍇ�������ATRUE ��Ԃ��܂��B
+	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
 
@@ -255,18 +255,18 @@ void CMacroToolDlg::Initialize()
 	m_listctl.SetMaxColumnNum(MAXNUM_CLOUMN);
 	m_listctl.EnableSelectRowAll();
 	m_listctl.SetLabel(LABELIDX_NO, LABEL_WIDTH_NO, "No");
-	m_listctl.SetLabel(LABELIDX_EXECUTE, LABEL_WIDTH_EXECUTE, "���s");
-	m_listctl.SetLabel(LABELIDX_SLEEP, LABEL_WIDTH_SLEEP, "�x������");
-	m_listctl.SetLabel(LABELIDX_EVENT, LABEL_WIDTH_EVENT, "�C�x���g");
-	m_listctl.SetLabel(LABELIDX_DETAIL, LABEL_WIDTH_DETAIL, "�ڍאݒ�");
-	m_listctl.SetLabel(LABELIDX_COMMENT, LABEL_WIDTH_COMMENT, "�R�����g");
+	m_listctl.SetLabel(LABELIDX_EXECUTE, LABEL_WIDTH_EXECUTE, "実行");
+	m_listctl.SetLabel(LABELIDX_SLEEP, LABEL_WIDTH_SLEEP, "遅延時間");
+	m_listctl.SetLabel(LABELIDX_EVENT, LABEL_WIDTH_EVENT, "イベント");
+	m_listctl.SetLabel(LABELIDX_DETAIL, LABEL_WIDTH_DETAIL, "詳細設定");
+	m_listctl.SetLabel(LABELIDX_COMMENT, LABEL_WIDTH_COMMENT, "コメント");
 
 	m_listctl.FillRect(LABELIDX_NO, "");
 	//m_listctl.FillRect(LABELIDX_EXECUTE, "");
 	//m_listctl.FillRect(LABELIDX_EVENT, "");
 	//m_listctl.FillRect(LABELIDX_DETAIL, "");
 	//m_listctl.FillRect(LABELIDX_SLEEP, "");
-#ifdef TODO //ListBox�̏����I����Ԃ���肽�����A�I������Ȃ��i�\�������������Ȃ�j
+#ifdef TODO //ListBoxの初期選択状態を作りたいが、選択されない（表示がおかしくなる）
 	//m_listctl.SelectIdx(m_idx);
 #endif
 	m_etKey.DisableCopyAndPaste(TRUE);
@@ -282,7 +282,7 @@ void CMacroToolDlg::Initialize()
 //	SetDlgItemInt(IDET_MOUSE_X, DEF_MOUSE_X_VALUE);
 //	SetDlgItemInt(IDET_MOUSE_Y, DEF_MOUSE_Y_VALUE);
 
-	//�R���{�{�b�N�X
+	//コンボボックス
 	SendDlgItemMessage(IDCB_MOUSE, CB_RESETCONTENT, 0L, 0L);
 	for( int i=0; i<MOUSE_ARRAY_MAX; i++ )
 	{
@@ -627,7 +627,7 @@ void CMacroToolDlg::OnEnChangeRepeatTime()
 void CMacroToolDlg::OnAllclear()
 {
 	RestoreDefault();
-//	RestoreDefault();//�\��
+//	RestoreDefault();//予備
 	UpdateListControl(TRUE);
 	UpdateControl();
 }
@@ -699,7 +699,7 @@ void CMacroToolDlg::ReadFile(CString FileName)
 			case MOUSE_ARRAY_LUP :
 				if ( cnt > 0 )
 				{
-					// �O��LDOWN��������A�O��̖��߂�LCLICK�ɕύX
+					// 前回がLDOWNだったら、前回の命令をLCLICKに変更
 					if ( m_tmpEvent[cnt-1].evMouse.nOpe == MOUSE_ARRAY_LDOWN &&
 							m_tmpEvent[cnt-1].evMouse.pt.x == evt.evMouse.pt.x &&
 							m_tmpEvent[cnt-1].evMouse.pt.y == evt.evMouse.pt.y)
@@ -713,7 +713,7 @@ void CMacroToolDlg::ReadFile(CString FileName)
 			case MOUSE_ARRAY_RUP :
 				if ( cnt > 0 )
 				{
-					// �O��RDOWN��������A�O��̖��߂�RCLICK�ɕύX
+					// 前回がRDOWNだったら、前回の命令をRCLICKに変更
 					if ( m_tmpEvent[cnt-1].evMouse.nOpe == MOUSE_ARRAY_RDOWN &&
 							m_tmpEvent[cnt-1].evMouse.pt.x == evt.evMouse.pt.x &&
 							m_tmpEvent[cnt-1].evMouse.pt.y == evt.evMouse.pt.y)
@@ -882,7 +882,7 @@ BOOL CMacroToolDlg::CheckLogFormat(EVENT evt)
 {
 	BOOL bReturn = TRUE;
 
-	// ���s
+	// 実行
 	if ( ! (EXECUTE_NONE <= evt.nExe && evt.nExe <= EXECUTE_MAX) )
 	{
 		bReturn = FALSE;
@@ -894,7 +894,7 @@ BOOL CMacroToolDlg::CheckLogFormat(EVENT evt)
 		bReturn = FALSE;
 	}
 
-	// Event�iMouse/Key�j
+	// Event（Mouse/Key）
 	if ( ! (EVENT_MOUSE <= evt.nEvent && evt.nEvent <= EVENT_KEY) )
 	{
 		bReturn = FALSE;
@@ -941,7 +941,7 @@ BOOL CMacroToolDlg::CheckLogFormat(EVENT evt)
 void CMacroToolDlg::OnHelp()
 {
 #if 0
-	MessageBox("�w���v�͂���܂���m(_ _)m");
+	MessageBox("ヘルプはありませんm(_ _)m");
 #endif
 
 #if 0
@@ -997,7 +997,7 @@ void CMacroToolDlg::UpdateControl()
 	//sleep
 	UpdateControlSleep();
 
-	//�^�C�g���o�[�ɃX���[�v���Ԃ�\��
+	//タイトルバーにスリープ時間を表示
 	SetTitleBar();
 }
 
@@ -1170,7 +1170,7 @@ void CMacroToolDlg::UpdateListControlExecute(int idx)
 
 	if (  m_tmpEvent[nIdx].nEvent != EVENT_UNDEFINE )
 	{
-		//���s��
+		//実行可否
 		str.Format("%d", m_tmpEvent[nIdx].nExe);
 	}
 	m_listctl.SetItemText(nIdx, SUBITEM_EXECUTE, str);
@@ -1206,7 +1206,7 @@ void CMacroToolDlg::UpdateListControlEvent(int idx)
 
 	if (  m_tmpEvent[nIdx].nEvent != EVENT_UNDEFINE )
 	{
-		//event������
+		//event文字列
 		switch(m_tmpEvent[nIdx].nEvent)
 		{
 		case EVENT_KEY :
@@ -1347,17 +1347,17 @@ void CMacroToolDlg::OnRecord()
 	{
 		CString title;
 
-		title.Format("%s(Record��)",STR_SET_TITLE);
+		title.Format("%s(Record中)",STR_SET_TITLE);
 		SetWindowText(title);
-		GetDlgItem(IDBT_RECORD)->SetWindowText("�L�^�I��");
+		GetDlgItem(IDBT_RECORD)->SetWindowText("記録終了");
 
-		remove(TempFile);	// �t�@�C�������݂��Ă�����폜
+		remove(TempFile);	// ファイルが存在していたら削除
 		StartRecord();
 	}
 	else
 	{
 		SetTitleBar();
-		GetDlgItem(IDBT_RECORD)->SetWindowText("�L�^");
+		GetDlgItem(IDBT_RECORD)->SetWindowText("記録");
 		StopRecord();
 
 		ReadFile(TempFile);
@@ -1366,7 +1366,7 @@ void CMacroToolDlg::OnRecord()
 
 void CMacroToolDlg::StartRecord()
 {
-#if USE_KEY_HOOK // �L�[�{�[�h�͖�����
+#if USE_KEY_HOOK // キーボードは未完成
 	if ( StartKeyHook && StartKeyHook() &&
 		 StartMouseHook && StartMouseHook() )
 #else
@@ -1384,7 +1384,7 @@ void CMacroToolDlg::StartRecord()
 
 void CMacroToolDlg::StopRecord()
 {
-#if USE_KEY_HOOK // �L�[�{�[�h�͖�����
+#if USE_KEY_HOOK // キーボードは未完成
 	if ( StopKeyHook && StopKeyHook()
 		 StopMouseHook && StopMouseHook() )
 #else
@@ -1424,23 +1424,23 @@ BOOL CMacroToolDlg::IsSuccessSetting()
 {
 	if  ( m_p->m_nRepeatNum <= 1 )
 	{
-		/* ���s�񐔂�1��ȉ��͌x���ΏۊO */
+		/* 実行回数が1回以下は警告対象外 */
 		return TRUE;
 	}
 
 	int nMsec = GetTotalTime();
 	if ( nMsec > CHECK_CRISIS_MSEC )
 	{
-		/* 1��̎��s���Ԃ��K�莞�Ԗ����͌x���ΏۊO */
+		/* 1回の実行時間が規定時間未満は警告対象外 */
 		return TRUE;
 	}
 
 	CString str;
-	str.Format("���L���ݒ肳��܂����B�ݒ���������܂����H\n�@�E2��ȏ�̎��s��\n�@�E�P��̎��s���Ԃ�2�b����");
+	str.Format("下記が設定されました。設定を見直しますか？\n　・2回以上の実行回数\n　・１回の実行時間が2秒未満");
 	int ret = MessageBox(str, "Warning", MB_YESNO);
 	if ( ret == IDNO )
 	{
-		/* ���[�U�[����薳���Ɣ��f */
+		/* ユーザーが問題無いと判断 */
 		return TRUE;
 	}
 
@@ -1451,7 +1451,7 @@ void CMacroToolDlg::OnBnClickedOk()
 {
 	if( ! IsSuccessSetting() )
 	{
-		// �ݒ肵����
+		// 設定し直し
 		return;
 	}
 		

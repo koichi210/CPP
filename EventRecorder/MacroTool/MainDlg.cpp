@@ -1,4 +1,4 @@
-// MainDlg.cpp : À‘•ƒtƒ@ƒCƒ‹
+ï»¿// MainDlg.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include <process.h>
@@ -28,7 +28,7 @@ void fnProcKey(EVENTKEY	evKey);
 
 
 
-// CMainDlg ƒ_ƒCƒAƒƒO
+// CMainDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 IMPLEMENT_DYNAMIC(CMainDlg, CDialog)
 
 CMainDlg::CMainDlg(CWnd* pParent /*=NULL*/)
@@ -61,12 +61,12 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CMainDlg ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰
+// CMainDlg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©
 BOOL CMainDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	//‰Šú•\¦
+	//åˆæœŸè¡¨ç¤º
 	m_ver.LoadString(IDS_VERSION);
 	SetWindowText(m_ver);
 
@@ -79,7 +79,7 @@ void CMainDlg::OnSetting()
 	CString str;
 	GetDlgItem(IDET_SAMPLE)->GetWindowText(str);
 
-	//ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğİ’è
+	//ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’è¨­å®š
 #if USER_DIRECTORY
 	char path[MAX_PATH];
 	if ( SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path) == S_OK )
@@ -90,7 +90,7 @@ void CMainDlg::OnSetting()
 	m_fName.SetString(".");
 #endif
 
-	//ƒJƒŒƒ“ƒgƒtƒ@ƒCƒ‹–¼‚ğİ’è
+	//ã‚«ãƒ¬ãƒ³ãƒˆãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¨­å®š
 	m_fName.Append("\\");
 	if ( str.IsEmpty() )
 	{
@@ -205,7 +205,7 @@ UINT ProcThread(LPVOID pParam)
 {
 	sPROCSETTINGS* p=(sPROCSETTINGS*)pParam;
 	CString			tmp;
-#ifdef TODO	//ƒƒ‚ƒŠƒŠ[ƒNGG
+#ifdef TODO	//ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯ï¼›ï¼›
 	CString			str;
 #else
 	char			str[MAX_PATH];
@@ -220,7 +220,7 @@ UINT ProcThread(LPVOID pParam)
 	{
 		for (int j=0; j < MAXNUM_CLOUMN && *p->bpProcFlg; j++)
 		{
-			// ‚±‚êˆÈã’è‹`‚ª‚È‚¢‚Ì‚ÅI—¹
+			// ã“ã‚Œä»¥ä¸Šå®šç¾©ãŒãªã„ã®ã§çµ‚äº†
 			if ( p->strEvent[j].nEvent == EVENT_UNDEFINE )
 			{
 				break;
@@ -228,7 +228,7 @@ UINT ProcThread(LPVOID pParam)
 
 			for (int k=0; k < p->strEvent[j].nExe; k++)
 			{
-#ifdef TODO	//ƒƒ‚ƒŠƒŠ[ƒNGG
+#ifdef TODO	//ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯ï¼›ï¼›
 				str.Format(
 #else
 				sprintf(str,
@@ -242,7 +242,7 @@ UINT ProcThread(LPVOID pParam)
 //					p->strEvent[j].nExe);
 				SetWindowText(p->hWnd, str);
 
-				// sleepŒãA“®ì‚·‚é‘O‚Éƒtƒ‰ƒO‚ğƒ`ƒFƒbƒN
+				// sleepå¾Œã€å‹•ä½œã™ã‚‹å‰ã«ãƒ•ãƒ©ã‚°ã‚’ãƒã‚§ãƒƒã‚¯
 				SleepCnt(p->strEvent[j].sleep, p->bpProcFlg);
 
 				if ( *p->bpProcFlg == FALSE )
@@ -260,7 +260,7 @@ UINT ProcThread(LPVOID pParam)
 				}
 			}
 		}
-		SleepCnt(p->nRepeatTime, p->bpProcFlg);	// ‘S‘Ì‚ğ‘ÎÛ‚Æ‚µ‚½sleepŠÔ
+		SleepCnt(p->nRepeatTime, p->bpProcFlg);	// å…¨ä½“ã‚’å¯¾è±¡ã¨ã—ãŸsleepæ™‚é–“
 	}
 	PostMessage(p->hWnd, WM_ENDPROC, NULL, NULL);
 
@@ -285,10 +285,10 @@ void SleepCnt(int sleep, BOOL *bpProcFlg)
 
 	int cnt = 0;
 
-	// 1•b–¢–‚Ìsleep‚ğ‚±‚±‚Å•â“U
+	// 1ç§’æœªæº€ã®sleepã‚’ã“ã“ã§è£œå¡«
 	Sleep(msec);
 
-	//1•b‚¸‚Âsleep‚µ‚ÄAbpProcfFlg‚ğŒ©‚é
+	//1ç§’ãšã¤sleepã—ã¦ã€bpProcfFlgã‚’è¦‹ã‚‹
 	for(int i=0; i<sec && *bpProcFlg; i++)
 	{
 		evt.FunctionKeyAction(FLICKA_KEY);
@@ -346,7 +346,7 @@ void fnProcKey(EVENTKEY	evKey)
 		// function
 		evt.FunctionKeyAction(VK_FUNCTIONKEY(evKey.keyEx));
 	}
-#ifdef TODO //ƒJ[ƒ\ƒ‹‚ª“®‚©‚È‚¢
+#ifdef TODO //ã‚«ãƒ¼ã‚½ãƒ«ãŒå‹•ã‹ãªã„
 	else if ( KEY_ARRAY_CURSOR_START <= evKey.keyEx && evKey.keyEx <= KEY_ARRAY_CURSOR_END )
 	{
 		// cursol
@@ -355,7 +355,7 @@ void fnProcKey(EVENTKEY	evKey)
 #endif
 	else // if ( evKey.keyEx == KEY_ARRAY_USER )
 	{
-		// ƒL[“ü—Í(a to z)
+		// ã‚­ãƒ¼å…¥åŠ›(a to z)
 		char *key = evKey.key;
 		size_t len = strlen(evKey.key);
 		for(size_t i=0; i<len; i++)
@@ -382,7 +382,7 @@ CString GetControlDetail(EVENT evt)
 {
 	CString str;
 
-	//İ’è•¶š—ñ
+	//è¨­å®šæ–‡å­—åˆ—
 	if ( evt.nEvent == EVENT_KEY )
 	{
 		if ( evt.evKey.keyEx == KEY_ARRAY_USER )

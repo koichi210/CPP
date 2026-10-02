@@ -1,12 +1,12 @@
-
-// Util.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿
+// Util.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #pragma once
 #include "afxwin.h"
 
 
-// ì‹Æ‚ÉWork‚Æ‚µ‚Ä¶¬‚·‚éƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚ÌƒvƒŠƒtƒBƒbƒNƒX
+// ä½œæ¥­æ™‚ã«Workã¨ã—ã¦ç”Ÿæˆã™ã‚‹ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ—ãƒªãƒ•ã‚£ãƒƒã‚¯ã‚¹
 #define TEMP_FILE_PRE_FIX		"DCS"
 
 
@@ -17,26 +17,26 @@ public :
 };
 
 
-// ”ñƒXƒŒƒbƒhÀs
+// éã‚¹ãƒ¬ãƒƒãƒ‰å®Ÿè¡Œ
 UINT ExecuteCommand(LPVOID pParam, CString OutFileName = "");
 
-// ƒXƒŒƒbƒhÀs
+// ã‚¹ãƒ¬ãƒƒãƒ‰å®Ÿè¡Œ
 UINT ExecuteProcess(LPVOID pParam);
 
 void UpdateComboBox(CMyComboBox *CtrlCB);
 
-// Iniæ“¾
+// Iniå–å¾—
 CString GetIniFileParam( CString FileName, CString SectionName, CString KeyName, CString DefaultKeyName = "");
 CString GetIniFileParam( CString FileName, CString SectionName, CString KeyName, int LoopMax, CString DefaultKeyName = "");
 void GetIniFileParam( CString FileName, CString SectionName, CString KeyName, int LoopMax, CMyComboBox *CtrlCB );
 
-// Iniİ’è
+// Iniè¨­å®š
 void SetIniFileParam( CString FileName, CString SectionName, CString KeyName, CString Value);
 void SetIniFileParam( CString FileName, CString SectionName, CString KeyName, int Value);
 void SetIniFileParams( CString FileName, CString SectionName, CString KeyName, CString Value);
 void SetIniFileParams( CString FileName, CString SectionName, CString KeyName, CMyComboBox *CtrlCB);
 
-// •¶š—ñ‘€ì
+// æ–‡å­—åˆ—æ“ä½œ
 CString AppendString(CString Path, int Value);
 CString Append(CString Param1, CString Param2);
 CString GetDriveName(CString FullPath);

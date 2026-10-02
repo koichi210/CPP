@@ -1,4 +1,4 @@
-// MacroToolDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// MacroToolDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 #pragma once
 
 #include "StandardTemplate.h"
@@ -9,9 +9,9 @@
 #define USE_KEY_HOOK	0
 #define DLL_LOG_FNAME	"MacroLog.txt"
 
-#define CHECK_CRISIS_MSEC	(2000)	// –ŒÌ–h~‚Ì‚½‚ßA‹K’èŠÔ‚ğ–‚½‚È‚¢İ’è‚ÍŒx‚ğ•\¦‚·‚é	
+#define CHECK_CRISIS_MSEC	(2000)	// äº‹æ•…é˜²æ­¢ã®ãŸã‚ã€è¦å®šæ™‚é–“ã‚’æº€ãŸãªã„è¨­å®šã¯è­¦å‘Šã‚’è¡¨ç¤ºã™ã‚‹	
 
-// Ini€–Ú–¼
+// Inié …ç›®å
 #define INI_FILE_SECTION_TABLE "TABLE"
 #define INI_FILE_SECTION_COMMON "COMMON"
 
@@ -62,31 +62,31 @@
 #define LABEL_WIDTH_DETAIL		165
 #define LABEL_WIDTH_COMMENT		46
 
-#define STR_TRUE			"›"
-#define STR_FALSE			"~"
-#define STR_MOUSE			"ƒ}ƒEƒX"
-#define STR_KEY				"ƒL["
-#define STR_MOUSE_MOVE		"ˆÚ“®"
-#define STR_MOUSE_LCLICK	"¶ƒNƒŠƒbƒN"
-#define STR_MOUSE_RCLICK	"‰EƒNƒŠƒbƒN"
+#define STR_TRUE			"â—‹"
+#define STR_FALSE			"Ã—"
+#define STR_MOUSE			"ãƒã‚¦ã‚¹"
+#define STR_KEY				"ã‚­ãƒ¼"
+#define STR_MOUSE_MOVE		"ç§»å‹•"
+#define STR_MOUSE_LCLICK	"å·¦ã‚¯ãƒªãƒƒã‚¯"
+#define STR_MOUSE_RCLICK	"å³ã‚¯ãƒªãƒƒã‚¯"
 #define STR_MOUSE_POINT		"%s X[%4d] Y[%4d]"
 #define STR_KEY_FMT			"[%s]"
-#define STR_KEY_SHIFT		"@Shift"
-#define STR_KEY_CTRL		"@Ctrl"
-#define STR_KEY_ALT			"@Alt"
+#define STR_KEY_SHIFT		"ã€€Shift"
+#define STR_KEY_CTRL		"ã€€Ctrl"
+#define STR_KEY_ALT			"ã€€Alt"
 
 #define CONT_NUM			10
 #define STR_LOG_FMT			"%d,%d,%d,%d,%d,%d,%d,%d,%s,%s\n"
 //#define STR_LOG_FMT		"%d,%d,%d,%d,%d,%d,%d,%d,%s %s\n"
 #define STR_SAVE_FNAME		"save.txt"
 #define STR_DLG_FILTER		"Files (*.txt)|*.txt|All Files (*.*)|*.*|"
-#define STR_DLG_TITLE		"ƒtƒ@ƒCƒ‹‚ğ‘I‘ğ"
-#define STR_ERR_FILE_NOT_FOUND	"ƒtƒ@ƒCƒ‹‚ª‚İ‚Â‚©‚è‚Ü‚¹‚ñ m(_ _)m"
-#define STR_ERR_OPEN_FILE	"ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½(err=%d)"
-#define STR_ERR_WRITE		"ƒtƒ@ƒCƒ‹‚Ì•Û‘¶‚É¸”s‚µ‚Ü‚µ‚½"
+#define STR_DLG_TITLE		"ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠ"
+#define STR_ERR_FILE_NOT_FOUND	"ãƒ•ã‚¡ã‚¤ãƒ«ãŒã¿ã¤ã‹ã‚Šã¾ã›ã‚“ m(_ _)m"
+#define STR_ERR_OPEN_FILE	"ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ(err=%d)"
+#define STR_ERR_WRITE		"ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜ã«å¤±æ•—ã—ã¾ã—ãŸ"
 #define STR_NULL			"(null)"
 #define STR_EXT				".txt"
-#define STR_SELECT_LAST_CLOUMN	"ÅIs‚ğ‘I‘ğ‚µ‚Ü‚µ‚½Bˆ—‚ğ’†’f‚µ‚Ü‚·"
+#define STR_SELECT_LAST_CLOUMN	"æœ€çµ‚è¡Œã‚’é¸æŠã—ã¾ã—ãŸã€‚å‡¦ç†ã‚’ä¸­æ–­ã—ã¾ã™"
 
 #define LOGGING_FNAME	"MacroLog.txt"
 
@@ -98,19 +98,19 @@
 #define MOUSE_ARRAY_RDOWN	(4)
 #define MOUSE_ARRAY_RUP		(5)
 #define MOUSE_ARRAY_MOVE	(6)
-const char arMouse[MOUSE_ARRAY_MAX][MAX_PATH] = {"¶ƒNƒŠƒbƒN", "¶DN", "¶UP", "‰EƒNƒŠƒbƒN", "‰EDN", "‰EUP", "ˆÚ“®"};
+const char arMouse[MOUSE_ARRAY_MAX][MAX_PATH] = {"å·¦ã‚¯ãƒªãƒƒã‚¯", "å·¦DN", "å·¦UP", "å³ã‚¯ãƒªãƒƒã‚¯", "å³DN", "å³UP", "ç§»å‹•"};
 
 #define KEY_ARRAY_USER			0
 #define KEY_ARRAY_FUNC_START	(KEY_ARRAY_USER + 1)			//  1
 #define KEY_ARRAY_FUNC_END		(KEY_ARRAY_FUNC_START + 11)		// 12
-#ifdef TODO //ƒJ[ƒ\ƒ‹‚ª“®‚©‚È‚¢
+#ifdef TODO //ã‚«ãƒ¼ã‚½ãƒ«ãŒå‹•ã‹ãªã„
 #define KEY_ARRAY_CURSOR_START	(KEY_ARRAY_FUNC_END + 1)		// 13
 #define KEY_ARRAY_CURSOR_END	(KEY_ARRAY_CURSOR_START + 3)	// 16
 #define KEY_ARRAY_MAX			(KEY_ARRAY_CURSOR_END + 1)		// 17
-const char arKey[KEY_ARRAY_MAX][MAX_PATH] = {"‰E‹L", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "©", "ª", "¨", "«"};
+const char arKey[KEY_ARRAY_MAX][MAX_PATH] = {"å³è¨˜", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "â†", "â†‘", "â†’", "â†“"};
 #else
 #define KEY_ARRAY_MAX			(KEY_ARRAY_FUNC_END + 1)		// 13
-const char arKey[KEY_ARRAY_MAX][MAX_PATH] = {"ã‹L", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"};
+const char arKey[KEY_ARRAY_MAX][MAX_PATH] = {"ä¸Šè¨˜", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"};
 #endif
 
 #define HOUR_MAX	24
@@ -137,19 +137,19 @@ typedef struct{
 	int nMsec;
 } TIME;
 
-// CMacroToolDlg ƒ_ƒCƒAƒƒO
+// CMacroToolDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class CMacroToolDlg : public CDialog
 {
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 public:
-	CMacroToolDlg(CWnd* pParent = NULL, CString fName = "");	// •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	virtual ~CMacroToolDlg();									// ƒfƒXƒgƒ‰ƒNƒ^
+	CMacroToolDlg(CWnd* pParent = NULL, CString fName = "");	// æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	virtual ~CMacroToolDlg();									// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	enum { IDD = IDD_MACROTOOL_DIALOG };
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 
 
-// ƒƒ“ƒo•Ï”
+// ãƒ¡ãƒ³ãƒå¤‰æ•°
 protected:
 	HICON		m_hIcon;
 	CMainDlg	*m_p;
@@ -172,7 +172,7 @@ protected:
 	DebugModeFUNC		* DebugMode;
 	HINSTANCE m_hDLLInst;
 
-//Šù‘¶ƒƒ“ƒoŠÖ”
+//æ—¢å­˜ãƒ¡ãƒ³ãƒé–¢æ•°
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -185,11 +185,11 @@ protected:
 	afx_msg void OnBnClickedOk();
 	DECLARE_MESSAGE_MAP()
 
-//ƒƒ“ƒoŠÖ”
+//ãƒ¡ãƒ³ãƒé–¢æ•°
 	void StartRecord();
 	void StopRecord();
 
-//ƒƒ“ƒoŠÖ”
+//ãƒ¡ãƒ³ãƒé–¢æ•°
 public:
 	virtual BOOL OnInitDialog();
 	void Initialize();
@@ -226,14 +226,14 @@ public:
 	BOOL CheckLogFormat(EVENT evt);
 	void OnHelp();
 
-	// İ’è’lƒRƒ“ƒgƒ[ƒ‹‚ÌUpdate
+	// è¨­å®šå€¤ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®Update
 	void UpdateControl();
 	void UpdateControlExecute();
 	void UpdateControlEvent();
 	void UpdateControlDetail();
 	void UpdateControlSleep();
 
-	// ƒŠƒXƒgƒRƒ“ƒgƒ[ƒ‹‚ÌUpdate
+	// ãƒªã‚¹ãƒˆã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®Update
 	void UpdateListControl(BOOL bAll = FALSE);
 	void UpdateListControlExecute(int idx = CURRENT_IDX);
 	void UpdateListControlSleep(int idx = CURRENT_IDX);

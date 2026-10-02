@@ -1,5 +1,5 @@
-
-// Util.cpp : À‘•ƒtƒ@ƒCƒ‹
+ï»¿
+// Util.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 #include "stdafx.h"
 #include "Util.h"
@@ -15,7 +15,7 @@ CString CMyComboBox::GetWindowText()
 
 CString CreateTempFile()
 {
-	// ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚ğ¶¬
+	// ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆ
 	char TempDir[MAX_PATH];
 	char TempName[MAX_PATH];
 	CString TempPathName;
@@ -85,12 +85,12 @@ void UpdateComboBox(CMyComboBox *CtrlCB)
 		}
 	}
 
-	// ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚É‚È‚¢‚Æfor•¶‚ğ”²‚¯‚é
+	// ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«ãªã„ã¨foræ–‡ã‚’æŠœã‘ã‚‹
 	CtrlCB->AddString(CtrlCB->GetWindowText());
 	CtrlCB->SetCurSel(CtrlCB->GetCount() - 1);
 }
 
-// Iniæ“¾ //////////////////////////////////////////////////////////////////
+// Iniå–å¾— //////////////////////////////////////////////////////////////////
 CString GetIniFileParam( CString FileName, CString SectionName, CString KeyName, CString DefaultKeyName)
 {
 	char Value[MAX_PATH];
@@ -129,7 +129,7 @@ void GetIniFileParam( CString FileName, CString SectionName, CString KeyName, in
 	}
 }
 
-// Iniİ’è //////////////////////////////////////////////////////////////////
+// Iniè¨­å®š //////////////////////////////////////////////////////////////////
 void SetIniFileParam( CString FileName, CString SectionName, CString KeyName, CString Value)
 {
 	WritePrivateProfileString(SectionName, KeyName, Value, FileName);
@@ -152,7 +152,7 @@ void SetIniFileParams( CString FileName, CString SectionName, CString KeyName, C
 	while (resToken != _T(""))
 	{
 		Key.Format("%s[%d]", KeyName, cnt);
-		SetIniFileParam(FileName, SectionName, Key, resToken);	// TODO:•s—v‚È‰üs‚ª“ü‚Á‚Ä‚¢‚é
+		SetIniFileParam(FileName, SectionName, Key, resToken);	// TODO:ä¸è¦ãªæ”¹è¡ŒãŒå…¥ã£ã¦ã„ã‚‹
 		resToken = Value.Tokenize(_T("\r\n"), curPos);
 		cnt++;
 	}
@@ -170,7 +170,7 @@ void SetIniFileParams( CString FileName, CString SectionName, CString KeyName, C
 	}
 }
 
-// •¶š—ñ‘€ì ////////////////////////////////////////////////////////////////////
+// æ–‡å­—åˆ—æ“ä½œ ////////////////////////////////////////////////////////////////////
 CString AppendString(CString Path, int Value)
 {
 	CString Append;
