@@ -144,7 +144,7 @@ public:
 	INT_PTR	m_list_cnt;		// 処理対象のファイル数
 	BOOL	m_ignore_alert;	// 警告を無視する
 	BOOL	m_comp;			// 大文字小文字を区別する
-	CString m_file_name[FILE_MAX];
+	CStringArray m_file_name;
 	char	m_dir[STR_BUFF];
 	char	m_name1[STR_BUFF];
 	char	m_name2[STR_BUFF];

@@ -288,8 +288,7 @@ void CFname_exchangeDlg::OnGetFile()
 
 			if( cFind.IsDirectory() )
 			{
-				strFolder = cFind.GetFilePath();
-				strFolder.Delete(0, szPathLength);
+				strFolder = cFind.GetFileName();
 				if ( (strcmp(strFolder, ".") == 0 ) ||
 					 (strcmp(strFolder, "..") == 0 ) )
 				{
@@ -425,6 +424,18 @@ void CFname_exchangeDlg::OnExecute()
 		return;
 	}
 
+	//復元情報が上限に達していたら、いちばん古いものを捨てる
+	if ( m_undo.curnum >= UNDO_MAX )
+	{
+		for ( int i=1; i < UNDO_MAX; i++ )
+		{
+			m_undo.exch[i-1] = m_undo.exch[i];
+		}
+		m_undo.curnum--;
+	}
+	//復元した後の再実行で、前回の復元情報が残らないようにする
+	m_undo.exch[m_undo.curnum].num = 0;
+
 	//ファイル名変換処理
 	ExChangeProc();
 
@@ -517,6 +528,7 @@ void CFname_exchangeDlg::Refresh()
 		break ;
 	default :
 		break ;
+	}
 
 	// 復元
 	bEnable = FALSE;
@@ -525,7 +537,6 @@ void CFname_exchangeDlg::Refresh()
 		bEnable = TRUE;
 	}
 	GetDlgItem(IDBT_UNDO)->EnableWindow(bEnable);
-	}
 }
 
 void CFname_exchangeDlg::GetFileList() 
@@ -539,6 +550,7 @@ void CFname_exchangeDlg::GetFileList()
 	m_list.GetSelItems((int) m_list_cnt, selections.GetData());
 
 	m_list_cnt = selections.GetSize();
+	m_file_name.SetSize(m_list_cnt);
 
 	for (int i=0; i < m_list_cnt; i++)
 	{
@@ -614,7 +626,8 @@ void CFname_exchangeDlg::ExChangeProc()
 		m_oname = m_dir;
 		AppendPath(&m_oname, m_file_name[i]);
 
-		//新しいファイル名取得
+		//新しいファイル名取得（入力エラーなどで中断したら空のまま）
+		m_nname.Empty();
 		switch(m_type)
 		{
 		case ENUM:		EnumProc();		break;	// 通し番号付加
@@ -626,6 +639,11 @@ void CFname_exchangeDlg::ExChangeProc()
 		case DEL:		DelProc();		break;	// 文字列削除
 		case REP:		RepProc();		break;	// 文字列置換
 		default :		break;
+		}
+
+		if ( m_nname.IsEmpty() )
+		{
+			continue;
 		}
 
 		//ファイル名変換
@@ -929,7 +947,8 @@ void CFname_exchangeDlg::UndoProc()
 	}
 
 	m_undo.curnum--;
-	for(int i=0; i < m_undo.exch[m_undo.curnum].num; i++)
+	// 同じ名前を順に使い回した変換（例: 1→0, 2→1）も戻せるよう、後ろから戻す
+	for(int i=m_undo.exch[m_undo.curnum].num - 1; i >= 0; i--)
 	{
 		oname = m_undo.exch[m_undo.curnum].ofname[i];
 		nname = m_undo.exch[m_undo.curnum].nfname[i];
@@ -971,10 +990,10 @@ void CFname_exchangeDlg::MoveFileProc()
 			int unum = m_undo.curnum;	// 実行ボタン押した数
 			int fnum = m_undo.exch[m_undo.curnum].num; // 1度に変更したファイルの数
 
-			m_undo.exch[unum].ofname[fnum] = m_oname;
-			m_undo.exch[unum].nfname[fnum] = m_nname;
-			if ( m_undo.exch[m_undo.curnum].num < FILE_MAX )
+			if ( fnum < FILE_MAX )
 			{
+				m_undo.exch[unum].ofname[fnum] = m_oname;
+				m_undo.exch[unum].nfname[fnum] = m_nname;
 				m_undo.exch[unum].num++;
 			}
 			else
