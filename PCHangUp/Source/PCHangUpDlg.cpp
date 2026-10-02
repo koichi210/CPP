@@ -1,5 +1,5 @@
-
-// PCHangUpDlg.cpp : ŽÀ‘•ƒtƒ@ƒCƒ‹
+ï»¿
+// PCHangUpDlg.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "stdafx.h"
@@ -11,11 +11,11 @@
 #define new DEBUG_NEW
 #endif
 
-// ******** ‚±‚±‚ð—LŒø‚É‚·‚é‚ÆPC‚ªƒnƒ“ƒO‚µ‚Ü‚·B ********
+// ******** ã“ã“ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã¨PCãŒãƒãƒ³ã‚°ã—ã¾ã™ã€‚ ********
 //#define PC_HANG_UP	
 
 
-// CPCHangUpDlg ƒ_ƒCƒAƒƒO
+// CPCHangUpDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 CPCHangUpDlg::CPCHangUpDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CPCHangUpDlg::IDD, pParent)
 {
@@ -34,35 +34,35 @@ BEGIN_MESSAGE_MAP(CPCHangUpDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CPCHangUpDlg ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰[
+// CPCHangUpDlg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
 
 BOOL CPCHangUpDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ‚±‚Ìƒ_ƒCƒAƒƒO‚ÌƒAƒCƒRƒ“‚ðÝ’è‚µ‚Ü‚·BƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒƒCƒ“ ƒEƒBƒ“ƒhƒE‚ªƒ_ƒCƒAƒƒO‚Å‚È‚¢ê‡A
-	//  Framework ‚ÍA‚±‚ÌÝ’è‚ðŽ©“®“I‚És‚¢‚Ü‚·B
-	SetIcon(m_hIcon, TRUE);			// ‘å‚«‚¢ƒAƒCƒRƒ“‚ÌÝ’è
-	SetIcon(m_hIcon, FALSE);		// ¬‚³‚¢ƒAƒCƒRƒ“‚ÌÝ’è
+	// ã“ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®šã—ã¾ã™ã€‚ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ¡ã‚¤ãƒ³ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã§ãªã„å ´åˆã€
+	//  Framework ã¯ã€ã“ã®è¨­å®šã‚’è‡ªå‹•çš„ã«è¡Œã„ã¾ã™ã€‚
+	SetIcon(m_hIcon, TRUE);			// å¤§ãã„ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
+	SetIcon(m_hIcon, FALSE);		// å°ã•ã„ã‚¢ã‚¤ã‚³ãƒ³ã®è¨­å®š
 
-	// TODO: ‰Šú‰»‚ð‚±‚±‚É’Ç‰Á‚µ‚Ü‚·B
+	// TODO: åˆæœŸåŒ–ã‚’ã“ã“ã«è¿½åŠ ã—ã¾ã™ã€‚
 
-	return TRUE;  // ƒtƒH[ƒJƒX‚ðƒRƒ“ƒgƒ[ƒ‹‚ÉÝ’è‚µ‚½ê‡‚ðœ‚«ATRUE ‚ð•Ô‚µ‚Ü‚·B
+	return TRUE;  // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«è¨­å®šã—ãŸå ´åˆã‚’é™¤ãã€TRUE ã‚’è¿”ã—ã¾ã™ã€‚
 }
 
-// ƒ_ƒCƒAƒƒO‚ÉÅ¬‰»ƒ{ƒ^ƒ“‚ð’Ç‰Á‚·‚éê‡AƒAƒCƒRƒ“‚ð•`‰æ‚·‚é‚½‚ß‚Ì
-//  ‰º‚ÌƒR[ƒh‚ª•K—v‚Å‚·BƒhƒLƒ…ƒƒ“ƒg/ƒrƒ…[ ƒ‚ƒfƒ‹‚ðŽg‚¤ MFC ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìê‡A
-//  ‚±‚ê‚ÍAFramework ‚É‚æ‚Á‚ÄŽ©“®“I‚ÉÝ’è‚³‚ê‚Ü‚·B
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã«æœ€å°åŒ–ãƒœã‚¿ãƒ³ã‚’è¿½åŠ ã™ã‚‹å ´åˆã€ã‚¢ã‚¤ã‚³ãƒ³ã‚’æç”»ã™ã‚‹ãŸã‚ã®
+//  ä¸‹ã®ã‚³ãƒ¼ãƒ‰ãŒå¿…è¦ã§ã™ã€‚ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ/ãƒ“ãƒ¥ãƒ¼ ãƒ¢ãƒ‡ãƒ«ã‚’ä½¿ã† MFC ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®å ´åˆã€
+//  ã“ã‚Œã¯ã€Framework ã«ã‚ˆã£ã¦è‡ªå‹•çš„ã«è¨­å®šã•ã‚Œã¾ã™ã€‚
 
 void CPCHangUpDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // •`‰æ‚ÌƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
+		CPaintDC dc(this); // æç”»ã®ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// ƒNƒ‰ƒCƒAƒ“ƒg‚ÌŽlŠpŒ`—Ìˆæ“à‚Ì’†‰›
+		// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®å››è§’å½¢é ˜åŸŸå†…ã®ä¸­å¤®
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -70,7 +70,7 @@ void CPCHangUpDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ƒAƒCƒRƒ“‚Ì•`‰æ
+		// ã‚¢ã‚¤ã‚³ãƒ³ã®æç”»
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -79,8 +79,8 @@ void CPCHangUpDlg::OnPaint()
 	}
 }
 
-// ƒ†[ƒU[‚ªÅ¬‰»‚µ‚½ƒEƒBƒ“ƒhƒE‚ðƒhƒ‰ƒbƒO‚µ‚Ä‚¢‚é‚Æ‚«‚É•\Ž¦‚·‚éƒJ[ƒ\ƒ‹‚ðŽæ“¾‚·‚é‚½‚ß‚ÉA
-//  ƒVƒXƒeƒ€‚ª‚±‚ÌŠÖ”‚ðŒÄ‚Ño‚µ‚Ü‚·B
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒæœ€å°åŒ–ã—ãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ãƒ‰ãƒ©ãƒƒã‚°ã—ã¦ã„ã‚‹ã¨ãã«è¡¨ç¤ºã™ã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚’å–å¾—ã™ã‚‹ãŸã‚ã«ã€
+//  ã‚·ã‚¹ãƒ†ãƒ ãŒã“ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™ã€‚
 HCURSOR CPCHangUpDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -98,11 +98,11 @@ void CPCHangUpDlg::OnBnClickedButton1()
 
 	if ( bExec ) 
 	{
-		MessageBox("PC‚ªƒnƒ“ƒO‚µ‚Ü‚·");
+		MessageBox("PCãŒãƒãƒ³ã‚°ã—ã¾ã™");
 	}
 	else
 	{
-		MessageBox("PC‚ðƒnƒ“ƒO‚³‚¹‚éê‡A‰º‹Lƒ}ƒNƒ‚ð—LŒø‚É‚µ‚Ä‚­‚¾‚³‚¢\n   PC_HANG_UP");
+		MessageBox("PCã‚’ãƒãƒ³ã‚°ã•ã›ã‚‹å ´åˆã€ä¸‹è¨˜ãƒžã‚¯ãƒ­ã‚’æœ‰åŠ¹ã«ã—ã¦ãã ã•ã„\n   PC_HANG_UP");
 	}
 
 	while ( bExec )
@@ -113,7 +113,7 @@ void CPCHangUpDlg::OnBnClickedButton1()
 
 UINT ProcThread(LPVOID pParam)
 {
-	// ‚±‚±‚ªƒXƒŒƒbƒh‚ÅŽÀs‚³‚ê‚éˆ—
-	// d‚¢ˆ—‚ð‘‚¢‚½‚çPC•‰‰×‚ª‘‘å‚µ‚Ä‚¢‚­
+	// ã“ã“ãŒã‚¹ãƒ¬ãƒƒãƒ‰ã§å®Ÿè¡Œã•ã‚Œã‚‹å‡¦ç†
+	// é‡ã„å‡¦ç†ã‚’æ›¸ã„ãŸã‚‰PCè² è·ãŒå¢—å¤§ã—ã¦ã„ã
 	return TRUE;
 }
