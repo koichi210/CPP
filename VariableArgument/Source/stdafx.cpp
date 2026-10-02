@@ -1,7 +1,7 @@
-
-// stdafx.cpp : �W���C���N���[�h VariableArgument.pch �݂̂�
-// �܂ރ\�[�X �t�@�C���́A�v���R���p�C���ς݃w�b�_�[�ɂȂ�܂��B
-// stdafx.obj �ɂ̓v���R���p�C�����ꂽ�^��񂪊܂܂�܂��B
+﻿
+// stdafx.cpp : 標準インクルード VariableArgument.pch のみを
+// 含むソース ファイルは、プリコンパイル済みヘッダーになります。
+// stdafx.obj にはプリコンパイルされた型情報が含まれます。
 
 #include "stdafx.h"
 
