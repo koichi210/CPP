@@ -43,9 +43,6 @@
     <None Include="res\JointMovie.ico">
       <Filter>リソース ファイル</Filter>
     </None>
-    <None Include="res\JointMovie.rc2">
-      <Filter>リソース ファイル</Filter>
-    </None>
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>

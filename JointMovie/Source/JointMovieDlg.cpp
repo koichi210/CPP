@@ -1,7 +1,5 @@
-﻿// JointMovieDlg.cpp : 実装ファイル
-//
+﻿// JointMovieDlg.cpp : メインダイアログ
 
-#include <afxtempl.h>
 #include "stdafx.h"
 #include "JointMovie.h"
 #include "JointMovieDlg.h"
@@ -10,84 +8,44 @@
 #define new DEBUG_NEW
 #endif
 
-
-// アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
-
-class CAboutDlg : public CDialog
+namespace
 {
-public:
-	CAboutDlg();
+	// 入力ファイル欄の数（IDC_INPUTFILE1 から連番）
+	constexpr int kInputFileCount = 8;
 
-// ダイアログ データ
-	enum { IDD = IDD_ABOUTBOX };
-
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
-
-// 実装
-protected:
-	DECLARE_MESSAGE_MAP()
-};
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
-{
+	// バージョン情報ダイアログ（システムメニューから開く）
+	class CAboutDlg : public CDialog
+	{
+	public:
+		CAboutDlg() : CDialog(IDD_ABOUTBOX) {}
+	};
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-END_MESSAGE_MAP()
-
-
-// CJointMovieDlg ダイアログ
-
-
-CJointMovieDlg::CJointMovieDlg(CWnd* pParent /*=NULL*/)
+CJointMovieDlg::CJointMovieDlg(CWnd* pParent /*=nullptr*/)
 	: CDialog(CJointMovieDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-}
-
-void CJointMovieDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CJointMovieDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	//}}AFX_MSG_MAP
-	ON_BN_CLICKED(IDC_OUT_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_IN1_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_IN2_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_IN3_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_IN4_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_IN5_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_IN6_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_IN7_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_IN8_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_EXECUTE, OnExecute)
+	ON_CONTROL_RANGE(BN_CLICKED, IDC_OUT_BROWSE, IDC_IN8_BROWSE, &CJointMovieDlg::OnBrowse)
+	ON_BN_CLICKED(IDC_EXECUTE, &CJointMovieDlg::OnExecute)
 END_MESSAGE_MAP()
-
-
-// CJointMovieDlg メッセージ ハンドラ
 
 BOOL CJointMovieDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// "バージョン情報..." メニューをシステム メニューに追加します。
-
-	// IDM_ABOUTBOX は、システム コマンドの範囲内になければなりません。
+	// システムメニューに「バージョン情報」を追加する
+	// （IDM_ABOUTBOX はシステムコマンドの範囲内でなければならない）
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
+	if (pSysMenu != nullptr)
 	{
 		CString strAboutMenu;
 		strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -98,14 +56,10 @@ BOOL CJointMovieDlg::OnInitDialog()
 		}
 	}
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
 void CJointMovieDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -121,27 +75,22 @@ void CJointMovieDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
 void CJointMovieDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int cxIcon = GetSystemMetrics(SM_CXICON);
+		const int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - cxIcon + 1) / 2;
+		const int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -150,74 +99,64 @@ void CJointMovieDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CJointMovieDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-void CJointMovieDlg::OnBrowse()
+// 「参照」ボタン：選んだファイル名を対応する入力欄へ設定する
+void CJointMovieDlg::OnBrowse(UINT nID)
 {
-	const MSG *pMsg = GetCurrentMessage();
+	const int editId = (nID == IDC_OUT_BROWSE)
+		? IDC_OUTPUTFILE
+		: IDC_INPUTFILE1 + static_cast<int>(nID - IDC_IN1_BROWSE);
 
-	if ( pMsg )
+	TCHAR fileNames[MAX_PATH] = {};
+	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT,
+		_T("動画（*.mpg; *.mpeg;）|*.mpg; *.mpeg;|すべてのﾌｧｲﾙ （*.*）|*.*||"), this);
+	dlg.GetOFN().lpstrFile = fileNames;
+	dlg.GetOFN().nMaxFile = _countof(fileNames);
+	if (dlg.DoModal() == IDOK)
 	{
-		CString	strFileType;
-		char	szFileNames[MAX_PATH]="\0";
-		int		idCtrl = LOWORD(pMsg->wParam);
-		int		idxCtrl = idCtrl - IDC_IN1_BROWSE;	// オフセット取得
-
-		idxCtrl += IDC_INPUTFILE1;	// 設定するエディットコントロールIDを算出
-
-		strFileType.Format("動画（*.mpg; *.mpeg;）|*.mpg; *.mpeg;|すべてのﾌｧｲﾙ （*.*）|*.*||");
-		CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT, strFileType, this);
-		dlg.GetOFN().lpstrFile = szFileNames;
-		dlg.GetOFN().nMaxFile = sizeof(szFileNames) / sizeof(char);
-		if ( dlg.DoModal() == IDOK )
-		{
-			SetDlgItemText(idxCtrl, szFileNames);
-		}
+		SetDlgItemText(editId, fileNames);
 	}
 }
 
-
+// 「実行」ボタン：copy /B 入力1+入力2+... 出力 で連結する（空欄の入力は飛ばす）
 void CJointMovieDlg::OnExecute()
 {
-	CString org_fname;
-	CString new_fname;
-	CString tmp;
-	BOOL rt = FALSE;
+	CString outputFile;
+	GetDlgItemText(IDC_OUTPUTFILE, outputFile);
 
-	GetDlgItem(IDC_OUTPUTFILE)->GetWindowText(new_fname);
-	for(int i=0;i < GROUP_MAX;i++)
+	CString inputFiles;
+	for (int i = 0; i < kInputFileCount; i++)
 	{
-		GetDlgItem(IDC_INPUTFILE1 + i)->GetWindowText(tmp);
-		if ( tmp != "" )
+		CString file;
+		GetDlgItemText(IDC_INPUTFILE1 + i, file);
+		if (file.IsEmpty())
 		{
-			if ( org_fname != "" )
-			{
-				org_fname += "+";
-			}
-			// 空白を含むパスでも copy に1つの引数として渡るよう引用符で囲む
-			org_fname += "\"" + tmp + "\"";
+			continue;
 		}
+		if (!inputFiles.IsEmpty())
+		{
+			inputFiles += _T("+");
+		}
+		// 空白を含むパスでも copy に1つの引数として渡るよう引用符で囲む
+		inputFiles += _T("\"") + file + _T("\"");
 	}
 
-	if ( new_fname == "" )
+	if (outputFile.IsEmpty())
 	{
-		MessageBox("結合先ファイル名が不正");
+		MessageBox(_T("結合先ファイル名が不正"));
 	}
-	else if ( org_fname == "" )
+	else if (inputFiles.IsEmpty())
 	{
-		MessageBox("元ファイル名が不正");
+		MessageBox(_T("元ファイル名が不正"));
 	}
 	else
 	{
 		CString command;
-
-		command.Format("copy /B /-Y %s \"%s\"", (LPCTSTR)org_fname, (LPCTSTR)new_fname);
-		rt = system(command);
+		command.Format(_T("copy /B /-Y %s \"%s\""), static_cast<LPCTSTR>(inputFiles), static_cast<LPCTSTR>(outputFile));
+		_tsystem(command);
 	}
 }
