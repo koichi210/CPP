@@ -1,32 +1,20 @@
-﻿
-// MotionCaptureDlg.h : ヘッダー ファイル
-//
+﻿// MotionCaptureDlg.h : メインダイアログ
 
 #pragma once
-#include <vfw.h>
+
 #include "ManageAvi.h"
 
-
-// CMotionCaptureDlg ダイアログ
 class CMotionCaptureDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CMotionCaptureDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	CMotionCaptureDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_MOTIONCAPTURE_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedRecord();
@@ -35,29 +23,26 @@ protected:
 	afx_msg void OnBnClickedOk();
 	DECLARE_MESSAGE_MAP()
 
-public :
-	CManageAvi m_Avi;
+private:
+	HICON		m_hIcon;
+	CManageAvi	m_avi;
 
-	// GUI設定[ファイル名]
-	CString m_SaveFilename;
+	// 画面の設定値
+	CString	m_saveFilename{ _T("c:\\ScreenCapture.avi") };
 
-	// GUI設定[記録]
-	int m_FrameRate;
-	UINT m_TimeoutSec;
-	UINT m_SkipFrame;
+	int		m_frameRate = 20;
+	UINT	m_timeoutSec = 10;
+	UINT	m_skipFrame = 0;
 
-	// GUI設定[Capt]
-	int m_CaptRectX;
-	int m_CaptRectY;
-	int m_CaptRectWidth;
-	int m_CaptRectHeight;
-	UINT m_BitmapBpp;		// 0,1,4,8,16,24,32 (0 is implied by the JPEG or PNG format)
+	int		m_captRectX = 0;
+	int		m_captRectY = 0;
+	int		m_captRectWidth = 1920;
+	int		m_captRectHeight = 1080;
+	UINT	m_bitmapBpp = 24;		// 0,1,4,8,16,24,32 (0 is implied by the JPEG or PNG format)
 
-	// GUI設定[Resize]
-	int m_ResizeRectWidth;
-	int m_ResizeRectHeight;
-	BOOL m_ResizeEnable;
+	int		m_resizeRectWidth = 1024;
+	int		m_resizeRectHeight = 768;
+	BOOL	m_bResize = FALSE;
 
-	// GUI設定[マウスポインタ]
-	BOOL m_MousePointRec;
+	BOOL	m_bMousePointRec = TRUE;
 };

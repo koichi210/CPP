@@ -1,108 +1,69 @@
-﻿
-// MotionCaptureDlg.cpp : 実装ファイル
-//
+﻿// MotionCaptureDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "afxdialogex.h"
 #include "MotionCapture.h"
 #include "MotionCaptureDlg.h"
 #include "SampleCaptAreaDlg.h"
-#include "ManageAvi.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-// CMotionCaptureDlg ダイアログ
-CMotionCaptureDlg::CMotionCaptureDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CMotionCaptureDlg::IDD, pParent)
-	, m_ResizeRectWidth(0)
-	, m_ResizeRectHeight(0)
-	, m_ResizeEnable(FALSE)
-	, m_MousePointRec(FALSE)
-	, m_SkipFrame(0)
+CMotionCaptureDlg::CMotionCaptureDlg(CWnd* pParent)
+	: CDialogEx(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-
-	// 外部から指定するパラメータ
-	m_SaveFilename = "c:\\ScreenCapture.avi";
-	m_MousePointRec = TRUE;
-
-	m_FrameRate = 20;
-	m_TimeoutSec = 10;
-	m_SkipFrame = 0;
-
-	m_CaptRectX = 0;
-	m_CaptRectY = 0;
-	m_CaptRectWidth = 1920;
-	m_CaptRectHeight = 1080;
-	m_BitmapBpp = 24;
-
-	m_ResizeEnable = FALSE;
-	m_ResizeRectWidth = 1024;
-	m_ResizeRectHeight = 768;
-
 }
 
 void CMotionCaptureDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDET_SAVE_FILENAME, m_SaveFilename);
-	DDX_Text(pDX, IDET_CAPT_RECT_X, m_CaptRectX);
-	DDX_Text(pDX, IDET_CAPT_RECT_Y, m_CaptRectY);
-	DDX_Text(pDX, IDET_CAPT_RECT_WIDTH, m_CaptRectWidth);
-	DDX_Text(pDX, IDET_CAPT_RECT_HEIGHT, m_CaptRectHeight);
-	DDX_Text(pDX, IDET_CAPT_BPP, m_BitmapBpp);
-	DDV_MinMaxInt(pDX, m_BitmapBpp, 0, 32);
-	DDX_Text(pDX, IDET_CAPT_FPS, m_FrameRate);
-	DDV_MinMaxInt(pDX, m_FrameRate, 1, 120);
-	DDX_Text(pDX, IDET_TIMEOUT_SEC, m_TimeoutSec);
-	DDX_Text(pDX, IDET_SKIP_FRAME, m_SkipFrame);
-	DDX_Text(pDX, IDET_RESIZE_RECT_WIDTH, m_ResizeRectWidth);
-	DDX_Text(pDX, IDET_RESIZE_RECT_HEIGHT, m_ResizeRectHeight);
-	DDX_Check(pDX, IDCH_RESIZE, m_ResizeEnable);
-	DDX_Check(pDX, IDCH_MOUSE_POINT_REC, m_MousePointRec);
+	DDX_Text(pDX, IDET_SAVE_FILENAME, m_saveFilename);
+	DDX_Text(pDX, IDET_CAPT_RECT_X, m_captRectX);
+	DDX_Text(pDX, IDET_CAPT_RECT_Y, m_captRectY);
+	DDX_Text(pDX, IDET_CAPT_RECT_WIDTH, m_captRectWidth);
+	DDX_Text(pDX, IDET_CAPT_RECT_HEIGHT, m_captRectHeight);
+	DDX_Text(pDX, IDET_CAPT_BPP, m_bitmapBpp);
+	DDV_MinMaxInt(pDX, m_bitmapBpp, 0, 32);
+	DDX_Text(pDX, IDET_CAPT_FPS, m_frameRate);
+	DDV_MinMaxInt(pDX, m_frameRate, 1, 120);
+	DDX_Text(pDX, IDET_TIMEOUT_SEC, m_timeoutSec);
+	DDX_Text(pDX, IDET_SKIP_FRAME, m_skipFrame);
+	DDX_Text(pDX, IDET_RESIZE_RECT_WIDTH, m_resizeRectWidth);
+	DDX_Text(pDX, IDET_RESIZE_RECT_HEIGHT, m_resizeRectHeight);
+	DDX_Check(pDX, IDCH_RESIZE, m_bResize);
+	DDX_Check(pDX, IDCH_MOUSE_POINT_REC, m_bMousePointRec);
 }
 
 BEGIN_MESSAGE_MAP(CMotionCaptureDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_RECORD, OnBnClickedRecord)
-	ON_BN_CLICKED(IDBT_RECORD_STOP, OnBnClickedRecordStop)
-	ON_BN_CLICKED(IDBT_CAPT_AREA_SAMPLE, OnBnClickedSampleCaptArea)
-	ON_BN_CLICKED(IDOK, OnBnClickedOk)
+	ON_BN_CLICKED(IDBT_RECORD, &CMotionCaptureDlg::OnBnClickedRecord)
+	ON_BN_CLICKED(IDBT_RECORD_STOP, &CMotionCaptureDlg::OnBnClickedRecordStop)
+	ON_BN_CLICKED(IDBT_CAPT_AREA_SAMPLE, &CMotionCaptureDlg::OnBnClickedSampleCaptArea)
+	ON_BN_CLICKED(IDOK, &CMotionCaptureDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
-
-
-// CMotionCaptureDlg メッセージ ハンドラー
 
 BOOL CMotionCaptureDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログがメインウィンドウのため自前で描く）
 void CMotionCaptureDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -110,7 +71,6 @@ void CMotionCaptureDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -119,74 +79,62 @@ void CMotionCaptureDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CMotionCaptureDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+// Enter キーでダイアログが閉じないよう、何もしない
 void CMotionCaptureDlg::OnBnClickedOk()
 {
-	// TODO: ここにコントロール通知ハンドラー コードを追加します。
-	//CDialogEx::OnOK();
 }
 
 void CMotionCaptureDlg::OnBnClickedRecord()
 {
-	if (m_Avi.IsExecution() )
+	if (m_avi.IsExecution())
 	{
-		int rt = MessageBox("実行中です。中断しますか？", "Warning", MB_YESNO);
-		if ( rt == IDYES )
+		if (MessageBox(_T("実行中です。中断しますか？"), _T("Warning"), MB_YESNO) == IDYES)
 		{
 			OnBnClickedRecordStop();
 		}
 		return;
 	}
 
-	// GUIの値を取得
 	UpdateData();
 
-	// 別プロセスがアクセス中かチェック
+	// 別プロセスが保存先を使っていないか、実際に開いて確かめる
 	{
-		CFile cfile;
-		if ( cfile.Open(_T(m_SaveFilename), CFile::modeCreate | CFile::modeWrite) )
+		CFile file;
+		if (!file.Open(m_saveFilename, CFile::modeCreate | CFile::modeWrite))
 		{
-			cfile.Close();
-		}
-		else
-		{
-			MessageBox("別プロセスが使用中です。", "Warning", MB_OK);
+			MessageBox(_T("別プロセスが使用中です。"), _T("Warning"), MB_OK);
 			return;
 		}
+		file.Close();
 	}
 
-	// パラメータを設定
-	m_Avi.SetSaveFileName(m_SaveFilename);
-	m_Avi.SetFrameRate(m_FrameRate);
-	m_Avi.SetRecordSec(m_TimeoutSec);
-	m_Avi.SetSkipFrame(m_SkipFrame);
-	m_Avi.SetCaptureRect(m_CaptRectX, m_CaptRectY, m_CaptRectWidth, m_CaptRectHeight);
-	m_Avi.SetCaptureQuality(m_BitmapBpp);
-	m_Avi.SetResize(m_ResizeEnable, m_ResizeRectWidth, m_ResizeRectHeight);
-	m_Avi.SetRecordMousePoint(m_MousePointRec);
+	m_avi.SetSaveFileName(m_saveFilename);
+	m_avi.SetFrameRate(m_frameRate);
+	m_avi.SetRecordSec(m_timeoutSec);
+	m_avi.SetSkipFrame(m_skipFrame);
+	m_avi.SetCaptureRect(m_captRectX, m_captRectY, m_captRectWidth, m_captRectHeight);
+	m_avi.SetCaptureQuality(m_bitmapBpp);
+	m_avi.SetResize(m_bResize, m_resizeRectWidth, m_resizeRectHeight);
+	m_avi.SetRecordMousePoint(m_bMousePointRec);
 
-	// 記録開始
-	m_Avi.StartRecord();
+	m_avi.StartRecord();
 }
 
 void CMotionCaptureDlg::OnBnClickedRecordStop()
 {
-	// 記録タスクを止める
-	m_Avi.StopRecord();
+	m_avi.StopRecord();
 }
 
 void CMotionCaptureDlg::OnBnClickedSampleCaptArea()
 {
 	UpdateData();
-	RECT rt = {m_CaptRectX, m_CaptRectY, m_CaptRectWidth, m_CaptRectHeight};
+	RECT rt = { m_captRectX, m_captRectY, m_captRectWidth, m_captRectHeight };
 
-	SampleCaptAreaDlg dlg(rt, m_BitmapBpp);
+	CSampleCaptAreaDlg dlg(rt, m_bitmapBpp);
 	dlg.DoModal();
-	return;
 }
