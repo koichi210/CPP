@@ -1,35 +1,24 @@
-﻿
-// PCHangUpDlg.h : ヘッダー ファイル
-//
+﻿// PCHangUpDlg.h : メインダイアログ（スレッドを作り続けて PC をハングさせる実験）
 
 #pragma once
 
-
-// CPCHangUpDlg ダイアログ
 class CPCHangUpDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CPCHangUpDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CPCHangUpDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_PCHANGUP_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+	afx_msg void OnBnClickedHangUp();
 	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg void OnBnClickedButton1();
-};
 
-UINT ProcThread(LPVOID pParam);
+private:
+	static UINT HangUpThreadProc(LPVOID pParam);
+
+	HICON m_hIcon;
+};
