@@ -1,4 +1,4 @@
-// memoryDlg.cpp : �C���v�������e�[�V���� �t�@�C��
+﻿// memoryDlg.cpp : インプリメンテーション ファイル
 //
 
 #include "stdafx.h"
@@ -13,25 +13,25 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// �A�v���P�[�V�����̃o�[�W�������Ŏg���Ă��� CAboutDlg �_�C�A���O
+// アプリケーションのバージョン情報で使われている CAboutDlg ダイアログ
 
 class CAboutDlg : public CDialog
 {
 public:
 	CAboutDlg();
 
-// �_�C�A���O �f�[�^
+// ダイアログ データ
 	//{{AFX_DATA(CAboutDlg)
 	enum { IDD = IDD_ABOUTBOX };
 	//}}AFX_DATA
 
-	// ClassWizard �͉��z�֐��̃I�[�o�[���C�h�𐶐����܂�
+	// ClassWizard は仮想関数のオーバーライドを生成します
 	//{{AFX_VIRTUAL(CAboutDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV �̃T�|�[�g
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV のサポート
 	//}}AFX_VIRTUAL
 
-// �C���v�������e�[�V����
+// インプリメンテーション
 protected:
 	//{{AFX_MSG(CAboutDlg)
 	//}}AFX_MSG
@@ -53,20 +53,20 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
-		// ���b�Z�[�W �n���h��������܂���B
+		// メッセージ ハンドラがありません。
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CMemoryDlg �_�C�A���O
+// CMemoryDlg ダイアログ
 
 CMemoryDlg::CMemoryDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CMemoryDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CMemoryDlg)
-		// ����: ���̈ʒu�� ClassWizard �ɂ���ă����o�̏��������ǉ�����܂��B
+		// メモ: この位置に ClassWizard によってメンバの初期化が追加されます。
 	//}}AFX_DATA_INIT
-	// ����: LoadIcon �� Win32 �� DestroyIcon �̃T�u�V�[�P���X��v�����܂���B
+	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
@@ -74,7 +74,7 @@ void CMemoryDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CMemoryDlg)
-		// ����: ���̏ꏊ�ɂ� ClassWizard �ɂ���� DDX �� DDV �̌Ăяo�����ǉ�����܂��B
+		// メモ: この場所には ClassWizard によって DDX と DDV の呼び出しが追加されます。
 	DDX_Control(pDX, IDC_VIEW_SPEED, cyc_bar);
 	//}}AFX_DATA_MAP
 }
@@ -99,16 +99,16 @@ BEGIN_MESSAGE_MAP(CMemoryDlg, CDialog)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CMemoryDlg ���b�Z�[�W �n���h��
+// CMemoryDlg メッセージ ハンドラ
 
 BOOL CMemoryDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	CString str ;
 
-	// "�o�[�W�������..." ���j���[���ڂ��V�X�e�� ���j���[�֒ǉ����܂��B
+	// "バージョン情報..." メニュー項目をシステム メニューへ追加します。
 
-	// IDM_ABOUTBOX �̓R�}���h ���j���[�͈̔͂łȂ���΂Ȃ�܂���B
+	// IDM_ABOUTBOX はコマンド メニューの範囲でなければなりません。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -124,10 +124,10 @@ BOOL CMemoryDlg::OnInitDialog()
 		}
 	}
 
-	// ���̃_�C�A���O�p�̃A�C�R����ݒ肵�܂��B�t���[�����[�N�̓A�v���P�[�V�����̃��C��
-	// �E�B���h�E���_�C�A���O�łȂ����͎����I�ɐݒ肵�܂���B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R����ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R����ݒ�
+	// このダイアログ用のアイコンを設定します。フレームワークはアプリケーションのメイン
+	// ウィンドウがダイアログでない時は自動的に設定しません。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンを設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンを設定
 	
 	timer_cyc = CYC_INIT_VAL ;
 	new_mode = ANKI ;
@@ -153,7 +153,7 @@ BOOL CMemoryDlg::OnInitDialog()
 	GetDlgItem(IDC_SPEED_TXT)->SetWindowText(str) ;
 	InitProc() ;
 
-	return TRUE;  // TRUE ��Ԃ��ƃR���g���[���ɐݒ肵���t�H�[�J�X�͎����܂���B
+	return TRUE;  // TRUE を返すとコントロールに設定したフォーカスは失われません。
 }
 
 void CMemoryDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -169,19 +169,19 @@ void CMemoryDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// �����_�C�A���O�{�b�N�X�ɍŏ����{�^����ǉ�����Ȃ�΁A�A�C�R����`�悷��
-// �R�[�h���ȉ��ɋL�q����K�v������܂��BMFC �A�v���P�[�V������ document/view
-// ���f�����g���Ă���̂ŁA���̏����̓t���[�����[�N�ɂ�莩���I�ɏ�������܂��B
+// もしダイアログボックスに最小化ボタンを追加するならば、アイコンを描画する
+// コードを以下に記述する必要があります。MFC アプリケーションは document/view
+// モデルを使っているので、この処理はフレームワークにより自動的に処理されます。
 
 void CMemoryDlg::OnPaint() 
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��p�̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画用のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-		// �N���C�A���g�̋�`�̈���̒���
+		// クライアントの矩形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -189,7 +189,7 @@ void CMemoryDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R����`�悵�܂��B
+		// アイコンを描画します。
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -198,8 +198,8 @@ void CMemoryDlg::OnPaint()
 	}
 }
 
-// �V�X�e���́A���[�U�[���ŏ����E�B���h�E���h���b�O���Ă���ԁA
-// �J�[�\����\�����邽�߂ɂ������Ăяo���܂��B
+// システムは、ユーザーが最小化ウィンドウをドラッグしている間、
+// カーソルを表示するためにここを呼び出します。
 HCURSOR CMemoryDlg::OnQueryDragIcon()
 {
 	return (HCURSOR) m_hIcon;
@@ -240,19 +240,19 @@ void CMemoryDlg::OnStart()
 			InitProc() ;
 			StartProc() ;
 		}else{
-			sprintf(str,"���͒l�G���[�ł��B\n\n") ;
+			sprintf(str,"入力値エラーです。\n\n") ;
 			if(rt & NUM_ERR){
-				strcat(str,"����ȏo�萔����͂��ĉ������B\n") ;
+				strcat(str,"正常な出題数を入力して下さい。\n") ;
 			}
 
 			if(rt & KETA_ERR){
-				strcat(str,"����Ȍ�������͂��ĉ������B\n") ;
+				strcat(str,"正常な桁数を入力して下さい。\n") ;
 			}
 			AfxMessageBox(str) ;
 		}
 
 	}else{
-		AfxMessageBox("�ǂꂩ�ЂƂ̓`�F�b�N����ĉ������B") ;
+		AfxMessageBox("どれかひとつはチェック入れて下さい。") ;
 	}
 }
 
@@ -262,7 +262,7 @@ int CMemoryDlg::StartCheck()
 	int wk ;
 	int rt = NORMAL ;
 
-	//�o�萔�`�F�b�N
+	//出題数チェック
 	wk = GetDlgItemInt(IDC_PR_NUM,NULL,0);
 	if(wk < MIN_VAL || wk > PR_NUM_MAX){
 		rt |= NUM_ERR ;
@@ -271,7 +271,7 @@ int CMemoryDlg::StartCheck()
 		SetDlgItemInt(IDC_PR_NUM,num,0);
 	}
 
-	//�����`�F�b�N
+	//桁数チェック
 	if(new_mode == KEISAN){
 		max_val = KETA_KEISAN_MAX ;
 	}else{
@@ -294,7 +294,7 @@ void CMemoryDlg::OnAns()
 	CAnserDlg memans(pParent);
 
 	if ( memans.DoModal() == ID_ANSOK ){
-		// �Ȃ񂩏��������ˁ`
+		// なんか書きたいね～
 	}
 }
 
@@ -312,7 +312,7 @@ void CMemoryDlg::OnAnki()
 	CheckDlgButton(IDC_ENG_SMALL,type & ENG_SMALL) ;
 	CheckDlgButton(IDC_ENG_LARGE,type & ENG_LARGE) ;
 	CheckDlgButton(IDC_NUMBER,type & NUMBER) ;
-	GetDlgItem(IDC_KETA_STR)->SetWindowText("(1�`15)") ;
+	GetDlgItem(IDC_KETA_STR)->SetWindowText("(1～15)") ;
 
 	keta = GetDlgItemInt(IDC_PR_KETA,NULL,0);
 	if(keta < MIN_VAL || keta > KETA_ANIKI_MAX){
@@ -335,7 +335,7 @@ void CMemoryDlg::OnKeisan()
 	CheckDlgButton(IDC_ENG_SMALL,type & ENG_SMALL) ;
 	CheckDlgButton(IDC_ENG_LARGE,type & ENG_LARGE) ;
 	CheckDlgButton(IDC_NUMBER,type & NUMBER) ;
-	GetDlgItem(IDC_KETA_STR)->SetWindowText("(1�`3)") ;
+	GetDlgItem(IDC_KETA_STR)->SetWindowText("(1～3)") ;
 
 	keta = GetDlgItemInt(IDC_PR_KETA,NULL,0);
 	if(keta < MIN_VAL || keta > KETA_KEISAN_MAX){
@@ -353,12 +353,12 @@ void CMemoryDlg::StartProc()
 			SetType(NUMBER,TRUE) ;
 		}
 		ItemSts(FALSE) ;
-		GetDlgItem(IDC_START)->SetWindowText("�X�g�b�v");
+		GetDlgItem(IDC_START)->SetWindowText("ストップ");
 
-		// �Ƃ肠�����\���������i����Ȃ��ƃ`��������j
+		// とりあえず表示を消す（じゃないとチラつくから）
 		GetDlgItem(IDC_SHOW)->SetWindowText("");
 
-		// �ꔭ��
+		// 一発目
 		ViewText() ;
 		this->SetTimer(GENERATE_ID,timer_cyc,NULL);
 	}else{
@@ -371,7 +371,7 @@ void CMemoryDlg::EndProc()
 	count = 0 ;
 	states = END ;
 	ItemSts(TRUE) ;
-	GetDlgItem(IDC_START)->SetWindowText("�J�n");
+	GetDlgItem(IDC_START)->SetWindowText("開始");
 	GetDlgItem(IDC_SHOW)->SetWindowText("");
 	this->KillTimer(GENERATE_ID);
 }
@@ -405,21 +405,21 @@ void CMemoryDlg::KeyGen(char str[KETA_ANIKI_MAX])
 	int val ;
 	int number = 1 ;
 	int i=0 ;
-	static HFONT font ;	//�\�������\����
-	LOGFONT viewfont ;	//�\�������\����
+	static HFONT font ;	//表示文字構造体
+	LOGFONT viewfont ;	//表示文字構造体
 
 	::memset(&wk,0,sizeof(wk)) ;
 	::memset(&viewfont,0,sizeof(viewfont)) ;
 
-	//�\���t�H���g�쐬
+	//表示フォント作成
 	viewfont.lfCharSet = DEFAULT_CHARSET ;
 	viewfont.lfWeight = SHOW_WEIGHT ;
 	viewfont.lfHeight = SHOW_HEIGHT ;
 	font = CreateFontIndirect(&viewfont) ;
 	SendDlgItemMessage(IDC_SHOW,WM_SETFONT,(WPARAM)font,MAKELPARAM(TRUE,0)) ;
 
-	//1�b�Ɉ��X�V����݂����ŁA1�b��葁���Ăяo�����ƑO��l�ƑS�������l�ɂȂ��Ă��܂��B
-	//�̂ŁA���׍H���Ė���Ⴄ�l���E���悤�ɂ���B
+	//1秒に一回更新するみたいで、1秒より早く呼び出されると前回値と全く同じ値になってしまう。
+	//ので、小細工して毎回違う値を拾うようにする。
 	srand( (unsigned)time( NULL )*(count+1)*(number+number) );
 	for(i=0;i<keta;i++){
 		val = rand() ;
@@ -431,8 +431,8 @@ void CMemoryDlg::KeyGen(char str[KETA_ANIKI_MAX])
 	sprintf(record[count],"%s",str) ;
 	count++ ;
 
-	// font���폜���Ȃ��Ⴂ���Ȃ��񂾂��ǁA�R�R�ł��ƍ�����t�H���g�������ɂȂ��Ă��܂��B
-	// ������ׂ��ꏊ��font�̍쐬&�폜������K�v����B
+	// fontを削除しなきゃいけないんだけど、ココでやると作ったフォントが無効になってしまう。
+	// しかるべき場所でfontの作成&削除をする必要あり。
 	//DeleteObject(font) ;
 
 }
@@ -441,7 +441,7 @@ int CMemoryDlg::GetKeyGenType(int val)
 {
 	int str_type = NUMBER;
 
-	// type������ ���Z�����l���L�[�ɗD�揇�ʂ����߂�
+	// typeを決定 除算した値をキーに優先順位を決める
 	if( (val % 3) == 1){
 		if(type & ENG_SMALL){
 			//Small Alphabet
@@ -482,15 +482,15 @@ int CMemoryDlg::GetKeyGenType(int val)
 
 void CMemoryDlg::GetKeyGenVal(char * wk, int str_type, int number, int val)
 {
-	static int old_number = -1 ;	// 1���̂Ƃ��̑O��l��v�����l������static�ɁB�B
+	static int old_number = -1 ;	// 1桁のときの前回値一致時を考慮してstaticに。。
 
-	// �etype���ɏ���
+	// 各type毎に処理
 	switch(str_type){
 	case NUMBER :
 		//number generate
 		number = val % 10 ;
 
-		// ���ꕶ�������΍�
+		// 同一文字内被り対策
 		if(number == old_number){
 			MatchProc(val,&number) ;
 		}
@@ -500,7 +500,7 @@ void CMemoryDlg::GetKeyGenVal(char * wk, int str_type, int number, int val)
 	case ENG_SMALL :
 		number = 0x61 + (val % 26) ;
 
-		// ���ꕶ�������΍�
+		// 同一文字内被り対策
 		if(number == old_number){
 			MatchProc(val,&number) ;
 			number += 0x61 ;
@@ -511,7 +511,7 @@ void CMemoryDlg::GetKeyGenVal(char * wk, int str_type, int number, int val)
 	case ENG_LARGE :
 		number = 0x41 + (val % 26) ;
 
-		// ���ꕶ�������΍�
+		// 同一文字内被り対策
 		if(number == old_number){
 			MatchProc(val,&number) ;
 			number += 0x41 ;
@@ -564,8 +564,8 @@ void CMemoryDlg::OnNumber()
 
 void CMemoryDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
-	// TODO: ���̈ʒu�Ƀ��b�Z�[�W �n���h���p�̃R�[�h��ǉ����邩�܂��̓f�t�H���g�̏������Ăяo���Ă�������
-	//�X�N���[���o�[��G�����Ƃ�
+	// TODO: この位置にメッセージ ハンドラ用のコードを追加するかまたはデフォルトの処理を呼び出してください
+	//スクロールバーを触ったとき
 
 	timer_cyc = cyc_bar.GetScrollPos();
 	int max,min;
@@ -622,29 +622,29 @@ void CMemoryDlg::OnHelp()
 
 	::memset(help_str,0,sizeof(help_str)) ;
 
-		sprintf(help_str,"�@�@�E�]���]�������\�t�g�@�w���v\n"
+		sprintf(help_str,"　　右脳左脳活性化ソフト　ヘルプ\n"
 		"\n"
-		"���o�萔\t�o�肷�鐔\n"
-		"������\t�P��ɂ��o�肳��錅��\n"
+		"○出題数\t出題する数\n"
+		"○桁数\t１問につき出題される桁数\n"
 		"\n"
-		"���v���C���[�h�I���i�v�Z / �ËL�j\n"
-		"�@�E�v�Z\t�o�肳�ꂽ����S�ĉ��Z����\n"
-		"�@�E�ËL\t�o�肳�ꂽ������S�ĈËL����\n"
+		"○プレイモード選択（計算 / 暗記）\n"
+		"　・計算\t出題された数を全て加算する\n"
+		"　・暗記\t出題された文字を全て暗記する\n"
 		"\n"
-		"���v���C�^�C�v�I���i���� / �p���� / �p�厚�j\n"
-		"�@�E����\t�o�肷�镶���ɐ�����ǉ�\n"
-		"�@�E�p����\t�o�肷�镶���ɉp������ǉ�\n"
-		"�@�E�p�厚\t�o�肷�镶���ɉp�厚��ǉ�\n"
+		"○プレイタイプ選択（数字 / 英小字 / 英大字）\n"
+		"　・数字\t出題する文字に数字を追加\n"
+		"　・英小字\t出題する文字に英小字を追加\n"
+		"　・英大字\t出題する文字に英大字を追加\n"
 		"\n"
-		"���\�����x�@���̕\�����x��10ms�P�ʂŒ���\n"
+		"○表示速度　問題の表示速度を10ms単位で調整\n"
 		"\n"
-		"���{�^��\n"
-		"�@�E�J�n\t�X�^�[�g\n"
-		"�@�E��\t�������킹\n"
-		"�@�E�I��\t�A�v���̏I��\n"
-		"�@�E�w���v\t���������{�^��\n") ;
+		"○ボタン\n"
+		"　・開始\tスタート\n"
+		"　・解答\t答え合わせ\n"
+		"　・終了\tアプリの終了\n"
+		"　・ヘルプ\t今押したボタン\n") ;
 
-		MessageBox(help_str,"�w���v",MB_OK);
+		MessageBox(help_str,"ヘルプ",MB_OK);
 }
 
 void CMemoryDlg::OnDestroy() 

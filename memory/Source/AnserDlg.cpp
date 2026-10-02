@@ -1,4 +1,4 @@
-// AnserDlg.cpp : ƒCƒ“ƒvƒŠƒƒ“ƒe[ƒVƒ‡ƒ“ ƒtƒ@ƒCƒ‹
+ï»¿// AnserDlg.cpp : ã‚¤ãƒ³ãƒ—ãƒªãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #include "stdafx.h"
@@ -13,7 +13,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// CAnserDlg ƒ_ƒCƒAƒƒO
+// CAnserDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 
 CAnserDlg::CAnserDlg(CWnd* pParent /*=NULL*/)
@@ -28,7 +28,7 @@ void CAnserDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CAnserDlg)
-		// ƒƒ‚ - ClassWizard ‚Í‚±‚ÌˆÊ’u‚Éƒ}ƒbƒsƒ“ƒO—p‚Ìƒ}ƒNƒ‚ğ’Ç‰Á‚Ü‚½‚Ííœ‚µ‚Ü‚·B
+		// ãƒ¡ãƒ¢ - ClassWizard ã¯ã“ã®ä½ç½®ã«ãƒãƒƒãƒ”ãƒ³ã‚°ç”¨ã®ãƒã‚¯ãƒ­ã‚’è¿½åŠ ã¾ãŸã¯å‰Šé™¤ã—ã¾ã™ã€‚
 	//}}AFX_DATA_MAP
 }
 
@@ -50,11 +50,11 @@ BOOL CAnserDlg::OnInitDialog()
 
 	CDialog::OnInitDialog();
 
-	cheat = FALSE ;	// cheatƒtƒ‰ƒO
+	cheat = FALSE ;	// cheatãƒ•ãƒ©ã‚°
 
-	// Enable 2 Disableˆ—
+	// Enable 2 Disableå‡¦ç†
 	for(i=0;i<PR_NUM_MAX;i++){
-		// ‚Æ‚è‚ ‚¦‚¸Disable‚Å‰Šú‰»
+		// ã¨ã‚Šã‚ãˆãšDisableã§åˆæœŸåŒ–
 		GetDlgItem(IDC_ANS_TEXT1+i)->EnableWindow(FALSE) ;
 		GetDlgItem(ANS_NO1+i)->EnableWindow(FALSE) ;
 
@@ -70,7 +70,7 @@ BOOL CAnserDlg::OnInitDialog()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CAnserDlg ƒƒbƒZ[ƒW ƒnƒ“ƒhƒ‰
+// CAnserDlg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒ³ãƒ‰ãƒ©
 
 void CAnserDlg::OnDestroy() 
 {
@@ -112,18 +112,18 @@ void CAnserDlg::OnAnsShow()
 			GetDlgItem(IDC_ANSER1)->SetWindowText(wk) ;
 		}
 
-		// –t–¼Ì•ÏX
-		GetDlgItem(ID_ANS_SHOW)->SetWindowText("“š‚¦‚ğ”ñ•\¦") ;
+		// é‡¦åç§°å¤‰æ›´
+		GetDlgItem(ID_ANS_SHOW)->SetWindowText("ç­”ãˆã‚’éè¡¨ç¤º") ;
 
 	}else{
 		for(i=0;i<pParent->num ;i++){
 			GetDlgItem(IDC_ANSER1+i)->SetWindowText("") ;
 		}
-		// –t–¼Ì•ÏX
-		GetDlgItem(ID_ANS_SHOW)->SetWindowText("ƒJƒ“ƒjƒ“ƒO¦") ;
+		// é‡¦åç§°å¤‰æ›´
+		GetDlgItem(ID_ANS_SHOW)->SetWindowText("ã‚«ãƒ³ãƒ‹ãƒ³ã‚°ç¤º") ;
 	}
 
-	GetDlgItem(IDC_CHEAT)->SetWindowText("“š‚¦‰{——Ï‚İ") ;
+	GetDlgItem(IDC_CHEAT)->SetWindowText("ç­”ãˆé–²è¦§æ¸ˆã¿") ;
 }
 	
 void CAnserDlg::OnAnserCheck() 
@@ -143,43 +143,43 @@ void CAnserDlg::OnAnserCheck()
 	::memset(gsBuf,0,sizeof(gsBuf)) ;
 	::memset(wk,0,sizeof(wk)) ;
 
-	// •\¦ƒf[ƒ^‚ğì¬
+	// è¡¨ç¤ºãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆ
 	for(i=0;i<pParent->num ;i++){
 		GetDlgItemText(IDC_ANS_TEXT1+i,gsBuf,sizeof(gsBuf)) ;
 
 		if(pParent->old_mode == KEISAN){
-			// ŒvZ
-			// “ü—Í’l‚ğ‰ÁZ
+			// è¨ˆç®—
+			// å…¥åŠ›å€¤ã‚’åŠ ç®—
 			sum += atol(pParent->record[i]) ;
 		}else{
-			// ˆÃ‹L
-			//@”»’è
+			// æš—è¨˜
+			//ã€€åˆ¤å®š
 			rt = strcmp(pParent->record[i],gsBuf) ;
 			if(rt == 0){
-				// ³‰ğ
-				GetDlgItem(IDC_JUDGE1+i)->SetWindowText("›") ;
+				// æ­£è§£
+				GetDlgItem(IDC_JUDGE1+i)->SetWindowText("â—‹") ;
 				GetDlgItem(IDC_ANSER1+i)->SetWindowText(pParent->record[i]) ;
 			}else{
-				// •s³‰ğ
-				GetDlgItem(IDC_JUDGE1+i)->SetWindowText("~") ;
-				// ŠÔˆá‚Á‚½‚Ì‚¾‚¯‘‚­‚Ì‚à‚¢‚¢‚µ
+				// ä¸æ­£è§£
+				GetDlgItem(IDC_JUDGE1+i)->SetWindowText("Ã—") ;
+				// é–“é•ã£ãŸã®ã ã‘æ›¸ãã®ã‚‚ã„ã„ã—
 			}
 		}
 	}
 
-	// ‡Œv’l‚ğ•\¦
+	// åˆè¨ˆå€¤ã‚’è¡¨ç¤º
 	if(pParent->old_mode == KEISAN){
 		GetDlgItemText(IDC_ANS_TEXT1,gsBuf,sizeof(gsBuf)) ;
 		input_val= atol(gsBuf) ;
 
 		if(sum == input_val){
-			// ³‰ğ
+			// æ­£è§£
 				sprintf(wk,"%d",input_val) ;
-				GetDlgItem(IDC_JUDGE1)->SetWindowText("›") ;
+				GetDlgItem(IDC_JUDGE1)->SetWindowText("â—‹") ;
 				GetDlgItem(IDC_ANSER1)->SetWindowText(wk) ;
 		}else{
-			// •s³‰ğ
-				GetDlgItem(IDC_JUDGE1)->SetWindowText("~") ;
+			// ä¸æ­£è§£
+				GetDlgItem(IDC_JUDGE1)->SetWindowText("Ã—") ;
 		}
 	}
 }
@@ -191,11 +191,11 @@ HBRUSH CAnserDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	int ID = pWnd->GetDlgCtrlID();
 	switch(ID)   {
 	   case IDC_CHEAT:
-         pDC->SetTextColor(RGB(0xFF0,0,0));   // •¶šF‚ÍÔ
+         pDC->SetTextColor(RGB(0xFF0,0,0));   // æ–‡å­—è‰²ã¯èµ¤
 		 break ;
 	}
 
-	// TODO: ƒfƒtƒHƒ‹ƒg‚Ìƒuƒ‰ƒV‚ª–]‚İ‚Ì‚à‚Ì‚Å‚È‚¢ê‡‚É‚ÍAˆá‚¤ƒuƒ‰ƒV‚ğ•Ô‚µ‚Ä‚­‚¾‚³‚¢
+	// TODO: ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ–ãƒ©ã‚·ãŒæœ›ã¿ã®ã‚‚ã®ã§ãªã„å ´åˆã«ã¯ã€é•ã†ãƒ–ãƒ©ã‚·ã‚’è¿”ã—ã¦ãã ã•ã„
 	return hbr;
 }
 

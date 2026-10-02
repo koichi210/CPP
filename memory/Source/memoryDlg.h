@@ -1,4 +1,4 @@
-// memoryDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// memoryDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #if !defined(AFX_MEMORYDLG_H__B30A7A81_A157_4530_9E1F_C0528EF9B54E__INCLUDED_)
@@ -11,31 +11,31 @@
 #include "memoryDef.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// CMemoryDlg ƒ_ƒCƒAƒƒO
+// CMemoryDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 class CMemoryDlg : public CDialog
 {
-// \’z
+// æ§‹ç¯‰
 public:
-	CMemoryDlg(CWnd* pParent = NULL);	// •W€‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	CMemoryDlg(CWnd* pParent = NULL);	// æ¨™æº–ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	//{{AFX_DATA(CMemoryDlg)
 	enum { IDD = IDD_MEMORY_DIALOG };
-		// ƒƒ‚: ‚±‚ÌˆÊ’u‚É ClassWizard ‚É‚æ‚Á‚Äƒf[ƒ^ ƒƒ“ƒo‚ª’Ç‰Á‚³‚ê‚Ü‚·B
+		// ãƒ¡ãƒ¢: ã“ã®ä½ç½®ã« ClassWizard ã«ã‚ˆã£ã¦ãƒ‡ãƒ¼ã‚¿ ãƒ¡ãƒ³ãƒãŒè¿½åŠ ã•ã‚Œã¾ã™ã€‚
 	//}}AFX_DATA
 
-	// ClassWizard ‚Í‰¼‘zŠÖ”‚ÌƒI[ƒo[ƒ‰ƒCƒh‚ğ¶¬‚µ‚Ü‚·B
+	// ClassWizard ã¯ä»®æƒ³é–¢æ•°ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 	//{{AFX_VIRTUAL(CMemoryDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ‚ÌƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã®ã‚µãƒãƒ¼ãƒˆ
 	//}}AFX_VIRTUAL
 
-// ƒCƒ“ƒvƒŠƒƒ“ƒe[ƒVƒ‡ƒ“
+// ã‚¤ãƒ³ãƒ—ãƒªãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³
 protected:
 	HICON m_hIcon;
 
-	// ¶¬‚³‚ê‚½ƒƒbƒZ[ƒW ƒ}ƒbƒvŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒƒãƒ—é–¢æ•°
 	//{{AFX_MSG(CMemoryDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
@@ -56,33 +56,33 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
-// ’è‹`
+// å®šç¾©
 public:
-	char record[PR_NUM_MAX][KETA_ANIKI_MAX+2] ;	//•\¦‚µ‚½’l‚ğŠo‚¦‚Ä‚¨‚­('\0'‚Æ'\n'‚ğl—¶)
-	int timer_cyc ;		//ƒ^ƒCƒ}‹N“®üŠú
-	int count ;			//Œ»İ‚ÌŒÂ”
-	int states ;		//ó‹µ
-	int num ;			//•\¦‰ñ”(o‘è”)
-	int keta ;			//Œ…”
-	int type ;			//”š and ƒAƒ‹ƒtƒ@ƒxƒbƒg
-	int old_mode ;		//ˆÈ‘O‚Ìƒ‚[ƒh
-	int new_mode ;		//V‚µ‚¢ƒ‚[ƒh
-	CScrollBar cyc_bar ;	// •\¦‘¬“x‚ğİ’è
-	void ViewText() ;	//•\¦ŠÖ”
-	void InitProc() ;	//‰Šú‰»ˆ—
-	void StartProc() ;	//ŠJnˆ—
-	void EndProc() ;	//I—¹ˆ—
-	void ItemSts(BOOL flg) ;	// UI‚Ì‹Ö‘¥
-	void KeyGen(char str[KETA_ANIKI_MAX]) ;	// •\¦•¶šì¬
-	int GetKeyGenType(int val) ;		// KeyGen‚Ìƒ^ƒCƒvæ“¾
-	void GetKeyGenVal(char * wk, int str_type, int number, int val) ;	// KeyGen‚Ì’læ“¾
+	char record[PR_NUM_MAX][KETA_ANIKI_MAX+2] ;	//è¡¨ç¤ºã—ãŸå€¤ã‚’è¦šãˆã¦ãŠã('\0'ã¨'\n'ã‚’è€ƒæ…®)
+	int timer_cyc ;		//ã‚¿ã‚¤ãƒèµ·å‹•å‘¨æœŸ
+	int count ;			//ç¾åœ¨ã®å€‹æ•°
+	int states ;		//çŠ¶æ³
+	int num ;			//è¡¨ç¤ºå›æ•°(å‡ºé¡Œæ•°)
+	int keta ;			//æ¡æ•°
+	int type ;			//æ•°å­— and ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆ
+	int old_mode ;		//ä»¥å‰ã®ãƒ¢ãƒ¼ãƒ‰
+	int new_mode ;		//æ–°ã—ã„ãƒ¢ãƒ¼ãƒ‰
+	CScrollBar cyc_bar ;	// è¡¨ç¤ºé€Ÿåº¦ã‚’è¨­å®š
+	void ViewText() ;	//è¡¨ç¤ºé–¢æ•°
+	void InitProc() ;	//åˆæœŸåŒ–å‡¦ç†
+	void StartProc() ;	//é–‹å§‹å‡¦ç†
+	void EndProc() ;	//çµ‚äº†å‡¦ç†
+	void ItemSts(BOOL flg) ;	// UIã®ç¦å‰‡
+	void KeyGen(char str[KETA_ANIKI_MAX]) ;	// è¡¨ç¤ºæ–‡å­—ä½œæˆ
+	int GetKeyGenType(int val) ;		// KeyGenã®ã‚¿ã‚¤ãƒ—å–å¾—
+	void GetKeyGenVal(char * wk, int str_type, int number, int val) ;	// KeyGenã®å€¤å–å¾—
 
-	void MatchProc(int org_val,int * new_val) ;	// “¯ˆê•¶š“à”í‚èˆ—
-	int StartCheck() ;	//ŠJn‚Å‚«‚é‚©İ’è’l‚ğƒ`ƒFƒbƒN
+	void MatchProc(int org_val,int * new_val) ;	// åŒä¸€æ–‡å­—å†…è¢«ã‚Šå‡¦ç†
+	int StartCheck() ;	//é–‹å§‹ã§ãã‚‹ã‹è¨­å®šå€¤ã‚’ãƒã‚§ãƒƒã‚¯
 	void SetType(int type, BOOL flg) ;
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ ‚Í‘Os‚Ì’¼‘O‚É’Ç‰Á‚ÌéŒ¾‚ğ‘}“ü‚µ‚Ü‚·B
+// Microsoft Visual C++ ã¯å‰è¡Œã®ç›´å‰ã«è¿½åŠ ã®å®£è¨€ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚
 
 #endif // !defined(AFX_MEMORYDLG_H__B30A7A81_A157_4530_9E1F_C0528EF9B54E__INCLUDED_)

@@ -1,48 +1,48 @@
-// memoryDef.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// memoryDef.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
-#define FONT		1	// ‚¿‚å‚Á‚Æ–ï‰î‚Èƒ„ƒc
+#define FONT		1	// ã¡ã‚‡ã£ã¨å„ä»‹ãªãƒ¤ãƒ„
 
-#define GENERATE_ID	1	//ƒ^ƒCƒ}ID
-#define SHOW_WEIGHT	40	//•\¦•¶š—ñ‚Ì•
-#define SHOW_HEIGHT	40	//•\¦•¶š—ñ‚Ì‚‚³
+#define GENERATE_ID	1	//ã‚¿ã‚¤ãƒID
+#define SHOW_WEIGHT	40	//è¡¨ç¤ºæ–‡å­—åˆ—ã®å¹…
+#define SHOW_HEIGHT	40	//è¡¨ç¤ºæ–‡å­—åˆ—ã®é«˜ã•
 #define STR_BUFF	256
 #define ANSER_BUFF	1024	
 #define HELP_BUFF	4096	
 
-//Å‘åÅ¬’l
-#define	MIN_VAL		1		//Še’l‚ÌÅ¬’l
-#define PR_NUM_MAX	20		//o‘è”‚ÌÅ‘å’l
-#define KETA_ANIKI_MAX	15	//o‘èŒ…”‚ÌÅ‘å’l
-#define KETA_KEISAN_MAX	3	//o‘èŒ…”‚ÌÅ‘å’l
-#define MAX_CYC		5000	// Å‘åüŠú
-#define MIN_CYC		10		// Å¬üŠú
-#define ANS_OFFSET	15		//ƒƒbƒZ[ƒW•\¦‚Ìƒwƒbƒ_•ª
+//æœ€å¤§æœ€å°å€¤
+#define	MIN_VAL		1		//å„å€¤ã®æœ€å°å€¤
+#define PR_NUM_MAX	20		//å‡ºé¡Œæ•°ã®æœ€å¤§å€¤
+#define KETA_ANIKI_MAX	15	//å‡ºé¡Œæ¡æ•°ã®æœ€å¤§å€¤
+#define KETA_KEISAN_MAX	3	//å‡ºé¡Œæ¡æ•°ã®æœ€å¤§å€¤
+#define MAX_CYC		5000	// æœ€å¤§å‘¨æœŸ
+#define MIN_CYC		10		// æœ€å°å‘¨æœŸ
+#define ANS_OFFSET	15		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è¡¨ç¤ºã®ãƒ˜ãƒƒãƒ€åˆ†
 #define ANS_MAX		(KETA_ANIKI_MAX+ANS_OFFSET)
 
-//‰Šú’l
-#define	CYC_INIT_VAL	600		//•\¦üŠú(ms)
-#define	NUM_INIT_VAL	5		//o‘è”‚Ì‰Šú’l
-#define	KETA_INIT_VAL	1		//o‘èŒ…”‚Ì‰Šú’l
-#define TYPE_INIT_VAL	KEISAN	// o‘èí•Ê‚Ì‰Šú’l
+//åˆæœŸå€¤
+#define	CYC_INIT_VAL	600		//è¡¨ç¤ºå‘¨æœŸ(ms)
+#define	NUM_INIT_VAL	5		//å‡ºé¡Œæ•°ã®åˆæœŸå€¤
+#define	KETA_INIT_VAL	1		//å‡ºé¡Œæ¡æ•°ã®åˆæœŸå€¤
+#define TYPE_INIT_VAL	KEISAN	// å‡ºé¡Œç¨®åˆ¥ã®åˆæœŸå€¤
 
-//ó‘Ô
-#define	INIT		0	//‰Šú
-#define	ING			1	//^‚ÁÅ’†
-#define	END			2	//I—¹
+//çŠ¶æ…‹
+#define	INIT		0	//åˆæœŸ
+#define	ING			1	//çœŸã£æœ€ä¸­
+#define	END			2	//çµ‚äº†
 
-//ƒ‚[ƒh
-#define	ANKI		1	//ˆÃ‹L
-#define	KEISAN		2	//ŒvZ
+//ãƒ¢ãƒ¼ãƒ‰
+#define	ANKI		1	//æš—è¨˜
+#define	KEISAN		2	//è¨ˆç®—
 
-//ƒ^ƒCƒv
-#define NUMBER		1	//”’l
-#define ENG_SMALL	2	//ƒAƒ‹ƒtƒ@ƒxƒbƒgi¬j
-#define ENG_LARGE	4	//ƒAƒ‹ƒtƒ@ƒxƒbƒgi‘åj
+//ã‚¿ã‚¤ãƒ—
+#define NUMBER		1	//æ•°å€¤
+#define ENG_SMALL	2	//ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆï¼ˆå°ï¼‰
+#define ENG_LARGE	4	//ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆï¼ˆå¤§ï¼‰
 
-// ƒŠƒ^[ƒ“’l
-#define NORMAL		0	//³íƒŠƒ^[ƒ“
-#define NUM_ERR		1	//–â‘è”ƒGƒ‰[
-#define KETA_ERR	2	//Œ…”ƒGƒ‰[
+// ãƒªã‚¿ãƒ¼ãƒ³å€¤
+#define NORMAL		0	//æ­£å¸¸ãƒªã‚¿ãƒ¼ãƒ³
+#define NUM_ERR		1	//å•é¡Œæ•°ã‚¨ãƒ©ãƒ¼
+#define KETA_ERR	2	//æ¡æ•°ã‚¨ãƒ©ãƒ¼
 
 
 #include <stdlib.h>
