@@ -22,6 +22,8 @@ CZodiacDlg::CZodiacDlg(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	chk_states = 0;
+	m_year = 0;
 }
 
 void CZodiacDlg::DoDataExchange(CDataExchange* pDX)
