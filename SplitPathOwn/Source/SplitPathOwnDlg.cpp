@@ -1,5 +1,5 @@
-
-// SplitPathOwnDlg.cpp : �����t�@�C��
+﻿
+// SplitPathOwnDlg.cpp : 実装ファイル
 //
 
 #include "stdafx.h"
@@ -12,20 +12,20 @@
 #endif
 
 
-// �A�v���P�[�V�����̃o�[�W�������Ɏg���� CAboutDlg �_�C�A���O
+// アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
 
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// �_�C�A���O �f�[�^
+// ダイアログ データ
 	enum { IDD = IDD_ABOUTBOX };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV �T�|�[�g
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
 
-// ����
+// 実装
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -43,7 +43,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CSplitPathOwnDlg �_�C�A���O
+// CSplitPathOwnDlg ダイアログ
 
 
 
@@ -67,15 +67,15 @@ BEGIN_MESSAGE_MAP(CSplitPathOwnDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CSplitPathOwnDlg ���b�Z�[�W �n���h���[
+// CSplitPathOwnDlg メッセージ ハンドラー
 
 BOOL CSplitPathOwnDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// "�o�[�W�������..." ���j���[���V�X�e�� ���j���[�ɒǉ����܂��B
+	// "バージョン情報..." メニューをシステム メニューに追加します。
 
-	// IDM_ABOUTBOX �́A�V�X�e�� �R�}���h�͈͓̔��ɂȂ���΂Ȃ�܂���B
+	// IDM_ABOUTBOX は、システム コマンドの範囲内になければなりません。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -93,14 +93,14 @@ BOOL CSplitPathOwnDlg::OnInitDialog()
 		}
 	}
 
-	// ���̃_�C�A���O�̃A�C�R����ݒ肵�܂��B�A�v���P�[�V�����̃��C�� �E�B���h�E���_�C�A���O�łȂ��ꍇ�A
-	//  Framework �́A���̐ݒ�������I�ɍs���܂��B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R���̐ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R���̐ݒ�
+	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
+	//  Framework は、この設定を自動的に行います。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
-	// TODO: �������������ɒǉ����܂��B
+	// TODO: 初期化をここに追加します。
 
-	return TRUE;  // �t�H�[�J�X���R���g���[���ɐݒ肵���ꍇ�������ATRUE ��Ԃ��܂��B
+	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
 void CSplitPathOwnDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -116,19 +116,19 @@ void CSplitPathOwnDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// �_�C�A���O�ɍŏ����{�^����ǉ�����ꍇ�A�A�C�R����`�悷�邽�߂�
-//  ���̃R�[�h���K�v�ł��B�h�L�������g/�r���[ ���f�����g�� MFC �A�v���P�[�V�����̏ꍇ�A
-//  ����́AFramework �ɂ���Ď����I�ɐݒ肳��܂��B
+// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
+//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
+//  これは、Framework によって自動的に設定されます。
 
 void CSplitPathOwnDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// �N���C�A���g�̎l�p�`�̈���̒���
+		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -136,7 +136,7 @@ void CSplitPathOwnDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R���̕`��
+		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -145,8 +145,8 @@ void CSplitPathOwnDlg::OnPaint()
 	}
 }
 
-// ���[�U�[���ŏ��������E�B���h�E���h���b�O���Ă���Ƃ��ɕ\������J�[�\�����擾���邽�߂ɁA
-//  �V�X�e�������̊֐����Ăяo���܂��B
+// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
+//  システムがこの関数を呼び出します。
 HCURSOR CSplitPathOwnDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -176,30 +176,30 @@ void CSplitPathOwnDlg::SplitPath( char *pFileFullPath, char *pDrive, char *pDir,
 {
 	char *pt;
 
-	/* �h���C�u���擾 */
+	/* ドライブ名取得 */
 	{
-		pt = pFileFullPath;	/* �|�C���^��擪�Ɉړ�*/
+		pt = pFileFullPath;	/* ポインタを先頭に移動*/
 		while(*pt != '/')
 		{
 			pt++;
 		}
-		strncpy(pDrive, pFileFullPath, strlen(pFileFullPath) - strlen(pt) + 1);	// �u+1�v�͏I�[�́u/�v��ǉ�
+		strncpy(pDrive, pFileFullPath, strlen(pFileFullPath) - strlen(pt) + 1);	// 「+1」は終端の「/」を追加
 	}
 
-	/* �t�@�C�����擾 */
+	/* ファイル名取得 */
 	{
-		pt = pFileFullPath + strlen(pFileFullPath);	/* �|�C���^���I�[�Ɉړ� */
+		pt = pFileFullPath + strlen(pFileFullPath);	/* ポインタを終端に移動 */
 		while(*pt != '/')
 		{
 			pt--;
 		}
-		pt++;	// �擪�́u/�v���폜
+		pt++;	// 先頭の「/」を削除
 		strncpy(pFile, pt, strlen(pt));
 	}
 
-	/* �f�B���N�g�����擾 */
+	/* ディレクトリ名取得 */
 	{
-		pt = &pFileFullPath[strlen(pDrive)];	/* �|�C���^���h���C�u���^�[�̌��Ɉړ� */
+		pt = &pFileFullPath[strlen(pDrive)];	/* ポインタをドライブレターの後ろに移動 */
 		strncpy(pDir, pt, strlen(pt) - strlen(pFile));
 	}
 }
