@@ -118,17 +118,26 @@ BOOL CClipboardDlg::SetClipboardText( const CHAR *Str )
 		char  *Buf = (char *)GlobalLock( hMem );
 		if ( !Buf )
 		{
+			GlobalFree( hMem );
 			throw  FALSE;
 		}
 
 		strcpy_s( Buf, BufSize, m_Text );	// 文字列をセット
 		GlobalUnlock( hMem );				// メモリのロックを解除
-		if ( OpenClipboard() )
+		if ( !OpenClipboard() )
 		{
-			EmptyClipboard();                  // クリップボード内の古いデータを解放
-			SetClipboardData( CF_TEXT, hMem ); // クリップボードに新しいデータを入力
-			CloseClipboard();
+			GlobalFree( hMem );
+			throw  FALSE;
 		}
+		EmptyClipboard();                  // クリップボード内の古いデータを解放
+		if ( !SetClipboardData( CF_TEXT, hMem ) ) // クリップボードに新しいデータを入力
+		{
+			// 所有権がクリップボードに移らなかったので自分で解放する
+			GlobalFree( hMem );
+			CloseClipboard();
+			throw  FALSE;
+		}
+		CloseClipboard();
 	}
 	catch(BOOL Result)
 	{
