@@ -1,5 +1,5 @@
-
-// DivisionCouplingDlg.cpp : �����t�@�C��
+﻿
+// DivisionCouplingDlg.cpp : 実装ファイル
 //
 
 #include <string> 
@@ -15,7 +15,7 @@
 #endif
 
 
-// CDivisionCouplingDlg �_�C�A���O
+// CDivisionCouplingDlg ダイアログ
 CDivisionCouplingDlg::CDivisionCouplingDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CDivisionCouplingDlg::IDD, pParent)
 {
@@ -39,35 +39,35 @@ BEGIN_MESSAGE_MAP(CDivisionCouplingDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CDivisionCouplingDlg ���b�Z�[�W �n���h���[
+// CDivisionCouplingDlg メッセージ ハンドラー
 
 BOOL CDivisionCouplingDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ���̃_�C�A���O�̃A�C�R����ݒ肵�܂��B�A�v���P�[�V�����̃��C�� �E�B���h�E���_�C�A���O�łȂ��ꍇ�A
-	//  Framework �́A���̐ݒ�������I�ɍs���܂��B
-	SetIcon(m_hIcon, TRUE);			// �傫���A�C�R���̐ݒ�
-	SetIcon(m_hIcon, FALSE);		// �������A�C�R���̐ݒ�
+	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
+	//  Framework は、この設定を自動的に行います。
+	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
+	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
-	// TODO: �������������ɒǉ����܂��B
+	// TODO: 初期化をここに追加します。
 
-	return TRUE;  // �t�H�[�J�X���R���g���[���ɐݒ肵���ꍇ�������ATRUE ��Ԃ��܂��B
+	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
-// �_�C�A���O�ɍŏ����{�^����ǉ�����ꍇ�A�A�C�R����`�悷�邽�߂�
-//  ���̃R�[�h���K�v�ł��B�h�L�������g/�r���[ ���f�����g�� MFC �A�v���P�[�V�����̏ꍇ�A
-//  ����́AFramework �ɂ���Ď����I�ɐݒ肳��܂��B
+// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
+//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
+//  これは、Framework によって自動的に設定されます。
 
 void CDivisionCouplingDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // �`��̃f�o�C�X �R���e�L�X�g
+		CPaintDC dc(this); // 描画のデバイス コンテキスト
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// �N���C�A���g�̎l�p�`�̈���̒���
+		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -75,7 +75,7 @@ void CDivisionCouplingDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// �A�C�R���̕`��
+		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -84,8 +84,8 @@ void CDivisionCouplingDlg::OnPaint()
 	}
 }
 
-// ���[�U�[���ŏ��������E�B���h�E���h���b�O���Ă���Ƃ��ɕ\������J�[�\�����擾���邽�߂ɁA
-//  �V�X�e�������̊֐����Ăяo���܂��B
+// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
+//  システムがこの関数を呼び出します。
 HCURSOR CDivisionCouplingDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -109,7 +109,7 @@ void CDivisionCouplingDlg::OnBnClickedMerge()
 
 void CDivisionCouplingDlg::Initialize()
 {
-	// GUI����ݒ�l���擾
+	// GUIから設定値を取得
 	m_nIdx = 1;
 	m_Err = NO_ERROR;
 	m_bProc = TRUE;
@@ -123,24 +123,24 @@ void CDivisionCouplingDlg::Result()
 
 	if ( m_Err != NO_ERROR )
 	{
-		// �G���[���b�Z�[�W�쐬
+		// エラーメッセージ作成
 		CString msg;
 		switch(m_Err)
 		{
 		case ERR_OPEN_ORGFILE :
-			msg.Format("���t�@�C���I�[�v���G���[");
+			msg.Format("元ファイルオープンエラー");
 			break;
 
 		case ERR_OPEN_NEWFILE :
-			msg.Format("�t�@�C�����쐬�ł��܂���\n\n%s" ,m_fNameNew);
+			msg.Format("ファイルが作成できません\n\n%s" ,m_fNameNew);
 			break;
 
 		case ERR_CALLOC :
-			msg.Format("Work�������m�ۃG���[");
+			msg.Format("Workメモリ確保エラー");
 			break;
 
 		case ERR_DIV_SIZE :
-			msg.Format("�����T�C�Y�G���[");
+			msg.Format("分割サイズエラー");
 			break;
 
 		default :
@@ -165,7 +165,7 @@ void CDivisionCouplingDlg::SplitProc()
 		return;
 	}
 
-	char *buff;	// �ǂݍ��݃o�b�t�@�i�����ő�T�C�Y�Ŋm�ہj
+	char *buff;	// 読み込みバッファ（分割最大サイズで確保）
 	buff = (char *)calloc(m_fDivSize, sizeof(char));
 	if ( ! buff )
 	{
@@ -173,10 +173,10 @@ void CDivisionCouplingDlg::SplitProc()
 		return;
 	}
 
-	// �c��T�C�Y�̏����l�́A���t�@�C���̃T�C�Y
+	// 残りサイズの初期値は、元ファイルのサイズ
 	m_fRestSize = (size_t)m_cstOrgFile.GetLength();
 
-	// �v���O���X�o�[�Z�b�g
+	// プログレスバーセット
 	SetProgressSplitFileNum();
 	mdx_progress.SetRange32(0, GetProgressBarEnd());
 
@@ -190,7 +190,7 @@ void CDivisionCouplingDlg::SplitProc()
 			break;
 		}
 
-		// ����̕����T�C�Y������
+		// 今回の分割サイズを決定
 		if ( m_fRestSize > m_fDivSize )
 		{
 			szDivSize = m_fDivSize;
@@ -201,15 +201,15 @@ void CDivisionCouplingDlg::SplitProc()
 		}
 		m_fRestSize -= szDivSize;
 
-		// �o�C�i���f�[�^��Read&Write
+		// バイナリデータをRead&Write
 		m_cstOrgFile.Read(buff, szDivSize);
 		m_cstNewFile.Write(buff, szDivSize);
 		m_cstNewFile.Close();
 
-		// �v���O���X�o�[�̍X�V
+		// プログレスバーの更新
 		UpdateProgressBar(m_nIdx);
 
-		// �t�@�C�����̃C���f�b�N�X
+		// ファイル名のインデックス
 		m_nIdx++;
 	}
 
@@ -221,17 +221,17 @@ void CDivisionCouplingDlg::MergeProc()
 {
 	std::string fullpath = m_fNameNew;
 
-	// ex) fname.jpg.div001�@���@fname.jpg
+	// ex) fname.jpg.div001　→　fname.jpg
 	int idx = fullpath.find_last_of(".");
 	std::string pathname = fullpath.substr(0, idx);
 	m_fNameNew = pathname.c_str();
 
 	if ( PathFileExists(m_fNameNew))
 	{
-		int MsgResult = MessageBox("���łɃt�@�C�������݂��܂��B�㏑�����܂����H\n" + m_fNameNew,"Warning", MB_YESNO);
+		int MsgResult = MessageBox("すでにファイルが存在します。上書きしますか？\n" + m_fNameNew,"Warning", MB_YESNO);
 		if ( MsgResult == IDNO)
 		{
-			MessageBox("�����𒆒f���܂����B");
+			MessageBox("処理を中断しました。");
 			return;
 		}
 	}
@@ -242,14 +242,14 @@ void CDivisionCouplingDlg::MergeProc()
 		return;
 	}
 
-	char *buff;	// �ǂݍ��݃o�b�t�@
+	char *buff;	// 読み込みバッファ
 	int szDivSize;
 	while( m_bProc )
 	{
 		m_fNameOrg.Format("%s.div%03d", m_fNameNew, m_nIdx);
 		if ( ! m_cstOrgFile.Open(m_fNameOrg, CFile::typeBinary) )
 		{
-			// �ǂݍ��ރt�@�C���������Ȃ�����I��
+			// 読み込むファイルが無くなったら終了
 			break;
 		}
 
@@ -261,13 +261,13 @@ void CDivisionCouplingDlg::MergeProc()
 			break;
 		}
 
-		// �o�C�i���f�[�^��Read&Write
+		// バイナリデータをRead&Write
 		m_cstOrgFile.Read(buff, szDivSize);
 		m_cstNewFile.Write(buff, szDivSize);
 		m_cstOrgFile.Close();
 
-		// TODO�F��������t�@�C���S�����擾����K�v������
-		// �v���O���X�o�[�̍X�V
+		// TODO：結合するファイル全数を取得する必要がある
+		// プログレスバーの更新
 		//UpdateProgressBar(m_nIdx);
 
 		m_nIdx++;
@@ -289,10 +289,10 @@ void CDivisionCouplingDlg::OnBnClickedMergeBrowse()
 
 void CDivisionCouplingDlg::OnBrowse(UINT nID, BOOL bIsFileOpen)
 {
-	// �t�@�C�����J��
+	// ファイルを開く
 	CFileDialog *dlgFile;
 
-	dlgFile = new CFileDialog(bIsFileOpen, "*.*", NULL, OFN_CREATEPROMPT, "*.*|*.*|�S��(*.*)|*.*||");
+	dlgFile = new CFileDialog(bIsFileOpen, "*.*", NULL, OFN_CREATEPROMPT, "*.*|*.*|全て(*.*)|*.*||");
 	if ( dlgFile->DoModal() == IDOK )
 	{
 		CString strFileName;
@@ -310,7 +310,7 @@ void CDivisionCouplingDlg::EnableControl(BOOL bEnable)
 
 void CDivisionCouplingDlg::UpdateProgressBar(int nPos)
 {
-	// Start�ʒu�AEnd�ʒu��ݒ�
+	// Start位置、End位置を設定
 	int start,end;
 	switch(nPos)
 	{
@@ -330,7 +330,7 @@ void CDivisionCouplingDlg::UpdateProgressBar(int nPos)
 		break;
 	}
 
-	// �v���O���X�o�[�̌��݈ʒu�ݒ�
+	// プログレスバーの現在位置設定
 	mdx_progress.SetPos(start);
 }
 

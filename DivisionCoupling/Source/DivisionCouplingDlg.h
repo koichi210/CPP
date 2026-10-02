@@ -1,5 +1,5 @@
-
-// DivisionCouplingDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿
+// DivisionCouplingDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #pragma once
@@ -10,35 +10,35 @@
 #define POS_END				(-1)
 #define POS_INIT			(0)
 
-// CDivisionCouplingDlg ƒ_ƒCƒAƒƒO
+// CDivisionCouplingDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 class CDivisionCouplingDlg : public CDialogEx
 {
-// ƒRƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³
 public:
-	CDivisionCouplingDlg(CWnd* pParent = NULL);	// •W€ƒRƒ“ƒXƒgƒ‰ƒNƒ^[
-	int			m_fDivSize;		// •ªŠ„ƒTƒCƒY
-	int			m_fRestSize;	// •ªŠ„c‚èƒTƒCƒY
-	int			m_nIdx;			// •ªŠ„‚ÌƒCƒ“ƒfƒbƒNƒX
-	CString		m_fNameOrg;		// •ªŠ„Œ³ƒtƒ@ƒCƒ‹–¼
-	CString		m_fNameNew;		// •ªŠ„Œãƒtƒ@ƒCƒ‹–¼
-	CStdioFile	m_cstOrgFile;	// •ªŠ„Œ³ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^
-	CStdioFile	m_cstNewFile;	// •ªŠ„Œãƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^
-	int			m_Err;			// ˆ—’†‚ÌƒGƒ‰[
-	int			m_MaxNum;		// •ªŠ„‚µ‚½ƒtƒ@ƒCƒ‹‚Ì”iƒvƒƒOƒŒƒXƒo[—pj
-	BOOL		m_bProc;		// ˆ—’†ƒtƒ‰ƒO
+	CDivisionCouplingDlg(CWnd* pParent = NULL);	// æ¨™æº–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼
+	int			m_fDivSize;		// åˆ†å‰²ã‚µã‚¤ã‚º
+	int			m_fRestSize;	// åˆ†å‰²æ®‹ã‚Šã‚µã‚¤ã‚º
+	int			m_nIdx;			// åˆ†å‰²æ™‚ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	CString		m_fNameOrg;		// åˆ†å‰²å…ƒãƒ•ã‚¡ã‚¤ãƒ«å
+	CString		m_fNameNew;		// åˆ†å‰²å¾Œãƒ•ã‚¡ã‚¤ãƒ«å
+	CStdioFile	m_cstOrgFile;	// åˆ†å‰²å…ƒãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+	CStdioFile	m_cstNewFile;	// åˆ†å‰²å¾Œãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+	int			m_Err;			// å‡¦ç†ä¸­ã®ã‚¨ãƒ©ãƒ¼
+	int			m_MaxNum;		// åˆ†å‰²ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®æ•°ï¼ˆãƒ—ãƒ­ã‚°ãƒ¬ã‚¹ãƒãƒ¼ç”¨ï¼‰
+	BOOL		m_bProc;		// å‡¦ç†ä¸­ãƒ•ãƒ©ã‚°
 	enum {				// Err
-		//NO_ERROR		 = 0,	// WinError.h‚Å’è‹`Ï‚İ
+		//NO_ERROR		 = 0,	// WinError.hã§å®šç¾©æ¸ˆã¿
 		ERR_OPEN_ORGFILE = 1,
 		ERR_OPEN_NEWFILE = 2,
 		ERR_CALLOC		 = 3,
 		ERR_DIV_SIZE	 = 4
 	};
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	enum { IDD = IDD_DIVISION_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã‚µãƒãƒ¼ãƒˆ
 public:
 	void Initialize();
 	void Result();
@@ -51,11 +51,11 @@ public:
 	void SetProgressSplitFileNum();
 	void SetProgressMergeFileNum();
 
-// À‘•
+// å®Ÿè£…
 protected:
 	HICON m_hIcon;
 
-	// ¶¬‚³‚ê‚½AƒƒbƒZ[ƒWŠ„‚è“–‚ÄŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²ã‚Šå½“ã¦é–¢æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
