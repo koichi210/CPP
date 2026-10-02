@@ -1,50 +1,25 @@
-﻿#if !defined(AFX_ANSDLG_H__10E74F65_7B5F_4506_A68B_6EB9A9E4D00E__INCLUDED_)
-#define AFX_ANSDLG_H__10E74F65_7B5F_4506_A68B_6EB9A9E4D00E__INCLUDED_
+﻿// AnsDlg.h : 解答ダイアログ（答え合わせ）
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// AnsDlg.h : ヘッダー ファイル
-//
 
-/////////////////////////////////////////////////////////////////////////////
-// AnsDlg ダイアログ
+class CTurnMemoryDlg;
 
-class AnsDlg : public CDialog
+class CAnsDlg : public CDialog
 {
-// コンストラクション
 public:
-	AnsDlg(CWnd* pParent = NULL);   // 標準のコンストラクタ
-	void CheckProc();
-	CTurnMemoryDlg *pParent;
-	int judge[CELL_MAX*CELL_MAX];
+	CAnsDlg(const CTurnMemoryDlg& game, CWnd* pParent = nullptr);
 
-// ダイアログ データ
-	//{{AFX_DATA(AnsDlg)
 	enum { IDD = IDD_ANS };
-		// メモ: ClassWizard はこの位置にデータ メンバを追加します。
-	//}}AFX_DATA
 
-
-// オーバーライド
-	// ClassWizard は仮想関数のオーバーライドを生成します。
-	//{{AFX_VIRTUAL(AnsDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
-	//}}AFX_VIRTUAL
-
-// インプリメンテーション
 protected:
+	virtual BOOL OnInitDialog() override;
 
-	// 生成されたメッセージ マップ関数
-	//{{AFX_MSG(AnsDlg)
-	virtual BOOL OnInitDialog();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
+private:
+	void CheckProc();
+
+	const CTurnMemoryDlg&	m_game;
+	bool					m_judge[CELL_MAX * CELL_MAX] = {};	// 各マスが正解か
 };
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ は前行の直前に追加の宣言を挿入します。
-
-#endif // !defined(AFX_ANSDLG_H__10E74F65_7B5F_4506_A68B_6EB9A9E4D00E__INCLUDED_)

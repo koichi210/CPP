@@ -54,9 +54,5 @@
     <CustomBuild Include="res\TurnMemory.ico">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="res\TurnMemory.rc2">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
-﻿// TurnMemoryDlg.cpp : インプリメンテーション ファイル
-//
+﻿// TurnMemoryDlg.cpp : メインダイアログ（出題）
 
 #include "stdafx.h"
 #include "TurnMemory.h"
@@ -8,90 +7,97 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// CTurnMemoryDlg ダイアログ
-
-CTurnMemoryDlg::CTurnMemoryDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CTurnMemoryDlg::IDD, pParent)
+namespace
 {
-	//{{AFX_DATA_INIT(CTurnMemoryDlg)
-		// メモ: この位置に ClassWizard によってメンバの初期化が追加されます。
-	//}}AFX_DATA_INIT
-	// メモ: LoadIcon は Win32 の DestroyIcon のサブシーケンスを要求しません。
+	constexpr int DEF_PRB = 4;			// 1辺のマス数の初期値
+
+	constexpr UINT_PTR EVENT_SHOW = 1;	// 順番を表示するタイマ
+	constexpr UINT_PTR EVENT_WAIT = 2;	// 記憶時間のタイマ
+
+	constexpr UINT SHOW_INVAL = 1000;
+	constexpr UINT WAIT_INVAL = 1000;
+	constexpr int WAIT_MAX = 5;
+
+	constexpr LPCTSTR KEEP_MIND_STR		= _T("順番を記憶して下さい。");
+	constexpr LPCTSTR CNT_REMEMBER_STR	= _T("秒間覚えて下さい。");
+	constexpr LPCTSTR START_STR			= _T("スタートを押して下さい。");
+	constexpr LPCTSTR END_STR			= _T("解答を入力して下さい。");
+	constexpr LPCTSTR START_BUTTON		= _T("スタート");
+	constexpr LPCTSTR STOP_BUTTON		= _T("ストップ");
+}
+
+void ShowCellGrid(CWnd& dlg, int size)
+{
+	for (int i = 0; i < CELL_MAX; i++)
+	{
+		for (int j = 0; j < CELL_MAX; j++)
+		{
+			const bool bShow = (i < size) && (j < size);
+			dlg.GetDlgItem(CellCtrlId(i, j))->ShowWindow(bShow ? SW_SHOWNORMAL : SW_HIDE);
+		}
+
+		const int nShowEdge = (i < size) ? SW_SHOWNORMAL : SW_HIDE;
+		dlg.GetDlgItem(IDC_LINE1 + i)->ShowWindow(nShowEdge);
+		dlg.GetDlgItem(IDC_ROW1 + i)->ShowWindow(nShowEdge);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// CTurnMemoryDlg
+
+CTurnMemoryDlg::CTurnMemoryDlg(CWnd* pParent)
+	: CDialog(IDD, pParent)
+{
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CTurnMemoryDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CTurnMemoryDlg)
-		// メモ: この場所には ClassWizard によって DDX と DDV の呼び出しが追加されます。
-	//}}AFX_DATA_MAP
-}
-
 BEGIN_MESSAGE_MAP(CTurnMemoryDlg, CDialog)
-	//{{AFX_MSG_MAP(CTurnMemoryDlg)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_START, OnStart)
-	ON_BN_CLICKED(IDC_ANS, OnAns)
+	ON_BN_CLICKED(IDC_START, &CTurnMemoryDlg::OnStart)
+	ON_BN_CLICKED(IDC_ANS, &CTurnMemoryDlg::OnAns)
 	ON_WM_TIMER()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CTurnMemoryDlg メッセージ ハンドラ
 
 BOOL CTurnMemoryDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// このダイアログ用のアイコンを設定します。フレームワークはアプリケーションのメイン
-	// ウィンドウがダイアログでない時は自動的に設定しません。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンを設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンを設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
 	GetDlgItem(IDC_TITLE)->SetWindowText(START_STR);
-	srand(time(NULL));
-	//makelist box
+	srand(static_cast<unsigned>(time(nullptr)));
+
+	// マス数の選択肢
 	SendDlgItemMessage(IDC_PROBLEM, CB_RESETCONTENT, 0, 0L);
 	for (int i = CELL_MIN; i <= CELL_MAX; i++)
 	{
-		char str[256];
-		long ind;
-		memset(str, 0, sizeof(str));
-
-		sprintf(str, "%d × %d", i, i); 
-		ind = SendDlgItemMessage(IDC_PROBLEM, CB_ADDSTRING, 0, (LPARAM)str);
-		SendDlgItemMessage(IDC_PROBLEM, CB_SETITEMDATA, (WPARAM)i, ind);
+		CString str;
+		str.Format(_T("%d × %d"), i, i);
+		SendDlgItemMessage(IDC_PROBLEM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(str.GetString()));
 	}
 
-	prb_num = DEF_PRB;
-	states = INIT;
+	m_size = DEF_PRB;
+	m_state = GameState::Init;
 	m_cnt = 1;
-    SendDlgItemMessage(IDC_PROBLEM, CB_SETCURSEL, prb_num-CELL_MIN, 0L);
+	SendDlgItemMessage(IDC_PROBLEM, CB_SETCURSEL, m_size - CELL_MIN, 0L);
 	Refresh();
 
-	return TRUE;  // TRUE を返すとコントロールに設定したフォーカスは失われません。
+	return TRUE;
 }
 
-// もしダイアログボックスに最小化ボタンを追加するならば、アイコンを描画する
-// コードを以下に記述する必要があります。MFC アプリケーションは document/view
-// モデルを使っているので、この処理はフレームワークにより自動的に処理されます。
-
-void CTurnMemoryDlg::OnPaint() 
+// 最小化時のアイコン描画（ダイアログがメインウィンドウのため自前で描く）
+void CTurnMemoryDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画用のデバイス コンテキスト
+		CPaintDC dc(this);
 
-		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの矩形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -99,7 +105,6 @@ void CTurnMemoryDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンを描画します。
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -108,197 +113,190 @@ void CTurnMemoryDlg::OnPaint()
 	}
 }
 
-// システムは、ユーザーが最小化ウィンドウをドラッグしている間、
-// カーソルを表示するためにここを呼び出します。
 HCURSOR CTurnMemoryDlg::OnQueryDragIcon()
 {
-	return (HCURSOR) m_hIcon;
+	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CTurnMemoryDlg::OnStart() 
+void CTurnMemoryDlg::OnStart()
 {
-	if(states != START){
-		memset(&intbl, 0, sizeof(intbl));
-		states = START;
-		GetDlgItem(IDC_START)->SetWindowText(STOP_BUTTON);
-		GetDlgItem(IDC_TITLE)->SetWindowText(KEEP_MIND_STR);
-		GetDlgItem(IDC_ANS)->EnableWindow(FALSE);
-		GetDlgItem(IDC_PROBLEM)->EnableWindow(FALSE);
-
-		Refresh();
-		BuildNumber();
-		this->SetTimer(EVENT_SHOW, SHOW_INVAL, NULL);
-	}else{
-		states = STOP;
+	if (m_state == GameState::Start)
+	{
+		m_state = GameState::Stop;
 		InitProc();
 		ExitProc();
+		return;
 	}
+
+	memset(m_input, 0, sizeof(m_input));
+	m_state = GameState::Start;
+	GetDlgItem(IDC_START)->SetWindowText(STOP_BUTTON);
+	GetDlgItem(IDC_TITLE)->SetWindowText(KEEP_MIND_STR);
+	GetDlgItem(IDC_ANS)->EnableWindow(FALSE);
+	GetDlgItem(IDC_PROBLEM)->EnableWindow(FALSE);
+
+	Refresh();
+	BuildNumber();
+	SetTimer(EVENT_SHOW, SHOW_INVAL, nullptr);
 }
 
-void CTurnMemoryDlg::OnAns() 
+void CTurnMemoryDlg::OnAns()
 {
-	CTurnMemoryDlg *pParent = (CTurnMemoryDlg *)GetParent();
-	AnsDlg Ans(pParent);
-
-	int ans_cnt = 0;
-
-	for(int i=0;i<prb_num;i++){
-		for(int j=0;j<prb_num;j++){
-			int CurId = i*CELL_MAX+j;
-			intbl[ans_cnt++] = GetDlgItemInt(IDC_EDIT1+CurId, NULL, 0);
+	for (int i = 0; i < m_size; i++)
+	{
+		for (int j = 0; j < m_size; j++)
+		{
+			m_input[i * m_size + j] = GetDlgItemInt(CellCtrlId(i, j), nullptr, FALSE);
 		}
 	}
 
-	Ans.DoModal();
+	CAnsDlg dlg(*this, this);
+	dlg.DoModal();
 
 	GetDlgItem(IDC_TITLE)->SetWindowText(START_STR);
 }
 
-void CTurnMemoryDlg::OnTimer(UINT nIDEvent) 
+void CTurnMemoryDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if(nIDEvent == EVENT_SHOW){
-		//値表示
+	if (nIDEvent == EVENT_SHOW)
+	{
 		ShowProc();
-	}else if(nIDEvent == EVENT_WAIT){
-		//記憶時間カウントダウン
+	}
+	else if (nIDEvent == EVENT_WAIT)
+	{
 		WaitProc();
 	}
 	CDialog::OnTimer(nIDEvent);
 }
 
+// 全部の順番を表示し終えたら、記憶時間のカウントダウンに移る
 void CTurnMemoryDlg::EndProc()
 {
 	m_cnt = 1;
 	m_wait = WAIT_MAX;
-	this->KillTimer(EVENT_SHOW);
-	this->SetTimer(EVENT_WAIT, WAIT_INVAL, NULL);
+	KillTimer(EVENT_SHOW);
+	SetTimer(EVENT_WAIT, WAIT_INVAL, nullptr);
 }
 
 void CTurnMemoryDlg::ExitProc()
 {
-	states = END;
+	m_state = GameState::End;
 	m_cnt = 1;
-	memset(anstbl, 0, sizeof(anstbl));
+	memset(m_answer, 0, sizeof(m_answer));
 	GetDlgItem(IDC_TITLE)->SetWindowText(START_STR);
 	GetDlgItem(IDC_START)->SetWindowText(START_BUTTON);
-	this->KillTimer(EVENT_SHOW);
-	this->KillTimer(EVENT_WAIT);
+	KillTimer(EVENT_SHOW);
+	KillTimer(EVENT_WAIT);
 }
 
+// 解答の入力を受け付ける状態にする
 void CTurnMemoryDlg::InitProc()
 {
 	GetDlgItem(IDC_START)->SetWindowText(START_BUTTON);
 	GetDlgItem(IDC_TITLE)->SetWindowText(END_STR);
 	GetDlgItem(IDC_PROBLEM)->EnableWindow(TRUE);
-	if(states == END && intbl[0] == 0){
+	if (m_state == GameState::End && m_input[0] == 0)
+	{
 		GetDlgItem(IDC_ANS)->EnableWindow(TRUE);
-	}else{
+	}
+	else
+	{
 		GetDlgItem(IDC_ANS)->EnableWindow(FALSE);
 	}
 
-	for(int i=0;i < prb_num;i++){
-		for(int j=0;j < prb_num;j++){
-			int CurId = j*CELL_MAX+i;
-			GetDlgItem(IDC_EDIT1+CurId)->EnableWindow(TRUE);
-			GetDlgItem(IDC_EDIT1+CurId)->SetWindowText("");
+	for (int i = 0; i < m_size; i++)
+	{
+		for (int j = 0; j < m_size; j++)
+		{
+			CWnd* pCell = GetDlgItem(CellCtrlId(i, j));
+			pCell->EnableWindow(TRUE);
+			pCell->SetWindowText(_T(""));
 		}
 	}
 }
 
+// 各マスに 1～マス数 の順番をランダムに割り当てる
 void CTurnMemoryDlg::BuildNumber()
 {
-	int max = -1;
-	int idx = 0;
-	int cell_cnt = CurCellMax(prb_num);
-	int i, j;
-	int randtbl[CELL_MAX*CELL_MAX];
+	const int cellCount = CellCount();
+	int randtbl[CELL_MAX * CELL_MAX];
 
-	// make
-	memset(&anstbl, 0, sizeof(anstbl));
-	for(i=0;i<CurCellMax(prb_num);i++){
+	memset(m_answer, 0, sizeof(m_answer));
+	for (int i = 0; i < cellCount; i++)
+	{
 		randtbl[i] = rand();
 	}
 
-	// sort and build（番号を振ったマスは -1 にして、次からは選ばない）
-	for(i=0;i<CurCellMax(prb_num);i++){
-		for(j=0;j<CurCellMax(prb_num);j++){
-			if(randtbl[j] > max){
+	// 乱数の大きいマスから大きい番号を振る。振ったマスは -1 にして次からは選ばない
+	int number = cellCount;
+	for (int i = 0; i < cellCount; i++)
+	{
+		int max = -1;
+		int idx = 0;
+		for (int j = 0; j < cellCount; j++)
+		{
+			if (randtbl[j] > max)
+			{
 				max = randtbl[j];
 				idx = j;
 			}
 		}
-		anstbl[idx] = cell_cnt--;
+		m_answer[idx] = number--;
 		randtbl[idx] = -1;
-		max = -1 ;
 	}
 }
 
+// 選択中のマス数に合わせてマスを表示し直す
 void CTurnMemoryDlg::Refresh()
 {
-	prb_num = SendDlgItemMessage(IDC_PROBLEM, CB_GETCURSEL, 0, 0);
-	prb_num += CELL_MIN;
+	m_size = static_cast<int>(SendDlgItemMessage(IDC_PROBLEM, CB_GETCURSEL, 0, 0)) + CELL_MIN;
 
-	for(int i=0;i<CELL_MAX;i++){
-		// cell
-		for(int j=0;j<CELL_MAX;j++){
-			int CurId = j*CELL_MAX+i;
-			if((i < prb_num) && (j < prb_num)){
-				GetDlgItem(IDC_EDIT1+CurId)->ShowWindow(TRUE);
-				GetDlgItem(IDC_EDIT1+CurId)->EnableWindow(FALSE);
-				GetDlgItem(IDC_EDIT1+CurId)->SetWindowText("");
-			}else{
-				GetDlgItem(IDC_EDIT1+CurId)->ShowWindow(FALSE);
-			}
-		}
+	ShowCellGrid(*this, m_size);
 
-		// edge
-		if(i < prb_num){
-			GetDlgItem(IDC_LINE1+i)->ShowWindow(TRUE);
-			GetDlgItem(IDC_ROW1+i)->ShowWindow(TRUE);
-		}else{
-			GetDlgItem(IDC_LINE1+i)->ShowWindow(FALSE);
-			GetDlgItem(IDC_ROW1+i)->ShowWindow(FALSE);
+	for (int i = 0; i < m_size; i++)
+	{
+		for (int j = 0; j < m_size; j++)
+		{
+			CWnd* pCell = GetDlgItem(CellCtrlId(i, j));
+			pCell->EnableWindow(FALSE);
+			pCell->SetWindowText(_T(""));
 		}
 	}
 }
 
-void CTurnMemoryDlg::ShowProc() 
+// 次の順番のマスに番号を表示する
+void CTurnMemoryDlg::ShowProc()
 {
-	int i;
-	int CurId = -1;
-	char str[STR_BUFF];
-
-	memset(str, 0, sizeof(str));
-
-	// serch
-	for(i=0;i<CurCellMax(prb_num);i++){
-		if(anstbl[i] == m_cnt){
-			CurId = (i/prb_num) * CELL_MAX + (i%prb_num);
-			break ;
+	for (int i = 0; i < CellCount(); i++)
+	{
+		if (m_answer[i] == m_cnt)
+		{
+			CString str;
+			str.Format(_T("%d"), m_cnt);
+			GetDlgItem(CellCtrlId(i / m_size, i % m_size))->SetWindowText(str);
+			break;
 		}
 	}
 
-	sprintf(str, "%d", m_cnt);
-	GetDlgItem(IDC_EDIT1+CurId)->SetWindowText(str);
-	m_cnt ++;
-	if(m_cnt > CurCellMax(prb_num)){
+	m_cnt++;
+	if (m_cnt > CellCount())
+	{
 		EndProc();
 	}
 }
 
-void CTurnMemoryDlg::WaitProc() 
+void CTurnMemoryDlg::WaitProc()
 {
-	char str[STR_BUFF];
-
-	memset(str, 0, sizeof(str));
-
-	sprintf(str, "%d%s", m_wait, CNT_REMEMBER_STR);
+	CString str;
+	str.Format(_T("%d%s"), m_wait, CNT_REMEMBER_STR);
 	GetDlgItem(IDC_TITLE)->SetWindowText(str);
-	m_wait --;
-	if(m_wait < 0){
-		states = END;
+
+	m_wait--;
+	if (m_wait < 0)
+	{
+		m_state = GameState::End;
 		InitProc();
-		m_wait = WAIT_MAX ;
-		this->KillTimer(EVENT_WAIT);
+		m_wait = WAIT_MAX;
+		KillTimer(EVENT_WAIT);
 	}
 }
