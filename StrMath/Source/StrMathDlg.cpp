@@ -184,6 +184,8 @@ void GetString(int num, LPSTR str)
 		}
 
 		switch(val){
+		case 1:
+			// no braek
 		case 2:
 			// no braek
 		case 4:
