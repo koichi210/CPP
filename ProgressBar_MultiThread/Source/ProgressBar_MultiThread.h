@@ -1,18 +1,18 @@
-
-// ProgressBar_MultiThread.h : PROJECT_NAME ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒƒCƒ“ ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹‚Å‚·B
+ï»¿
+// ProgressBar_MultiThread.h : PROJECT_NAME ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ¡ã‚¤ãƒ³ ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™ã€‚
 //
 
 #pragma once
 
 #ifndef __AFXWIN_H__
-	#error "PCH ‚É‘Î‚µ‚Ä‚±‚Ìƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒNƒ‹[ƒh‚·‚é‘O‚É 'stdafx.h' ‚ğƒCƒ“ƒNƒ‹[ƒh‚µ‚Ä‚­‚¾‚³‚¢"
+	#error "PCH ã«å¯¾ã—ã¦ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã™ã‚‹å‰ã« 'stdafx.h' ã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã—ã¦ãã ã•ã„"
 #endif
 
-#include "resource.h"		// ƒƒCƒ“ ƒVƒ“ƒ{ƒ‹
+#include "resource.h"		// ãƒ¡ã‚¤ãƒ³ ã‚·ãƒ³ãƒœãƒ«
 
 
 // CProgressBarApp:
-// ‚±‚ÌƒNƒ‰ƒX‚ÌÀ‘•‚É‚Â‚¢‚Ä‚ÍAProgressBar_MultiThread.cpp ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢B
+// ã“ã®ã‚¯ãƒ©ã‚¹ã®å®Ÿè£…ã«ã¤ã„ã¦ã¯ã€ProgressBar_MultiThread.cpp ã‚’å‚ç…§ã—ã¦ãã ã•ã„ã€‚
 //
 
 class CProgressBarApp : public CWinApp
@@ -20,11 +20,11 @@ class CProgressBarApp : public CWinApp
 public:
 	CProgressBarApp();
 
-// ƒI[ƒo[ƒ‰ƒCƒh
+// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 public:
 	virtual BOOL InitInstance();
 
-// À‘•
+// å®Ÿè£…
 
 	DECLARE_MESSAGE_MAP()
 };
