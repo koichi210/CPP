@@ -640,10 +640,9 @@ void CBackUpDlg::Refresh()
 
 void CBackUpDlg::OnBnClickedAllClear()
 {
-	// TODO：バグってる？
 	for(int i=0; i < MAXNUM_IDX; i++)
 	{
-		memcpy(&m_bkStruct[i], &m_bkDefault, sizeof(m_bkDefault));
+		m_bkStruct[i] = m_bkDefault;
 	}
 	Refresh();
 }
@@ -715,7 +714,7 @@ BOOL CBackUpDlg::ReadSetting()
 			CString str;
 			int curPos;
 
-			while( file.ReadString(str) )
+			while( idx < MAXNUM_IDX && file.ReadString(str) )
 			{
 				curPos=0;
 				m_bkStruct[idx].bBkEnable = atoi(str.Tokenize(",",curPos));
@@ -732,7 +731,7 @@ BOOL CBackUpDlg::ReadSetting()
 
 	for(;idx<MAXNUM_IDX;idx++)
 	{
-		memcpy(&m_bkStruct[idx],&m_bkDefault,sizeof(m_bkDefault));
+		m_bkStruct[idx] = m_bkDefault;
 	}
 
 	return bReturn;
