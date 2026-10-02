@@ -180,8 +180,8 @@ void CSecurityDlg::OnGetproc()
 	TOKEN_INFORMATION_CLASS tic = TokenGroups;
 	BOOL bReturn;
 
-	char name[2560];
-	char domain[2560];
+	CString name;
+	CString domain;
 	hProcess = GetCurrentProcess();
 	bReturn = OpenProcessToken(hProcess, TOKEN_QUERY, &hToken);
 	if ( bReturn )
@@ -196,8 +196,6 @@ void CSecurityDlg::OnGetproc()
 				bReturn = GetTokenInformation(hToken, tic, (VOID *)pTokenGroups, dwSize, &dwSize);
 				if ( bReturn )
 				{
-					strcpy(name,"");
-					strcpy(domain,"");
 					for(DWORD i=0; i < pTokenGroups->GroupCount; i++ )
 					{
 						char Name[256];
@@ -207,20 +205,28 @@ void CSecurityDlg::OnGetproc()
 						SID_NAME_USE use;
 
 						bReturn = LookupAccountSid(NULL,pTokenGroups->Groups[i].Sid,Name,&szName,Domain,&szDomain,&use);
-						strcat(name,Name);
-						strcat(name,"\n");
-						if( strcmp(Domain,"") == 0){
-							strcat(domain,"(not available name)");
-						}else{
-							strcat(domain,Domain);
+						if ( ! bReturn )
+						{
+							// 名前を引けない SID（ログオン SID など）は空欄扱い
+							Name[0] = '\0';
+							Domain[0] = '\0';
 						}
-						strcat(domain,"\n");
+						name += Name;
+						name += "\n";
+						if( strcmp(Domain,"") == 0){
+							domain += "(not available name)";
+						}else{
+							domain += Domain;
+						}
+						domain += "\n";
 					}
 					GetDlgItem(IDC_PROCTOKEN_NAME)->SetWindowText(name) ;
 					GetDlgItem(IDC_PROCTOKEN_DOMAIN)->SetWindowText(domain) ;
 				}
+				free(pTokenGroups);
 			}
 		}
+		CloseHandle(hToken);
 	}
 	
 }
