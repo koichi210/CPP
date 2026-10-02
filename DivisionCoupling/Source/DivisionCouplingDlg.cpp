@@ -2,7 +2,8 @@
 // DivisionCouplingDlg.cpp : 実装ファイル
 //
 
-#include <string> 
+#include <string>
+#include <climits>
 
 #include "stdafx.h"
 #include "DivisionCoupling.h"
@@ -94,8 +95,8 @@ HCURSOR CDivisionCouplingDlg::OnQueryDragIcon()
 void CDivisionCouplingDlg::OnBnClickedSplit()
 {
 	GetDlgItem(IDET_SPLIT_FNAME)->GetWindowText(m_fNameOrg);
-	m_fDivSize = GetDlgItemInt(IDET_SIZE);
-	m_fDivSize *= UNIT_VALUE;
+	int divSizeKB = (int)GetDlgItemInt(IDET_SIZE);
+	m_fDivSize = ( 0 < divSizeKB && divSizeKB <= INT_MAX / UNIT_VALUE ) ? divSizeKB * UNIT_VALUE : 0;
 	Initialize();
 	AfxBeginThread(SplitProcThread, this);
 }
@@ -170,11 +171,12 @@ void CDivisionCouplingDlg::SplitProc()
 	if ( ! buff )
 	{
 		m_Err = ERR_CALLOC;
+		m_cstOrgFile.Close();
 		return;
 	}
 
 	// 残りサイズの初期値は、元ファイルのサイズ
-	m_fRestSize = (size_t)m_cstOrgFile.GetLength();
+	m_fRestSize = m_cstOrgFile.GetLength();
 
 	// プログレスバーセット
 	SetProgressSplitFileNum();
@@ -191,13 +193,13 @@ void CDivisionCouplingDlg::SplitProc()
 		}
 
 		// 今回の分割サイズを決定
-		if ( m_fRestSize > m_fDivSize )
+		if ( m_fRestSize > (ULONGLONG)m_fDivSize )
 		{
 			szDivSize = m_fDivSize;
 		}
 		else
 		{
-			szDivSize = m_fRestSize;
+			szDivSize = (int)m_fRestSize;
 		}
 		m_fRestSize -= szDivSize;
 
@@ -258,6 +260,7 @@ void CDivisionCouplingDlg::MergeProc()
 		if ( ! buff )
 		{
 			m_Err = ERR_CALLOC;
+			m_cstOrgFile.Close();
 			break;
 		}
 
@@ -290,13 +293,11 @@ void CDivisionCouplingDlg::OnBnClickedMergeBrowse()
 void CDivisionCouplingDlg::OnBrowse(UINT nID, BOOL bIsFileOpen)
 {
 	// ファイルを開く
-	CFileDialog *dlgFile;
-
-	dlgFile = new CFileDialog(bIsFileOpen, "*.*", NULL, OFN_CREATEPROMPT, "*.*|*.*|全て(*.*)|*.*||");
-	if ( dlgFile->DoModal() == IDOK )
+	CFileDialog dlgFile(bIsFileOpen, "*.*", NULL, OFN_CREATEPROMPT, "*.*|*.*|全て(*.*)|*.*||");
+	if ( dlgFile.DoModal() == IDOK )
 	{
 		CString strFileName;
-		strFileName = dlgFile->GetPathName();
+		strFileName = dlgFile.GetPathName();
 		GetDlgItem(nID)->SetWindowText(strFileName);
 	}
 }
@@ -341,7 +342,7 @@ int CDivisionCouplingDlg::GetProgressBarEnd()
 
 void CDivisionCouplingDlg::SetProgressSplitFileNum()
 {
-	m_MaxNum = m_fRestSize / m_fDivSize;
+	m_MaxNum = (int)(m_fRestSize / m_fDivSize);
 	if ( m_fRestSize % m_fDivSize)
 	{
 		m_MaxNum++;

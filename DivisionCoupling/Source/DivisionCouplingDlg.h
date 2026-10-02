@@ -17,7 +17,7 @@ class CDivisionCouplingDlg : public CDialogEx
 public:
 	CDivisionCouplingDlg(CWnd* pParent = NULL);	// 標準コンストラクター
 	int			m_fDivSize;		// 分割サイズ
-	int			m_fRestSize;	// 分割残りサイズ
+	ULONGLONG	m_fRestSize;	// 分割残りサイズ
 	int			m_nIdx;			// 分割時のインデックス
 	CString		m_fNameOrg;		// 分割元ファイル名
 	CString		m_fNameNew;		// 分割後ファイル名
