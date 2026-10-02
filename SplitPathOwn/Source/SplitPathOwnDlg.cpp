@@ -1,6 +1,4 @@
-﻿
-// SplitPathOwnDlg.cpp : 実装ファイル
-//
+﻿// SplitPathOwnDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "SplitPathOwn.h"
@@ -11,26 +9,21 @@
 #define new DEBUG_NEW
 #endif
 
-
-// アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
-
+// システムメニューの「バージョン情報」から開くダイアログ
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// ダイアログ データ
 	enum { IDD = IDD_ABOUTBOX };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
-
-// 実装
 protected:
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
+CAboutDlg::CAboutDlg() : CDialogEx(IDD)
 {
 }
 
@@ -43,13 +36,8 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CSplitPathOwnDlg ダイアログ
-
-
-
-
-CSplitPathOwnDlg::CSplitPathOwnDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CSplitPathOwnDlg::IDD, pParent)
+CSplitPathOwnDlg::CSplitPathOwnDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -66,26 +54,22 @@ BEGIN_MESSAGE_MAP(CSplitPathOwnDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CSplitPathOwnDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-
-// CSplitPathOwnDlg メッセージ ハンドラー
-
 BOOL CSplitPathOwnDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// "バージョン情報..." メニューをシステム メニューに追加します。
-
-	// IDM_ABOUTBOX は、システム コマンドの範囲内になければなりません。
+	// システムメニューに「バージョン情報」を追加する
+	// （IDM_ABOUTBOX はシステムコマンドの範囲内でなければならない）
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
+	if (pSysMenu != nullptr)
 	{
-		BOOL bNameValid;
 		CString strAboutMenu;
-		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
+		BOOL bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
 		ASSERT(bNameValid);
+		UNREFERENCED_PARAMETER(bNameValid);
 		if (!strAboutMenu.IsEmpty())
 		{
 			pSysMenu->AppendMenu(MF_SEPARATOR);
@@ -93,14 +77,10 @@ BOOL CSplitPathOwnDlg::OnInitDialog()
 		}
 	}
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
 void CSplitPathOwnDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -116,19 +96,15 @@ void CSplitPathOwnDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
 void CSplitPathOwnDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -136,7 +112,6 @@ void CSplitPathOwnDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -145,36 +120,33 @@ void CSplitPathOwnDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CSplitPathOwnDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
 void CSplitPathOwnDlg::OnBnClickedButton1()
 {
 	char FileFullPath[256] = "C:/Windows/System32/explorer.exe";
-	char drive[256] = "";       // Drive     : Output
-	char dir[256] = "";         // Directory : Output
-	char fname[256] = "";       // Filename  : Output
-	SplitPath( FileFullPath, drive, dir, fname );
-	
+	// strncpy は終端の '\0' を付けないので、出力先は0で埋めておく
+	char drive[256] = "";
+	char dir[256] = "";
+	char fname[256] = "";
+	SplitPath(FileFullPath, drive, dir, fname);
+
 	CString Result;
 	Result.Format("org=%s\n\n drv=%s\n dir=%s\n fname=%s",
-			FileFullPath,  // Path Input
-			drive,       // Drive     : Output
-			dir,         // Directory : Output
-			fname       // Filename  : Output
+			FileFullPath,
+			drive,
+			dir,
+			fname
 			);
 	MessageBox(Result);
 }
 
-void CSplitPathOwnDlg::SplitPath( char *pFileFullPath, char *pDrive, char *pDir, char *pFile )
+void CSplitPathOwnDlg::SplitPath(const char* pFileFullPath, char* pDrive, char* pDir, char* pFile)
 {
-	char *pt;
+	const char* pt;
 
 	/* ドライブ名取得 */
 	{
