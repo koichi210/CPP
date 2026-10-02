@@ -1,6 +1,4 @@
-﻿
-// memsetDlg.cpp : 実装ファイル
-//
+﻿// memsetDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
 #include "memset.h"
@@ -11,26 +9,21 @@
 #define new DEBUG_NEW
 #endif
 
-
-// アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
-
+// システムメニューの「バージョン情報」から開くダイアログ
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// ダイアログ データ
 	enum { IDD = IDD_ABOUTBOX };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
-
-// 実装
 protected:
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
+CAboutDlg::CAboutDlg() : CDialogEx(IDD)
 {
 }
 
@@ -43,51 +36,41 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CmemsetDlg ダイアログ
-
-
-
-
-CmemsetDlg::CmemsetDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CmemsetDlg::IDD, pParent)
-	, m_FillVal(0)
+CMemsetDlg::CMemsetDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CmemsetDlg::DoDataExchange(CDataExchange* pDX)
+void CMemsetDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDET_FILL_VAL, m_FillVal);
+	DDX_Text(pDX, IDET_FILL_VAL, m_fillValue);
 }
 
-BEGIN_MESSAGE_MAP(CmemsetDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CMemsetDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_EXE, &CmemsetDlg::OnBnClickedExe)
+	ON_BN_CLICKED(IDBT_EXE, &CMemsetDlg::OnBnClickedExe)
 END_MESSAGE_MAP()
 
-
-// CmemsetDlg メッセージ ハンドラー
-
-BOOL CmemsetDlg::OnInitDialog()
+BOOL CMemsetDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// "バージョン情報..." メニューをシステム メニューに追加します。
-
-	// IDM_ABOUTBOX は、システム コマンドの範囲内になければなりません。
+	// システムメニューに「バージョン情報」を追加する
+	// （IDM_ABOUTBOX はシステムコマンドの範囲内でなければならない）
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
+	if (pSysMenu != nullptr)
 	{
-		BOOL bNameValid;
 		CString strAboutMenu;
-		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
+		BOOL bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
 		ASSERT(bNameValid);
+		UNREFERENCED_PARAMETER(bNameValid);
 		if (!strAboutMenu.IsEmpty())
 		{
 			pSysMenu->AppendMenu(MF_SEPARATOR);
@@ -95,17 +78,13 @@ BOOL CmemsetDlg::OnInitDialog()
 		}
 	}
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: 初期化をここに追加します。
-
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return TRUE;
 }
 
-void CmemsetDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CMemsetDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -118,19 +97,15 @@ void CmemsetDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
-
-void CmemsetDlg::OnPaint()
+// 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
+void CMemsetDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -138,7 +113,6 @@ void CmemsetDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// アイコンの描画
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -147,19 +121,16 @@ void CmemsetDlg::OnPaint()
 	}
 }
 
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
-HCURSOR CmemsetDlg::OnQueryDragIcon()
+HCURSOR CMemsetDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-void CmemsetDlg::OnBnClickedExe()
+// memset に int を渡しても下位1バイトの値で埋められることを、デバッガで addr を見て確かめる
+void CMemsetDlg::OnBnClickedExe()
 {
 	UpdateData();
 
 	char addr[100] = {0};
-	memset(addr, m_FillVal, 100);
+	memset(addr, m_fillValue, 100);
 }

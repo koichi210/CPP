@@ -1,35 +1,25 @@
-﻿
-// memsetDlg.h : ヘッダー ファイル
-//
+﻿// memsetDlg.h : メインダイアログ
 
 #pragma once
 
-
-// CmemsetDlg ダイアログ
-class CmemsetDlg : public CDialogEx
+class CMemsetDlg : public CDialogEx
 {
-// コンストラクション
 public:
-	CmemsetDlg(CWnd* pParent = NULL);	// 標準コンストラクター
+	explicit CMemsetDlg(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_memset_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
-
-
-// 実装
 protected:
-	HICON m_hIcon;
+	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual BOOL OnInitDialog() override;
 
-	// 生成された、メッセージ割り当て関数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-public:
-	int m_FillVal;
 	afx_msg void OnBnClickedExe();
+	DECLARE_MESSAGE_MAP()
+
+private:
+	HICON m_hIcon;
+	int m_fillValue = 0;
 };
