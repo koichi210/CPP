@@ -1,6 +1,4 @@
-﻿
-// FileCompare.h : PROJECT_NAME アプリケーションのメイン ヘッダー ファイルです。
-//
+﻿// FileCompare.h : アプリケーションクラス
 
 #pragma once
 
@@ -8,23 +6,14 @@
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
-
-
-// CFileCompareApp:
-// このクラスの実装については、FileCompare.cpp を参照してください。
-//
+#include "resource.h"
 
 class CFileCompareApp : public CWinApp
 {
 public:
 	CFileCompareApp();
 
-// オーバーライド
-public:
-	virtual BOOL InitInstance();
-
-// 実装
+	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };

@@ -1,8 +1,3 @@
-﻿
-// stdafx.cpp : 標準インクルード FileCompare.pch のみを
-// 含むソース ファイルは、プリコンパイル済みヘッダーになります。
-// stdafx.obj にはプリコンパイルされた型情報が含まれます。
+﻿// stdafx.cpp : プリコンパイル済みヘッダーを生成する
 
 #include "stdafx.h"
-
-

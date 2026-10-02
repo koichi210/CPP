@@ -1,79 +1,78 @@
-﻿
-// FileCompareDlg.cpp : 実装ファイル
-//
+﻿// FileCompareDlg.cpp : メインダイアログ（指定フォルダ内の重複ファイルを探す）
 
 #include "stdafx.h"
 #include "FileCompare.h"
 #include "FileCompareDlg.h"
 #include "afxdialogex.h"
-#include "utils.h"
+#include "FileComparer.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
-// CFileCompareDlg ダイアログ
-CFileCompareDlg::CFileCompareDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CFileCompareDlg::IDD, pParent)
+namespace
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	m_bProc = FALSE;
+	// 配列はダイアログ生成時に確保し、比較中に再確保しない（比較スレッドが参照し続けるため）
+	constexpr int		kMaxFileCount	= 100000;
+	constexpr size_t	kMaxFolderCount	= 20;
+	constexpr int		kNoGroup		= 0;
+	constexpr LPCTSTR	kDefaultPath	= _T("C:\\windows;D:\\download;E:\\tmp");
+	constexpr LPCTSTR	kStartLabel		= _T("比較");
+	constexpr LPCTSTR	kStopLabel		= _T("停止");
+	constexpr LPCTSTR	kNewLine		= _T("\r\n");
 }
 
+CFileCompareDlg::CFileCompareDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD, pParent)
+	, m_hIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME))
+	, m_running(false)
+	, m_files(kMaxFileCount)
+	, m_fileCount(0)
+	, m_nextGroup(1)
+{
+}
 
 void CFileCompareDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDPR_COMPARE, mdx_progress);
+	DDX_Control(pDX, IDPR_COMPARE, m_progress);
 }
-
 
 BEGIN_MESSAGE_MAP(CFileCompareDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_EXECUTE, OnBnClickedExecute)
+	ON_BN_CLICKED(IDBT_EXECUTE, &CFileCompareDlg::OnBnClickedExecute)
 END_MESSAGE_MAP()
 
-
-// CFileCompareDlg メッセージ ハンドラー
 BOOL CFileCompareDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
-	//  Framework は、この設定を自動的に行います。
-	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
-	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	GetDlgItem(IDBT_EXECUTE)->SetWindowText(STR_START);
-	GetDlgItem(IDET_PATH)->SetWindowText(STR_DEFALUT_PATH);
-	GetDlgItem(IDET_PATH)->SetFocus();
-	((CEdit*)GetDlgItem(IDET_PATH))->SetSel(0,-1);
-	return FALSE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	SetDlgItemText(IDBT_EXECUTE, kStartLabel);
+	SetDlgItemText(IDET_PATH, kDefaultPath);
+	CEdit* pPathEdit = static_cast<CEdit*>(GetDlgItem(IDET_PATH));
+	pPathEdit->SetFocus();
+	pPathEdit->SetSel(0, -1);
+	return FALSE;	// フォーカスを自分で設定したので FALSE
 }
 
-
-// ダイアログに最小化ボタンを追加する場合、アイコンを描画するための
-//  下のコードが必要です。ドキュメント/ビュー モデルを使う MFC アプリケーションの場合、
-//  これは、Framework によって自動的に設定されます。
+// 最小化時のアイコン描画（ダイアログアプリでは自前で描く必要がある）
 void CFileCompareDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 描画のデバイス コンテキスト
-
+		CPaintDC dc(this);
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// クライアントの四角形領域内の中央
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int cxIcon = GetSystemMetrics(SM_CXICON);
+		const int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// アイコンの描画
+		const int x = (rect.Width() - cxIcon + 1) / 2;
+		const int y = (rect.Height() - cyIcon + 1) / 2;
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -82,255 +81,174 @@ void CFileCompareDlg::OnPaint()
 	}
 }
 
-
-// ユーザーが最小化したウィンドウをドラッグしているときに表示するカーソルを取得するために、
-//  システムがこの関数を呼び出します。
 HCURSOR CFileCompareDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
+// 比較中なら停止、そうでなければ比較を開始する
 void CFileCompareDlg::OnBnClickedExecute()
 {
-	if ( m_bProc )
+	if (m_running)
 	{
-		StopProc();
+		StopCompare();
 		return;
 	}
-
-	InitProc();
-	GetFolder();
-	GetFile();
-	Compare();
+	StartCompare();
 }
 
-
-void CFileCompareDlg::StopProc()
+void CFileCompareDlg::StartCompare()
 {
-	GetDlgItem(IDBT_EXECUTE)->SetWindowText(STR_START);
-	m_bProc = FALSE;
+	m_fileCount = 0;
+	m_nextGroup = 1;
+	m_running = true;
+	SetDlgItemText(IDBT_EXECUTE, kStopLabel);
+	SetDlgItemText(IDET_RESULT, _T(""));
+
+	CollectFiles(GetFolders());
+
+	// 総当たりの進捗。表示上の位置は「行 * ファイル数 + 列」で数える
+	m_progress.SetRange32(0, GetProgressEnd());
+	UpdateProgress(0, 0);
+	AfxBeginThread(CompareThread, this);
 }
 
-void CFileCompareDlg::InitProc()
+void CFileCompareDlg::StopCompare()
 {
-	m_SameGroup = 1;
-	m_FileNum = 0;
-	m_bProc = TRUE;
-
-	for ( int i=0; i<MAX_FILE_NUM; i++)
-	{
-		m_FileList[i].nFindSame = UNKNOWN_SAME;
-		m_FileList[i].strFileName = "";
-	}
-
-	for ( int i=0; i<MAX_FOLDER_NUM; i++)
-	{
-		m_FolderList[i] = "";
-	}
-
-	GetDlgItem(IDBT_EXECUTE)->SetWindowText(STR_STOP);
-	OutputResult(TRUE);
+	SetDlgItemText(IDBT_EXECUTE, kStartLabel);
+	m_running = false;
 }
 
-
-void CFileCompareDlg::GetFolder()
+std::vector<CString> CFileCompareDlg::GetFolders() const
 {
-	CString temp;
-	int		nCnt;
-
-	GetDlgItem(IDET_PATH)->GetWindowText(temp);
-	if ( temp.IsEmpty() )
+	std::vector<CString> folders;
+	CString rest;
+	GetDlgItemText(IDET_PATH, rest);
+	if (rest.IsEmpty())
 	{
-		return ;
+		return folders;
 	}
-	
-	for(int i=0; i<MAX_FOLDER_NUM; i++)
+
+	// 上限を超えた分は捨てる
+	while (folders.size() < kMaxFolderCount)
 	{
-		nCnt = temp.Find(";");
-		if ( nCnt != -1 )
+		const int sep = rest.Find(_T(';'));
+		if (sep < 0)
 		{
-			m_FolderList[i] = temp.Left(nCnt);
-			temp.Delete(0, nCnt+1);	//目的の文字列数 + 区切り（;）文字数
-		}
-		else
-		{
-			m_FolderList[i] = temp;
+			folders.push_back(rest);
 			break;
 		}
+		folders.push_back(rest.Left(sep));
+		rest.Delete(0, sep + 1);
 	}
+	return folders;
 }
 
-
-void CFileCompareDlg::GetFile()
+// 各フォルダ直下のファイルを集める（サブフォルダはたどらない）
+void CFileCompareDlg::CollectFiles(const std::vector<CString>& folders)
 {
-	CFileFind cFind;
-	TCHAR pathName[MAX_PATH];
-
-	for ( int i=0; i<MAX_FOLDER_NUM; i++)
+	CFileFind finder;
+	for (const CString& folder : folders)
 	{
-		if ( m_FolderList[i].IsEmpty() )
+		if (folder.IsEmpty())
 		{
 			continue;
 		}
 
-		// 検索対象フォルダのパス
-		sprintf(pathName, "%s\\*", m_FolderList[i]);
-
-		BOOL bContinue = cFind.FindFile(pathName);
-		while( bContinue )
+		BOOL found = finder.FindFile(folder + _T("\\*"));
+		while (found)
 		{
-			bContinue = cFind.FindNextFile();
-			
-			if ( cFind.IsDots() )	// "." or ".."
+			found = finder.FindNextFile();
+			if (finder.IsDots() || finder.IsDirectory())
 			{
 				continue;
 			}
-
-			if( cFind.IsDirectory() )
+			if (m_fileCount >= kMaxFileCount)
 			{
-				// フォルダはネストする？
+				break;
 			}
-			else // ファイルという認識で良い？
-			{
-				if ( m_FileNum >= MAX_FILE_NUM )
-				{
-					break;
-				}
-				m_FileList[m_FileNum].strFileName = cFind.GetFilePath();
-				m_FileNum++;
-			}
+			m_files[m_fileCount].path = finder.GetFilePath();
+			m_files[m_fileCount].group = kNoGroup;
+			m_fileCount++;
 		}
 	}
 }
 
-void CFileCompareDlg::Compare()
+UINT CFileCompareDlg::CompareThread(LPVOID pParam)
 {
-	//プログレスバーの幅をセット。総当たりで比較するため式は[x * (x-1) /2 = 1～x-1 までの和]
-	mdx_progress.SetRange32(0, GetProgressBarEnd());
-
-	// 位置表示のラベルをリセット
-	UpdateProgressBar(POS_INIT);
-	AfxBeginThread(ProcThread, this);
+	static_cast<CFileCompareDlg*>(pParam)->CompareFiles();
+	return 0;
 }
 
-void CFileCompareDlg::OutputResult(BOOL bClear)
+// 総当たりで比較し、同じ内容のファイルに同じ組番号を付ける
+void CFileCompareDlg::CompareFiles()
 {
-	CString str;
+	CFileComparer comparer;
+	const int end = GetProgressEnd();
 
-	if ( bClear )
+	for (int i = 0; i < m_fileCount && m_running; i++)
 	{
-		str = "";
-	}
-	else
-	{
-		CString temp;
-		for ( int i=1; i<m_SameGroup; i++)
+		UpdateProgress(i * m_fileCount, end);
+		if (m_files[i].group != kNoGroup)
 		{
-			temp.Format("[Group%d]%s", i, END_OF_LINE);
-			str += temp;
-			for ( int j=0; j<MAX_FILE_NUM; j++)
-			{
-				if ( m_FileList[j].nFindSame == i )
-				{
-					str += m_FileList[j].strFileName;
-					str += END_OF_LINE;
-				}
-			}
-			str += END_OF_LINE;
-		}
-	}
-	GetDlgItem(IDET_RESULT)->SetWindowText(str);
-}
-
-void CFileCompareDlg::Result()
-{
-	m_bProc = FALSE;
-	OutputResult();
-}
-
-
-int CFileCompareDlg::GetProgressBarEnd()
-{
-	//return m_FileNum*(m_FileNum-1)/2;
-	return m_FileNum*(m_FileNum-1);
-}
-
-
-void CFileCompareDlg::UpdateProgressBar(int nPos)
-{
-	// Start位置、End位置を設定
-	int start,end;
-	switch(nPos)
-	{
-	case POS_INIT :
-		start = 0;
-		end = 0;
-		break;
-
-	case POS_END :
-		start = GetProgressBarEnd();
-		end = GetProgressBarEnd();
-		break;
-
-	default :
-		start = nPos;
-		end = GetProgressBarEnd();
-		break;
-	}
-
-	// プログレスバーの現在位置設定
-	mdx_progress.SetPos(start);
-
-	// ラベル表示
-	CString str;
-	str.Format("(%d / %d)", start, end);
-	GetDlgItem(IDST_COMPARE)->SetWindowText(str);
-}
-
-
-UINT ProcThread(LPVOID pParam)
-{
-	CFileCompareDlg* pDlg=(CFileCompareDlg*)pParam;
-	CMyCompareFile cCompFile;
-	CString str;
-	BOOL bIsSame;
-
-	for( int i=0; i < pDlg->m_FileNum && pDlg->m_bProc; i++ )	// ファイルリストがいっぱいになるまでループ
-	{
-		pDlg->UpdateProgressBar(i * pDlg->m_FileNum);	// 前の行 * 1列MAX + j
-		if ( pDlg->m_FileList[i].nFindSame != UNKNOWN_SAME )
-		{
-			// すでにダブりを見つけている
-			continue;
+			continue;	// すでにどこかの組に入っている
 		}
 
-		for( int j=i+1; j < pDlg->m_FileNum && pDlg->m_bProc; j++ )
+		for (int j = i + 1; j < m_fileCount && m_running; j++)
 		{
-			pDlg->UpdateProgressBar(i * pDlg->m_FileNum + j);	// 前の行 * 1列MAX + j
-			if ( pDlg->m_FileList[j].nFindSame != UNKNOWN_SAME )
+			UpdateProgress(i * m_fileCount + j, end);
+			if (m_files[j].group != kNoGroup)
 			{
-				// すでにダブりを見つけている
 				continue;
 			}
-			bIsSame = cCompFile.CompareBinary(pDlg->m_FileList[i].strFileName, pDlg->m_FileList[j].strFileName);
-			if ( bIsSame )
+			if (comparer.CompareBinary(m_files[i].path, m_files[j].path))
 			{
-				pDlg->m_FileList[i].nFindSame = pDlg->m_SameGroup;
-				pDlg->m_FileList[j].nFindSame = pDlg->m_SameGroup;
+				m_files[i].group = m_nextGroup;
+				m_files[j].group = m_nextGroup;
 			}
 		}
 
-		if ( pDlg->m_FileList[i].nFindSame != UNKNOWN_SAME )
+		if (m_files[i].group != kNoGroup)
 		{
-			// 今回新しい塊を見つけた
-			pDlg->m_SameGroup++;
+			m_nextGroup++;
 		}
 	}
 
-	//結果表示
-	pDlg->StopProc();
-	pDlg->OutputResult();
-	return TRUE;
+	StopCompare();
+	ShowResult();
 }
 
+int CFileCompareDlg::GetProgressEnd() const
+{
+	return m_fileCount * (m_fileCount - 1);
+}
+
+void CFileCompareDlg::UpdateProgress(int pos, int end)
+{
+	m_progress.SetPos(pos);
+
+	CString text;
+	text.Format(_T("(%d / %d)"), pos, end);
+	SetDlgItemText(IDST_COMPARE, text);
+}
+
+void CFileCompareDlg::ShowResult()
+{
+	CString result;
+	for (int group = 1; group < m_nextGroup; group++)
+	{
+		CString header;
+		header.Format(_T("[Group%d]%s"), group, kNewLine);
+		result += header;
+		for (int i = 0; i < m_fileCount; i++)
+		{
+			if (m_files[i].group == group)
+			{
+				result += m_files[i].path;
+				result += kNewLine;
+			}
+		}
+		result += kNewLine;
+	}
+	SetDlgItemText(IDET_RESULT, result);
+}
