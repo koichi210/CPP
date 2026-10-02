@@ -1,4 +1,4 @@
-// TurnMemoryDlg.h : ƒwƒbƒ_[ ƒtƒ@ƒCƒ‹
+ï»¿// TurnMemoryDlg.h : ãƒ˜ãƒƒãƒ€ãƒ¼ ãƒ•ã‚¡ã‚¤ãƒ«
 //
 
 #if !defined(AFX_TURNMEMORYDLG_H__DBAA0EB2_1E2F_47F7_88D1_F83B473736BE__INCLUDED_)
@@ -9,7 +9,7 @@
 #endif // _MSC_VER > 1000
 
 /////////////////////////////////////////////////////////////////////////////
-// ’è‹`
+// å®šç¾©
 #define INIT		0
 #define START		1
 #define STOP		2
@@ -30,36 +30,36 @@
 #define WAIT_INVAL	1000
 #define WAIT_MAX	5
 
-#define KEEP_MIND_STR		"‡”Ô‚ğ‹L‰¯‚µ‚Ä‰º‚³‚¢B"
-#define CNT_REMEMBER_STR	"•bŠÔŠo‚¦‚Ä‰º‚³‚¢B"
-#define START_STR			"ƒXƒ^[ƒg‚ğ‰Ÿ‚µ‚Ä‰º‚³‚¢B"
-#define END_STR				"‰ğ“š‚ğ“ü—Í‚µ‚Ä‰º‚³‚¢B"
-#define START_BUTTON		"ƒXƒ^[ƒg"
-#define STOP_BUTTON			"ƒXƒgƒbƒv"
+#define KEEP_MIND_STR		"é †ç•ªã‚’è¨˜æ†¶ã—ã¦ä¸‹ã•ã„ã€‚"
+#define CNT_REMEMBER_STR	"ç§’é–“è¦šãˆã¦ä¸‹ã•ã„ã€‚"
+#define START_STR			"ã‚¹ã‚¿ãƒ¼ãƒˆã‚’æŠ¼ã—ã¦ä¸‹ã•ã„ã€‚"
+#define END_STR				"è§£ç­”ã‚’å…¥åŠ›ã—ã¦ä¸‹ã•ã„ã€‚"
+#define START_BUTTON		"ã‚¹ã‚¿ãƒ¼ãƒˆ"
+#define STOP_BUTTON			"ã‚¹ãƒˆãƒƒãƒ—"
 
 #define CurCellMax(a)	(a * a)
 /////////////////////////////////////////////////////////////////////////////
-// CTurnMemoryDlg ƒ_ƒCƒAƒƒO
+// CTurnMemoryDlg ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 
 class CTurnMemoryDlg : public CDialog
 {
-// \’z
+// æ§‹ç¯‰
 public:
-	CTurnMemoryDlg(CWnd* pParent = NULL);	// •W€‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	CTurnMemoryDlg(CWnd* pParent = NULL);	// æ¨™æº–ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-// ƒ_ƒCƒAƒƒO ƒf[ƒ^
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ãƒ‡ãƒ¼ã‚¿
 	//{{AFX_DATA(CTurnMemoryDlg)
 	enum { IDD = IDD_TURNMEMORY_DIALOG };
-		// ƒƒ‚: ‚±‚ÌˆÊ’u‚É ClassWizard ‚É‚æ‚Á‚Äƒf[ƒ^ ƒƒ“ƒo‚ª’Ç‰Á‚³‚ê‚Ü‚·B
+		// ãƒ¡ãƒ¢: ã“ã®ä½ç½®ã« ClassWizard ã«ã‚ˆã£ã¦ãƒ‡ãƒ¼ã‚¿ ãƒ¡ãƒ³ãƒãŒè¿½åŠ ã•ã‚Œã¾ã™ã€‚
 	//}}AFX_DATA
 
-	// ClassWizard ‚Í‰¼‘zŠÖ”‚ÌƒI[ƒo[ƒ‰ƒCƒh‚ğ¶¬‚µ‚Ü‚·B
+	// ClassWizard ã¯ä»®æƒ³é–¢æ•°ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 	//{{AFX_VIRTUAL(CTurnMemoryDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ‚ÌƒTƒ|[ƒg
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV ã®ã‚µãƒãƒ¼ãƒˆ
 	//}}AFX_VIRTUAL
 
-// ƒCƒ“ƒvƒŠƒƒ“ƒe[ƒVƒ‡ƒ“
+// ã‚¤ãƒ³ãƒ—ãƒªãƒ¡ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³
 protected:
 	HICON m_hIcon;
 
@@ -78,7 +78,7 @@ public:
 	void ShowProc();
 	void WaitProc();
 
-	// ¶¬‚³‚ê‚½ƒƒbƒZ[ƒW ƒ}ƒbƒvŠÖ”
+	// ç”Ÿæˆã•ã‚ŒãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒãƒƒãƒ—é–¢æ•°
 	//{{AFX_MSG(CTurnMemoryDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -91,6 +91,6 @@ public:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ ‚Í‘Os‚Ì’¼‘O‚É’Ç‰Á‚ÌéŒ¾‚ğ‘}“ü‚µ‚Ü‚·B
+// Microsoft Visual C++ ã¯å‰è¡Œã®ç›´å‰ã«è¿½åŠ ã®å®£è¨€ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚
 
 #endif // !defined(AFX_TURNMEMORYDLG_H__DBAA0EB2_1E2F_47F7_88D1_F83B473736BE__INCLUDED_)
