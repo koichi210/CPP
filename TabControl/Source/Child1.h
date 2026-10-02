@@ -1,21 +1,18 @@
-﻿#pragma once
+﻿// Child1.h : タブ（PageA）に表示する子ダイアログ
 
-
-// CChild1 ダイアログ
+#pragma once
 
 class CChild1 : public CDialogEx
 {
 	DECLARE_DYNAMIC(CChild1)
 
 public:
-	CChild1(CWnd* pParent = NULL);   // 標準コンストラクター
-	virtual ~CChild1();
+	explicit CChild1(CWnd* pParent = nullptr);
 
-// ダイアログ データ
 	enum { IDD = IDD_CHILD1 };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
+	virtual void DoDataExchange(CDataExchange* pDX) override;
 
 	DECLARE_MESSAGE_MAP()
 };
