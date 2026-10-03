@@ -8,10 +8,10 @@
 
 #include "resource.h"
 
-class CEnumModuleApp : public CWinApp
+class EnumModuleApp : public CWinApp
 {
 public:
-	CEnumModuleApp();
+	EnumModuleApp();
 
 	virtual BOOL InitInstance() override;
 

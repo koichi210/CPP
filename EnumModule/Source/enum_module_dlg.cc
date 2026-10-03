@@ -16,7 +16,7 @@ namespace
 {
 	// GetMappedFileName が返すデバイスパス（\Device\HarddiskVolumeN\...）を
 	// ドライブ文字のパス（C:\...）に戻す
-	bool DevicePathToDosPath(LPCTSTR devicePath, CString& dosPath)
+	bool DevicePathToDosPath(LPCTSTR device_path, CString& dos_path)
 	{
 		TCHAR drives[MAX_PATH + 1] = {};
 		if (GetLogicalDriveStrings(MAX_PATH, drives) == 0)
@@ -28,16 +28,16 @@ namespace
 		for (LPCTSTR p = drives; *p != _T('\0'); p += _tcslen(p) + 1)
 		{
 			const TCHAR drive[3] = { p[0], _T(':'), _T('\0') };
-			TCHAR deviceName[MAX_PATH] = {};
-			if (QueryDosDevice(drive, deviceName, MAX_PATH) == 0)
+			TCHAR device_name[MAX_PATH] = {};
+			if (QueryDosDevice(drive, device_name, MAX_PATH) == 0)
 			{
 				continue;
 			}
 
-			const size_t nameLen = _tcslen(deviceName);
-			if (_tcsnicmp(devicePath, deviceName, nameLen) == 0)
+			const size_t name_len = _tcslen(device_name);
+			if (_tcsnicmp(device_path, device_name, name_len) == 0)
 			{
-				dosPath = CString(drive) + (devicePath + nameLen);
+				dos_path = CString(drive) + (device_path + name_len);
 				return true;
 			}
 		}
@@ -45,133 +45,133 @@ namespace
 	}
 
 	// ファイルをメモリマップし、マップされた実体のファイル名を得る
-	bool GetPhysicalFileName(LPCTSTR fileName, CString& realFileName)
+	bool GetPhysicalFileName(LPCTSTR file_name, CString& real_file_name)
 	{
-		HANDLE hFile = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+		HANDLE file = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
 			nullptr, OPEN_EXISTING, 0, nullptr);
-		if (hFile == INVALID_HANDLE_VALUE)
+		if (file == INVALID_HANDLE_VALUE)
 		{
 			return false;
 		}
 
 		// サイズ 0 のファイルはマッピングできない
-		DWORD sizeHigh = 0;
-		const DWORD sizeLow = GetFileSize(hFile, &sizeHigh);
-		if (sizeLow == 0 && sizeHigh == 0)
+		DWORD size_high = 0;
+		const DWORD size_low = GetFileSize(file, &size_high);
+		if (size_low == 0 && size_high == 0)
 		{
-			CloseHandle(hFile);
+			CloseHandle(file);
 			return false;
 		}
 
-		HANDLE hFileMap = CreateFileMapping(hFile, nullptr, PAGE_READONLY, 0, 1, nullptr);
-		if (hFileMap == nullptr)
+		HANDLE file_map = CreateFileMapping(file, nullptr, PAGE_READONLY, 0, 1, nullptr);
+		if (file_map == nullptr)
 		{
-			CloseHandle(hFile);
+			CloseHandle(file);
 			return false;
 		}
 
-		void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
-		if (pMem == nullptr)
+		void* mem = MapViewOfFile(file_map, FILE_MAP_READ, 0, 0, 1);
+		if (mem == nullptr)
 		{
-			CloseHandle(hFileMap);
-			CloseHandle(hFile);
+			CloseHandle(file_map);
+			CloseHandle(file);
 			return false;
 		}
 
 		bool succeeded = false;
-		TCHAR mappedName[MAX_PATH + 1] = {};
-		if (GetMappedFileName(GetCurrentProcess(), pMem, mappedName, MAX_PATH))
+		TCHAR mapped_name[MAX_PATH + 1] = {};
+		if (GetMappedFileName(GetCurrentProcess(), mem, mapped_name, MAX_PATH))
 		{
-			succeeded = DevicePathToDosPath(mappedName, realFileName);
+			succeeded = DevicePathToDosPath(mapped_name, real_file_name);
 		}
 
-		UnmapViewOfFile(pMem);
-		CloseHandle(hFileMap);
-		CloseHandle(hFile);
+		UnmapViewOfFile(mem);
+		CloseHandle(file_map);
+		CloseHandle(file);
 		return succeeded;
 	}
 
 	// 指定プロセスが読み込んでいるモジュールの一覧を文字列にする
-	CString ListModuleNames(DWORD processId)
+	CString ListModuleNames(DWORD process_id)
 	{
 		CString result;
 
-		TRACE(_T("\nProcess ID: %u\n"), processId);
-		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
-		if (hProcess == nullptr)
+		TRACE(_T("\nProcess ID: %u\n"), process_id);
+		HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, process_id);
+		if (process == nullptr)
 		{
 			return result;
 		}
 
-		HMODULE hMods[1024];
-		DWORD cbNeeded = 0;
-		if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
+		HMODULE mods[1024];
+		DWORD bytes_needed = 0;
+		if (EnumProcessModules(process, mods, sizeof(mods), &bytes_needed))
 		{
-			// モジュール数が配列より多いと cbNeeded は配列サイズを超えるので、配列の範囲で打ち切る
-			if (cbNeeded > sizeof(hMods))
+			// モジュール数が配列より多いと bytes_needed は配列サイズを超えるので、配列の範囲で打ち切る
+			if (bytes_needed > sizeof(mods))
 			{
-				cbNeeded = sizeof(hMods);
+				bytes_needed = sizeof(mods);
 			}
 
-			const DWORD count = cbNeeded / sizeof(HMODULE);
+			const DWORD count = bytes_needed / sizeof(HMODULE);
 			for (DWORD i = 0; i < count; i++)
 			{
-				TCHAR modName[MAX_PATH];
-				if (GetModuleFileNameEx(hProcess, hMods[i], modName, _countof(modName)) == 0)
+				TCHAR mod_name[MAX_PATH];
+				if (GetModuleFileNameEx(process, mods[i], mod_name, _countof(mod_name)) == 0)
 				{
 					continue;
 				}
 
 				CString line;
-				line.Format(_T("[%2u]\r\n%s (0x%p)\r\n"), i, modName, hMods[i]);
+				line.Format(_T("[%2u]\r\n%s (0x%p)\r\n"), i, mod_name, mods[i]);
 				result += line;
 
-				CString realName;
-				if (GetPhysicalFileName(modName, realName))
+				CString real_name;
+				if (GetPhysicalFileName(mod_name, real_name))
 				{
-					line.Format(_T("   => %s\r\n"), static_cast<LPCTSTR>(realName));
+					line.Format(_T("   => %s\r\n"), static_cast<LPCTSTR>(real_name));
 					result += line;
 				}
 				result += _T("\r\n");
 			}
 		}
-		CloseHandle(hProcess);
+		CloseHandle(process);
 
 		return result;
 	}
 }
 
-CEnumModuleDlg::CEnumModuleDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(CEnumModuleDlg::IDD, pParent)
+EnumModuleDlg::EnumModuleDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(EnumModuleDlg::IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CEnumModuleDlg::DoDataExchange(CDataExchange* pDX)
+void EnumModuleDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDET_PROCESS_NAME, m_strProcessName);
-	DDX_Text(pDX, IDET_RESULT, m_strResult);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Text(dx, IDET_PROCESS_NAME, process_name_);
+	DDX_Text(dx, IDET_RESULT, result_);
 }
 
-BEGIN_MESSAGE_MAP(CEnumModuleDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(EnumModuleDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_GET_MODULENAME, &CEnumModuleDlg::OnBnClickedGetModulename)
+	ON_BN_CLICKED(IDBT_GET_MODULENAME, &EnumModuleDlg::OnBnClickedGetModulename)
 END_MESSAGE_MAP()
 
-BOOL CEnumModuleDlg::OnInitDialog()
+BOOL EnumModuleDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
-void CEnumModuleDlg::OnPaint()
+void EnumModuleDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -179,14 +179,14 @@ void CEnumModuleDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		const int x = (rect.Width() - cxIcon + 1) / 2;
-		const int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -194,22 +194,22 @@ void CEnumModuleDlg::OnPaint()
 	}
 }
 
-HCURSOR CEnumModuleDlg::OnQueryDragIcon()
+HCURSOR EnumModuleDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CEnumModuleDlg::OnBnClickedGetModulename()
+void EnumModuleDlg::OnBnClickedGetModulename()
 {
 	UpdateData(TRUE);
 
-	if (!m_strProcessName.IsEmpty())
+	if (!process_name_.IsEmpty())
 	{
 		// プロセス名から PID を引く機能は未実装
 		MessageBox(_T("プロセス名を任意に指定する機能は非サポート"));
 		return;
 	}
 
-	m_strResult = ListModuleNames(GetCurrentProcessId());
+	result_ = ListModuleNames(GetCurrentProcessId());
 	UpdateData(FALSE);
 }

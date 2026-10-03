@@ -2,15 +2,15 @@
 
 #pragma once
 
-class CEnumModuleDlg : public CDialogEx
+class EnumModuleDlg : public CDialogEx
 {
 public:
-	explicit CEnumModuleDlg(CWnd* pParent = nullptr);
+	explicit EnumModuleDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_ENUMMODULE_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -19,7 +19,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	HICON m_hIcon;
-	CString m_strProcessName;
-	CString m_strResult;
+	HICON icon_;
+	CString process_name_;
+	CString result_;
 };
