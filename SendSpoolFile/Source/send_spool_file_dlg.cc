@@ -165,7 +165,7 @@ void SendSpoolFileDlg::OnBrowse()
 {
 	char file_names[MAX_PATH] = "";
 
-	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT,
+	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_HIDEREADONLY,
 		"スプールファイル（*.SPL）|*.spl;|すべてのﾌｧｲﾙ （*.*）|*.*||", this);
 	dlg.GetOFN().lpstrFile = file_names;
 	dlg.GetOFN().nMaxFile = _countof(file_names);
