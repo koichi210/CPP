@@ -8,10 +8,10 @@
 
 #include "resource.h"
 
-class CJsonIFApp : public CWinApp
+class JsonIFApp : public CWinApp
 {
 public:
-	CJsonIFApp();
+	JsonIFApp();
 
 	virtual BOOL InitInstance() override;
 

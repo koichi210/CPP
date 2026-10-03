@@ -9,31 +9,31 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CJsonIFApp, CWinApp)
+BEGIN_MESSAGE_MAP(JsonIFApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CJsonIFApp theApp;
+JsonIFApp the_app;
 
-CJsonIFApp::CJsonIFApp()
+JsonIFApp::JsonIFApp()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 }
 
-BOOL CJsonIFApp::InitInstance()
+BOOL JsonIFApp::InitInstance()
 {
 	// ComCtl32.dll Version 6 を使うマニフェストの場合、これが無いとウィンドウ作成に失敗する
-	INITCOMMONCONTROLSEX initCtrls = {};
-	initCtrls.dwSize = sizeof(initCtrls);
-	initCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls = {};
+	init_ctrls.dwSize = sizeof(init_ctrls);
+	init_ctrls.dwICC = ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 
 	// MFC コントロールでテーマを有効にするため "Windows ネイティブ" のビジュアルマネージャーを使う
 	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 
-	CJsonIFDlg dlg;
+	JsonIFDlg dlg;
 	m_pMainWnd = &dlg;
 	if (dlg.DoModal() == -1)
 	{

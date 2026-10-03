@@ -6,10 +6,10 @@
 #include "External/rapidjson.h"
 #include "External/json.hpp"
 
-class CJsonIFDlg : public CDialogEx
+class JsonIFDlg : public CDialogEx
 {
 public:
-	explicit CJsonIFDlg(CWnd* pParent = nullptr);
+	explicit JsonIFDlg(CWnd* parent = nullptr);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_JSONIF_DIALOG };
@@ -26,5 +26,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	HICON m_hIcon;
+	HICON icon_;
 };

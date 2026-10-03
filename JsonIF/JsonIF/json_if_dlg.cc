@@ -10,32 +10,32 @@
 #define new DEBUG_NEW
 #endif
 
-CJsonIFDlg::CJsonIFDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_JSONIF_DIALOG, pParent)
+JsonIFDlg::JsonIFDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD_JSONIF_DIALOG, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-BEGIN_MESSAGE_MAP(CJsonIFDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(JsonIFDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IBT_PICOJSON, &CJsonIFDlg::OnBnClickedPicojson)
-	ON_BN_CLICKED(IBT_RAPIDJSON, &CJsonIFDlg::OnBnClickedRapidjson)
-	ON_BN_CLICKED(IBT_NLOMANNJSON, &CJsonIFDlg::OnBnClickedNlomannjson)
+	ON_BN_CLICKED(IBT_PICOJSON, &JsonIFDlg::OnBnClickedPicojson)
+	ON_BN_CLICKED(IBT_RAPIDJSON, &JsonIFDlg::OnBnClickedRapidjson)
+	ON_BN_CLICKED(IBT_NLOMANNJSON, &JsonIFDlg::OnBnClickedNlomannjson)
 END_MESSAGE_MAP()
 
-BOOL CJsonIFDlg::OnInitDialog()
+BOOL JsonIFDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
-void CJsonIFDlg::OnPaint()
+void JsonIFDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -43,14 +43,14 @@ void CJsonIFDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		const int x = (rect.Width() - cxIcon + 1) / 2;
-		const int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -58,22 +58,22 @@ void CJsonIFDlg::OnPaint()
 	}
 }
 
-HCURSOR CJsonIFDlg::OnQueryDragIcon()
+HCURSOR JsonIFDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CJsonIFDlg::OnBnClickedPicojson()
-{
-	// 未実装
-}
-
-void CJsonIFDlg::OnBnClickedRapidjson()
+void JsonIFDlg::OnBnClickedPicojson()
 {
 	// 未実装
 }
 
-void CJsonIFDlg::OnBnClickedNlomannjson()
+void JsonIFDlg::OnBnClickedRapidjson()
+{
+	// 未実装
+}
+
+void JsonIFDlg::OnBnClickedNlomannjson()
 {
 	// お試し用なので、JSON 操作の例外で落ちないよう内容を表示して止める
 	try
