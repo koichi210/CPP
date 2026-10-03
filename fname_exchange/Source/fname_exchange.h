@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CFnameExchangeApp : public CWinApp
+class FnameExchangeApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;

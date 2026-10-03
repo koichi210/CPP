@@ -58,14 +58,14 @@ namespace
 	};
 	const ConvertButton kConvertButtons[] =
 	{
-		{ IDRB_ENUM,     ConvertType::Enum },
-		{ IDRB_ALL_SBCS, ConvertType::AllSbcs },
-		{ IDRB_ALL_DBCS, ConvertType::AllDbcs },
-		{ IDRB_DEL_DIST, ConvertType::DeleteExt },
-		{ IDRB_DEL_NUM,  ConvertType::DeleteCount },
-		{ IDRB_ADD,      ConvertType::Add },
-		{ IDRB_DEL,      ConvertType::Delete },
-		{ IDRB_REP,      ConvertType::Replace },
+		{ IDRB_ENUM,     ConvertType::kEnum },
+		{ IDRB_ALL_SBCS, ConvertType::kAllSbcs },
+		{ IDRB_ALL_DBCS, ConvertType::kAllDbcs },
+		{ IDRB_DEL_DIST, ConvertType::kDeleteExt },
+		{ IDRB_DEL_NUM,  ConvertType::kDeleteCount },
+		{ IDRB_ADD,      ConvertType::kAdd },
+		{ IDRB_DEL,      ConvertType::kDelete },
+		{ IDRB_REP,      ConvertType::kReplace },
 	};
 
 	UINT CountDigits(UINT number)
@@ -82,80 +82,80 @@ namespace
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報ダイアログ
 
-class CAboutDlg : public CDialog
+class AboutDlg : public CDialog
 {
 public:
-	CAboutDlg() : CDialog(IDD) {}
+	AboutDlg() : CDialog(IDD) {}
 
 	enum { IDD = IDD_ABOUTBOX };
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CFnameExchangeDlg
+// FnameExchangeDlg
 
-CFnameExchangeDlg::CFnameExchangeDlg(CWnd* pParent /*=nullptr*/)
-	: CDialog(IDD, pParent)
-	, m_hIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME))
-	, m_target(Target::File)
-	, m_type(ConvertType::Enum)
-	, m_ignoreAlert(kDefaultIgnoreAlert)
-	, m_caseSensitive(false)
-	, m_firstNumber(0)
-	, m_nextNumber(0)
-	, m_digits(0)
-	, m_keepName(false)
-	, m_deleteHead(0)
-	, m_deleteTail(0)
-	, m_addBefore(false)
-	, m_addAfter(false)
+FnameExchangeDlg::FnameExchangeDlg(CWnd* parent /*=nullptr*/)
+	: CDialog(IDD, parent)
+	, icon_(AfxGetApp()->LoadIcon(IDR_MAINFRAME))
+	, target_(Target::kFile)
+	, type_(ConvertType::kEnum)
+	, ignore_alert_(kDefaultIgnoreAlert)
+	, case_sensitive_(false)
+	, first_number_(0)
+	, next_number_(0)
+	, digits_(0)
+	, keep_name_(false)
+	, delete_head_(0)
+	, delete_tail_(0)
+	, add_before_(false)
+	, add_after_(false)
 {
 }
 
-void CFnameExchangeDlg::DoDataExchange(CDataExchange* pDX)
+void FnameExchangeDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDLB_FILE, m_list);
+	CDialog::DoDataExchange(dx);
+	DDX_Control(dx, IDLB_FILE, list_);
 }
 
-BEGIN_MESSAGE_MAP(CFnameExchangeDlg, CDialog)
+BEGIN_MESSAGE_MAP(FnameExchangeDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_BROWSE, &CFnameExchangeDlg::OnBrowse)
-	ON_BN_CLICKED(IDBT_GET_FILE, &CFnameExchangeDlg::OnGetFile)
-	ON_BN_CLICKED(IDRB_FILE, &CFnameExchangeDlg::OnTargetFile)
-	ON_BN_CLICKED(IDRB_FOLDER, &CFnameExchangeDlg::OnTargetFolder)
-	ON_BN_CLICKED(IDBT_ALL_CHECK, &CFnameExchangeDlg::OnAllCheck)
-	ON_BN_CLICKED(IDBT_ALL_UNCHECK, &CFnameExchangeDlg::OnAllUncheck)
-	ON_BN_CLICKED(IDCH_IGNORE_ALERT, &CFnameExchangeDlg::OnIgnoreAlert)
-	ON_BN_CLICKED(IDCH_COMP_BIG_SMALL, &CFnameExchangeDlg::OnCaseSensitive)
-	ON_CONTROL_RANGE(BN_CLICKED, IDRB_ENUM, IDRB_ALL_SBCS, &CFnameExchangeDlg::OnConvertType)
-	ON_BN_CLICKED(IDBT_EXE, &CFnameExchangeDlg::OnExecute)
-	ON_BN_CLICKED(IDBT_UNDO, &CFnameExchangeDlg::OnUndo)
-	ON_BN_CLICKED(IDBT_END, &CFnameExchangeDlg::OnEnd)
+	ON_BN_CLICKED(IDBT_BROWSE, &FnameExchangeDlg::OnBrowse)
+	ON_BN_CLICKED(IDBT_GET_FILE, &FnameExchangeDlg::OnGetFile)
+	ON_BN_CLICKED(IDRB_FILE, &FnameExchangeDlg::OnTargetFile)
+	ON_BN_CLICKED(IDRB_FOLDER, &FnameExchangeDlg::OnTargetFolder)
+	ON_BN_CLICKED(IDBT_ALL_CHECK, &FnameExchangeDlg::OnAllCheck)
+	ON_BN_CLICKED(IDBT_ALL_UNCHECK, &FnameExchangeDlg::OnAllUncheck)
+	ON_BN_CLICKED(IDCH_IGNORE_ALERT, &FnameExchangeDlg::OnIgnoreAlert)
+	ON_BN_CLICKED(IDCH_COMP_BIG_SMALL, &FnameExchangeDlg::OnCaseSensitive)
+	ON_CONTROL_RANGE(BN_CLICKED, IDRB_ENUM, IDRB_ALL_SBCS, &FnameExchangeDlg::OnConvertType)
+	ON_BN_CLICKED(IDBT_EXE, &FnameExchangeDlg::OnExecute)
+	ON_BN_CLICKED(IDBT_UNDO, &FnameExchangeDlg::OnUndo)
+	ON_BN_CLICKED(IDBT_END, &FnameExchangeDlg::OnEnd)
 END_MESSAGE_MAP()
 
-BOOL CFnameExchangeDlg::OnInitDialog()
+BOOL FnameExchangeDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
 	// システムメニューに「バージョン情報」を追加（ID はシステムコマンドの範囲内である必要がある）
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != nullptr)
+	CMenu* sys_menu = GetSystemMenu(FALSE);
+	if (sys_menu != nullptr)
 	{
-		CString aboutMenu;
-		aboutMenu.LoadString(IDS_ABOUTBOX);
-		if (!aboutMenu.IsEmpty())
+		CString about_menu;
+		about_menu.LoadString(IDS_ABOUTBOX);
+		if (!about_menu.IsEmpty())
 		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, aboutMenu);
+			sys_menu->AppendMenu(MF_SEPARATOR);
+			sys_menu->AppendMenu(MF_STRING, IDM_ABOUTBOX, about_menu);
 		}
 	}
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	CString title;
 	title.LoadString(IDSTR_FILE_EXCHANGE);
@@ -168,17 +168,17 @@ BOOL CFnameExchangeDlg::OnInitDialog()
 	CheckDlgButton(IDCH_KEEP_NAME, BST_CHECKED);
 	CheckDlgButton(IDCH_ADD_BEF, BST_CHECKED);
 	CheckDlgButton(IDCH_IGNORE_ALERT, kDefaultIgnoreAlert ? BST_CHECKED : BST_UNCHECKED);
-	m_type = ConvertType::Enum;
+	type_ = ConvertType::kEnum;
 
 	InitDigitsCombo();
-	m_undoSteps.clear();
+	undo_steps_.clear();
 	UpdateControls();
 
 	return TRUE;
 }
 
 // 桁数の選択肢：「自動」「1 ケタ」〜「5 ケタ」。選択位置がそのまま桁数になる
-void CFnameExchangeDlg::InitDigitsCombo()
+void FnameExchangeDlg::InitDigitsCombo()
 {
 	SendDlgItemMessage(IDCB_KETA, CB_RESETCONTENT, 0, 0);
 
@@ -193,34 +193,34 @@ void CFnameExchangeDlg::InitDigitsCombo()
 	SendDlgItemMessage(IDCB_KETA, CB_SETCURSEL, 0, 0);
 }
 
-void CFnameExchangeDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void FnameExchangeDlg::OnSysCommand(UINT id, LPARAM param)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	if ((id & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
+		AboutDlg about_dlg;
+		about_dlg.DoModal();
 	}
 	else
 	{
-		CDialog::OnSysCommand(nID, lParam);
+		CDialog::OnSysCommand(id, param);
 	}
 }
 
 // 最小化時のアイコン描画（ダイアログアプリでは自前で描く必要がある）
-void CFnameExchangeDlg::OnPaint()
+void FnameExchangeDlg::OnPaint()
 {
 	if (IsIconic())
 	{
 		CPaintDC dc(this);
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		const int x = (rect.Width() - cxIcon + 1) / 2;
-		const int y = (rect.Height() - cyIcon + 1) / 2;
-		dc.DrawIcon(x, y, m_hIcon);
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -228,12 +228,12 @@ void CFnameExchangeDlg::OnPaint()
 	}
 }
 
-HCURSOR CFnameExchangeDlg::OnQueryDragIcon()
+HCURSOR FnameExchangeDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CFnameExchangeDlg::OnBrowse()
+void FnameExchangeDlg::OnBrowse()
 {
 	CString path;
 	if (BrowseFolder(m_hWnd, kBrowseTitle, path))
@@ -244,7 +244,7 @@ void CFnameExchangeDlg::OnBrowse()
 }
 
 // 対象ディレクトリ直下のファイル（またはフォルダ）を一覧に出す
-void CFnameExchangeDlg::OnGetFile()
+void FnameExchangeDlg::OnGetFile()
 {
 	CString dir;
 	GetDlgItemText(IDET_DIR, dir);
@@ -254,12 +254,12 @@ void CFnameExchangeDlg::OnGetFile()
 	}
 	const CString pattern = dir + _T("\\*.*");
 
-	m_list.ResetContent();
+	list_.ResetContent();
 
-	int maxLength = 0;
-	if (m_target == Target::File)
+	int max_length = 0;
+	if (target_ == Target::kFile)
 	{
-		m_list.Dir(DDL_READWRITE, pattern);
+		list_.Dir(DDL_READWRITE, pattern);
 	}
 	else
 	{
@@ -274,67 +274,67 @@ void CFnameExchangeDlg::OnGetFile()
 			}
 
 			const CString name = finder.GetFileName();
-			m_list.AddString(name);
-			if (maxLength < name.GetLength())
+			list_.AddString(name);
+			if (max_length < name.GetLength())
 			{
-				maxLength = name.GetLength();
+				max_length = name.GetLength();
 			}
 		}
 	}
-	m_list.SetHorizontalExtent(maxLength * kListCharWidth);
+	list_.SetHorizontalExtent(max_length * kListCharWidth);
 }
 
-void CFnameExchangeDlg::OnTargetFile()
+void FnameExchangeDlg::OnTargetFile()
 {
-	m_target = Target::File;
+	target_ = Target::kFile;
 	OnGetFile();
 }
 
-void CFnameExchangeDlg::OnTargetFolder()
+void FnameExchangeDlg::OnTargetFolder()
 {
-	m_target = Target::Folder;
+	target_ = Target::kFolder;
 	OnGetFile();
 }
 
-void CFnameExchangeDlg::OnAllCheck()
+void FnameExchangeDlg::OnAllCheck()
 {
-	m_list.SetSel(-1, TRUE);
+	list_.SetSel(-1, TRUE);
 }
 
-void CFnameExchangeDlg::OnAllUncheck()
+void FnameExchangeDlg::OnAllUncheck()
 {
-	m_list.SetSel(-1, FALSE);
+	list_.SetSel(-1, FALSE);
 }
 
-void CFnameExchangeDlg::OnIgnoreAlert()
+void FnameExchangeDlg::OnIgnoreAlert()
 {
-	m_ignoreAlert = (IsDlgButtonChecked(IDCH_IGNORE_ALERT) == BST_CHECKED);
+	ignore_alert_ = (IsDlgButtonChecked(IDCH_IGNORE_ALERT) == BST_CHECKED);
 }
 
-void CFnameExchangeDlg::OnCaseSensitive()
+void FnameExchangeDlg::OnCaseSensitive()
 {
-	m_caseSensitive = (IsDlgButtonChecked(IDCH_COMP_BIG_SMALL) == BST_CHECKED);
+	case_sensitive_ = (IsDlgButtonChecked(IDCH_COMP_BIG_SMALL) == BST_CHECKED);
 }
 
-void CFnameExchangeDlg::OnConvertType(UINT nID)
+void FnameExchangeDlg::OnConvertType(UINT id)
 {
 	for (const ConvertButton& button : kConvertButtons)
 	{
-		if (button.id == nID)
+		if (button.id == id)
 		{
-			m_type = button.type;
+			type_ = button.type;
 			UpdateControls();
 			return;
 		}
 	}
 }
 
-void CFnameExchangeDlg::OnEnd()
+void FnameExchangeDlg::OnEnd()
 {
 	CDialog::OnOK();
 }
 
-void CFnameExchangeDlg::OnExecute()
+void FnameExchangeDlg::OnExecute()
 {
 	ReadSettings();
 	const std::vector<CString> names = GetSelectedNames();
@@ -345,22 +345,22 @@ void CFnameExchangeDlg::OnExecute()
 	}
 
 	// 復元情報が上限に達していたら、いちばん古いものを捨てる
-	if (m_undoSteps.size() >= kMaxUndoSteps)
+	if (undo_steps_.size() >= kMaxUndoSteps)
 	{
-		m_undoSteps.erase(m_undoSteps.begin());
+		undo_steps_.erase(undo_steps_.begin());
 	}
-	m_undoSteps.emplace_back();
+	undo_steps_.emplace_back();
 
-	const int fileCount = static_cast<int>(names.size());
+	const int file_count = static_cast<int>(names.size());
 	for (const CString& name : names)
 	{
-		CString oldPath = m_dir;
-		AppendPath(oldPath, name);
+		CString old_path = dir_;
+		AppendPath(old_path, name);
 
-		const CString newPath = MakeNewPath(oldPath, fileCount);
-		if (!newPath.IsEmpty())
+		const CString new_path = MakeNewPath(old_path, file_count);
+		if (!new_path.IsEmpty())
 		{
-			RenameFile(oldPath, newPath);
+			RenameFile(old_path, new_path);
 		}
 	}
 
@@ -368,52 +368,52 @@ void CFnameExchangeDlg::OnExecute()
 	EnableItem(IDBT_UNDO, true);
 }
 
-void CFnameExchangeDlg::OnUndo()
+void FnameExchangeDlg::OnUndo()
 {
 	Undo();
 	OnGetFile();
 	UpdateControls();
 }
 
-void CFnameExchangeDlg::UpdateControls()
+void FnameExchangeDlg::UpdateControls()
 {
-	const bool isEnum = (m_type == ConvertType::Enum);
-	EnableItem(IDST_FIRST_NUM, isEnum);
-	EnableItem(IDET_FIRST_NUM, isEnum);
-	EnableItem(IDCH_KEEP_NAME, isEnum);
-	EnableItem(IDCB_KETA, isEnum);
+	const bool is_enum = (type_ == ConvertType::kEnum);
+	EnableItem(IDST_FIRST_NUM, is_enum);
+	EnableItem(IDET_FIRST_NUM, is_enum);
+	EnableItem(IDCH_KEEP_NAME, is_enum);
+	EnableItem(IDCB_KETA, is_enum);
 
-	const bool isDeleteCount = (m_type == ConvertType::DeleteCount);
-	EnableItem(IDST_DEL_BEF_NUM, isDeleteCount);
-	EnableItem(IDET_DEL_BEF_NUM, isDeleteCount);
-	EnableItem(IDST_DEL_AFT_NUM, isDeleteCount);
-	EnableItem(IDET_DEL_AFT_NUM, isDeleteCount);
+	const bool is_delete_count = (type_ == ConvertType::kDeleteCount);
+	EnableItem(IDST_DEL_BEF_NUM, is_delete_count);
+	EnableItem(IDET_DEL_BEF_NUM, is_delete_count);
+	EnableItem(IDST_DEL_AFT_NUM, is_delete_count);
+	EnableItem(IDET_DEL_AFT_NUM, is_delete_count);
 
-	const bool isAdd = (m_type == ConvertType::Add);
-	EnableItem(IDCH_ADD_BEF, isAdd);
-	EnableItem(IDCH_ADD_AFT, isAdd);
+	const bool is_add = (type_ == ConvertType::kAdd);
+	EnableItem(IDCH_ADD_BEF, is_add);
+	EnableItem(IDCH_ADD_AFT, is_add);
 
-	const bool useText1 = (m_type == ConvertType::Delete || m_type == ConvertType::Replace);
-	EnableItem(IDST_NAME1, useText1);
-	EnableItem(IDET_NAME1, useText1);
+	const bool use_text1 = (type_ == ConvertType::kDelete || type_ == ConvertType::kReplace);
+	EnableItem(IDST_NAME1, use_text1);
+	EnableItem(IDET_NAME1, use_text1);
 
-	const bool useText2 = (m_type == ConvertType::Add || m_type == ConvertType::Replace);
-	EnableItem(IDST_NAME2, useText2);
-	EnableItem(IDET_NAME2, useText2);
+	const bool use_text2 = (type_ == ConvertType::kAdd || type_ == ConvertType::kReplace);
+	EnableItem(IDST_NAME2, use_text2);
+	EnableItem(IDET_NAME2, use_text2);
 
 	// 見出しは使う変換方法のときだけ差し替える（使わない欄は前の見出しのまま無効表示）
 	CString label;
-	switch (m_type)
+	switch (type_)
 	{
-	case ConvertType::Add:
+	case ConvertType::kAdd:
 		label.LoadString(IDSTR_NAME_ADD);
 		SetDlgItemText(IDST_NAME2, label);
 		break;
-	case ConvertType::Delete:
+	case ConvertType::kDelete:
 		label.LoadString(IDSTR_NAME_DEL);
 		SetDlgItemText(IDST_NAME1, label);
 		break;
-	case ConvertType::Replace:
+	case ConvertType::kReplace:
 		label.LoadString(IDSTR_REP_BEF);
 		SetDlgItemText(IDST_NAME1, label);
 		label.LoadString(IDSTR_NAME_REP_AFT);
@@ -423,57 +423,57 @@ void CFnameExchangeDlg::UpdateControls()
 		break;
 	}
 
-	EnableItem(IDBT_UNDO, !m_undoSteps.empty());
+	EnableItem(IDBT_UNDO, !undo_steps_.empty());
 }
 
-void CFnameExchangeDlg::EnableItem(int id, bool enable)
+void FnameExchangeDlg::EnableItem(int id, bool enable)
 {
 	GetDlgItem(id)->EnableWindow(enable ? TRUE : FALSE);
 }
 
 // 選んでいる変換方法の設定だけ画面から読む
-void CFnameExchangeDlg::ReadSettings()
+void FnameExchangeDlg::ReadSettings()
 {
-	m_firstNumber = 0;
-	m_nextNumber = 0;
-	m_digits = 0;
-	m_keepName = false;
-	m_deleteHead = 0;
-	m_deleteTail = 0;
-	m_addBefore = false;
-	m_addAfter = false;
-	m_text1.Empty();
-	m_text2.Empty();
+	first_number_ = 0;
+	next_number_ = 0;
+	digits_ = 0;
+	keep_name_ = false;
+	delete_head_ = 0;
+	delete_tail_ = 0;
+	add_before_ = false;
+	add_after_ = false;
+	text1_.Empty();
+	text2_.Empty();
 
-	GetDlgItemText(IDET_DIR, m_dir);
+	GetDlgItemText(IDET_DIR, dir_);
 
-	switch (m_type)
+	switch (type_)
 	{
-	case ConvertType::Enum:
-		m_firstNumber = GetDlgItemInt(IDET_FIRST_NUM, nullptr, FALSE);
-		m_nextNumber = m_firstNumber;
-		m_keepName = (IsDlgButtonChecked(IDCH_KEEP_NAME) == BST_CHECKED);
-		m_digits = static_cast<int>(SendDlgItemMessage(IDCB_KETA, CB_GETCURSEL, 0, 0));
+	case ConvertType::kEnum:
+		first_number_ = GetDlgItemInt(IDET_FIRST_NUM, nullptr, FALSE);
+		next_number_ = first_number_;
+		keep_name_ = (IsDlgButtonChecked(IDCH_KEEP_NAME) == BST_CHECKED);
+		digits_ = static_cast<int>(SendDlgItemMessage(IDCB_KETA, CB_GETCURSEL, 0, 0));
 		break;
 
-	case ConvertType::DeleteCount:
-		m_deleteHead = GetDlgItemInt(IDET_DEL_BEF_NUM, nullptr, FALSE);
-		m_deleteTail = GetDlgItemInt(IDET_DEL_AFT_NUM, nullptr, FALSE);
+	case ConvertType::kDeleteCount:
+		delete_head_ = GetDlgItemInt(IDET_DEL_BEF_NUM, nullptr, FALSE);
+		delete_tail_ = GetDlgItemInt(IDET_DEL_AFT_NUM, nullptr, FALSE);
 		break;
 
-	case ConvertType::Add:
-		GetDlgItemText(IDET_NAME2, m_text2);
-		m_addBefore = (IsDlgButtonChecked(IDCH_ADD_BEF) == BST_CHECKED);
-		m_addAfter = (IsDlgButtonChecked(IDCH_ADD_AFT) == BST_CHECKED);
+	case ConvertType::kAdd:
+		GetDlgItemText(IDET_NAME2, text2_);
+		add_before_ = (IsDlgButtonChecked(IDCH_ADD_BEF) == BST_CHECKED);
+		add_after_ = (IsDlgButtonChecked(IDCH_ADD_AFT) == BST_CHECKED);
 		break;
 
-	case ConvertType::Delete:
-		GetDlgItemText(IDET_NAME1, m_text1);
+	case ConvertType::kDelete:
+		GetDlgItemText(IDET_NAME1, text1_);
 		break;
 
-	case ConvertType::Replace:
-		GetDlgItemText(IDET_NAME1, m_text1);
-		GetDlgItemText(IDET_NAME2, m_text2);
+	case ConvertType::kReplace:
+		GetDlgItemText(IDET_NAME1, text1_);
+		GetDlgItemText(IDET_NAME2, text2_);
 		break;
 
 	default:
@@ -481,73 +481,73 @@ void CFnameExchangeDlg::ReadSettings()
 	}
 }
 
-std::vector<CString> CFnameExchangeDlg::GetSelectedNames()
+std::vector<CString> FnameExchangeDlg::GetSelectedNames()
 {
 	std::vector<CString> names;
-	const int count = m_list.GetSelCount();
+	const int count = list_.GetSelCount();
 	if (count <= 0)
 	{
 		return names;
 	}
 
 	std::vector<int> indexes(count);
-	m_list.GetSelItems(count, indexes.data());
+	list_.GetSelItems(count, indexes.data());
 	for (int index : indexes)
 	{
 		CString name;
-		m_list.GetText(index, name);
+		list_.GetText(index, name);
 		names.push_back(name);
 	}
 	return names;
 }
 
-CString CFnameExchangeDlg::MakeNewPath(const CString& oldPath, int fileCount)
+CString FnameExchangeDlg::MakeNewPath(const CString& old_path, int file_count)
 {
 	CString file;
 	CString ext;
-	SplitPath(oldPath, nullptr, nullptr, &file, &ext);
+	SplitPath(old_path, nullptr, nullptr, &file, &ext);
 
-	switch (m_type)
+	switch (type_)
 	{
-	case ConvertType::Enum:
-		return BuildPath(MakeEnumName(file, fileCount), ext);
+	case ConvertType::kEnum:
+		return BuildPath(MakeEnumName(file, file_count), ext);
 
-	case ConvertType::AllSbcs:
+	case ConvertType::kAllSbcs:
 		return BuildPath(ZenkakuToHankaku(file), ext);
 
-	case ConvertType::AllDbcs:
+	case ConvertType::kAllDbcs:
 		return BuildPath(HankakuToZenkaku(file), ext);
 
-	case ConvertType::DeleteExt:
+	case ConvertType::kDeleteExt:
 		return BuildPath(file, CString());
 
-	case ConvertType::DeleteCount:
+	case ConvertType::kDeleteCount:
 	{
 		const CString name = MakeDeleteCountName(file);
 		return name.IsEmpty() ? CString() : BuildPath(name, ext);
 	}
 
-	case ConvertType::Add:
+	case ConvertType::kAdd:
 	{
 		const CString name = MakeAddName(file);
 		return name.IsEmpty() ? CString() : BuildPath(name, ext);
 	}
 
-	case ConvertType::Delete:
-		if (m_text1.IsEmpty())
+	case ConvertType::kDelete:
+		if (text1_.IsEmpty())
 		{
 			ShowError(IDSTR_ERR_INPUT_DEL_STR);
 			return CString();
 		}
-		return BuildPath(ReplaceString(file, m_text1, nullptr, m_caseSensitive), ext);
+		return BuildPath(ReplaceString(file, text1_, nullptr, case_sensitive_), ext);
 
-	case ConvertType::Replace:
-		if (m_text1.IsEmpty() || m_text2.IsEmpty())
+	case ConvertType::kReplace:
+		if (text1_.IsEmpty() || text2_.IsEmpty())
 		{
 			ShowError(IDSTR_ERR_INPUT_REP_STR);
 			return CString();
 		}
-		return BuildPath(ReplaceString(file, m_text1, m_text2, m_caseSensitive), ext);
+		return BuildPath(ReplaceString(file, text1_, text2_, case_sensitive_), ext);
 
 	default:
 		return CString();
@@ -555,26 +555,26 @@ CString CFnameExchangeDlg::MakeNewPath(const CString& oldPath, int fileCount)
 }
 
 // 番号は「最初の値 + 件数」の桁数（または指定桁数の大きい方）まで 0 で埋める
-CString CFnameExchangeDlg::MakeEnumName(const CString& file, int fileCount)
+CString FnameExchangeDlg::MakeEnumName(const CString& file, int file_count)
 {
-	int digits = static_cast<int>(CountDigits(m_firstNumber + static_cast<UINT>(fileCount)));
-	if (digits < m_digits)
+	int digits = static_cast<int>(CountDigits(first_number_ + static_cast<UINT>(file_count)));
+	if (digits < digits_)
 	{
-		digits = m_digits;
+		digits = digits_;
 	}
-	const int currentDigits = (m_nextNumber == 0) ? 1 : static_cast<int>(CountDigits(m_nextNumber));
+	const int current_digits = (next_number_ == 0) ? 1 : static_cast<int>(CountDigits(next_number_));
 
 	CString name;
-	for (int i = currentDigits; i < digits; i++)
+	for (int i = current_digits; i < digits; i++)
 	{
 		name += _T('0');
 	}
 	CString number;
-	number.Format(_T("%d"), m_nextNumber);
+	number.Format(_T("%d"), next_number_);
 	name += number;
-	m_nextNumber++;
+	next_number_++;
 
-	if (m_keepName)
+	if (keep_name_)
 	{
 		name += _T(' ');
 		name += file;
@@ -582,9 +582,9 @@ CString CFnameExchangeDlg::MakeEnumName(const CString& file, int fileCount)
 	return name;
 }
 
-CString CFnameExchangeDlg::MakeDeleteCountName(const CString& file)
+CString FnameExchangeDlg::MakeDeleteCountName(const CString& file)
 {
-	if (m_deleteHead == 0 && m_deleteTail == 0)
+	if (delete_head_ == 0 && delete_tail_ == 0)
 	{
 		ShowError(IDSTR_ERR_DEL_NUM);
 		return CString();
@@ -592,9 +592,9 @@ CString CFnameExchangeDlg::MakeDeleteCountName(const CString& file)
 
 	// 文字数はバイト単位で数える
 	const UINT length = static_cast<UINT>(file.GetLength());
-	if (length < m_deleteHead + m_deleteTail + kMinRemainLength)
+	if (length < delete_head_ + delete_tail_ + kMinRemainLength)
 	{
-		if (!m_ignoreAlert)
+		if (!ignore_alert_)
 		{
 			ShowError(IDSTR_ERR_SHORT_NAME);
 		}
@@ -602,78 +602,78 @@ CString CFnameExchangeDlg::MakeDeleteCountName(const CString& file)
 	}
 
 	CString name = file;
-	name.Delete(static_cast<int>(length - m_deleteTail), static_cast<int>(m_deleteTail));
-	name.Delete(0, static_cast<int>(m_deleteHead));
+	name.Delete(static_cast<int>(length - delete_tail_), static_cast<int>(delete_tail_));
+	name.Delete(0, static_cast<int>(delete_head_));
 	return name;
 }
 
-CString CFnameExchangeDlg::MakeAddName(const CString& file)
+CString FnameExchangeDlg::MakeAddName(const CString& file)
 {
-	if (!m_addBefore && !m_addAfter)
+	if (!add_before_ && !add_after_)
 	{
 		ShowError(IDSTR_ERR_SEL_INSERT);
 		return CString();
 	}
-	if (m_text2.IsEmpty())
+	if (text2_.IsEmpty())
 	{
 		ShowError(IDSTR_ERR_INPUT_ADD_STR);
 		return CString();
 	}
 
 	CString name;
-	if (m_addBefore)
+	if (add_before_)
 	{
-		name += m_text2;
+		name += text2_;
 	}
 	name += file;
-	if (m_addAfter)
+	if (add_after_)
 	{
-		name += m_text2;
+		name += text2_;
 	}
 	return name;
 }
 
 // 対象ディレクトリ + 名前 + 拡張子（ext は SplitPath で得た "." 付きのもの）
 // 名前が空でも対象ディレクトリの外のパスにならないよう、名前と拡張子をつないでから連結する
-CString CFnameExchangeDlg::BuildPath(const CString& name, const CString& ext) const
+CString FnameExchangeDlg::BuildPath(const CString& name, const CString& ext) const
 {
-	CString path = m_dir;
+	CString path = dir_;
 	AppendPath(path, name + ext);
 	return path;
 }
 
-void CFnameExchangeDlg::RenameFile(const CString& oldPath, const CString& newPath)
+void FnameExchangeDlg::RenameFile(const CString& old_path, const CString& new_path)
 {
 	CString title;
 	CString message;
 
-	if (oldPath.CompareNoCase(newPath) == 0)
+	if (old_path.CompareNoCase(new_path) == 0)
 	{
-		if (!m_ignoreAlert)
+		if (!ignore_alert_)
 		{
-			message.Format(IDSTR_ERR_FAIL_OVERLAP, oldPath.GetString(), newPath.GetString());
+			message.Format(IDSTR_ERR_FAIL_OVERLAP, old_path.GetString(), new_path.GetString());
 			title.LoadString(IDSTR_ERROR);
 			MessageBox(message, title, MB_OK);
 		}
 		return;
 	}
 
-	if (!::MoveFile(oldPath, newPath))
+	if (!::MoveFile(old_path, new_path))
 	{
 		const DWORD error = ::GetLastError();
-		if (!m_ignoreAlert)
+		if (!ignore_alert_)
 		{
-			message.Format(IDSTR_ERR_FAIL_CHANGE_NAME, static_cast<int>(error), oldPath.GetString(), newPath.GetString());
+			message.Format(IDSTR_ERR_FAIL_CHANGE_NAME, static_cast<int>(error), old_path.GetString(), new_path.GetString());
 			title.LoadString(IDSTR_ERROR);
 			MessageBox(message, title, MB_OK);
 		}
 		return;
 	}
 
-	std::vector<RenameRecord>& step = m_undoSteps.back();
+	std::vector<RenameRecord>& step = undo_steps_.back();
 	if (step.size() < kMaxFilesPerStep)
 	{
-		step.push_back({ oldPath, newPath });
+		step.push_back({ old_path, new_path });
 		return;
 	}
 
@@ -682,41 +682,41 @@ void CFnameExchangeDlg::RenameFile(const CString& oldPath, const CString& newPat
 	if (MessageBox(message, title, MB_YESNO) == IDYES)
 	{
 		// 以降の変更は新しい1回分として記録する
-		m_undoSteps.clear();
-		m_undoSteps.emplace_back();
+		undo_steps_.clear();
+		undo_steps_.emplace_back();
 	}
 }
 
-void CFnameExchangeDlg::Undo()
+void FnameExchangeDlg::Undo()
 {
-	if (m_undoSteps.empty())
+	if (undo_steps_.empty())
 	{
 		ShowError(IDSTR_ERR_NOT_UNDO);
 		return;
 	}
 
-	const std::vector<RenameRecord> step = std::move(m_undoSteps.back());
-	m_undoSteps.pop_back();
+	const std::vector<RenameRecord> step = std::move(undo_steps_.back());
+	undo_steps_.pop_back();
 
 	// 同じ名前を順に使い回した変換（例: 1→0, 2→1）も戻せるよう、後ろから戻す
 	for (auto it = step.rbegin(); it != step.rend(); ++it)
 	{
-		if (!::MoveFile(it->newPath, it->oldPath) && !m_ignoreAlert)
+		if (!::MoveFile(it->new_path, it->old_path) && !ignore_alert_)
 		{
 			CString message;
 			CString title;
-			message.Format(IDSTR_ERR_FAIL_UNDO, it->oldPath.GetString(), it->newPath.GetString());
+			message.Format(IDSTR_ERR_FAIL_UNDO, it->old_path.GetString(), it->new_path.GetString());
 			title.LoadString(IDSTR_ERROR);
 			MessageBox(message, title, MB_OK);
 		}
 	}
 }
 
-void CFnameExchangeDlg::ShowError(UINT messageId)
+void FnameExchangeDlg::ShowError(UINT message_id)
 {
 	CString message;
 	CString title;
-	message.LoadString(messageId);
+	message.LoadString(message_id);
 	title.LoadString(IDSTR_ERROR);
 	MessageBox(message, title, MB_OK);
 }

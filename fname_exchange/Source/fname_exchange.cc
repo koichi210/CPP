@@ -8,17 +8,17 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CFnameExchangeApp, CWinApp)
+BEGIN_MESSAGE_MAP(FnameExchangeApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CFnameExchangeApp theApp;
+FnameExchangeApp the_app;
 
-BOOL CFnameExchangeApp::InitInstance()
+BOOL FnameExchangeApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
-	CFnameExchangeDlg dlg;
+	FnameExchangeDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
