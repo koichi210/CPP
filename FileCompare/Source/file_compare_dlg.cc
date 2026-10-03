@@ -1,10 +1,10 @@
-﻿// FileCompareDlg.cpp : メインダイアログ（指定フォルダ内の重複ファイルを探す）
+﻿// file_compare_dlg.cc : メインダイアログ（指定フォルダ内の重複ファイルを探す）
 
 #include "stdafx.h"
-#include "FileCompare.h"
-#include "FileCompareDlg.h"
+#include "file_compare.h"
+#include "file_compare_dlg.h"
 #include "afxdialogex.h"
-#include "FileComparer.h"
+#include "file_comparer.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -183,7 +183,7 @@ UINT CFileCompareDlg::CompareThread(LPVOID pParam)
 // 総当たりで比較し、同じ内容のファイルに同じ組番号を付ける
 void CFileCompareDlg::CompareFiles()
 {
-	CFileComparer comparer;
+	FileComparer comparer;
 	const int end = GetProgressEnd();
 
 	for (int i = 0; i < m_fileCount && m_running; i++)

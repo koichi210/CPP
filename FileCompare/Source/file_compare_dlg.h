@@ -1,4 +1,4 @@
-﻿// FileCompareDlg.h : メインダイアログ（指定フォルダ内の重複ファイルを探す）
+﻿// file_compare_dlg.h : メインダイアログ（指定フォルダ内の重複ファイルを探す）
 
 #pragma once
 

@@ -1,4 +1,4 @@
-﻿// FileCompare.h : アプリケーションクラス
+﻿// file_compare.h : アプリケーションクラス
 
 #pragma once
 

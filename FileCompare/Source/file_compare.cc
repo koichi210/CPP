@@ -1,8 +1,8 @@
-﻿// FileCompare.cpp : アプリケーションクラス
+﻿// file_compare.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "FileCompare.h"
-#include "FileCompareDlg.h"
+#include "file_compare.h"
+#include "file_compare_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
