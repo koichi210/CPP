@@ -8,28 +8,28 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CFileCompareApp, CWinApp)
+BEGIN_MESSAGE_MAP(FileCompareApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CFileCompareApp::CFileCompareApp()
+FileCompareApp::FileCompareApp()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 }
 
-CFileCompareApp theApp;
+FileCompareApp the_app;
 
-BOOL CFileCompareApp::InitInstance()
+BOOL FileCompareApp::InitInstance()
 {
 	// プログレスバー（コモンコントロール）を使うため
-	INITCOMMONCONTROLSEX initCtrls;
-	initCtrls.dwSize = sizeof(initCtrls);
-	initCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls;
+	init_ctrls.dwSize = sizeof(init_ctrls);
+	init_ctrls.dwICC = ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 
-	CFileCompareDlg dlg;
+	FileCompareDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 

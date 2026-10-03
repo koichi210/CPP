@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CFileCompareApp : public CWinApp
+class FileCompareApp : public CWinApp
 {
 public:
-	CFileCompareApp();
+	FileCompareApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CFileCompareApp theApp;
+extern FileCompareApp the_app;

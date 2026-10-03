@@ -12,15 +12,15 @@ struct FileEntry
 	int		group;		// 同じ内容のファイルの組番号（kNoGroup なら未発見）
 };
 
-class CFileCompareDlg : public CDialogEx
+class FileCompareDlg : public CDialogEx
 {
 public:
-	explicit CFileCompareDlg(CWnd* pParent = nullptr);
+	explicit FileCompareDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_FILECOMPARE_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -29,7 +29,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	static UINT CompareThread(LPVOID pParam);
+	static UINT CompareThread(LPVOID param);
 
 	void StartCompare();
 	void StopCompare();
@@ -40,10 +40,10 @@ private:
 	void UpdateProgress(int pos, int end);
 	void ShowResult();
 
-	HICON				m_hIcon;
-	CProgressCtrl		m_progress;
-	std::atomic<bool>	m_running;		// false にすると比較スレッドが途中で止まる
-	std::vector<FileEntry>	m_files;	// 先頭 m_fileCount 個が今回の比較対象
-	int					m_fileCount;
-	int					m_nextGroup;	// 次に見つけた組に付ける番号
+	HICON				icon_;
+	CProgressCtrl		progress_;
+	std::atomic<bool>	running_;		// false にすると比較スレッドが途中で止まる
+	std::vector<FileEntry>	files_;	// 先頭 file_count_ 個が今回の比較対象
+	int					file_count_;
+	int					next_group_;	// 次に見つけた組に付ける番号
 };
