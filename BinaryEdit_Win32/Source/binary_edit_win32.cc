@@ -7,33 +7,33 @@ namespace
 {
 	constexpr int kMaxLoadString = 100;
 
-	HINSTANCE	g_hInst;							// 現在のインスタンス
-	TCHAR		g_szTitle[kMaxLoadString];			// タイトル バーのテキスト
-	TCHAR		g_szWindowClass[kMaxLoadString];	// メイン ウィンドウ クラス名
+	HINSTANCE	app_instance;							// 現在のインスタンス
+	TCHAR		title[kMaxLoadString];			// タイトル バーのテキスト
+	TCHAR		window_class[kMaxLoadString];	// メイン ウィンドウ クラス名
 
-	ATOM				RegisterMainWindowClass(HINSTANCE hInstance);
-	BOOL				InitInstance(HINSTANCE hInstance, int nCmdShow);
-	LRESULT CALLBACK	WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-	INT_PTR CALLBACK	AboutDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+	ATOM				RegisterMainWindowClass(HINSTANCE instance);
+	BOOL				InitInstance(HINSTANCE instance, int cmd_show);
+	LRESULT CALLBACK	WndProc(HWND wnd, UINT message, WPARAM w_param, LPARAM l_param);
+	INT_PTR CALLBACK	AboutDlgProc(HWND dlg, UINT message, WPARAM w_param, LPARAM l_param);
 }
 
-int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpCmdLine*/, int nCmdShow)
+int APIENTRY _tWinMain(HINSTANCE instance, HINSTANCE /*prev_instance*/, LPTSTR /*cmd_line*/, int cmd_show)
 {
-	LoadString(hInstance, IDS_APP_TITLE, g_szTitle, kMaxLoadString);
-	LoadString(hInstance, IDC_BINARYEDIT_WIN32, g_szWindowClass, kMaxLoadString);
-	RegisterMainWindowClass(hInstance);
+	LoadString(instance, IDS_APP_TITLE, title, kMaxLoadString);
+	LoadString(instance, IDC_BINARYEDIT_WIN32, window_class, kMaxLoadString);
+	RegisterMainWindowClass(instance);
 
-	if (!InitInstance(hInstance, nCmdShow))
+	if (!InitInstance(instance, cmd_show))
 	{
 		return FALSE;
 	}
 
-	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BINARYEDIT_WIN32));
+	HACCEL accel_table = LoadAccelerators(instance, MAKEINTRESOURCE(IDC_BINARYEDIT_WIN32));
 
 	MSG msg;
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		if (!TranslateAccelerator(msg.hwnd, accel_table, &msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -46,7 +46,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR 
 namespace
 {
 
-ATOM RegisterMainWindowClass(HINSTANCE hInstance)
+ATOM RegisterMainWindowClass(HINSTANCE instance)
 {
 	WNDCLASSEX wcex;
 
@@ -55,69 +55,69 @@ ATOM RegisterMainWindowClass(HINSTANCE hInstance)
 	wcex.lpfnWndProc	= WndProc;
 	wcex.cbClsExtra		= 0;
 	wcex.cbWndExtra		= 0;
-	wcex.hInstance		= hInstance;
-	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_BINARYEDIT_WIN32));
+	wcex.hInstance		= instance;
+	wcex.hIcon			= LoadIcon(instance, MAKEINTRESOURCE(IDI_BINARYEDIT_WIN32));
 	wcex.hCursor		= LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground	= reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_BINARYEDIT_WIN32);
-	wcex.lpszClassName	= g_szWindowClass;
-	wcex.hIconSm		= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.lpszClassName	= window_class;
+	wcex.hIconSm		= LoadIcon(instance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassEx(&wcex);
 }
 
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(HINSTANCE instance, int cmd_show)
 {
-	g_hInst = hInstance;
+	app_instance = instance;
 
-	HWND hWnd = CreateWindow(g_szWindowClass, g_szTitle, WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-	if (!hWnd)
+	HWND wnd = CreateWindow(window_class, title, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, instance, nullptr);
+	if (!wnd)
 	{
 		return FALSE;
 	}
 
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
+	ShowWindow(wnd, cmd_show);
+	UpdateWindow(wnd);
 
 	return TRUE;
 }
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND wnd, UINT message, WPARAM w_param, LPARAM l_param)
 {
 	switch (message)
 	{
 	case WM_COMMAND:
-		switch (LOWORD(wParam))
+		switch (LOWORD(w_param))
 		{
 		case IDM_ABOUT:
-			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, AboutDlgProc);
+			DialogBox(app_instance, MAKEINTRESOURCE(IDD_ABOUTBOX), wnd, AboutDlgProc);
 			break;
 		case IDM_EXIT:
-			DestroyWindow(hWnd);
+			DestroyWindow(wnd);
 			break;
 		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
+			return DefWindowProc(wnd, message, w_param, l_param);
 		}
 		break;
 	case WM_PAINT:
 		{
 			// 描画は未実装。BeginPaint/EndPaint で無効領域だけ検証する
 			PAINTSTRUCT ps;
-			BeginPaint(hWnd, &ps);
-			EndPaint(hWnd, &ps);
+			BeginPaint(wnd, &ps);
+			EndPaint(wnd, &ps);
 		}
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		return DefWindowProc(wnd, message, w_param, l_param);
 	}
 	return 0;
 }
 
-INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM /*lParam*/)
+INT_PTR CALLBACK AboutDlgProc(HWND dlg, UINT message, WPARAM w_param, LPARAM /*l_param*/)
 {
 	switch (message)
 	{
@@ -125,9 +125,9 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM /*l
 		return TRUE;
 
 	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		if (LOWORD(w_param) == IDOK || LOWORD(w_param) == IDCANCEL)
 		{
-			EndDialog(hDlg, LOWORD(wParam));
+			EndDialog(dlg, LOWORD(w_param));
 			return TRUE;
 		}
 		break;
