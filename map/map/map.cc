@@ -1,4 +1,4 @@
-﻿// map.cpp : std::map の使い方を確認するコンソールアプリ
+﻿// map.cc : std::map の使い方を確認するコンソールアプリ
 
 #include "stdafx.h"
 #include <iostream>
