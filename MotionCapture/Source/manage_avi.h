@@ -1,6 +1,7 @@
 ﻿// manage_avi.h : 画面を AVI ファイルに録画する
 
-#pragma once
+#ifndef MOTIONCAPTURE_SOURCE_MANAGE_AVI_H_
+#define MOTIONCAPTURE_SOURCE_MANAGE_AVI_H_
 
 #include <vfw.h>
 #include <atomic>
@@ -71,3 +72,5 @@ private:
 	PAVISTREAM		avi_stream_ = nullptr;
 	PAVISTREAM		compress_avi_stream_ = nullptr;
 };
+
+#endif  // MOTIONCAPTURE_SOURCE_MANAGE_AVI_H_

@@ -1,6 +1,7 @@
 ﻿// variable_argument_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef VARIABLEARGUMENT_SOURCE_VARIABLE_ARGUMENT_DLG_H_
+#define VARIABLEARGUMENT_SOURCE_VARIABLE_ARGUMENT_DLG_H_
 
 class VariableArgumentDlg : public CDialogEx
 {
@@ -25,3 +26,5 @@ private:
 	CString replace_;
 	CString output_;
 };
+
+#endif  // VARIABLEARGUMENT_SOURCE_VARIABLE_ARGUMENT_DLG_H_

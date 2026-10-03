@@ -1,6 +1,7 @@
 ﻿// worker_threads.h : ワーカースレッドの起動と終了待ち
 
-#pragma once
+#ifndef COMMON_WORKER_THREADS_H_
+#define COMMON_WORKER_THREADS_H_
 
 #include <afxwin.h>
 
@@ -35,3 +36,5 @@ private:
 
 	std::vector<std::unique_ptr<CWinThread>> threads_;
 };
+
+#endif  // COMMON_WORKER_THREADS_H_

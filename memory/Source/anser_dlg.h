@@ -1,6 +1,7 @@
 ﻿// anser_dlg.h : 解答ダイアログ
 
-#pragma once
+#ifndef MEMORY_SOURCE_ANSER_DLG_H_
+#define MEMORY_SOURCE_ANSER_DLG_H_
 
 #include "memory_def.h"
 
@@ -26,3 +27,5 @@ private:
 	const MemoryDlg&	game_;			// 直前の出題内容
 	BOOL				cheat_ = FALSE;	// 答えを表示中か
 };
+
+#endif  // MEMORY_SOURCE_ANSER_DLG_H_

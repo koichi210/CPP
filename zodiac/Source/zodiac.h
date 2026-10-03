@@ -1,6 +1,7 @@
 ﻿// zodiac.h : アプリケーションクラス
 
-#pragma once
+#ifndef ZODIAC_SOURCE_ZODIAC_H_
+#define ZODIAC_SOURCE_ZODIAC_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -15,3 +16,5 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // ZODIAC_SOURCE_ZODIAC_H_

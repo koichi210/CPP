@@ -1,6 +1,7 @@
 ﻿// memory_def.h : 定数と型
 
-#pragma once
+#ifndef MEMORY_SOURCE_MEMORY_DEF_H_
+#define MEMORY_SOURCE_MEMORY_DEF_H_
 
 constexpr UINT_PTR kGenerateId	= 1;	// 出題タイマのID
 
@@ -47,3 +48,5 @@ constexpr int kTypeEngLarge	= 4;	// アルファベット（大）
 constexpr int kCheckOk			= 0;	// 正常
 constexpr int kCheckNumErr		= 1;	// 問題数エラー
 constexpr int kCheckKetaErr	= 2;	// 桁数エラー
+
+#endif  // MEMORY_SOURCE_MEMORY_DEF_H_

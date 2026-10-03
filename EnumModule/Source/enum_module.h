@@ -1,6 +1,7 @@
 ﻿// EnumModule.h : アプリケーションクラス
 
-#pragma once
+#ifndef ENUMMODULE_SOURCE_ENUM_MODULE_H_
+#define ENUMMODULE_SOURCE_ENUM_MODULE_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -17,3 +18,5 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // ENUMMODULE_SOURCE_ENUM_MODULE_H_

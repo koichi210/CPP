@@ -1,6 +1,7 @@
 ﻿// TabControlDlg.h : メインダイアログ
 
-#pragma once
+#ifndef TABCONTROL_SOURCE_TAB_CONTROL_DLG_H_
+#define TABCONTROL_SOURCE_TAB_CONTROL_DLG_H_
 
 #include "child1.h"
 #include "child2.h"
@@ -30,3 +31,5 @@ private:
 	Child1 child1_;
 	Child2 child2_;
 };
+
+#endif  // TABCONTROL_SOURCE_TAB_CONTROL_DLG_H_

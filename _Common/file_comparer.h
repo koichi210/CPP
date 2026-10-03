@@ -1,6 +1,7 @@
 ﻿// file_comparer.h : 2つのファイルの内容をバイナリ比較する
 
-#pragma once
+#ifndef COMMON_FILE_COMPARER_H_
+#define COMMON_FILE_COMPARER_H_
 
 #include <afxwin.h>
 
@@ -26,3 +27,5 @@ private:
 	CString	file2_;
 	int		error_ = kErrNone;
 };
+
+#endif  // COMMON_FILE_COMPARER_H_

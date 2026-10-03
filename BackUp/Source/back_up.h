@@ -1,6 +1,7 @@
 ﻿// back_up.h : アプリケーションクラス
 
-#pragma once
+#ifndef BACKUP_SOURCE_BACK_UP_H_
+#define BACKUP_SOURCE_BACK_UP_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -17,3 +18,5 @@ public:
 };
 
 extern BackUpApp the_app;
+
+#endif  // BACKUP_SOURCE_BACK_UP_H_

@@ -1,6 +1,7 @@
 ﻿// EnumModuleDlg.h : メインダイアログ（プロセスが読み込んでいるモジュールを列挙）
 
-#pragma once
+#ifndef ENUMMODULE_SOURCE_ENUM_MODULE_DLG_H_
+#define ENUMMODULE_SOURCE_ENUM_MODULE_DLG_H_
 
 class EnumModuleDlg : public CDialogEx
 {
@@ -23,3 +24,5 @@ private:
 	CString process_name_;
 	CString result_;
 };
+
+#endif  // ENUMMODULE_SOURCE_ENUM_MODULE_DLG_H_

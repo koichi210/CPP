@@ -1,6 +1,7 @@
 ﻿// main_dlg.h : メインダイアログ（マクロの実行・停止と設定画面の呼び出し）
 
-#pragma once
+#ifndef EVENTRECORDER_MACROTOOL_MAIN_DLG_H_
+#define EVENTRECORDER_MACROTOOL_MAIN_DLG_H_
 
 #include "macro_defs.h"
 
@@ -28,3 +29,5 @@ private:
 	std::atomic<bool>		running_{ false };		// 実行中。false にすると実行スレッドが止まる
 	CString					version_;				// タイトルに出すバージョン
 };
+
+#endif  // EVENTRECORDER_MACROTOOL_MAIN_DLG_H_

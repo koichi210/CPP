@@ -1,6 +1,7 @@
 ﻿// macro_defs.h : マクロ1行分のデータと、設定画面・実行で共通の定数
 
-#pragma once
+#ifndef EVENTRECORDER_MACROTOOL_MACRO_DEFS_H_
+#define EVENTRECORDER_MACROTOOL_MACRO_DEFS_H_
 
 constexpr int kMaxEventCount = 700;	// 設定できる行数
 
@@ -72,3 +73,5 @@ struct MacroEvent
 	MacroMouse	mouse;
 	char		comment[MAX_PATH];
 };
+
+#endif  // EVENTRECORDER_MACROTOOL_MACRO_DEFS_H_

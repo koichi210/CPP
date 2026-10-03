@@ -1,6 +1,7 @@
 ﻿// SplitPathOwnDlg.h : メインダイアログ
 
-#pragma once
+#ifndef SPLITPATHOWN_SOURCE_SPLIT_PATH_OWN_DLG_H_
+#define SPLITPATHOWN_SOURCE_SPLIT_PATH_OWN_DLG_H_
 
 class SplitPathOwnDlg : public CDialogEx
 {
@@ -25,3 +26,5 @@ private:
 
 	HICON icon_;
 };
+
+#endif  // SPLITPATHOWN_SOURCE_SPLIT_PATH_OWN_DLG_H_

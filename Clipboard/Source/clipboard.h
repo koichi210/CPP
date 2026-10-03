@@ -1,6 +1,7 @@
 ﻿// clipboard.h : アプリケーションクラス
 
-#pragma once
+#ifndef CLIPBOARD_SOURCE_CLIPBOARD_H_
+#define CLIPBOARD_SOURCE_CLIPBOARD_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -17,3 +18,5 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // CLIPBOARD_SOURCE_CLIPBOARD_H_

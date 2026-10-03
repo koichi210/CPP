@@ -1,6 +1,7 @@
 ﻿// memsetDlg.h : メインダイアログ
 
-#pragma once
+#ifndef MEMSET_SOURCE_MEMSET_DLG_H_
+#define MEMSET_SOURCE_MEMSET_DLG_H_
 
 class MemsetDlg : public CDialogEx
 {
@@ -23,3 +24,5 @@ private:
 	HICON icon_;
 	int fill_value_ = 0;
 };
+
+#endif  // MEMSET_SOURCE_MEMSET_DLG_H_

@@ -1,6 +1,7 @@
 ﻿// fname_exchange_dlg.h : メインダイアログ（選んだファイル/フォルダの名前を一括で変換する）
 
-#pragma once
+#ifndef FNAME_EXCHANGE_SOURCE_FNAME_EXCHANGE_DLG_H_
+#define FNAME_EXCHANGE_SOURCE_FNAME_EXCHANGE_DLG_H_
 
 // 変換方法（ラジオボタンと対応）
 enum class ConvertType
@@ -98,3 +99,5 @@ private:
 
 	std::vector<std::vector<RenameRecord>>	undo_steps_;	// 実行1回分ずつの復元情報
 };
+
+#endif  // FNAME_EXCHANGE_SOURCE_FNAME_EXCHANGE_DLG_H_

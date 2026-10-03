@@ -1,6 +1,7 @@
 ﻿// division_coupling_dlg.h : メインダイアログ（ファイルの分割と結合）
 
-#pragma once
+#ifndef DIVISIONCOUPLING_SOURCE_DIVISION_COUPLING_DLG_H_
+#define DIVISIONCOUPLING_SOURCE_DIVISION_COUPLING_DLG_H_
 
 #include <atomic>
 
@@ -66,3 +67,5 @@ private:
 	std::atomic<bool>	closing_{ false };	// 終了処理中（ワーカーはメッセージを出さない）
 	WorkerThreads		workers_;
 };
+
+#endif  // DIVISIONCOUPLING_SOURCE_DIVISION_COUPLING_DLG_H_

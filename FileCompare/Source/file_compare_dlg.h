@@ -1,6 +1,7 @@
 ﻿// file_compare_dlg.h : メインダイアログ（指定フォルダ内の重複ファイルを探す）
 
-#pragma once
+#ifndef FILECOMPARE_SOURCE_FILE_COMPARE_DLG_H_
+#define FILECOMPARE_SOURCE_FILE_COMPARE_DLG_H_
 
 #include <atomic>
 #include <vector>
@@ -54,3 +55,5 @@ private:
 	int					file_count_;
 	int					next_group_;	// 次に見つけた組に付ける番号
 };
+
+#endif  // FILECOMPARE_SOURCE_FILE_COMPARE_DLG_H_

@@ -1,6 +1,7 @@
 ﻿// zodiacDlg.h : メインダイアログ（生まれた年・年齢・干支の早見）
 
-#pragma once
+#ifndef ZODIAC_SOURCE_ZODIAC_DLG_H_
+#define ZODIAC_SOURCE_ZODIAC_DLG_H_
 
 class ZodiacDlg : public CDialog
 {
@@ -38,3 +39,5 @@ private:
 	Mode mode_ = Mode::kNone;
 	int year_ = 0;		// 閲覧基準の年（今年）
 };
+
+#endif  // ZODIAC_SOURCE_ZODIAC_DLG_H_

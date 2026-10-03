@@ -1,6 +1,7 @@
 ﻿// JointMovie.h : アプリケーションクラス
 
-#pragma once
+#ifndef JOINTMOVIE_SOURCE_JOINT_MOVIE_H_
+#define JOINTMOVIE_SOURCE_JOINT_MOVIE_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -15,3 +16,5 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // JOINTMOVIE_SOURCE_JOINT_MOVIE_H_

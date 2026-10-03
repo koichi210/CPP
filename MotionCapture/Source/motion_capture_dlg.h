@@ -1,6 +1,7 @@
 ﻿// motion_capture_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef MOTIONCAPTURE_SOURCE_MOTION_CAPTURE_DLG_H_
+#define MOTIONCAPTURE_SOURCE_MOTION_CAPTURE_DLG_H_
 
 #include "manage_avi.h"
 
@@ -46,3 +47,5 @@ private:
 
 	BOOL	mouse_point_rec_ = TRUE;
 };
+
+#endif  // MOTIONCAPTURE_SOURCE_MOTION_CAPTURE_DLG_H_

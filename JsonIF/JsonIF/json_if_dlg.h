@@ -1,6 +1,7 @@
 ﻿// json_if_dlg.h : メインダイアログ（JSON ライブラリの使い方を試す）
 
-#pragma once
+#ifndef JSONIF_JSONIF_JSON_IF_DLG_H_
+#define JSONIF_JSONIF_JSON_IF_DLG_H_
 
 #include "External/picojson.h"
 #include "External/rapidjson.h"
@@ -28,3 +29,5 @@ protected:
 private:
 	HICON icon_;
 };
+
+#endif  // JSONIF_JSONIF_JSON_IF_DLG_H_

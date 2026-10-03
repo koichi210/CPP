@@ -1,6 +1,7 @@
 ﻿// pc_hang_up.h : アプリケーションクラス
 
-#pragma once
+#ifndef PCHANGUP_SOURCE_PC_HANG_UP_H_
+#define PCHANGUP_SOURCE_PC_HANG_UP_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -17,3 +18,5 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // PCHANGUP_SOURCE_PC_HANG_UP_H_

@@ -1,6 +1,7 @@
 ﻿// ans_dlg.h : 解答ダイアログ（答え合わせ）
 
-#pragma once
+#ifndef TURNMEMORY_SOURCE_ANS_DLG_H_
+#define TURNMEMORY_SOURCE_ANS_DLG_H_
 
 class TurnMemoryDlg;
 
@@ -23,3 +24,5 @@ private:
 	const TurnMemoryDlg&	game_;
 	bool					judge_[kCellMax * kCellMax] = {};	// 各マスが正解か
 };
+
+#endif  // TURNMEMORY_SOURCE_ANS_DLG_H_

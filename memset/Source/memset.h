@@ -1,6 +1,7 @@
 ﻿// memset.h : アプリケーションクラス
 
-#pragma once
+#ifndef MEMSET_SOURCE_MEMSET_H_
+#define MEMSET_SOURCE_MEMSET_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -19,3 +20,5 @@ public:
 };
 
 extern MemsetApp the_app;
+
+#endif  // MEMSET_SOURCE_MEMSET_H_

@@ -1,6 +1,7 @@
 ﻿// StrMathDlg.h : メインダイアログ（ひらがなで足し算／引き算）
 
-#pragma once
+#ifndef STRMATH_SOURCE_STR_MATH_DLG_H_
+#define STRMATH_SOURCE_STR_MATH_DLG_H_
 
 class StrMathDlg : public CDialog
 {
@@ -36,3 +37,5 @@ private:
 	int digits_ = 2;
 	Operation operation_ = Operation::kSum;
 };
+
+#endif  // STRMATH_SOURCE_STR_MATH_DLG_H_

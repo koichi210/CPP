@@ -1,6 +1,7 @@
 ﻿// sample_capt_area_dlg.h : 記録領域の確認ダイアログ
 
-#pragma once
+#ifndef MOTIONCAPTURE_SOURCE_SAMPLE_CAPT_AREA_DLG_H_
+#define MOTIONCAPTURE_SOURCE_SAMPLE_CAPT_AREA_DLG_H_
 
 class SampleCaptAreaDlg : public CDialogEx
 {
@@ -27,3 +28,5 @@ private:
 	UINT		bitmap_bpp_;
 	BITMAPINFO	bitmap_info_ = {};
 };
+
+#endif  // MOTIONCAPTURE_SOURCE_SAMPLE_CAPT_AREA_DLG_H_

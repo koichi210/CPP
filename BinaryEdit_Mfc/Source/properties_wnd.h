@@ -1,6 +1,7 @@
 ﻿// properties_wnd.h : プロパティ ウィンドウ（ドッキングペイン）
 
-#pragma once
+#ifndef BINARYEDIT_MFC_SOURCE_PROPERTIES_WND_H_
+#define BINARYEDIT_MFC_SOURCE_PROPERTIES_WND_H_
 
 class PropertiesToolBar : public CMFCToolBar
 {
@@ -45,3 +46,5 @@ protected:
 	void InitPropList();
 	void SetPropListFont();
 };
+
+#endif  // BINARYEDIT_MFC_SOURCE_PROPERTIES_WND_H_

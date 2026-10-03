@@ -1,6 +1,7 @@
 ﻿// signed_unsigned_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef SIGNEDUNSIGNED_SIGNEDUNSIGNED_SIGNED_UNSIGNED_DLG_H_
+#define SIGNEDUNSIGNED_SIGNEDUNSIGNED_SIGNED_UNSIGNED_DLG_H_
 
 class SignedUnsignedDlg : public CDialogEx
 {
@@ -21,3 +22,5 @@ protected:
 private:
 	HICON icon_;
 };
+
+#endif  // SIGNEDUNSIGNED_SIGNEDUNSIGNED_SIGNED_UNSIGNED_DLG_H_

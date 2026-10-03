@@ -1,6 +1,7 @@
 ﻿// StrMath.h : アプリケーションクラス
 
-#pragma once
+#ifndef STRMATH_SOURCE_STR_MATH_H_
+#define STRMATH_SOURCE_STR_MATH_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -15,3 +16,5 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // STRMATH_SOURCE_STR_MATH_H_

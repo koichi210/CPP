@@ -1,6 +1,7 @@
 ﻿// pointer.h : アプリケーションクラス
 
-#pragma once
+#ifndef POINTER_SOURCE_POINTER_H_
+#define POINTER_SOURCE_POINTER_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -19,3 +20,5 @@ public:
 };
 
 extern PointerApp the_app;
+
+#endif  // POINTER_SOURCE_POINTER_H_

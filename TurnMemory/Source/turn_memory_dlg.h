@@ -1,6 +1,7 @@
 ﻿// turn_memory_dlg.h : メインダイアログ（出題）
 
-#pragma once
+#ifndef TURNMEMORY_SOURCE_TURN_MEMORY_DLG_H_
+#define TURNMEMORY_SOURCE_TURN_MEMORY_DLG_H_
 
 constexpr int kCellMax	= 10;	// 1辺の最大マス数
 constexpr int kCellMin	= 3;	// 1辺の最小マス数
@@ -63,3 +64,5 @@ private:
 	int			cnt_ = 1;			// 次に表示する順番
 	int			wait_ = 0;			// 記憶時間の残り秒数
 };
+
+#endif  // TURNMEMORY_SOURCE_TURN_MEMORY_DLG_H_

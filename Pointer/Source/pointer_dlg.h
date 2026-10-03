@@ -1,6 +1,7 @@
 ﻿// pointer_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef POINTER_SOURCE_POINTER_DLG_H_
+#define POINTER_SOURCE_POINTER_DLG_H_
 
 struct TestData
 {
@@ -33,3 +34,5 @@ private:
 	HICON icon_;
 	TestData test_;
 };
+
+#endif  // POINTER_SOURCE_POINTER_DLG_H_

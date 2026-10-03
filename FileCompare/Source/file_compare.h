@@ -1,6 +1,7 @@
 ﻿// file_compare.h : アプリケーションクラス
 
-#pragma once
+#ifndef FILECOMPARE_SOURCE_FILE_COMPARE_H_
+#define FILECOMPARE_SOURCE_FILE_COMPARE_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -19,3 +20,5 @@ public:
 };
 
 extern FileCompareApp the_app;
+
+#endif  // FILECOMPARE_SOURCE_FILE_COMPARE_H_

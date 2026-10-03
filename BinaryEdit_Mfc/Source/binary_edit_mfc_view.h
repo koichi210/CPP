@@ -1,6 +1,7 @@
 ﻿// binary_edit_mfc_view.h : ビュークラス
 
-#pragma once
+#ifndef BINARYEDIT_MFC_SOURCE_BINARY_EDIT_MFC_VIEW_H_
+#define BINARYEDIT_MFC_SOURCE_BINARY_EDIT_MFC_VIEW_H_
 
 class BinaryEditMfcView : public CView
 {
@@ -28,3 +29,5 @@ inline BinaryEditMfcDoc* BinaryEditMfcView::GetDocument() const
 	return reinterpret_cast<BinaryEditMfcDoc*>(m_pDocument);
 }
 #endif
+
+#endif  // BINARYEDIT_MFC_SOURCE_BINARY_EDIT_MFC_VIEW_H_

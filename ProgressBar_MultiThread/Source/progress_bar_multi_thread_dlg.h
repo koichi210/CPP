@@ -1,6 +1,7 @@
 ﻿// progress_bar_multi_thread_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef PROGRESSBAR_MULTITHREAD_SOURCE_PROGRESS_BAR_MULTI_THREAD_DLG_H_
+#define PROGRESSBAR_MULTITHREAD_SOURCE_PROGRESS_BAR_MULTI_THREAD_DLG_H_
 
 #include <atomic>
 
@@ -37,3 +38,5 @@ private:
 	std::atomic<bool> stop_requested_{ false };	// UI スレッドとワーカースレッドで共有
 	WorkerThreads workers_;
 };
+
+#endif  // PROGRESSBAR_MULTITHREAD_SOURCE_PROGRESS_BAR_MULTI_THREAD_DLG_H_

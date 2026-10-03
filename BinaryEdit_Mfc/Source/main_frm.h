@@ -1,6 +1,7 @@
 ﻿// main_frm.h : MDI メインフレーム
 
-#pragma once
+#ifndef BINARYEDIT_MFC_SOURCE_MAIN_FRM_H_
+#define BINARYEDIT_MFC_SOURCE_MAIN_FRM_H_
 
 #include "file_view.h"
 #include "class_view.h"
@@ -37,3 +38,5 @@ protected:
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL hi_color_icons);
 };
+
+#endif  // BINARYEDIT_MFC_SOURCE_MAIN_FRM_H_

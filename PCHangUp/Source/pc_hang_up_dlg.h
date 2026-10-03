@@ -1,6 +1,7 @@
 ﻿// pc_hang_up_dlg.h : メインダイアログ（スレッドを作り続けて PC をハングさせる実験）
 
-#pragma once
+#ifndef PCHANGUP_SOURCE_PC_HANG_UP_DLG_H_
+#define PCHANGUP_SOURCE_PC_HANG_UP_DLG_H_
 
 class PCHangUpDlg : public CDialogEx
 {
@@ -22,3 +23,5 @@ private:
 
 	HICON icon_;
 };
+
+#endif  // PCHANGUP_SOURCE_PC_HANG_UP_DLG_H_

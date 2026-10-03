@@ -1,6 +1,7 @@
 ﻿// motion_capture.h : アプリケーションクラス
 
-#pragma once
+#ifndef MOTIONCAPTURE_SOURCE_MOTION_CAPTURE_H_
+#define MOTIONCAPTURE_SOURCE_MOTION_CAPTURE_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -19,3 +20,5 @@ public:
 };
 
 extern MotionCaptureApp the_app;
+
+#endif  // MOTIONCAPTURE_SOURCE_MOTION_CAPTURE_H_

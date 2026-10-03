@@ -1,6 +1,7 @@
 ﻿// memcpy_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef MEMCPY_SOURCE_MEMCPY_DLG_H_
+#define MEMCPY_SOURCE_MEMCPY_DLG_H_
 
 class MemcpyDlg : public CDialogEx
 {
@@ -21,3 +22,5 @@ protected:
 private:
 	HICON icon_;
 };
+
+#endif  // MEMCPY_SOURCE_MEMCPY_DLG_H_

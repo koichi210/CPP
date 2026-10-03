@@ -1,6 +1,7 @@
 ﻿// memory.h : アプリケーションクラス
 
-#pragma once
+#ifndef MEMORY_SOURCE_MEMORY_H_
+#define MEMORY_SOURCE_MEMORY_H_
 
 #ifndef __AFXWIN_H__
 	#error include 'stdafx.h' before including this file for PCH
@@ -15,3 +16,5 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // MEMORY_SOURCE_MEMORY_H_

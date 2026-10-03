@@ -1,6 +1,7 @@
 ﻿// back_up_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef BACKUP_SOURCE_BACK_UP_DLG_H_
+#define BACKUP_SOURCE_BACK_UP_DLG_H_
 
 // バックアップ設定 1 件分
 struct BackupSetting
@@ -80,3 +81,5 @@ private:
 	void UpdatePath(int edit_id, int sub_item, LPCTSTR path);
 	void Refresh();
 };
+
+#endif  // BACKUP_SOURCE_BACK_UP_DLG_H_

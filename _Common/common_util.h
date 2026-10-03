@@ -1,6 +1,7 @@
 ﻿// common_util.h : パス・文字列・ダイアログの共通関数（MBCS / Shift-JIS 前提）
 
-#pragma once
+#ifndef COMMON_COMMON_UTIL_H_
+#define COMMON_COMMON_UTIL_H_
 
 #include <afxwin.h>
 
@@ -50,3 +51,5 @@ struct DlgItemText
 
 // 文字列リソースをまとめてコントロールに設定する
 BOOL SetDlgItemTextAll(HWND dlg, const DlgItemText* table, int count);
+
+#endif  // COMMON_COMMON_UTIL_H_

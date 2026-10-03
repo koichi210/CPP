@@ -1,6 +1,7 @@
 ﻿// output_wnd.h : 出力ウィンドウ（ドッキングペイン）
 
-#pragma once
+#ifndef BINARYEDIT_MFC_SOURCE_OUTPUT_WND_H_
+#define BINARYEDIT_MFC_SOURCE_OUTPUT_WND_H_
 
 // 出力タブ1枚分のリスト
 class OutputList : public CListBox
@@ -33,3 +34,5 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // BINARYEDIT_MFC_SOURCE_OUTPUT_WND_H_

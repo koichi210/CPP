@@ -1,6 +1,7 @@
 ﻿// progress_bar_single_thread_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef PROGRESSBAR_SINGLETHREAD_SOURCE_PROGRESS_BAR_SINGLE_THREAD_DLG_H_
+#define PROGRESSBAR_SINGLETHREAD_SOURCE_PROGRESS_BAR_SINGLE_THREAD_DLG_H_
 
 class ProgressBarSingleThreadDlg : public CDialogEx
 {
@@ -23,3 +24,5 @@ private:
 	HICON icon_;
 	CProgressCtrl progress_;
 };
+
+#endif  // PROGRESSBAR_SINGLETHREAD_SOURCE_PROGRESS_BAR_SINGLE_THREAD_DLG_H_

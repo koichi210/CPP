@@ -1,6 +1,7 @@
 ﻿// clipboard_dlg.h : メインダイアログ（入力した文字列をクリップボードへコピー）
 
-#pragma once
+#ifndef CLIPBOARD_SOURCE_CLIPBOARD_DLG_H_
+#define CLIPBOARD_SOURCE_CLIPBOARD_DLG_H_
 
 class ClipboardDlg : public CDialogEx
 {
@@ -24,3 +25,5 @@ private:
 	HICON icon_;
 	CString text_;
 };
+
+#endif  // CLIPBOARD_SOURCE_CLIPBOARD_DLG_H_

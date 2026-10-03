@@ -1,6 +1,7 @@
 ﻿// SendSpoolFileDlg.h : メインダイアログ
 
-#pragma once
+#ifndef SENDSPOOLFILE_SOURCE_SEND_SPOOL_FILE_DLG_H_
+#define SENDSPOOLFILE_SOURCE_SEND_SPOOL_FILE_DLG_H_
 
 class SendSpoolFileDlg : public CDialog
 {
@@ -24,3 +25,5 @@ private:
 
 	HICON icon_;
 };
+
+#endif  // SENDSPOOLFILE_SOURCE_SEND_SPOOL_FILE_DLG_H_

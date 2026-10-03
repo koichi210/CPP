@@ -1,6 +1,7 @@
 ﻿// binary_edit_mfc.h : アプリケーションクラス
 
-#pragma once
+#ifndef BINARYEDIT_MFC_SOURCE_BINARY_EDIT_MFC_H_
+#define BINARYEDIT_MFC_SOURCE_BINARY_EDIT_MFC_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -26,3 +27,5 @@ protected:
 };
 
 extern BinaryEditMfcApp the_app;
+
+#endif  // BINARYEDIT_MFC_SOURCE_BINARY_EDIT_MFC_H_

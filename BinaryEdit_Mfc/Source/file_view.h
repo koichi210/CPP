@@ -1,6 +1,7 @@
 ﻿// file_view.h : ファイル ビュー（ドッキングペイン）
 
-#pragma once
+#ifndef BINARYEDIT_MFC_SOURCE_FILE_VIEW_H_
+#define BINARYEDIT_MFC_SOURCE_FILE_VIEW_H_
 
 #include "view_tree.h"
 
@@ -38,3 +39,5 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // BINARYEDIT_MFC_SOURCE_FILE_VIEW_H_

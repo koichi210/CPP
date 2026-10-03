@@ -1,6 +1,7 @@
 ﻿// template_dlg.h : メインダイアログ
 
-#pragma once
+#ifndef TEMPLATE_TEMPLATE_TEMPLATE_DLG_H_
+#define TEMPLATE_TEMPLATE_TEMPLATE_DLG_H_
 
 class TemplateDlg : public CDialogEx
 {
@@ -21,3 +22,5 @@ protected:
 private:
 	HICON icon_;
 };
+
+#endif  // TEMPLATE_TEMPLATE_TEMPLATE_DLG_H_

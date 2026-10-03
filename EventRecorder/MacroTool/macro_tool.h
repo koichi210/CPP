@@ -1,6 +1,7 @@
 ﻿// macro_tool.h : アプリケーションクラス
 
-#pragma once
+#ifndef EVENTRECORDER_MACROTOOL_MACRO_TOOL_H_
+#define EVENTRECORDER_MACROTOOL_MACRO_TOOL_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -15,3 +16,5 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // EVENTRECORDER_MACROTOOL_MACRO_TOOL_H_

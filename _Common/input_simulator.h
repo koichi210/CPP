@@ -1,6 +1,7 @@
 ﻿// input_simulator.h : キーボード・マウスの入力をエミュレートする
 
-#pragma once
+#ifndef COMMON_INPUT_SIMULATOR_H_
+#define COMMON_INPUT_SIMULATOR_H_
 
 #include <afxwin.h>
 
@@ -26,3 +27,5 @@ public:
 private:
 	static void SendMouse(DWORD flags, LONG dx = 0, LONG dy = 0);
 };
+
+#endif  // COMMON_INPUT_SIMULATOR_H_

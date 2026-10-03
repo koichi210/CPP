@@ -1,6 +1,7 @@
 ﻿// Child1.h : タブ（PageA）に表示する子ダイアログ
 
-#pragma once
+#ifndef TABCONTROL_SOURCE_CHILD1_H_
+#define TABCONTROL_SOURCE_CHILD1_H_
 
 class Child1 : public CDialogEx
 {
@@ -16,3 +17,5 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+#endif  // TABCONTROL_SOURCE_CHILD1_H_

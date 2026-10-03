@@ -1,6 +1,7 @@
 ﻿// macro_tool_dlg.h : 設定ダイアログ（イベントの一覧編集・ファイル読み書き・記録）
 
-#pragma once
+#ifndef EVENTRECORDER_MACROTOOL_MACRO_TOOL_DLG_H_
+#define EVENTRECORDER_MACROTOOL_MACRO_TOOL_DLG_H_
 
 #include "macro_defs.h"
 #include "common_ctrl.h"
@@ -123,3 +124,5 @@ private:
 	HookFunc				stop_mouse_hook_ = nullptr;
 	DebugModeFunc			debug_mode_ = nullptr;
 };
+
+#endif  // EVENTRECORDER_MACROTOOL_MACRO_TOOL_DLG_H_

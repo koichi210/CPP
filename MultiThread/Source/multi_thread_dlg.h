@@ -1,6 +1,7 @@
 ﻿// multi_thread_dlg.h : メインダイアログ（ワーカースレッドからタイトルを更新する）
 
-#pragma once
+#ifndef MULTITHREAD_SOURCE_MULTI_THREAD_DLG_H_
+#define MULTITHREAD_SOURCE_MULTI_THREAD_DLG_H_
 
 #include "worker_threads.h"
 
@@ -32,3 +33,5 @@ private:
 	std::atomic<bool> stop_{ false };
 	WorkerThreads workers_;
 };
+
+#endif  // MULTITHREAD_SOURCE_MULTI_THREAD_DLG_H_

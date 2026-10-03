@@ -1,6 +1,7 @@
 ﻿// common_ctrl.h : 共通の MFC コントロール
 
-#pragma once
+#ifndef COMMON_COMMON_CTRL_H_
+#define COMMON_COMMON_CTRL_H_
 
 #include <afxwin.h>
 #include <afxcmn.h>
@@ -243,3 +244,5 @@ public:
 private:
 	int row_count_ = 1;
 };
+
+#endif  // COMMON_COMMON_CTRL_H_

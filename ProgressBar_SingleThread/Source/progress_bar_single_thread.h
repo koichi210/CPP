@@ -1,6 +1,7 @@
 ﻿// progress_bar_single_thread.h : アプリケーションクラス
 
-#pragma once
+#ifndef PROGRESSBAR_SINGLETHREAD_SOURCE_PROGRESS_BAR_SINGLE_THREAD_H_
+#define PROGRESSBAR_SINGLETHREAD_SOURCE_PROGRESS_BAR_SINGLE_THREAD_H_
 
 #ifndef __AFXWIN_H__
 	#error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
@@ -19,3 +20,5 @@ public:
 };
 
 extern ProgressBarSingleThreadApp the_app;
+
+#endif  // PROGRESSBAR_SINGLETHREAD_SOURCE_PROGRESS_BAR_SINGLE_THREAD_H_

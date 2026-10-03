@@ -1,6 +1,7 @@
 ﻿// memory_dlg.h : メインダイアログ（出題）
 
-#pragma once
+#ifndef MEMORY_SOURCE_MEMORY_DLG_H_
+#define MEMORY_SOURCE_MEMORY_DLG_H_
 
 #include "memory_def.h"
 
@@ -62,3 +63,5 @@ private:
 	PlayMode	selected_mode_ = PlayMode::kAnki;	// 画面で選んでいるモード
 	int			prev_char_ = -1;		// 直前に出題した文字（同じ文字が続かないようにする）
 };
+
+#endif  // MEMORY_SOURCE_MEMORY_DLG_H_

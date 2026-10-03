@@ -1,6 +1,7 @@
 ﻿// enum_token_dlg.h : メインダイアログ（自プロセスのトークンが属するグループを列挙）
 
-#pragma once
+#ifndef ENUMTOKEN_SOURCE_ENUM_TOKEN_DLG_H_
+#define ENUMTOKEN_SOURCE_ENUM_TOKEN_DLG_H_
 
 class EnumTokenDlg : public CDialog
 {
@@ -21,3 +22,5 @@ protected:
 private:
 	HICON icon_;
 };
+
+#endif  // ENUMTOKEN_SOURCE_ENUM_TOKEN_DLG_H_
