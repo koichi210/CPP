@@ -1,8 +1,8 @@
-﻿// BackUp.cpp : アプリケーションクラス
+﻿// back_up.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "BackUp.h"
-#include "BackUpDlg.h"
+#include "back_up.h"
+#include "back_up_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -1,4 +1,4 @@
-﻿// BackUp.h : アプリケーションクラス
+﻿// back_up.h : アプリケーションクラス
 
 #pragma once
 

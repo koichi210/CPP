@@ -18,13 +18,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BackUp.cpp">
+    <ClCompile Include="back_up.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="BackUpDlg.cpp">
+    <ClCompile Include="back_up_dlg.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_Common\CommonUtil.cpp">
+    <ClCompile Include="..\..\_Common\common_util.cc">
       <Filter>_Common</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -32,13 +32,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BackUp.h">
+    <ClInclude Include="back_up.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="BackUpDlg.h">
+    <ClInclude Include="back_up_dlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\_Common\CommonUtil.h">
+    <ClInclude Include="..\..\_Common\common_util.h">
       <Filter>_Common</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">

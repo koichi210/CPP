@@ -1,4 +1,4 @@
-﻿// BackUpDlg.h : メインダイアログ
+﻿// back_up_dlg.h : メインダイアログ
 
 #pragma once
 

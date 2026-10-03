@@ -1,9 +1,9 @@
-﻿// BackUpDlg.cpp : メインダイアログ
+﻿// back_up_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "BackUp.h"
-#include "BackUpDlg.h"
-#include "CommonUtil.h"
+#include "back_up.h"
+#include "back_up_dlg.h"
+#include "common_util.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
