@@ -108,15 +108,15 @@
     <None Include="res\ProgressBar_SingleThread.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ProgressBar_SingleThread.h" />
-    <ClInclude Include="ProgressBar_SingleThreadDlg.h" />
+    <ClInclude Include="progress_bar_single_thread.h" />
+    <ClInclude Include="progress_bar_single_thread_dlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ProgressBar_SingleThread.cpp" />
-    <ClCompile Include="ProgressBar_SingleThreadDlg.cpp" />
+    <ClCompile Include="progress_bar_single_thread.cc" />
+    <ClCompile Include="progress_bar_single_thread_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

@@ -1,4 +1,4 @@
-﻿// ProgressBar_SingleThread.h : アプリケーションクラス
+﻿// progress_bar_single_thread.h : アプリケーションクラス
 
 #pragma once
 

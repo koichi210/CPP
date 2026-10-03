@@ -1,4 +1,4 @@
-﻿// ProgressBar_SingleThreadDlg.h : メインダイアログ
+﻿// progress_bar_single_thread_dlg.h : メインダイアログ
 
 #pragma once
 
