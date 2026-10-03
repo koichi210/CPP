@@ -1,8 +1,8 @@
-﻿// DivisionCouplingDlg.cpp : メインダイアログ（ファイルの分割と結合）
+﻿// division_coupling_dlg.cc : メインダイアログ（ファイルの分割と結合）
 
 #include "stdafx.h"
-#include "DivisionCoupling.h"
-#include "DivisionCouplingDlg.h"
+#include "division_coupling.h"
+#include "division_coupling_dlg.h"
 
 #include <climits>
 #include <memory>

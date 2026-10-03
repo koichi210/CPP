@@ -1,10 +1,10 @@
-﻿// DivisionCouplingDlg.h : メインダイアログ（ファイルの分割と結合）
+﻿// division_coupling_dlg.h : メインダイアログ（ファイルの分割と結合）
 
 #pragma once
 
 #include <atomic>
 
-#include "WorkerThreads.h"
+#include "worker_threads.h"
 
 // ワーカーが分割・結合を終えたときに UI スレッドへ送る通知
 constexpr UINT WM_APP_PROCESS_FINISHED = WM_APP + 1;
@@ -64,5 +64,5 @@ private:
 	Error				m_error = Error::None;
 	std::atomic<bool>	m_running{ false };	// 「停止」でワーカースレッドに中断を伝える
 	std::atomic<bool>	m_closing{ false };	// 終了処理中（ワーカーはメッセージを出さない）
-	CWorkerThreads		m_workers;
+	WorkerThreads		m_workers;
 };

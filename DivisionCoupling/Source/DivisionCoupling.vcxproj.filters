@@ -15,24 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DivisionCoupling.cpp">
+    <ClCompile Include="division_coupling.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="DivisionCouplingDlg.cpp">
+    <ClCompile Include="division_coupling_dlg.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_Common\WorkerThreads.cpp">
+    <ClCompile Include="..\..\_Common\worker_threads.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DivisionCoupling.h">
+    <ClInclude Include="division_coupling.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="DivisionCouplingDlg.h">
+    <ClInclude Include="division_coupling_dlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -44,7 +44,7 @@
     <ClInclude Include="targetver.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\_Common\WorkerThreads.h">
+    <ClInclude Include="..\..\_Common\worker_threads.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

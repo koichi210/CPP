@@ -1,8 +1,8 @@
-﻿// DivisionCoupling.cpp : アプリケーションクラス
+﻿// division_coupling.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "DivisionCoupling.h"
-#include "DivisionCouplingDlg.h"
+#include "division_coupling.h"
+#include "division_coupling_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -89,22 +89,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DivisionCoupling.cpp" />
-    <ClCompile Include="DivisionCouplingDlg.cpp" />
+    <ClCompile Include="division_coupling.cc" />
+    <ClCompile Include="division_coupling_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\_Common\WorkerThreads.cpp">
+    <ClCompile Include="..\..\_Common\worker_threads.cc">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DivisionCoupling.h" />
-    <ClInclude Include="DivisionCouplingDlg.h" />
+    <ClInclude Include="division_coupling.h" />
+    <ClInclude Include="division_coupling_dlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\_Common\WorkerThreads.h" />
+    <ClInclude Include="..\..\_Common\worker_threads.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DivisionCoupling.rc" />

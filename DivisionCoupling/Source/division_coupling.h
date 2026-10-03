@@ -1,4 +1,4 @@
-﻿// DivisionCoupling.h : アプリケーションクラス
+﻿// division_coupling.h : アプリケーションクラス
 
 #pragma once
 
