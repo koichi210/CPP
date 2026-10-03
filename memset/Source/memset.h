@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CMemsetApp : public CWinApp
+class MemsetApp : public CWinApp
 {
 public:
-	CMemsetApp();
+	MemsetApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CMemsetApp theApp;
+extern MemsetApp the_app;

@@ -10,52 +10,52 @@
 #endif
 
 // システムメニューの「バージョン情報」から開くダイアログ
-class CAboutDlg : public CDialogEx
+class AboutDlg : public CDialogEx
 {
 public:
-	CAboutDlg();
+	AboutDlg();
 
 	enum { IDD = IDD_ABOUTBOX };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialogEx(IDD)
+AboutDlg::AboutDlg() : CDialogEx(IDD)
 {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
+void AboutDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(dx);
 }
 
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(AboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-CMemsetDlg::CMemsetDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+MemsetDlg::MemsetDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CMemsetDlg::DoDataExchange(CDataExchange* pDX)
+void MemsetDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDET_FILL_VAL, m_fillValue);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Text(dx, IDET_FILL_VAL, fill_value_);
 }
 
-BEGIN_MESSAGE_MAP(CMemsetDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(MemsetDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_EXE, &CMemsetDlg::OnBnClickedExe)
+	ON_BN_CLICKED(IDBT_EXE, &MemsetDlg::OnBnClickedExe)
 END_MESSAGE_MAP()
 
-BOOL CMemsetDlg::OnInitDialog()
+BOOL MemsetDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -64,41 +64,41 @@ BOOL CMemsetDlg::OnInitDialog()
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != nullptr)
+	CMenu* sys_menu = GetSystemMenu(FALSE);
+	if (sys_menu != nullptr)
 	{
-		CString strAboutMenu;
-		BOOL bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
-		ASSERT(bNameValid);
-		UNREFERENCED_PARAMETER(bNameValid);
-		if (!strAboutMenu.IsEmpty())
+		CString about_menu;
+		BOOL name_valid = about_menu.LoadString(IDS_ABOUTBOX);
+		ASSERT(name_valid);
+		UNREFERENCED_PARAMETER(name_valid);
+		if (!about_menu.IsEmpty())
 		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			sys_menu->AppendMenu(MF_SEPARATOR);
+			sys_menu->AppendMenu(MF_STRING, IDM_ABOUTBOX, about_menu);
 		}
 	}
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
-void CMemsetDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void MemsetDlg::OnSysCommand(UINT id, LPARAM param)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	if ((id & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
+		AboutDlg about_dlg;
+		about_dlg.DoModal();
 	}
 	else
 	{
-		CDialogEx::OnSysCommand(nID, lParam);
+		CDialogEx::OnSysCommand(id, param);
 	}
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CMemsetDlg::OnPaint()
+void MemsetDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -106,14 +106,14 @@ void CMemsetDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -121,16 +121,16 @@ void CMemsetDlg::OnPaint()
 	}
 }
 
-HCURSOR CMemsetDlg::OnQueryDragIcon()
+HCURSOR MemsetDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // memset に int を渡しても下位1バイトの値で埋められることを、デバッガで addr を見て確かめる
-void CMemsetDlg::OnBnClickedExe()
+void MemsetDlg::OnBnClickedExe()
 {
 	UpdateData();
 
 	char addr[100] = {0};
-	memset(addr, m_fillValue, 100);
+	memset(addr, fill_value_, 100);
 }

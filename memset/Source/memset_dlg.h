@@ -2,24 +2,24 @@
 
 #pragma once
 
-class CMemsetDlg : public CDialogEx
+class MemsetDlg : public CDialogEx
 {
 public:
-	explicit CMemsetDlg(CWnd* pParent = nullptr);
+	explicit MemsetDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_memset_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnSysCommand(UINT id, LPARAM param);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedExe();
 	DECLARE_MESSAGE_MAP()
 
 private:
-	HICON m_hIcon;
-	int m_fillValue = 0;
+	HICON icon_;
+	int fill_value_ = 0;
 };
