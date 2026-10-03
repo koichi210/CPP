@@ -107,14 +107,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SignedUnsigned.h" />
-    <ClInclude Include="SignedUnsignedDlg.h" />
+    <ClInclude Include="signed_unsigned.h" />
+    <ClInclude Include="signed_unsigned_dlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SignedUnsigned.cpp" />
-    <ClCompile Include="SignedUnsignedDlg.cpp" />
+    <ClCompile Include="signed_unsigned.cc" />
+    <ClCompile Include="signed_unsigned_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

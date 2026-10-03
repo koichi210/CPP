@@ -1,8 +1,8 @@
-﻿// SignedUnsignedDlg.cpp : メインダイアログ
+﻿// signed_unsigned_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "SignedUnsigned.h"
-#include "SignedUnsignedDlg.h"
+#include "signed_unsigned.h"
+#include "signed_unsigned_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

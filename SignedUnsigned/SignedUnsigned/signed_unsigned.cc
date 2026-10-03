@@ -1,8 +1,8 @@
-﻿// SignedUnsigned.cpp : アプリケーションクラス
+﻿// signed_unsigned.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "SignedUnsigned.h"
-#include "SignedUnsignedDlg.h"
+#include "signed_unsigned.h"
+#include "signed_unsigned_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

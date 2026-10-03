@@ -24,10 +24,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SignedUnsigned.h">
+    <ClInclude Include="signed_unsigned.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="SignedUnsignedDlg.h">
+    <ClInclude Include="signed_unsigned_dlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -41,10 +41,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SignedUnsigned.cpp">
+    <ClCompile Include="signed_unsigned.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="SignedUnsignedDlg.cpp">
+    <ClCompile Include="signed_unsigned_dlg.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">

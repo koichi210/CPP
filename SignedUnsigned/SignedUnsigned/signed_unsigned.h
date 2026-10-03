@@ -1,4 +1,4 @@
-﻿// SignedUnsigned.h : アプリケーションクラス
+﻿// signed_unsigned.h : アプリケーションクラス
 
 #pragma once
 

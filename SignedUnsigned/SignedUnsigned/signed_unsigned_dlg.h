@@ -1,4 +1,4 @@
-﻿// SignedUnsignedDlg.h : メインダイアログ
+﻿// signed_unsigned_dlg.h : メインダイアログ
 
 #pragma once
 
