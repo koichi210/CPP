@@ -4,6 +4,7 @@
 #include "fname_exchange.h"
 #include "fname_exchange_dlg.h"
 #include "common_util.h"
+#include <mbstring.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -13,7 +14,7 @@ namespace
 {
 	constexpr bool		kDefaultIgnoreAlert	= true;
 	constexpr int		kMaxDigits			= 5;	// 桁数コンボの選択肢（1〜5桁）
-	constexpr UINT		kMinRemainLength	= 5;	// 指定文字数削除の後に残すべき最小のバイト数
+	constexpr UINT		kMinRemainLength	= 5;	// 指定文字数削除の後に残すべき最小の文字数
 	constexpr size_t	kMaxUndoSteps		= 100;	// 復元できる実行回数
 	constexpr size_t	kMaxFilesPerStep	= 250;	// 1回の実行で復元情報に残せるファイル数
 	constexpr int		kListCharWidth		= 6;	// 一覧の横スクロール幅を決める1文字の幅(px)
@@ -591,8 +592,9 @@ CString FnameExchangeDlg::MakeDeleteCountName(const CString& file)
 		return CString();
 	}
 
-	// 文字数はバイト単位で数える
-	const UINT length = static_cast<UINT>(file.GetLength());
+	// 文字数は文字単位で数える（全角文字の途中で切らない）
+	const unsigned char* text = reinterpret_cast<const unsigned char*>(file.GetString());
+	const UINT length = static_cast<UINT>(_mbslen(text));
 	if (length < delete_head_ + delete_tail_ + kMinRemainLength)
 	{
 		if (!ignore_alert_)
@@ -602,10 +604,10 @@ CString FnameExchangeDlg::MakeDeleteCountName(const CString& file)
 		return CString();
 	}
 
-	CString name = file;
-	name.Delete(static_cast<int>(length - delete_tail_), static_cast<int>(delete_tail_));
-	name.Delete(0, static_cast<int>(delete_head_));
-	return name;
+	// 残す範囲 [head_bytes, tail_bytes) をバイト位置に直して取り出す
+	const int head_bytes = static_cast<int>(_mbsnbcnt(text, delete_head_));
+	const int tail_bytes = static_cast<int>(_mbsnbcnt(text, length - delete_tail_));
+	return file.Mid(head_bytes, tail_bytes - head_bytes);
 }
 
 CString FnameExchangeDlg::MakeAddName(const CString& file)
