@@ -1,8 +1,8 @@
-﻿// VariableArgumentDlg.cpp : メインダイアログ
+﻿// variable_argument_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "VariableArgument.h"
-#include "VariableArgumentDlg.h"
+#include "variable_argument.h"
+#include "variable_argument_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

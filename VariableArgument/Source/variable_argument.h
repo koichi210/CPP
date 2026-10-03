@@ -1,4 +1,4 @@
-﻿// VariableArgument.h : アプリケーションクラス
+﻿// variable_argument.h : アプリケーションクラス
 
 #pragma once
 

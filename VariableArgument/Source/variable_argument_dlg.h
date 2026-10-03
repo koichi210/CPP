@@ -1,4 +1,4 @@
-﻿// VariableArgumentDlg.h : メインダイアログ
+﻿// variable_argument_dlg.h : メインダイアログ
 
 #pragma once
 

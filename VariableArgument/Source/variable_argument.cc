@@ -1,8 +1,8 @@
-﻿// VariableArgument.cpp : アプリケーションクラス
+﻿// variable_argument.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "VariableArgument.h"
-#include "VariableArgumentDlg.h"
+#include "variable_argument.h"
+#include "variable_argument_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
