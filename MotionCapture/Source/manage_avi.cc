@@ -6,30 +6,30 @@
 namespace
 {
 	// マウスポインタを録画画像に描き込む（Scale はリサイズの倍率）
-	void DrawCursor(HDC hdc, float scaleX, float scaleY)
+	void DrawCursor(HDC hdc, float scale_x, float scale_y)
 	{
-		CURSORINFO cursorInfo;
-		cursorInfo.cbSize = sizeof(CURSORINFO);
-		GetCursorInfo(&cursorInfo);
+		CURSORINFO cursor_info;
+		cursor_info.cbSize = sizeof(CURSORINFO);
+		GetCursorInfo(&cursor_info);
 
-		ICONINFO iconInfo;
-		if (!GetIconInfo(cursorInfo.hCursor, &iconInfo))
+		ICONINFO icon_info;
+		if (!GetIconInfo(cursor_info.hCursor, &icon_info))
 		{
 			return;
 		}
 
-		int x = static_cast<int>(cursorInfo.ptScreenPos.x * scaleX) - iconInfo.xHotspot;
-		int y = static_cast<int>(cursorInfo.ptScreenPos.y * scaleY) - iconInfo.yHotspot;
-		DrawIcon(hdc, x, y, cursorInfo.hCursor);
+		int x = static_cast<int>(cursor_info.ptScreenPos.x * scale_x) - icon_info.xHotspot;
+		int y = static_cast<int>(cursor_info.ptScreenPos.y * scale_y) - icon_info.yHotspot;
+		DrawIcon(hdc, x, y, cursor_info.hCursor);
 
 		// GetIconInfo が作ったビットマップは呼び出し側で解放する
-		if (iconInfo.hbmMask)
+		if (icon_info.hbmMask)
 		{
-			DeleteObject(iconInfo.hbmMask);
+			DeleteObject(icon_info.hbmMask);
 		}
-		if (iconInfo.hbmColor)
+		if (icon_info.hbmColor)
 		{
-			DeleteObject(iconInfo.hbmColor);
+			DeleteObject(icon_info.hbmColor);
 		}
 	}
 }
@@ -37,113 +37,113 @@ namespace
 /////////////////////////////////////////////////////////////////////////////
 // 設定
 
-void CManageAvi::SetSaveFileName(const CString& filename)
+void ManageAvi::SetSaveFileName(const CString& filename)
 {
-	m_saveFilename = filename;
+	save_filename_ = filename;
 }
 
-void CManageAvi::SetCaptureRect(int top, int left, int right, int bottom)
+void ManageAvi::SetCaptureRect(int top, int left, int right, int bottom)
 {
-	m_rect.top = top;
-	m_rect.left = left;
-	m_rect.right = right;
-	m_rect.bottom = bottom;
+	rect_.top = top;
+	rect_.left = left;
+	rect_.right = right;
+	rect_.bottom = bottom;
 }
 
-void CManageAvi::SetFrameRate(UINT frameRate)
+void ManageAvi::SetFrameRate(UINT frame_rate)
 {
-	m_frameRate = frameRate;
+	frame_rate_ = frame_rate;
 }
 
-void CManageAvi::SetRecordSec(UINT recordSec)
+void ManageAvi::SetRecordSec(UINT record_sec)
 {
-	m_timeoutSec = recordSec;
+	timeout_sec_ = record_sec;
 }
 
-void CManageAvi::SetSkipFrame(UINT skipFrame)
+void ManageAvi::SetSkipFrame(UINT skip_frame)
 {
-	m_skipFrameMs = 1;
-	if (skipFrame > 0)
+	skip_frame_ms_ = 1;
+	if (skip_frame > 0)
 	{
-		m_skipFrameMs = 1000 / skipFrame;
+		skip_frame_ms_ = 1000 / skip_frame;
 	}
 }
 
-void CManageAvi::SetCaptureQuality(UINT bitmapBpp)
+void ManageAvi::SetCaptureQuality(UINT bitmap_bpp)
 {
-	m_bitmapBpp = bitmapBpp;
+	bitmap_bpp_ = bitmap_bpp;
 }
 
-void CManageAvi::SetCompress(BOOL bCompress)
+void ManageAvi::SetCompress(BOOL compress)
 {
-	m_bCompress = bCompress;
+	compress_ = compress;
 }
 
-void CManageAvi::SetResize(BOOL bResize, UINT resizeWidth, UINT resizeHeight)
+void ManageAvi::SetResize(BOOL resize, UINT resize_width, UINT resize_height)
 {
-	m_bResize = bResize;
-	if (m_bResize)
+	resize_ = resize;
+	if (resize_)
 	{
-		m_resize.x = resizeWidth;
-		m_resize.y = resizeHeight;
+		resize_size_.x = resize_width;
+		resize_size_.y = resize_height;
 	}
 }
 
-void CManageAvi::SetRecordMousePoint(BOOL bRecordMousePoint)
+void ManageAvi::SetRecordMousePoint(BOOL record_mouse_point)
 {
-	m_bRecordMousePoint = bRecordMousePoint;
+	record_mouse_point_ = record_mouse_point;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // 録画の開始・停止
 
-void CManageAvi::StartRecord()
+void ManageAvi::StartRecord()
 {
-	m_bExecuting = true;
+	executing_ = true;
 
 	AfxBeginThread(RecordThreadProc, this);
 }
 
-void CManageAvi::StopRecord()
+void ManageAvi::StopRecord()
 {
-	m_bExecuting = false;
+	executing_ = false;
 }
 
-BOOL CManageAvi::IsExecution() const
+BOOL ManageAvi::IsExecution() const
 {
-	return m_bExecuting ? TRUE : FALSE;
+	return executing_ ? TRUE : FALSE;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // 録画処理
 
-void CManageAvi::InitAviStreamInfo()
+void ManageAvi::InitAviStreamInfo()
 {
-	ZeroMemory(&m_aviStreamInfo, sizeof(AVISTREAMINFO));
-	m_aviStreamInfo.fccType = streamtypeVIDEO;
-	m_aviStreamInfo.fccHandler = comptypeDIB;
-	m_aviStreamInfo.dwScale = m_scale;							// dwRate / dwScale がフレームレートになる
-	m_aviStreamInfo.dwRate = m_frameRate;
-	m_aviStreamInfo.dwLength = m_timeoutSec * m_frameRate;		// 録画時間(秒) = Length / FrameRate
-	m_aviStreamInfo.dwQuality = m_quality;
-	m_aviStreamInfo.rcFrame = m_rect;
+	ZeroMemory(&avi_stream_info_, sizeof(AVISTREAMINFO));
+	avi_stream_info_.fccType = streamtypeVIDEO;
+	avi_stream_info_.fccHandler = comptypeDIB;
+	avi_stream_info_.dwScale = scale_;							// dwRate / dwScale がフレームレートになる
+	avi_stream_info_.dwRate = frame_rate_;
+	avi_stream_info_.dwLength = timeout_sec_ * frame_rate_;		// 録画時間(秒) = Length / FrameRate
+	avi_stream_info_.dwQuality = quality_;
+	avi_stream_info_.rcFrame = rect_;
 }
 
-void CManageAvi::InitBitmapInfo()
+void ManageAvi::InitBitmapInfo()
 {
-	ZeroMemory(&m_bitmapInfo, sizeof(BITMAPINFO));
-	BITMAPINFOHEADER& header = m_bitmapInfo.bmiHeader;
+	ZeroMemory(&bitmap_info_, sizeof(BITMAPINFO));
+	BITMAPINFOHEADER& header = bitmap_info_.bmiHeader;
 	header.biSize = sizeof(BITMAPINFOHEADER);
-	header.biWidth = m_aviStreamInfo.rcFrame.right;
-	header.biHeight = m_aviStreamInfo.rcFrame.bottom;
+	header.biWidth = avi_stream_info_.rcFrame.right;
+	header.biHeight = avi_stream_info_.rcFrame.bottom;
 	header.biPlanes = 1;
-	header.biBitCount = static_cast<WORD>(m_bitmapBpp);
+	header.biBitCount = static_cast<WORD>(bitmap_bpp_);
 	header.biCompression = BI_RGB;	// BI_JPEG は指定できなかった
 
-	if (m_bitmapBpp != 0)
+	if (bitmap_bpp_ != 0)
 	{
 		// 1行は 4 バイト境界にそろえる
-		header.biSizeImage = header.biHeight * ((header.biWidth * m_bitmapBpp + 31) / 32) * 4;
+		header.biSizeImage = header.biHeight * ((header.biWidth * bitmap_bpp_ + 31) / 32) * 4;
 	}
 	else
 	{
@@ -152,28 +152,28 @@ void CManageAvi::InitBitmapInfo()
 	}
 }
 
-AviError CManageAvi::CreateAviFile()
+AviError ManageAvi::CreateAviFile()
 {
-	if (AVIERR_OK != ::AVIFileOpen(&m_paviFile, m_saveFilename, OF_CREATE | OF_WRITE, nullptr))
+	if (AVIERR_OK != ::AVIFileOpen(&avi_file_, save_filename_, OF_CREATE | OF_WRITE, nullptr))
 	{
-		return AviError::FileOpen;
+		return AviError::kFileOpen;
 	}
 
-	if (AVIERR_OK != ::AVIFileCreateStream(m_paviFile, &m_paviStream, &m_aviStreamInfo))
+	if (AVIERR_OK != ::AVIFileCreateStream(avi_file_, &avi_stream_, &avi_stream_info_))
 	{
-		return AviError::CreateStream;
+		return AviError::kCreateStream;
 	}
 
-	return AviError::Success;
+	return AviError::kSuccess;
 }
 
-AviError CManageAvi::SetStreamFormat()
+AviError ManageAvi::SetStreamFormat()
 {
-	m_pcompressAviStream = nullptr;
-	if (!m_bCompress)
+	compress_avi_stream_ = nullptr;
+	if (!compress_)
 	{
-		::AVIStreamSetFormat(m_paviStream, 0, &m_bitmapInfo, sizeof(BITMAPINFO));
-		return AviError::Success;
+		::AVIStreamSetFormat(avi_stream_, 0, &bitmap_info_, sizeof(BITMAPINFO));
+		return AviError::kSuccess;
 	}
 
 	COMPVARS cv = {};
@@ -181,12 +181,12 @@ AviError CManageAvi::SetStreamFormat()
 	cv.dwFlags = ICMF_COMPVARS_VALID;
 	cv.fccHandler = comptypeDIB;
 	cv.lQ = ICQUALITY_DEFAULT;
-	if (!ICCompressorChoose(nullptr, ICMF_CHOOSE_DATARATE | ICMF_CHOOSE_KEYFRAME, &m_bitmapInfo, nullptr, &cv, nullptr))
+	if (!ICCompressorChoose(nullptr, ICMF_CHOOSE_DATARATE | ICMF_CHOOSE_KEYFRAME, &bitmap_info_, nullptr, &cv, nullptr))
 	{
-		return AviError::CancelCompress;
+		return AviError::kCancelCompress;
 	}
 
-	m_aviStreamInfo.fccHandler = cv.fccHandler;
+	avi_stream_info_.fccHandler = cv.fccHandler;
 
 	AVICOMPRESSOPTIONS opt;
 	opt.fccType = streamtypeVIDEO;
@@ -203,113 +203,113 @@ AviError CManageAvi::SetStreamFormat()
 	opt.dwInterleaveEvery = 0;
 
 	// opt は cv.lpState を指しているので、ストリームを作ってから解放する
-	HRESULT hr = ::AVIMakeCompressedStream(&m_pcompressAviStream, m_paviStream, &opt, nullptr);
+	HRESULT hr = ::AVIMakeCompressedStream(&compress_avi_stream_, avi_stream_, &opt, nullptr);
 	::ICCompressorFree(&cv);
 	if (AVIERR_OK != hr)
 	{
-		return AviError::CreateCompressStream;
+		return AviError::kCreateCompressStream;
 	}
-	::AVIStreamSetFormat(m_pcompressAviStream, 0, &m_bitmapInfo, sizeof(BITMAPINFO));
+	::AVIStreamSetFormat(compress_avi_stream_, 0, &bitmap_info_, sizeof(BITMAPINFO));
 
-	return AviError::Success;
+	return AviError::kSuccess;
 }
 
-void CManageAvi::Record()
+void ManageAvi::Record()
 {
-	HDC hMemDC = ::CreateCompatibleDC(nullptr);
-	LPVOID pvBits;
+	HDC mem_dc = ::CreateCompatibleDC(nullptr);
+	LPVOID pv_bits;
 
 	// 既知の問題: リサイズ有効時、画面外のマウスポインタまで拾ってしまう。
 	//             m_bitmapInfo の width と height を見直す必要あり。
-	HBITMAP hMemBitmap = ::CreateDIBSection(nullptr, &m_bitmapInfo, DIB_RGB_COLORS, &pvBits, nullptr, 0);
-	HBITMAP hOldBitmap = static_cast<HBITMAP>(::SelectObject(hMemDC, hMemBitmap));
+	HBITMAP mem_bitmap = ::CreateDIBSection(nullptr, &bitmap_info_, DIB_RGB_COLORS, &pv_bits, nullptr, 0);
+	HBITMAP old_bitmap = static_cast<HBITMAP>(::SelectObject(mem_dc, mem_bitmap));
 
-	HDC dcScreen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), nullptr);
+	HDC dc_screen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), nullptr);
 
-	const BITMAPINFOHEADER& header = m_bitmapInfo.bmiHeader;
-	float scaleX = 1.0;
-	float scaleY = 1.0;
-	if (m_bResize)
+	const BITMAPINFOHEADER& header = bitmap_info_.bmiHeader;
+	float scale_x = 1.0;
+	float scale_y = 1.0;
+	if (resize_)
 	{
-		scaleX = static_cast<float>(m_resize.x) / header.biWidth;
-		scaleY = static_cast<float>(m_resize.y) / header.biHeight;
+		scale_x = static_cast<float>(resize_size_.x) / header.biWidth;
+		scale_y = static_cast<float>(resize_size_.y) / header.biHeight;
 	}
 
-	PAVISTREAM pStream = m_bCompress ? m_pcompressAviStream : m_paviStream;
+	PAVISTREAM stream = compress_ ? compress_avi_stream_ : avi_stream_;
 
-	for (DWORD dwFrameNo = 0; dwFrameNo < m_aviStreamInfo.dwLength; dwFrameNo++)
+	for (DWORD frame_no = 0; frame_no < avi_stream_info_.dwLength; frame_no++)
 	{
-		if (!m_bExecuting)
+		if (!executing_)
 		{
 			break;
 		}
 
-		if (m_bResize)
+		if (resize_)
 		{
-			::StretchBlt(hMemDC, 0, 0, m_resize.x, m_resize.y,
-				dcScreen, 0, 0, header.biWidth, header.biHeight, SRCCOPY);
+			::StretchBlt(mem_dc, 0, 0, resize_size_.x, resize_size_.y,
+				dc_screen, 0, 0, header.biWidth, header.biHeight, SRCCOPY);
 		}
 		else
 		{
-			::BitBlt(hMemDC, 0, 0, header.biWidth, header.biHeight, dcScreen, 0, 0, SRCCOPY);
+			::BitBlt(mem_dc, 0, 0, header.biWidth, header.biHeight, dc_screen, 0, 0, SRCCOPY);
 		}
 
-		if (m_bRecordMousePoint)
+		if (record_mouse_point_)
 		{
-			DrawCursor(hMemDC, scaleX, scaleY);
+			DrawCursor(mem_dc, scale_x, scale_y);
 		}
 
-		::AVIStreamWrite(pStream, dwFrameNo, 1, pvBits, header.biSizeImage, AVIIF_KEYFRAME, nullptr, nullptr);
-		::Sleep(m_skipFrameMs);
+		::AVIStreamWrite(stream, frame_no, 1, pv_bits, header.biSizeImage, AVIIF_KEYFRAME, nullptr, nullptr);
+		::Sleep(skip_frame_ms_);
 	}
 
-	::SelectObject(hMemDC, hOldBitmap);
-	::DeleteObject(hMemBitmap);
-	::DeleteDC(hMemDC);
-	::DeleteDC(dcScreen);
+	::SelectObject(mem_dc, old_bitmap);
+	::DeleteObject(mem_bitmap);
+	::DeleteDC(mem_dc);
+	::DeleteDC(dc_screen);
 }
 
-void CManageAvi::ReleaseAvi()
+void ManageAvi::ReleaseAvi()
 {
-	if (m_paviStream)
+	if (avi_stream_)
 	{
-		::AVIStreamRelease(m_paviStream);
-		m_paviStream = nullptr;
+		::AVIStreamRelease(avi_stream_);
+		avi_stream_ = nullptr;
 	}
 
-	if (m_pcompressAviStream)
+	if (compress_avi_stream_)
 	{
-		::AVIStreamRelease(m_pcompressAviStream);
-		m_pcompressAviStream = nullptr;
+		::AVIStreamRelease(compress_avi_stream_);
+		compress_avi_stream_ = nullptr;
 	}
 
-	if (m_paviFile)
+	if (avi_file_)
 	{
-		::AVIFileRelease(m_paviFile);
-		m_paviFile = nullptr;
+		::AVIFileRelease(avi_file_);
+		avi_file_ = nullptr;
 	}
 }
 
-UINT CManageAvi::RecordThreadProc(LPVOID pParam)
+UINT ManageAvi::RecordThreadProc(LPVOID param)
 {
-	CManageAvi* pAvi = static_cast<CManageAvi*>(pParam);
+	ManageAvi* avi = static_cast<ManageAvi*>(param);
 
 	::AVIFileInit();
 
-	pAvi->InitAviStreamInfo();
+	avi->InitAviStreamInfo();
 
-	AviError err = pAvi->CreateAviFile();
-	if (err == AviError::Success)
+	AviError err = avi->CreateAviFile();
+	if (err == AviError::kSuccess)
 	{
-		pAvi->InitBitmapInfo();
-		err = pAvi->SetStreamFormat();
+		avi->InitBitmapInfo();
+		err = avi->SetStreamFormat();
 	}
 
-	if (err == AviError::Success)
+	if (err == AviError::kSuccess)
 	{
-		pAvi->Record();
+		avi->Record();
 
-		if (pAvi->m_bExecuting)
+		if (avi->executing_)
 		{
 			// 停止されずに最後のフレームまで録画した
 			MessageBox(nullptr, _T("タイムアウトが発生しました。\n記録を停止しファイルを保存しました。"), _T("Warning"), MB_OK);
@@ -324,16 +324,16 @@ UINT CManageAvi::RecordThreadProc(LPVOID pParam)
 		CString msg;
 		switch (err)
 		{
-		case AviError::FileOpen:
-			msg = _T("AVIファイルが開けませんでした。") + pAvi->m_saveFilename;
+		case AviError::kFileOpen:
+			msg = _T("AVIファイルが開けませんでした。") + avi->save_filename_;
 			break;
-		case AviError::CreateStream:
+		case AviError::kCreateStream:
 			msg = _T("Streamが生成できませんでした。");
 			break;
-		case AviError::CancelCompress:
+		case AviError::kCancelCompress:
 			msg = _T("圧縮設定がキャンセルされました。");
 			break;
-		case AviError::CreateCompressStream:
+		case AviError::kCreateCompressStream:
 			msg = _T("圧縮Streamが生成できませんでした。");
 			break;
 		default:
@@ -343,10 +343,10 @@ UINT CManageAvi::RecordThreadProc(LPVOID pParam)
 		MessageBox(nullptr, msg, _T("Error"), MB_OK);
 	}
 
-	pAvi->ReleaseAvi();
+	avi->ReleaseAvi();
 	::AVIFileExit();
 
-	pAvi->m_bExecuting = false;
+	avi->executing_ = false;
 
 	return TRUE;
 }

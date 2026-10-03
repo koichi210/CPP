@@ -10,53 +10,53 @@
 #define new DEBUG_NEW
 #endif
 
-CMotionCaptureDlg::CMotionCaptureDlg(CWnd* pParent)
-	: CDialogEx(IDD, pParent)
+MotionCaptureDlg::MotionCaptureDlg(CWnd* parent)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CMotionCaptureDlg::DoDataExchange(CDataExchange* pDX)
+void MotionCaptureDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDET_SAVE_FILENAME, m_saveFilename);
-	DDX_Text(pDX, IDET_CAPT_RECT_X, m_captRectX);
-	DDX_Text(pDX, IDET_CAPT_RECT_Y, m_captRectY);
-	DDX_Text(pDX, IDET_CAPT_RECT_WIDTH, m_captRectWidth);
-	DDX_Text(pDX, IDET_CAPT_RECT_HEIGHT, m_captRectHeight);
-	DDX_Text(pDX, IDET_CAPT_BPP, m_bitmapBpp);
-	DDV_MinMaxInt(pDX, m_bitmapBpp, 0, 32);
-	DDX_Text(pDX, IDET_CAPT_FPS, m_frameRate);
-	DDV_MinMaxInt(pDX, m_frameRate, 1, 120);
-	DDX_Text(pDX, IDET_TIMEOUT_SEC, m_timeoutSec);
-	DDX_Text(pDX, IDET_SKIP_FRAME, m_skipFrame);
-	DDX_Text(pDX, IDET_RESIZE_RECT_WIDTH, m_resizeRectWidth);
-	DDX_Text(pDX, IDET_RESIZE_RECT_HEIGHT, m_resizeRectHeight);
-	DDX_Check(pDX, IDCH_RESIZE, m_bResize);
-	DDX_Check(pDX, IDCH_MOUSE_POINT_REC, m_bMousePointRec);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Text(dx, IDET_SAVE_FILENAME, save_filename_);
+	DDX_Text(dx, IDET_CAPT_RECT_X, capt_rect_x_);
+	DDX_Text(dx, IDET_CAPT_RECT_Y, capt_rect_y_);
+	DDX_Text(dx, IDET_CAPT_RECT_WIDTH, capt_rect_width_);
+	DDX_Text(dx, IDET_CAPT_RECT_HEIGHT, capt_rect_height_);
+	DDX_Text(dx, IDET_CAPT_BPP, bitmap_bpp_);
+	DDV_MinMaxInt(dx, bitmap_bpp_, 0, 32);
+	DDX_Text(dx, IDET_CAPT_FPS, frame_rate_);
+	DDV_MinMaxInt(dx, frame_rate_, 1, 120);
+	DDX_Text(dx, IDET_TIMEOUT_SEC, timeout_sec_);
+	DDX_Text(dx, IDET_SKIP_FRAME, skip_frame_);
+	DDX_Text(dx, IDET_RESIZE_RECT_WIDTH, resize_rect_width_);
+	DDX_Text(dx, IDET_RESIZE_RECT_HEIGHT, resize_rect_height_);
+	DDX_Check(dx, IDCH_RESIZE, resize_);
+	DDX_Check(dx, IDCH_MOUSE_POINT_REC, mouse_point_rec_);
 }
 
-BEGIN_MESSAGE_MAP(CMotionCaptureDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(MotionCaptureDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_RECORD, &CMotionCaptureDlg::OnBnClickedRecord)
-	ON_BN_CLICKED(IDBT_RECORD_STOP, &CMotionCaptureDlg::OnBnClickedRecordStop)
-	ON_BN_CLICKED(IDBT_CAPT_AREA_SAMPLE, &CMotionCaptureDlg::OnBnClickedSampleCaptArea)
-	ON_BN_CLICKED(IDOK, &CMotionCaptureDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDBT_RECORD, &MotionCaptureDlg::OnBnClickedRecord)
+	ON_BN_CLICKED(IDBT_RECORD_STOP, &MotionCaptureDlg::OnBnClickedRecordStop)
+	ON_BN_CLICKED(IDBT_CAPT_AREA_SAMPLE, &MotionCaptureDlg::OnBnClickedSampleCaptArea)
+	ON_BN_CLICKED(IDOK, &MotionCaptureDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
-BOOL CMotionCaptureDlg::OnInitDialog()
+BOOL MotionCaptureDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログがメインウィンドウのため自前で描く）
-void CMotionCaptureDlg::OnPaint()
+void MotionCaptureDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -64,14 +64,14 @@ void CMotionCaptureDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -79,19 +79,19 @@ void CMotionCaptureDlg::OnPaint()
 	}
 }
 
-HCURSOR CMotionCaptureDlg::OnQueryDragIcon()
+HCURSOR MotionCaptureDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // Enter キーでダイアログが閉じないよう、何もしない
-void CMotionCaptureDlg::OnBnClickedOk()
+void MotionCaptureDlg::OnBnClickedOk()
 {
 }
 
-void CMotionCaptureDlg::OnBnClickedRecord()
+void MotionCaptureDlg::OnBnClickedRecord()
 {
-	if (m_avi.IsExecution())
+	if (avi_.IsExecution())
 	{
 		if (MessageBox(_T("実行中です。中断しますか？"), _T("Warning"), MB_YESNO) == IDYES)
 		{
@@ -105,7 +105,7 @@ void CMotionCaptureDlg::OnBnClickedRecord()
 	// 別プロセスが保存先を使っていないか、実際に開いて確かめる
 	{
 		CFile file;
-		if (!file.Open(m_saveFilename, CFile::modeCreate | CFile::modeWrite))
+		if (!file.Open(save_filename_, CFile::modeCreate | CFile::modeWrite))
 		{
 			MessageBox(_T("別プロセスが使用中です。"), _T("Warning"), MB_OK);
 			return;
@@ -113,28 +113,28 @@ void CMotionCaptureDlg::OnBnClickedRecord()
 		file.Close();
 	}
 
-	m_avi.SetSaveFileName(m_saveFilename);
-	m_avi.SetFrameRate(m_frameRate);
-	m_avi.SetRecordSec(m_timeoutSec);
-	m_avi.SetSkipFrame(m_skipFrame);
-	m_avi.SetCaptureRect(m_captRectX, m_captRectY, m_captRectWidth, m_captRectHeight);
-	m_avi.SetCaptureQuality(m_bitmapBpp);
-	m_avi.SetResize(m_bResize, m_resizeRectWidth, m_resizeRectHeight);
-	m_avi.SetRecordMousePoint(m_bMousePointRec);
+	avi_.SetSaveFileName(save_filename_);
+	avi_.SetFrameRate(frame_rate_);
+	avi_.SetRecordSec(timeout_sec_);
+	avi_.SetSkipFrame(skip_frame_);
+	avi_.SetCaptureRect(capt_rect_x_, capt_rect_y_, capt_rect_width_, capt_rect_height_);
+	avi_.SetCaptureQuality(bitmap_bpp_);
+	avi_.SetResize(resize_, resize_rect_width_, resize_rect_height_);
+	avi_.SetRecordMousePoint(mouse_point_rec_);
 
-	m_avi.StartRecord();
+	avi_.StartRecord();
 }
 
-void CMotionCaptureDlg::OnBnClickedRecordStop()
+void MotionCaptureDlg::OnBnClickedRecordStop()
 {
-	m_avi.StopRecord();
+	avi_.StopRecord();
 }
 
-void CMotionCaptureDlg::OnBnClickedSampleCaptArea()
+void MotionCaptureDlg::OnBnClickedSampleCaptArea()
 {
 	UpdateData();
-	RECT rt = { m_captRectX, m_captRectY, m_captRectWidth, m_captRectHeight };
+	RECT rt = { capt_rect_x_, capt_rect_y_, capt_rect_width_, capt_rect_height_ };
 
-	CSampleCaptAreaDlg dlg(rt, m_bitmapBpp);
+	SampleCaptAreaDlg dlg(rt, bitmap_bpp_);
 	dlg.DoModal();
 }

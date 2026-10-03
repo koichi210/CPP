@@ -10,41 +10,41 @@
 
 namespace
 {
-	constexpr int PICTURE_BOX_WIDTH		= 700;
-	constexpr int PICTURE_BOX_HEIGHT	= 400;
+	constexpr int kPictureBoxWidth		= 700;
+	constexpr int kPictureBoxHeight	= 400;
 }
 
-IMPLEMENT_DYNAMIC(CSampleCaptAreaDlg, CDialogEx)
+IMPLEMENT_DYNAMIC(SampleCaptAreaDlg, CDialogEx)
 
-CSampleCaptAreaDlg::CSampleCaptAreaDlg(const RECT& rt, UINT bitmapBpp, CWnd* pParent)
-	: CDialogEx(IDD, pParent)
-	, m_preview(rt)
-	, m_bitmapBpp(bitmapBpp)
+SampleCaptAreaDlg::SampleCaptAreaDlg(const RECT& rt, UINT bitmap_bpp, CWnd* parent)
+	: CDialogEx(IDD, parent)
+	, preview_(rt)
+	, bitmap_bpp_(bitmap_bpp)
 {
 }
 
-BEGIN_MESSAGE_MAP(CSampleCaptAreaDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(SampleCaptAreaDlg, CDialogEx)
 	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
-void CSampleCaptAreaDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+void SampleCaptAreaDlg::OnShowWindow(BOOL show, UINT status)
 {
-	CDialogEx::OnShowWindow(bShow, nStatus);
+	CDialogEx::OnShowWindow(show, status);
 	PreView();
 }
 
-void CSampleCaptAreaDlg::InitBitmapInfo()
+void SampleCaptAreaDlg::InitBitmapInfo()
 {
-	ZeroMemory(&m_bitmapInfo, sizeof(BITMAPINFO));
-	BITMAPINFOHEADER& header = m_bitmapInfo.bmiHeader;
+	ZeroMemory(&bitmap_info_, sizeof(BITMAPINFO));
+	BITMAPINFOHEADER& header = bitmap_info_.bmiHeader;
 	header.biSize = sizeof(BITMAPINFOHEADER);
-	header.biWidth = m_preview.right - m_preview.left;
-	header.biHeight = m_preview.bottom - m_preview.top;
+	header.biWidth = preview_.right - preview_.left;
+	header.biHeight = preview_.bottom - preview_.top;
 	header.biPlanes = 1;
-	header.biBitCount = static_cast<WORD>(m_bitmapBpp);
+	header.biBitCount = static_cast<WORD>(bitmap_bpp_);
 	header.biCompression = BI_RGB;	// BI_JPEG は指定できなかった
 
-	if (m_bitmapBpp != 0)
+	if (bitmap_bpp_ != 0)
 	{
 		header.biSizeImage = header.biHeight * ((3 * header.biWidth + 3) / 4) * 4;
 	}
@@ -55,81 +55,81 @@ void CSampleCaptAreaDlg::InitBitmapInfo()
 	}
 }
 
-void CSampleCaptAreaDlg::ScreenCapture()
+void SampleCaptAreaDlg::ScreenCapture()
 {
-	HDC hMemDC = ::CreateCompatibleDC(nullptr);
-	LPVOID pvBits;
+	HDC mem_dc = ::CreateCompatibleDC(nullptr);
+	LPVOID pv_bits;
 
 	InitBitmapInfo();
-	HBITMAP hMemBitmap = ::CreateDIBSection(nullptr, &m_bitmapInfo, DIB_RGB_COLORS, &pvBits, nullptr, 0);
-	HBITMAP hOldBitmap = static_cast<HBITMAP>(::SelectObject(hMemDC, hMemBitmap));
+	HBITMAP mem_bitmap = ::CreateDIBSection(nullptr, &bitmap_info_, DIB_RGB_COLORS, &pv_bits, nullptr, 0);
+	HBITMAP old_bitmap = static_cast<HBITMAP>(::SelectObject(mem_dc, mem_bitmap));
 
-	HDC dcScreen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), nullptr);
+	HDC dc_screen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), nullptr);
 
-	::BitBlt(hMemDC, 0, 0, m_bitmapInfo.bmiHeader.biWidth, m_bitmapInfo.bmiHeader.biHeight, dcScreen, 0, 0, SRCCOPY);
+	::BitBlt(mem_dc, 0, 0, bitmap_info_.bmiHeader.biWidth, bitmap_info_.bmiHeader.biHeight, dc_screen, 0, 0, SRCCOPY);
 
-	::SelectObject(hMemDC, hOldBitmap);
-	::DeleteObject(hMemBitmap);
-	::DeleteDC(hMemDC);
-	::DeleteDC(dcScreen);
+	::SelectObject(mem_dc, old_bitmap);
+	::DeleteObject(mem_bitmap);
+	::DeleteDC(mem_dc);
+	::DeleteDC(dc_screen);
 }
 
-void CSampleCaptAreaDlg::PreView()
+void SampleCaptAreaDlg::PreView()
 {
-	const CString samplePath = _T("c:\\Sample.bmp");
+	const CString sample_path = _T("c:\\Sample.bmp");
 
-	if (!PathFileExists(samplePath))
+	if (!PathFileExists(sample_path))
 	{
-		MessageBox(_T("ファイルオープンに失敗しました。\n") + samplePath);
+		MessageBox(_T("ファイルオープンに失敗しました。\n") + sample_path);
 		return;
 	}
 
-	HBITMAP hBitmap = static_cast<HBITMAP>(::LoadImage(
+	HBITMAP bitmap = static_cast<HBITMAP>(::LoadImage(
 		AfxGetInstanceHandle(),
-		samplePath,
+		sample_path,
 		IMAGE_BITMAP,
-		PICTURE_BOX_WIDTH,
-		PICTURE_BOX_HEIGHT,
+		kPictureBoxWidth,
+		kPictureBoxHeight,
 		LR_LOADFROMFILE));
 
 	// ビットマップはピクチャーコントロールに渡したまま残す
-	CStatic* pPictureBox = static_cast<CStatic*>(GetDlgItem(IDPC_SAMPLE));
-	pPictureBox->SetBitmap(hBitmap);
+	CStatic* picture_box = static_cast<CStatic*>(GetDlgItem(IDPC_SAMPLE));
+	picture_box->SetBitmap(bitmap);
 }
 
 // 24bpp の BMP ファイルとして書き出す
-BOOL CSampleCaptAreaDlg::WriteBitmap(LPCTSTR lpszFileName, int nWidth, int nHeight, LPVOID lpBits)
+BOOL SampleCaptAreaDlg::WriteBitmap(LPCTSTR file_name, int width, int height, LPVOID bits)
 {
-	HANDLE hFile = CreateFile(lpszFileName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (hFile == INVALID_HANDLE_VALUE)
+	HANDLE file = CreateFile(file_name, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (file == INVALID_HANDLE_VALUE)
 	{
 		return FALSE;
 	}
 
-	DWORD dwResult;
-	const DWORD dwSizeImage = nHeight * ((3 * nWidth + 3) / 4) * 4;
+	DWORD result;
+	const DWORD size_image = height * ((3 * width + 3) / 4) * 4;
 
-	BITMAPFILEHEADER bmfHeader = {};
-	bmfHeader.bfType    = 0x4D42;	// "BM"
-	bmfHeader.bfSize    = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + dwSizeImage;
-	bmfHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+	BITMAPFILEHEADER bmf_header = {};
+	bmf_header.bfType    = 0x4D42;	// "BM"
+	bmf_header.bfSize    = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + size_image;
+	bmf_header.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 
-	WriteFile(hFile, &bmfHeader, sizeof(BITMAPFILEHEADER), &dwResult, nullptr);
+	WriteFile(file, &bmf_header, sizeof(BITMAPFILEHEADER), &result, nullptr);
 
-	BITMAPINFOHEADER bmiHeader = {};
-	bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
-	bmiHeader.biWidth       = nWidth;
-	bmiHeader.biHeight      = nHeight;
-	bmiHeader.biPlanes      = 1;
-	bmiHeader.biBitCount    = 24;
-	bmiHeader.biSizeImage   = dwSizeImage;
-	bmiHeader.biCompression = BI_RGB;
+	BITMAPINFOHEADER bmi_header = {};
+	bmi_header.biSize        = sizeof(BITMAPINFOHEADER);
+	bmi_header.biWidth       = width;
+	bmi_header.biHeight      = height;
+	bmi_header.biPlanes      = 1;
+	bmi_header.biBitCount    = 24;
+	bmi_header.biSizeImage   = size_image;
+	bmi_header.biCompression = BI_RGB;
 
-	WriteFile(hFile, &bmiHeader, sizeof(BITMAPINFOHEADER), &dwResult, nullptr);
+	WriteFile(file, &bmi_header, sizeof(BITMAPINFOHEADER), &result, nullptr);
 
-	WriteFile(hFile, lpBits, dwSizeImage, &dwResult, nullptr);
+	WriteFile(file, bits, size_image, &result, nullptr);
 
-	CloseHandle(hFile);
+	CloseHandle(file);
 
 	return TRUE;
 }

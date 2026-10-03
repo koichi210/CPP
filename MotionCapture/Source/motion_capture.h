@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CMotionCaptureApp : public CWinApp
+class MotionCaptureApp : public CWinApp
 {
 public:
-	CMotionCaptureApp();
+	MotionCaptureApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CMotionCaptureApp theApp;
+extern MotionCaptureApp the_app;

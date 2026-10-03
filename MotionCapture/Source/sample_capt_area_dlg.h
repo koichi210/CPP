@@ -2,28 +2,28 @@
 
 #pragma once
 
-class CSampleCaptAreaDlg : public CDialogEx
+class SampleCaptAreaDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CSampleCaptAreaDlg)
+	DECLARE_DYNAMIC(SampleCaptAreaDlg)
 
 public:
-	CSampleCaptAreaDlg(const RECT& rt, UINT bitmapBpp, CWnd* pParent = nullptr);
+	SampleCaptAreaDlg(const RECT& rt, UINT bitmap_bpp, CWnd* parent = nullptr);
 
 	enum { IDD = IDD_SAMPLE_CAPT_AREA_DIALOG };
 
 protected:
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnShowWindow(BOOL show, UINT status);
 	DECLARE_MESSAGE_MAP()
 
 	void PreView();
 
 	// 記録領域のキャプチャ（試作中。まだどこからも呼ばれていない）
-	BOOL WriteBitmap(LPCTSTR lpszFileName, int nWidth, int nHeight, LPVOID lpBits);
+	BOOL WriteBitmap(LPCTSTR file_name, int width, int height, LPVOID bits);
 	void InitBitmapInfo();
 	void ScreenCapture();
 
 private:
-	RECT		m_preview;
-	UINT		m_bitmapBpp;
-	BITMAPINFO	m_bitmapInfo = {};
+	RECT		preview_;
+	UINT		bitmap_bpp_;
+	BITMAPINFO	bitmap_info_ = {};
 };

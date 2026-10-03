@@ -8,24 +8,24 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CMotionCaptureApp, CWinApp)
+BEGIN_MESSAGE_MAP(MotionCaptureApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CMotionCaptureApp theApp;
+MotionCaptureApp the_app;
 
-CMotionCaptureApp::CMotionCaptureApp()
+MotionCaptureApp::MotionCaptureApp()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 }
 
-BOOL CMotionCaptureApp::InitInstance()
+BOOL MotionCaptureApp::InitInstance()
 {
 	// visual スタイル（ComCtl32 v6）を使うにはコモンコントロールの初期化が要る
-	INITCOMMONCONTROLSEX initCtrls;
-	initCtrls.dwSize = sizeof(initCtrls);
-	initCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls;
+	init_ctrls.dwSize = sizeof(init_ctrls);
+	init_ctrls.dwICC = ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 
@@ -33,7 +33,7 @@ BOOL CMotionCaptureApp::InitInstance()
 
 	SetRegistryKey(_T("アプリケーション ウィザードで生成されたローカル アプリケーション"));
 
-	CMotionCaptureDlg dlg;
+	MotionCaptureDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
