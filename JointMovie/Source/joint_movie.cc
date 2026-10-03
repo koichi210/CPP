@@ -1,8 +1,8 @@
 ﻿// JointMovie.cpp : アプリケーションクラス
 
 #include "stdafx.h"
-#include "JointMovie.h"
-#include "JointMovieDlg.h"
+#include "joint_movie.h"
+#include "joint_movie_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

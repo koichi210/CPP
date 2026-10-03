@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="JointMovie.cpp">
+    <ClCompile Include="joint_movie.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="JointMovieDlg.cpp">
+    <ClCompile Include="joint_movie_dlg.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -26,10 +26,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="JointMovie.h">
+    <ClInclude Include="joint_movie.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="JointMovieDlg.h">
+    <ClInclude Include="joint_movie_dlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">

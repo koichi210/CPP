@@ -110,16 +110,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="JointMovie.cpp" />
-    <ClCompile Include="JointMovieDlg.cpp" />
+    <ClCompile Include="joint_movie.cc" />
+    <ClCompile Include="joint_movie_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="JointMovie.h" />
-    <ClInclude Include="JointMovieDlg.h" />
+    <ClInclude Include="joint_movie.h" />
+    <ClInclude Include="joint_movie_dlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
