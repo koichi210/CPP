@@ -11,10 +11,10 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 
-const GLfloat lightPos[] = { 3 , 0 , -2 , 0 };
-const GLfloat lightCol[] = { 1 , 0 , 0 , 1 };
+const GLfloat kLightPos[] = { 3 , 0 , -2 , 0 };
+const GLfloat kLightCol[] = { 1 , 0 , 0 , 1 };
 
-void dispPyramid(void) {
+void DispPyramid(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBegin(GL_POLYGON);
 	glNormal3f(3, 0, -2);
@@ -39,14 +39,14 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
 
 	glutCreateWindow("図形描画");
-	glutDisplayFunc(dispPyramid);
+	glutDisplayFunc(DispPyramid);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(1, -1, -1, 1, 2, 10);
 
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightCol);
+	glLightfv(GL_LIGHT0, GL_POSITION, kLightPos);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, kLightCol);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
