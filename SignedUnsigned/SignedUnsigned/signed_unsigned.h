@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CSignedUnsignedApp : public CWinApp
+class SignedUnsignedApp : public CWinApp
 {
 public:
-	CSignedUnsignedApp();
+	SignedUnsignedApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CSignedUnsignedApp theApp;
+extern SignedUnsignedApp the_app;

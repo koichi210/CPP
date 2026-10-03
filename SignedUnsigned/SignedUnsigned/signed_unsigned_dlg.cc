@@ -9,35 +9,35 @@
 #define new DEBUG_NEW
 #endif
 
-CSignedUnsignedDlg::CSignedUnsignedDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+SignedUnsignedDlg::SignedUnsignedDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CSignedUnsignedDlg::DoDataExchange(CDataExchange* pDX)
+void SignedUnsignedDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(dx);
 }
 
-BEGIN_MESSAGE_MAP(CSignedUnsignedDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(SignedUnsignedDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CSignedUnsignedDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &SignedUnsignedDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-BOOL CSignedUnsignedDlg::OnInitDialog()
+BOOL SignedUnsignedDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CSignedUnsignedDlg::OnPaint()
+void SignedUnsignedDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -45,14 +45,14 @@ void CSignedUnsignedDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -60,24 +60,24 @@ void CSignedUnsignedDlg::OnPaint()
 	}
 }
 
-HCURSOR CSignedUnsignedDlg::OnQueryDragIcon()
+HCURSOR SignedUnsignedDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // 符号なし同士の引き算が負になる（ラップアラウンドする）と、その後の乗除算の結果が
 // 期待した負の値にならないことを確かめる。結果はわざと %d（符号付き）で表示している
-void CSignedUnsignedDlg::OnBnClickedButton1()
+void SignedUnsignedDlg::OnBnClickedButton1()
 {
-	UINT32	BitDepthValue		= 8;
-	UINT32	YOffset				= 1;
-	UINT32	BaseWidth			= 1;
-	UINT32	XOffset				= 1;
-	UINT32	Compass_Hcopy_num	= 18;
-	UINT32	Pix2ByteDen			= 1;
+	UINT32	bit_depth_value		= 8;
+	UINT32	y_offset				= 1;
+	UINT32	base_width			= 1;
+	UINT32	x_offset				= 1;
+	UINT32	compass_hcopy_num	= 18;
+	UINT32	pix2_byte_den			= 1;
 
-	UINT32	CompIn1Offset = (( YOffset * BaseWidth + XOffset ) - Compass_Hcopy_num ) * BitDepthValue / Pix2ByteDen;
+	UINT32	comp_in1_offset = (( y_offset * base_width + x_offset ) - compass_hcopy_num ) * bit_depth_value / pix2_byte_den;
 	CString str;
-	str.Format("Result = %d", CompIn1Offset );
+	str.Format("Result = %d", comp_in1_offset );
 	MessageBox(str);
 }
