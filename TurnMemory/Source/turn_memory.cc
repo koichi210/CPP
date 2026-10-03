@@ -8,17 +8,17 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CTurnMemoryApp, CWinApp)
+BEGIN_MESSAGE_MAP(TurnMemoryApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CTurnMemoryApp theApp;
+TurnMemoryApp the_app;
 
-BOOL CTurnMemoryApp::InitInstance()
+BOOL TurnMemoryApp::InitInstance()
 {
 	AfxEnableControlContainer();
 
-	CTurnMemoryDlg dlg;
+	TurnMemoryDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
