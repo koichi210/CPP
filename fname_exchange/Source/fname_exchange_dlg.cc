@@ -554,10 +554,11 @@ CString FnameExchangeDlg::MakeNewPath(const CString& old_path, int file_count)
 	}
 }
 
-// 番号は「最初の値 + 件数」の桁数（または指定桁数の大きい方）まで 0 で埋める
+// 番号は「最後に使う番号（最初の値 + 件数 - 1）」の桁数（または指定桁数の大きい方）まで 0 で埋める
 CString FnameExchangeDlg::MakeEnumName(const CString& file, int file_count)
 {
-	int digits = static_cast<int>(CountDigits(first_number_ + static_cast<UINT>(file_count)));
+	const UINT last_number = first_number_ + static_cast<UINT>(file_count) - 1;
+	int digits = static_cast<int>(CountDigits(last_number));
 	if (digits < digits_)
 	{
 		digits = digits_;
