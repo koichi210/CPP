@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CDivisionCouplingApp : public CWinApp
+class DivisionCouplingApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;

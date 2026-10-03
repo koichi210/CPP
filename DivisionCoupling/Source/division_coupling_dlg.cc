@@ -14,7 +14,7 @@
 
 namespace
 {
-	constexpr int KILOBYTE = 1024;
+	constexpr int kKilobyte = 1024;
 
 	// calloc で確保した作業バッファを自動で解放する
 	struct FreeDeleter
@@ -31,47 +31,47 @@ namespace
 	// 分割ファイル名（例: fname.jpg → fname.jpg.div001）
 	CString MakePartPath(const CString& path, int index)
 	{
-		CString partPath;
-		partPath.Format(_T("%s.div%03d"), static_cast<LPCTSTR>(path), index);
-		return partPath;
+		CString part_path;
+		part_path.Format(_T("%s.div%03d"), static_cast<LPCTSTR>(path), index);
+		return part_path;
 	}
 }
 
-CDivisionCouplingDlg::CDivisionCouplingDlg(CWnd* pParent)
-	: CDialogEx(IDD, pParent)
+DivisionCouplingDlg::DivisionCouplingDlg(CWnd* parent)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CDivisionCouplingDlg::DoDataExchange(CDataExchange* pDX)
+void DivisionCouplingDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDPR_SPLITMERGE, m_progress);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Control(dx, IDPR_SPLITMERGE, progress_);
 }
 
-BEGIN_MESSAGE_MAP(CDivisionCouplingDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(DivisionCouplingDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_SPLIT, &CDivisionCouplingDlg::OnBnClickedSplit)
-	ON_BN_CLICKED(IDBT_MERGE, &CDivisionCouplingDlg::OnBnClickedMerge)
-	ON_BN_CLICKED(IDBT_SPLIT_BROWSE, &CDivisionCouplingDlg::OnBnClickedSplitBrowse)
-	ON_BN_CLICKED(IDBT_MERGE_BROWSE, &CDivisionCouplingDlg::OnBnClickedMergeBrowse)
-	ON_BN_CLICKED(IDBT_STOP, &CDivisionCouplingDlg::OnBnClickedStop)
+	ON_BN_CLICKED(IDBT_SPLIT, &DivisionCouplingDlg::OnBnClickedSplit)
+	ON_BN_CLICKED(IDBT_MERGE, &DivisionCouplingDlg::OnBnClickedMerge)
+	ON_BN_CLICKED(IDBT_SPLIT_BROWSE, &DivisionCouplingDlg::OnBnClickedSplitBrowse)
+	ON_BN_CLICKED(IDBT_MERGE_BROWSE, &DivisionCouplingDlg::OnBnClickedMergeBrowse)
+	ON_BN_CLICKED(IDBT_STOP, &DivisionCouplingDlg::OnBnClickedStop)
 	ON_WM_ENDSESSION()
-	ON_MESSAGE(WM_APP_PROCESS_FINISHED, &CDivisionCouplingDlg::OnProcessFinished)
+	ON_MESSAGE(kWmAppProcessFinished, &DivisionCouplingDlg::OnProcessFinished)
 END_MESSAGE_MAP()
 
-BOOL CDivisionCouplingDlg::OnInitDialog()
+BOOL DivisionCouplingDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
-void CDivisionCouplingDlg::OnPaint()
+void DivisionCouplingDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -80,11 +80,11 @@ void CDivisionCouplingDlg::OnPaint()
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
 		// アイコンをクライアント領域の中央に描く
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		dc.DrawIcon((rect.Width() - cxIcon + 1) / 2, (rect.Height() - cyIcon + 1) / 2, m_hIcon);
+		dc.DrawIcon((rect.Width() - icon_width + 1) / 2, (rect.Height() - icon_height + 1) / 2, icon_);
 	}
 	else
 	{
@@ -92,62 +92,62 @@ void CDivisionCouplingDlg::OnPaint()
 	}
 }
 
-HCURSOR CDivisionCouplingDlg::OnQueryDragIcon()
+HCURSOR DivisionCouplingDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CDivisionCouplingDlg::OnBnClickedSplit()
+void DivisionCouplingDlg::OnBnClickedSplit()
 {
-	GetDlgItemText(IDET_SPLIT_FNAME, m_srcPath);
+	GetDlgItemText(IDET_SPLIT_FNAME, src_path_);
 
 	// KB → バイト。int に収まらない値は分割サイズエラーにする
-	const int divSizeKB = static_cast<int>(GetDlgItemInt(IDET_SIZE));
-	m_divSize = (0 < divSizeKB && divSizeKB <= INT_MAX / KILOBYTE) ? divSizeKB * KILOBYTE : 0;
+	const int div_size_kb = static_cast<int>(GetDlgItemInt(IDET_SIZE));
+	div_size_ = (0 < div_size_kb && div_size_kb <= INT_MAX / kKilobyte) ? div_size_kb * kKilobyte : 0;
 
-	StartProcess(&CDivisionCouplingDlg::SplitThreadProc);
+	StartProcess(&DivisionCouplingDlg::SplitThreadProc);
 }
 
-void CDivisionCouplingDlg::OnBnClickedMerge()
+void DivisionCouplingDlg::OnBnClickedMerge()
 {
-	GetDlgItemText(IDET_MERGE_FNAME, m_srcPath);
+	GetDlgItemText(IDET_MERGE_FNAME, src_path_);
 
 	// 選んだ分割ファイルから最後の拡張子を外したものが結合後のファイル名
 	// 例: fname.jpg.div001 → fname.jpg
-	const int dot = m_srcPath.ReverseFind(_T('.'));
-	m_destPath = (dot >= 0) ? m_srcPath.Left(dot) : m_srcPath;
+	const int dot = src_path_.ReverseFind(_T('.'));
+	dest_path_ = (dot >= 0) ? src_path_.Left(dot) : src_path_;
 
 	// 確認はワーカーを動かす前に UI スレッドで行う
-	if (PathFileExists(m_destPath))
+	if (PathFileExists(dest_path_))
 	{
-		if (MessageBox(_T("すでにファイルが存在します。上書きしますか？\n") + m_destPath, _T("Warning"), MB_YESNO) == IDNO)
+		if (MessageBox(_T("すでにファイルが存在します。上書きしますか？\n") + dest_path_, _T("Warning"), MB_YESNO) == IDNO)
 		{
 			MessageBox(_T("処理を中断しました。"));
 			return;
 		}
 	}
 
-	StartProcess(&CDivisionCouplingDlg::MergeThreadProc);
+	StartProcess(&DivisionCouplingDlg::MergeThreadProc);
 }
 
-void CDivisionCouplingDlg::OnBnClickedSplitBrowse()
+void DivisionCouplingDlg::OnBnClickedSplitBrowse()
 {
 	BrowseFile(IDET_SPLIT_FNAME);
 }
 
-void CDivisionCouplingDlg::OnBnClickedMergeBrowse()
+void DivisionCouplingDlg::OnBnClickedMergeBrowse()
 {
 	BrowseFile(IDET_MERGE_FNAME);
 }
 
 // 開始ボタンはワーカーが止まりきってから OnProcessFinished で戻す（前の処理と同時に動かさないため）
-void CDivisionCouplingDlg::OnBnClickedStop()
+void DivisionCouplingDlg::OnBnClickedStop()
 {
-	m_running = false;
+	running_ = false;
 	GetDlgItem(IDBT_STOP)->EnableWindow(FALSE);
 }
 
-void CDivisionCouplingDlg::OnOK()
+void DivisionCouplingDlg::OnOK()
 {
 	if (StopWorkersForClose())
 	{
@@ -155,7 +155,7 @@ void CDivisionCouplingDlg::OnOK()
 	}
 }
 
-void CDivisionCouplingDlg::OnCancel()
+void DivisionCouplingDlg::OnCancel()
 {
 	if (StopWorkersForClose())
 	{
@@ -163,9 +163,9 @@ void CDivisionCouplingDlg::OnCancel()
 	}
 }
 
-bool CDivisionCouplingDlg::StopWorkersForClose()
+bool DivisionCouplingDlg::StopWorkersForClose()
 {
-	if (m_workers.IsRunning())
+	if (workers_.IsRunning())
 	{
 		const int answer = MessageBox(_T("処理中です。中止して閉じますか？\n\n作成途中のファイルは削除します。"), _T("確認"), MB_YESNO | MB_ICONQUESTION);
 		if (answer != IDYES)
@@ -179,80 +179,80 @@ bool CDivisionCouplingDlg::StopWorkersForClose()
 }
 
 // シャットダウン・ログオフでは、この後すぐプロセスごと終了させられるので、確認せずに止めて後片付けさせる
-void CDivisionCouplingDlg::OnEndSession(BOOL bEnding)
+void DivisionCouplingDlg::OnEndSession(BOOL ending)
 {
-	if (bEnding)
+	if (ending)
 	{
 		StopWorkers();
 	}
-	CDialogEx::OnEndSession(bEnding);
+	CDialogEx::OnEndSession(ending);
 }
 
 // ワーカーはダイアログを触るので、閉じる（ダイアログが破棄される）前に止めて終了を待つ
-void CDivisionCouplingDlg::StopWorkers()
+void DivisionCouplingDlg::StopWorkers()
 {
-	m_closing = true;
-	m_running = false;
+	closing_ = true;
+	running_ = false;
 	EnableWindow(FALSE);	// 待っている間に操作させない
-	m_workers.WaitAll();
+	workers_.WaitAll();
 	EnableWindow(TRUE);
 }
 
 // ワーカーは画面に何も出さず、終わったことだけ UI スレッドに伝えてすぐ終わる
 // （ワーカーがメッセージボックスを出すと、閉じるまでスレッドが終われないため）
-UINT CDivisionCouplingDlg::SplitThreadProc(LPVOID pParam)
+UINT DivisionCouplingDlg::SplitThreadProc(LPVOID param)
 {
-	auto pDlg = static_cast<CDivisionCouplingDlg*>(pParam);
-	pDlg->Split();
-	pDlg->PostMessage(WM_APP_PROCESS_FINISHED);
+	auto dlg = static_cast<DivisionCouplingDlg*>(param);
+	dlg->Split();
+	dlg->PostMessage(kWmAppProcessFinished);
 	return TRUE;
 }
 
-UINT CDivisionCouplingDlg::MergeThreadProc(LPVOID pParam)
+UINT DivisionCouplingDlg::MergeThreadProc(LPVOID param)
 {
-	auto pDlg = static_cast<CDivisionCouplingDlg*>(pParam);
-	pDlg->Merge();
-	pDlg->PostMessage(WM_APP_PROCESS_FINISHED);
+	auto dlg = static_cast<DivisionCouplingDlg*>(param);
+	dlg->Merge();
+	dlg->PostMessage(kWmAppProcessFinished);
 	return TRUE;
 }
 
-void CDivisionCouplingDlg::StartProcess(AFX_THREADPROC pfnThreadProc)
+void DivisionCouplingDlg::StartProcess(AFX_THREADPROC thread_proc)
 {
-	m_error = Error::None;
-	m_running = true;
+	error_ = Error::kNone;
+	running_ = true;
 	EnableControls(true);
-	m_workers.Start(pfnThreadProc, this);
+	workers_.Start(thread_proc, this);
 }
 
-LRESULT CDivisionCouplingDlg::OnProcessFinished(WPARAM /*wParam*/, LPARAM /*lParam*/)
+LRESULT DivisionCouplingDlg::OnProcessFinished(WPARAM /*w_param*/, LPARAM /*l_param*/)
 {
-	m_running = false;
+	running_ = false;
 	EnableControls(false);
 
 	// 閉じる途中はダイアログの終了を妨げないよう、何も表示しない
-	if (m_closing)
+	if (closing_)
 	{
 		return 0;
 	}
 
 	CString msg;
-	switch (m_error)
+	switch (error_)
 	{
-	case Error::None:
+	case Error::kNone:
 		return 0;
-	case Error::Aborted:
+	case Error::kAborted:
 		MessageBox(_T("処理を中止しました。\n作成途中のファイルは削除しました。"), _T("info"), MB_OK);
 		return 0;
-	case Error::OpenSource:
+	case Error::kOpenSource:
 		msg = _T("元ファイルオープンエラー");
 		break;
-	case Error::OpenDest:
-		msg.Format(_T("ファイルが作成できません\n\n%s"), static_cast<LPCTSTR>(m_destPath));
+	case Error::kOpenDest:
+		msg.Format(_T("ファイルが作成できません\n\n%s"), static_cast<LPCTSTR>(dest_path_));
 		break;
-	case Error::Alloc:
+	case Error::kAlloc:
 		msg = _T("Workメモリ確保エラー");
 		break;
-	case Error::DivSize:
+	case Error::kDivSize:
 		msg = _T("分割サイズエラー");
 		break;
 	}
@@ -260,135 +260,135 @@ LRESULT CDivisionCouplingDlg::OnProcessFinished(WPARAM /*wParam*/, LPARAM /*lPar
 	return 0;
 }
 
-void CDivisionCouplingDlg::Split()
+void DivisionCouplingDlg::Split()
 {
-	if (m_divSize <= 0)
+	if (div_size_ <= 0)
 	{
-		m_error = Error::DivSize;
+		error_ = Error::kDivSize;
 		return;
 	}
 
-	CFile srcFile;
-	if (!srcFile.Open(m_srcPath, CFile::modeRead))
+	CFile src_file;
+	if (!src_file.Open(src_path_, CFile::modeRead))
 	{
-		m_error = Error::OpenSource;
+		error_ = Error::kOpenSource;
 		return;
 	}
 
 	// 読み込みバッファは分割サイズで1回だけ確保する
-	CallocBuffer buffer = AllocBuffer(m_divSize);
+	CallocBuffer buffer = AllocBuffer(div_size_);
 	if (!buffer)
 	{
-		m_error = Error::Alloc;
+		error_ = Error::kAlloc;
 		return;
 	}
 
-	ULONGLONG restSize = srcFile.GetLength();
-	int partCount = static_cast<int>(restSize / m_divSize);
-	if (restSize % m_divSize)
+	ULONGLONG rest_size = src_file.GetLength();
+	int part_count = static_cast<int>(rest_size / div_size_);
+	if (rest_size % div_size_)
 	{
-		partCount++;
+		part_count++;
 	}
-	m_progress.SetRange32(0, partCount);
+	progress_.SetRange32(0, part_count);
 
 	// 途中で終わったときに消せるよう、作った分割ファイルを覚えておく
-	std::vector<CString> createdParts;
+	std::vector<CString> created_parts;
 
-	for (int index = 1; restSize > 0 && m_running; index++)
+	for (int index = 1; rest_size > 0 && running_; index++)
 	{
-		m_destPath = MakePartPath(m_srcPath, index);
-		CFile destFile;
-		if (!destFile.Open(m_destPath, CFile::modeCreate | CFile::modeWrite))
+		dest_path_ = MakePartPath(src_path_, index);
+		CFile dest_file;
+		if (!dest_file.Open(dest_path_, CFile::modeCreate | CFile::modeWrite))
 		{
-			m_error = Error::OpenDest;
+			error_ = Error::kOpenDest;
 			break;
 		}
-		createdParts.push_back(m_destPath);
+		created_parts.push_back(dest_path_);
 
-		const UINT size = (restSize > static_cast<ULONGLONG>(m_divSize))
-			? static_cast<UINT>(m_divSize) : static_cast<UINT>(restSize);
-		restSize -= size;
+		const UINT size = (rest_size > static_cast<ULONGLONG>(div_size_))
+			? static_cast<UINT>(div_size_) : static_cast<UINT>(rest_size);
+		rest_size -= size;
 
-		srcFile.Read(buffer.get(), size);
-		destFile.Write(buffer.get(), size);
-		destFile.Close();
+		src_file.Read(buffer.get(), size);
+		dest_file.Write(buffer.get(), size);
+		dest_file.Close();
 
-		m_progress.SetPos(index);
+		progress_.SetPos(index);
 	}
 
-	srcFile.Close();
+	src_file.Close();
 
 	// 分割ファイルが欠けたまま残ると、結合したときに欠けたファイルが黙ってできてしまう
-	if (restSize > 0)
+	if (rest_size > 0)
 	{
-		if (m_error == Error::None)
+		if (error_ == Error::kNone)
 		{
-			m_error = Error::Aborted;
+			error_ = Error::kAborted;
 		}
-		for (const CString& part : createdParts)
+		for (const CString& part : created_parts)
 		{
 			::DeleteFile(part);
 		}
 	}
 }
 
-void CDivisionCouplingDlg::Merge()
+void DivisionCouplingDlg::Merge()
 {
-	// 結合先 m_destPath は OnBnClickedMerge で決めて、上書きの確認も済んでいる
-	CFile destFile;
-	if (!destFile.Open(m_destPath, CFile::modeCreate | CFile::modeWrite))
+	// 結合先 dest_path_ は OnBnClickedMerge で決めて、上書きの確認も済んでいる
+	CFile dest_file;
+	if (!dest_file.Open(dest_path_, CFile::modeCreate | CFile::modeWrite))
 	{
-		m_error = Error::OpenDest;
+		error_ = Error::kOpenDest;
 		return;
 	}
 
 	// .div001 から番号順に、ファイルが無くなるまで連結する
 	for (int index = 1; ; index++)
 	{
-		if (!m_running)
+		if (!running_)
 		{
-			m_error = Error::Aborted;
+			error_ = Error::kAborted;
 			break;
 		}
 
-		CFile partFile;
-		if (!partFile.Open(MakePartPath(m_destPath, index), CFile::modeRead))
+		CFile part_file;
+		if (!part_file.Open(MakePartPath(dest_path_, index), CFile::modeRead))
 		{
 			break;
 		}
 
-		const UINT size = static_cast<UINT>(partFile.GetLength());
+		const UINT size = static_cast<UINT>(part_file.GetLength());
 		CallocBuffer buffer = AllocBuffer(size);
 		if (!buffer)
 		{
-			m_error = Error::Alloc;
+			error_ = Error::kAlloc;
 			break;
 		}
 
-		partFile.Read(buffer.get(), size);
-		destFile.Write(buffer.get(), size);
-		partFile.Close();
+		part_file.Read(buffer.get(), size);
+		dest_file.Write(buffer.get(), size);
+		part_file.Close();
 	}
 
-	destFile.Close();
+	dest_file.Close();
 
 	// 途中で終わった結合結果は欠けているので残さない
-	if (m_error != Error::None)
+	if (error_ != Error::kNone)
 	{
-		::DeleteFile(m_destPath);
+		::DeleteFile(dest_path_);
 	}
 }
 
-void CDivisionCouplingDlg::BrowseFile(UINT editId)
+void DivisionCouplingDlg::BrowseFile(UINT edit_id)
 {
 	CFileDialog dlg(TRUE, _T("*.*"), nullptr, OFN_CREATEPROMPT, _T("*.*|*.*|全て(*.*)|*.*||"));
 	if (dlg.DoModal() == IDOK)
 	{
-		SetDlgItemText(editId, dlg.GetPathName());
+		SetDlgItemText(edit_id, dlg.GetPathName());
 	}
 }
 
-void CDivisionCouplingDlg::EnableControls(bool running)
+void DivisionCouplingDlg::EnableControls(bool running)
 {
 	GetDlgItem(IDBT_SPLIT)->EnableWindow(!running);
 	GetDlgItem(IDBT_MERGE)->EnableWindow(!running);

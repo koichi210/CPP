@@ -8,17 +8,17 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CDivisionCouplingApp, CWinApp)
+BEGIN_MESSAGE_MAP(DivisionCouplingApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CDivisionCouplingApp theApp;
+DivisionCouplingApp the_app;
 
-BOOL CDivisionCouplingApp::InitInstance()
+BOOL DivisionCouplingApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
-	CDivisionCouplingDlg dlg;
+	DivisionCouplingDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 

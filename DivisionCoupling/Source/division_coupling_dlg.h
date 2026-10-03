@@ -7,17 +7,17 @@
 #include "worker_threads.h"
 
 // ワーカーが分割・結合を終えたときに UI スレッドへ送る通知
-constexpr UINT WM_APP_PROCESS_FINISHED = WM_APP + 1;
+constexpr UINT kWmAppProcessFinished = WM_APP + 1;
 
-class CDivisionCouplingDlg : public CDialogEx
+class DivisionCouplingDlg : public CDialogEx
 {
 public:
-	explicit CDivisionCouplingDlg(CWnd* pParent = nullptr);
+	explicit DivisionCouplingDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_DIVISION_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 	virtual void OnOK() override;
 	virtual void OnCancel() override;
@@ -29,40 +29,40 @@ protected:
 	afx_msg void OnBnClickedSplitBrowse();
 	afx_msg void OnBnClickedMergeBrowse();
 	afx_msg void OnBnClickedStop();
-	afx_msg void OnEndSession(BOOL bEnding);
-	afx_msg LRESULT OnProcessFinished(WPARAM wParam, LPARAM lParam);	// ワーカーの終了通知
+	afx_msg void OnEndSession(BOOL ending);
+	afx_msg LRESULT OnProcessFinished(WPARAM w_param, LPARAM l_param);	// ワーカーの終了通知
 	DECLARE_MESSAGE_MAP()
 
 private:
 	enum class Error
 	{
-		None,
-		OpenSource,		// 元ファイルが開けない
-		OpenDest,		// 出力ファイルが作れない
-		Alloc,			// 作業メモリが確保できない
-		DivSize,		// 分割サイズが不正
-		Aborted,		// 「停止」または終了で中断した
+		kNone,
+		kOpenSource,		// 元ファイルが開けない
+		kOpenDest,		// 出力ファイルが作れない
+		kAlloc,			// 作業メモリが確保できない
+		kDivSize,		// 分割サイズが不正
+		kAborted,		// 「停止」または終了で中断した
 	};
 
 	// 分割・結合はワーカースレッドで行う
-	static UINT SplitThreadProc(LPVOID pParam);
-	static UINT MergeThreadProc(LPVOID pParam);
+	static UINT SplitThreadProc(LPVOID param);
+	static UINT MergeThreadProc(LPVOID param);
 
-	void StartProcess(AFX_THREADPROC pfnThreadProc);
+	void StartProcess(AFX_THREADPROC thread_proc);
 	void Split();
 	void Merge();
-	void BrowseFile(UINT editId);
+	void BrowseFile(UINT edit_id);
 	void EnableControls(bool running);
 	bool StopWorkersForClose();		// 処理中なら確認のうえ中断し、終了を待つ（閉じてよければ true）
 	void StopWorkers();				// 確認せずに中断し、終了を待つ
 
-	CProgressCtrl		m_progress;
-	HICON				m_hIcon;
-	int					m_divSize = 0;		// 分割サイズ(バイト)
-	CString				m_srcPath;			// 分割元ファイル / 結合で選んだ分割ファイル
-	CString				m_destPath;			// 出力中のファイル（エラー表示にも使う）
-	Error				m_error = Error::None;
-	std::atomic<bool>	m_running{ false };	// 「停止」でワーカースレッドに中断を伝える
-	std::atomic<bool>	m_closing{ false };	// 終了処理中（ワーカーはメッセージを出さない）
-	WorkerThreads		m_workers;
+	CProgressCtrl		progress_;
+	HICON				icon_;
+	int					div_size_ = 0;		// 分割サイズ(バイト)
+	CString				src_path_;			// 分割元ファイル / 結合で選んだ分割ファイル
+	CString				dest_path_;			// 出力中のファイル（エラー表示にも使う）
+	Error				error_ = Error::kNone;
+	std::atomic<bool>	running_{ false };	// 「停止」でワーカースレッドに中断を伝える
+	std::atomic<bool>	closing_{ false };	// 終了処理中（ワーカーはメッセージを出さない）
+	WorkerThreads		workers_;
 };
