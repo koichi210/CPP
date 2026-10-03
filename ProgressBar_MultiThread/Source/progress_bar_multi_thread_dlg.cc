@@ -11,44 +11,44 @@
 
 namespace
 {
-	constexpr int PROGRESS_MAX = 100000;
+	constexpr int kProgressMax = 100000;
 }
 
-CProgressBarDlg::CProgressBarDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+ProgressBarDlg::ProgressBarDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CProgressBarDlg::DoDataExchange(CDataExchange* pDX)
+void ProgressBarDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_PROGRESS1, m_progress);
-	DDX_Text(pDX, IDST_STATUS_BAR, m_strStatus);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Control(dx, IDC_PROGRESS1, progress_);
+	DDX_Text(dx, IDST_STATUS_BAR, status_);
 }
 
-BEGIN_MESSAGE_MAP(CProgressBarDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(ProgressBarDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_START, &CProgressBarDlg::OnBnClickedStart)
-	ON_BN_CLICKED(IDC_STOP, &CProgressBarDlg::OnBnClickedStop)
+	ON_BN_CLICKED(IDC_START, &ProgressBarDlg::OnBnClickedStart)
+	ON_BN_CLICKED(IDC_STOP, &ProgressBarDlg::OnBnClickedStop)
 	ON_WM_ENDSESSION()
 END_MESSAGE_MAP()
 
-BOOL CProgressBarDlg::OnInitDialog()
+BOOL ProgressBarDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
-	m_progress.SetRange32(0, PROGRESS_MAX - 1);
+	progress_.SetRange32(0, kProgressMax - 1);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CProgressBarDlg::OnPaint()
+void ProgressBarDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -56,14 +56,14 @@ void CProgressBarDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -71,68 +71,68 @@ void CProgressBarDlg::OnPaint()
 	}
 }
 
-HCURSOR CProgressBarDlg::OnQueryDragIcon()
+HCURSOR ProgressBarDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CProgressBarDlg::OnBnClickedStart()
+void ProgressBarDlg::OnBnClickedStart()
 {
-	m_stopRequested = false;
-	m_strStatus = "Start が押されたよ";
+	stop_requested_ = false;
+	status_ = "Start が押されたよ";
 	UpdateData(FALSE);
-	m_workers.Start(ProgressThread, this);
+	workers_.Start(ProgressThread, this);
 }
 
-void CProgressBarDlg::OnBnClickedStop()
+void ProgressBarDlg::OnBnClickedStop()
 {
-	m_stopRequested = true;
-	m_strStatus = "Stop が押されたよ";
+	stop_requested_ = true;
+	status_ = "Stop が押されたよ";
 	UpdateData(FALSE);
 }
 
-void CProgressBarDlg::OnOK()
+void ProgressBarDlg::OnOK()
 {
 	StopWorkers();
 	CDialogEx::OnOK();
 }
 
-void CProgressBarDlg::OnCancel()
+void ProgressBarDlg::OnCancel()
 {
 	StopWorkers();
 	CDialogEx::OnCancel();
 }
 
 // シャットダウン・ログオフでは、この後すぐプロセスごと終了させられるので、その前に止める
-void CProgressBarDlg::OnEndSession(BOOL bEnding)
+void ProgressBarDlg::OnEndSession(BOOL ending)
 {
-	if (bEnding)
+	if (ending)
 	{
 		StopWorkers();
 	}
-	CDialogEx::OnEndSession(bEnding);
+	CDialogEx::OnEndSession(ending);
 }
 
 // ワーカーはプログレスバーを触るので、閉じる（ダイアログが破棄される）前に止めて終了を待つ
-void CProgressBarDlg::StopWorkers()
+void ProgressBarDlg::StopWorkers()
 {
-	m_stopRequested = true;
+	stop_requested_ = true;
 	EnableWindow(FALSE);	// 待っている間に Start を押させない
-	m_workers.WaitAll();
+	workers_.WaitAll();
 	EnableWindow(TRUE);
 }
 
-UINT CProgressBarDlg::ProgressThread(LPVOID pParam)
+UINT ProgressBarDlg::ProgressThread(LPVOID param)
 {
-	auto* pDlg = static_cast<CProgressBarDlg*>(pParam);
+	auto* dlg = static_cast<ProgressBarDlg*>(param);
 
-	for (int i = 0; i < PROGRESS_MAX; i++)
+	for (int i = 0; i < kProgressMax; i++)
 	{
-		if (pDlg->m_stopRequested)
+		if (dlg->stop_requested_)
 		{
 			break;
 		}
-		pDlg->m_progress.SetPos(i);
+		dlg->progress_.SetPos(i);
 	}
 	return TRUE;
 }

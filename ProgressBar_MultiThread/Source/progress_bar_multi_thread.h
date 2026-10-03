@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CProgressBarApp : public CWinApp
+class ProgressBarApp : public CWinApp
 {
 public:
-	CProgressBarApp();
+	ProgressBarApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CProgressBarApp theApp;
+extern ProgressBarApp the_app;

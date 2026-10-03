@@ -6,15 +6,15 @@
 
 #include "worker_threads.h"
 
-class CProgressBarDlg : public CDialogEx
+class ProgressBarDlg : public CDialogEx
 {
 public:
-	explicit CProgressBarDlg(CWnd* pParent = nullptr);
+	explicit ProgressBarDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_PROGRESSBAR_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 	virtual void OnOK() override;
 	virtual void OnCancel() override;
@@ -23,17 +23,17 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedStart();
 	afx_msg void OnBnClickedStop();
-	afx_msg void OnEndSession(BOOL bEnding);
+	afx_msg void OnEndSession(BOOL ending);
 	DECLARE_MESSAGE_MAP()
 
 private:
 	// 進捗を進めるワーカースレッド。UI スレッドを塞がないので、処理中も Stop が押せる
-	static UINT ProgressThread(LPVOID pParam);
+	static UINT ProgressThread(LPVOID param);
 	void StopWorkers();		// 閉じる前にワーカーを止め、終了を待つ
 
-	HICON m_hIcon;
-	CProgressCtrl m_progress;
-	CString m_strStatus;
-	std::atomic<bool> m_stopRequested{ false };	// UI スレッドとワーカースレッドで共有
-	WorkerThreads m_workers;
+	HICON icon_;
+	CProgressCtrl progress_;
+	CString status_;
+	std::atomic<bool> stop_requested_{ false };	// UI スレッドとワーカースレッドで共有
+	WorkerThreads workers_;
 };
