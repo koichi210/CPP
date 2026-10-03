@@ -1,8 +1,8 @@
-﻿// ClipboardDlg.cpp : メインダイアログ
+﻿// clipboard_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "Clipboard.h"
-#include "ClipboardDlg.h"
+#include "clipboard.h"
+#include "clipboard_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

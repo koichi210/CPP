@@ -1,4 +1,4 @@
-﻿// Clipboard.h : アプリケーションクラス
+﻿// clipboard.h : アプリケーションクラス
 
 #pragma once
 

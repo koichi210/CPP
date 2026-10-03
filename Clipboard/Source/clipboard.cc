@@ -1,8 +1,8 @@
-﻿// Clipboard.cpp : アプリケーションクラス
+﻿// clipboard.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "Clipboard.h"
-#include "ClipboardDlg.h"
+#include "clipboard.h"
+#include "clipboard_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
