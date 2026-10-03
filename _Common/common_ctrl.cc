@@ -1,6 +1,6 @@
-﻿// CommonCtrl.cpp : 共通の MFC コントロール
+﻿// common_ctrl.cc : 共通の MFC コントロール
 
-#include "CommonCtrl.h"
+#include "common_ctrl.h"
 
 namespace
 {

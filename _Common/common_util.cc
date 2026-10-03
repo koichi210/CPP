@@ -1,11 +1,11 @@
-﻿// CommonUtil.cpp : パス・文字列・ダイアログの共通関数（MBCS / Shift-JIS 前提）
+﻿// common_util.cc : パス・文字列・ダイアログの共通関数（MBCS / Shift-JIS 前提）
 
-#include "CommonUtil.h"
+#include "common_util.h"
 
 #include <ShlObj.h>
 
 #ifdef _UNICODE
-#error "CommonUtil は MBCS（文字セット: マルチバイト）専用です"
+#error "common_util は MBCS（文字セット: マルチバイト）専用です"
 #endif
 
 static_assert(sizeof("あ") == 3, "文字列リテラルを Shift-JIS で埋め込む必要があります（/execution-charset:.932）");

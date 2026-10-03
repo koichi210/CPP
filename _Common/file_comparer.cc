@@ -1,6 +1,6 @@
-﻿// FileComparer.cpp : 2つのファイルの内容をバイナリ比較する
+﻿// file_comparer.cc : 2つのファイルの内容をバイナリ比較する
 
-#include "FileComparer.h"
+#include "file_comparer.h"
 
 #include <vector>
 

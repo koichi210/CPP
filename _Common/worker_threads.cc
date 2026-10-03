@@ -1,6 +1,6 @@
-﻿// WorkerThreads.cpp : ワーカースレッドの起動と終了待ち
+﻿// worker_threads.cc : ワーカースレッドの起動と終了待ち
 
-#include "WorkerThreads.h"
+#include "worker_threads.h"
 
 #include <algorithm>
 

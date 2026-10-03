@@ -1,4 +1,4 @@
-﻿// FileComparer.h : 2つのファイルの内容をバイナリ比較する
+﻿// file_comparer.h : 2つのファイルの内容をバイナリ比較する
 
 #pragma once
 

@@ -1,6 +1,6 @@
-﻿// InputSimulator.cpp : キーボード・マウスの入力をエミュレートする
+﻿// input_simulator.cc : キーボード・マウスの入力をエミュレートする
 
-#include "InputSimulator.h"
+#include "input_simulator.h"
 
 namespace
 {

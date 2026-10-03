@@ -1,4 +1,4 @@
-﻿// CommonCtrl.h : 共通の MFC コントロール
+﻿// common_ctrl.h : 共通の MFC コントロール
 
 #pragma once
 

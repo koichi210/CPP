@@ -1,4 +1,4 @@
-﻿// InputSimulator.h : キーボード・マウスの入力をエミュレートする
+﻿// input_simulator.h : キーボード・マウスの入力をエミュレートする
 
 #pragma once
 

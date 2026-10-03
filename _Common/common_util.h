@@ -1,4 +1,4 @@
-﻿// CommonUtil.h : パス・文字列・ダイアログの共通関数（MBCS / Shift-JIS 前提）
+﻿// common_util.h : パス・文字列・ダイアログの共通関数（MBCS / Shift-JIS 前提）
 
 #pragma once
 

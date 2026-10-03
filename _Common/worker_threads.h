@@ -1,4 +1,4 @@
-﻿// WorkerThreads.h : ワーカースレッドの起動と終了待ち
+﻿// worker_threads.h : ワーカースレッドの起動と終了待ち
 
 #pragma once
 
