@@ -5,17 +5,17 @@
 #include "child2.h"
 #include "afxdialogex.h"
 
-IMPLEMENT_DYNAMIC(CChild2, CDialogEx)
+IMPLEMENT_DYNAMIC(Child2, CDialogEx)
 
-CChild2::CChild2(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+Child2::Child2(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
 }
 
-void CChild2::DoDataExchange(CDataExchange* pDX)
+void Child2::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(dx);
 }
 
-BEGIN_MESSAGE_MAP(CChild2, CDialogEx)
+BEGIN_MESSAGE_MAP(Child2, CDialogEx)
 END_MESSAGE_MAP()

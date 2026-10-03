@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CTabControlApp : public CWinApp
+class TabControlApp : public CWinApp
 {
 public:
-	CTabControlApp();
+	TabControlApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CTabControlApp theApp;
+extern TabControlApp the_app;

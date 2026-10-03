@@ -2,17 +2,17 @@
 
 #pragma once
 
-class CChild1 : public CDialogEx
+class Child1 : public CDialogEx
 {
-	DECLARE_DYNAMIC(CChild1)
+	DECLARE_DYNAMIC(Child1)
 
 public:
-	explicit CChild1(CWnd* pParent = nullptr);
+	explicit Child1(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_CHILD1 };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 
 	DECLARE_MESSAGE_MAP()
 };

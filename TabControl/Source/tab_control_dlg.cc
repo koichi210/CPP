@@ -10,54 +10,54 @@
 #endif
 
 // システムメニューの「バージョン情報」から開くダイアログ
-class CAboutDlg : public CDialogEx
+class AboutDlg : public CDialogEx
 {
 public:
-	CAboutDlg();
+	AboutDlg();
 
 	enum { IDD = IDD_ABOUTBOX };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialogEx(IDD)
+AboutDlg::AboutDlg() : CDialogEx(IDD)
 {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
+void AboutDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(dx);
 }
 
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(AboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-CTabControlDlg::CTabControlDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+TabControlDlg::TabControlDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CTabControlDlg::DoDataExchange(CDataExchange* pDX)
+void TabControlDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_TAB1, m_tab1);
-	DDX_Control(pDX, IDC_TAB2, m_tab2);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Control(dx, IDC_TAB1, tab1_);
+	DDX_Control(dx, IDC_TAB2, tab2_);
 }
 
-BEGIN_MESSAGE_MAP(CTabControlDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(TabControlDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CTabControlDlg::OnTcnSelchangeTab1)
-	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB2, &CTabControlDlg::OnTcnSelchangeTab2)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &TabControlDlg::OnTcnSelchangeTab1)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB2, &TabControlDlg::OnTcnSelchangeTab2)
 END_MESSAGE_MAP()
 
-BOOL CTabControlDlg::OnInitDialog()
+BOOL TabControlDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -66,65 +66,65 @@ BOOL CTabControlDlg::OnInitDialog()
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != nullptr)
+	CMenu* sys_menu = GetSystemMenu(FALSE);
+	if (sys_menu != nullptr)
 	{
-		CString strAboutMenu;
-		BOOL bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
-		ASSERT(bNameValid);
-		UNREFERENCED_PARAMETER(bNameValid);
-		if (!strAboutMenu.IsEmpty())
+		CString about_menu;
+		BOOL name_valid = about_menu.LoadString(IDS_ABOUTBOX);
+		ASSERT(name_valid);
+		UNREFERENCED_PARAMETER(name_valid);
+		if (!about_menu.IsEmpty())
 		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			sys_menu->AppendMenu(MF_SEPARATOR);
+			sys_menu->AppendMenu(MF_STRING, IDM_ABOUTBOX, about_menu);
 		}
 	}
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
-	m_tab1.InsertItem(0, "Page1");
-	m_tab1.InsertItem(1, "Page2");
-	m_tab1.InsertItem(2, "Page3");
+	tab1_.InsertItem(0, "Page1");
+	tab1_.InsertItem(1, "Page2");
+	tab1_.InsertItem(2, "Page3");
 
-	m_tab2.InsertItem(0, "PageA");
-	m_tab2.InsertItem(1, "PageB");
+	tab2_.InsertItem(0, "PageA");
+	tab2_.InsertItem(1, "PageB");
 
 	// 子ダイアログをタブの子ウィンドウとして作り、タブ見出しを避けた領域に置く
 	CRect r;
-	m_tab2.GetClientRect(&r);
+	tab2_.GetClientRect(&r);
 	r.left += 2;
 	r.right -= 4;
 	r.top += 20;
 	r.bottom -= 4;
 
-	m_child1.Create(CChild1::IDD, &m_tab2);
-	m_child1.MoveWindow(&r);
+	child1_.Create(Child1::IDD, &tab2_);
+	child1_.MoveWindow(&r);
 
-	m_child2.Create(CChild2::IDD, &m_tab2);
-	m_child2.MoveWindow(&r);
+	child2_.Create(Child2::IDD, &tab2_);
+	child2_.MoveWindow(&r);
 
-	m_tab2.SetCurSel(0);
-	m_child1.ShowWindow(SW_SHOW);
+	tab2_.SetCurSel(0);
+	child1_.ShowWindow(SW_SHOW);
 
 	return TRUE;
 }
 
-void CTabControlDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void TabControlDlg::OnSysCommand(UINT id, LPARAM param)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	if ((id & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
+		AboutDlg about_dlg;
+		about_dlg.DoModal();
 	}
 	else
 	{
-		CDialogEx::OnSysCommand(nID, lParam);
+		CDialogEx::OnSysCommand(id, param);
 	}
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CTabControlDlg::OnPaint()
+void TabControlDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -132,14 +132,14 @@ void CTabControlDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -147,14 +147,14 @@ void CTabControlDlg::OnPaint()
 	}
 }
 
-HCURSOR CTabControlDlg::OnQueryDragIcon()
+HCURSOR TabControlDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CTabControlDlg::OnTcnSelchangeTab1(NMHDR* /*pNMHDR*/, LRESULT* pResult)
+void TabControlDlg::OnTcnSelchangeTab1(NMHDR* /*nmhdr*/, LRESULT* result)
 {
-	int sel = m_tab1.GetCurSel();
+	int sel = tab1_.GetCurSel();
 	if (0 <= sel && sel <= 2)
 	{
 		CString text;
@@ -162,23 +162,23 @@ void CTabControlDlg::OnTcnSelchangeTab1(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 		SetDlgItemText(IDC_STATIC1, text);
 	}
 
-	*pResult = 0;
+	*result = 0;
 }
 
-void CTabControlDlg::OnTcnSelchangeTab2(NMHDR* /*pNMHDR*/, LRESULT* pResult)
+void TabControlDlg::OnTcnSelchangeTab2(NMHDR* /*nmhdr*/, LRESULT* result)
 {
-	switch (m_tab2.GetCurSel())
+	switch (tab2_.GetCurSel())
 	{
 	case 0:
-		m_child2.ShowWindow(SW_HIDE);
-		m_child1.ShowWindow(SW_SHOW);
+		child2_.ShowWindow(SW_HIDE);
+		child1_.ShowWindow(SW_SHOW);
 		break;
 
 	case 1:
-		m_child1.ShowWindow(SW_HIDE);
-		m_child2.ShowWindow(SW_SHOW);
+		child1_.ShowWindow(SW_HIDE);
+		child2_.ShowWindow(SW_SHOW);
 		break;
 	}
 
-	*pResult = 0;
+	*result = 0;
 }
