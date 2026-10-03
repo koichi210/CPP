@@ -3,12 +3,12 @@
 #include "stdafx.h"
 #include <iostream>
 
-// クラス・変数・関数を名前空間に入れ、Greeting:: で修飾して使う
-namespace Greeting
+// クラス・変数・関数を名前空間に入れ、greeting:: で修飾して使う
+namespace greeting
 {
 	class Portugues {};
 
-	const char* Spanish = "Hola\n";
+	const char* spanish = "Hola\n";
 
 	void English()
 	{
@@ -18,11 +18,11 @@ namespace Greeting
 
 int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 {
-	Greeting::Portugues portugues;
+	greeting::Portugues portugues;
 	(void)portugues;
 
-	std::cout << Greeting::Spanish;
-	Greeting::English();
+	std::cout << greeting::spanish;
+	greeting::English();
 
 	return 0;
 }
