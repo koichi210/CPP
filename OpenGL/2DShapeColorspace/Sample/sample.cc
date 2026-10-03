@@ -12,24 +12,24 @@ namespace
 	constexpr GLsizei kHeight = 300;
 
 	// RGB 各1バイトのピクセル列（左下から右上へ）
-	std::vector<GLubyte> g_bits;
+	std::vector<GLubyte> bits;
 
-	void disp(void) {
+	void Disp(void) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glRasterPos2i(-1, -1);
-		glDrawPixels(kWidth, kHeight, GL_RGB, GL_UNSIGNED_BYTE, g_bits.data());
+		glDrawPixels(kWidth, kHeight, GL_RGB, GL_UNSIGNED_BYTE, bits.data());
 		glFlush();
 	}
 }
 
 int main(int argc, char** argv) {
-	g_bits.reserve(3 * kWidth * kHeight);
+	bits.reserve(3 * kWidth * kHeight);
 	for (GLsizei i = 0; i < kHeight; i++) {
 		const int r = (i * 0xFF) / kHeight;
 		for (GLsizei j = 0; j < kWidth; j++) {
-			g_bits.push_back(static_cast<GLubyte>(r));
-			g_bits.push_back(static_cast<GLubyte>((j * 0xFF) / kWidth));
-			g_bits.push_back(static_cast<GLubyte>(~r));
+			bits.push_back(static_cast<GLubyte>(r));
+			bits.push_back(static_cast<GLubyte>((j * 0xFF) / kWidth));
+			bits.push_back(static_cast<GLubyte>(~r));
 		}
 	}
 
@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);
 
 	glutCreateWindow("色空間");
-	glutDisplayFunc(disp);
+	glutDisplayFunc(Disp);
 
 	glutMainLoop();
 
