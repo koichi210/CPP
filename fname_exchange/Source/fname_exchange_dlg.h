@@ -62,6 +62,7 @@ private:
 	void UpdateControls();						// 変換方法に合わせて入力欄の有効/無効と見出しを切り替える
 	void EnableItem(int id, bool enable);
 	void ReadSettings();
+	bool ValidateSettings();					// 入力エラーがあれば通知して false
 	std::vector<CString> GetSelectedNames();
 
 	// 変換後のフルパスを作る。入力エラーなどで作れなければ空文字列

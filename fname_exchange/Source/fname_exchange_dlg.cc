@@ -345,6 +345,12 @@ void FnameExchangeDlg::OnExecute()
 		return;
 	}
 
+	// 入力エラーは1回の実行につき1回だけ知らせ、リネームを始めずに中止する
+	if (!ValidateSettings())
+	{
+		return;
+	}
+
 	// 復元情報が上限に達していたら、いちばん古いものを捨てる
 	if (undo_steps_.size() >= kMaxUndoSteps)
 	{
@@ -482,6 +488,54 @@ void FnameExchangeDlg::ReadSettings()
 	}
 }
 
+// 読み込んだ設定に入力エラーがあればメッセージを1回出して false を返す
+bool FnameExchangeDlg::ValidateSettings()
+{
+	switch (type_)
+	{
+	case ConvertType::kDeleteCount:
+		if (delete_head_ == 0 && delete_tail_ == 0)
+		{
+			ShowError(IDSTR_ERR_DEL_NUM);
+			return false;
+		}
+		break;
+
+	case ConvertType::kAdd:
+		if (!add_before_ && !add_after_)
+		{
+			ShowError(IDSTR_ERR_SEL_INSERT);
+			return false;
+		}
+		if (text2_.IsEmpty())
+		{
+			ShowError(IDSTR_ERR_INPUT_ADD_STR);
+			return false;
+		}
+		break;
+
+	case ConvertType::kDelete:
+		if (text1_.IsEmpty())
+		{
+			ShowError(IDSTR_ERR_INPUT_DEL_STR);
+			return false;
+		}
+		break;
+
+	case ConvertType::kReplace:
+		if (text1_.IsEmpty() || text2_.IsEmpty())
+		{
+			ShowError(IDSTR_ERR_INPUT_REP_STR);
+			return false;
+		}
+		break;
+
+	default:
+		break;
+	}
+	return true;
+}
+
 std::vector<CString> FnameExchangeDlg::GetSelectedNames()
 {
 	std::vector<CString> names;
@@ -535,19 +589,9 @@ CString FnameExchangeDlg::MakeNewPath(const CString& old_path, int file_count)
 	}
 
 	case ConvertType::kDelete:
-		if (text1_.IsEmpty())
-		{
-			ShowError(IDSTR_ERR_INPUT_DEL_STR);
-			return CString();
-		}
 		return BuildPath(ReplaceString(file, text1_, nullptr, case_sensitive_), ext);
 
 	case ConvertType::kReplace:
-		if (text1_.IsEmpty() || text2_.IsEmpty())
-		{
-			ShowError(IDSTR_ERR_INPUT_REP_STR);
-			return CString();
-		}
 		return BuildPath(ReplaceString(file, text1_, text2_, case_sensitive_), ext);
 
 	default:
@@ -586,12 +630,6 @@ CString FnameExchangeDlg::MakeEnumName(const CString& file, int file_count)
 
 CString FnameExchangeDlg::MakeDeleteCountName(const CString& file)
 {
-	if (delete_head_ == 0 && delete_tail_ == 0)
-	{
-		ShowError(IDSTR_ERR_DEL_NUM);
-		return CString();
-	}
-
 	// 文字数は文字単位で数える（全角文字の途中で切らない）
 	const unsigned char* text = reinterpret_cast<const unsigned char*>(file.GetString());
 	const UINT length = static_cast<UINT>(_mbslen(text));
@@ -612,17 +650,6 @@ CString FnameExchangeDlg::MakeDeleteCountName(const CString& file)
 
 CString FnameExchangeDlg::MakeAddName(const CString& file)
 {
-	if (!add_before_ && !add_after_)
-	{
-		ShowError(IDSTR_ERR_SEL_INSERT);
-		return CString();
-	}
-	if (text2_.IsEmpty())
-	{
-		ShowError(IDSTR_ERR_INPUT_ADD_STR);
-		return CString();
-	}
-
 	CString name;
 	if (add_before_)
 	{
