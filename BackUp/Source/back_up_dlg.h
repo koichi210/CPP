@@ -3,53 +3,53 @@
 #pragma once
 
 // バックアップ設定 1 件分
-struct BACKUP
+struct BackupSetting
 {
 	// オプションのビット（設定ファイルにこの値のまま保存される）
-	static constexpr DWORD OPT_SUBDIR		= 0x1;	// サブディレクトリも対象
-	static constexpr DWORD OPT_DIFF			= 0x2;	// 差分ファイルのみ対象
-	static constexpr DWORD OPT_OVERWRITE	= 0x4;	// 上書きの確認を表示
+	static constexpr DWORD kOptSubdir		= 0x1;	// サブディレクトリも対象
+	static constexpr DWORD kOptDiff			= 0x2;	// 差分ファイルのみ対象
+	static constexpr DWORD kOptOverwrite	= 0x4;	// 上書きの確認を表示
 
-	BOOL	bBkEnable	= TRUE;
-	CString	strSrcPath;
-	CString	strDstPath;
-	DWORD	opt			= OPT_SUBDIR | OPT_DIFF;
+	BOOL	bk_enable	= TRUE;
+	CString	src_path;
+	CString	dst_path;
+	DWORD	opt			= kOptSubdir | kOptDiff;
 };
 
-class CBackUpDlg : public CDialog
+class BackUpDlg : public CDialog
 {
 public:
-	CBackUpDlg(CWnd* pParent = nullptr);
+	BackUpDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_BACKUP_DIALOG };
 
-	static constexpr int MAX_ENTRY = 50;
+	static constexpr int kMaxEntry = 50;
 
 private:
 	// バックアップ後の動作（IDC_END_NONE からの並び順と一致させる）
 	enum class EndAction
 	{
-		None,
-		App,
-		Reboot,
-		Shutdown,
+		kNone,
+		kApp,
+		kReboot,
+		kShutdown,
 	};
 
-	CListCtrl	m_listCtrl;
-	int			m_nCurIdx = 0;		// 選択中の設定
-	EndAction	m_endAction = EndAction::None;
-	BACKUP		m_entries[MAX_ENTRY];
-	HICON		m_hIcon;
+	CListCtrl	list_ctrl_;
+	int			cur_index_ = 0;		// 選択中の設定
+	EndAction	end_action_ = EndAction::kNone;
+	BackupSetting		entries_[kMaxEntry];
+	HICON		icon_;
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 	virtual void OnCancel() override;
 
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnSysCommand(UINT id, LPARAM l_param);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnLvnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnLvnItemchangedList(NMHDR* nmhdr, LRESULT* result);
 	afx_msg void OnBrowseSrc();
 	afx_msg void OnBrowseDest();
 	afx_msg void OnDiff();
@@ -61,22 +61,22 @@ protected:
 	afx_msg void OnEnChangeEditSrc();
 	afx_msg void OnEnChangeEditDst();
 	afx_msg void OnBnClickedAllClear();
-	afx_msg void OnEndOption(UINT nID);
+	afx_msg void OnEndOption(UINT id);
 	DECLARE_MESSAGE_MAP()
 
 private:
-	bool RunBackup(bool bWriteBatchOnly);
+	bool RunBackup(bool write_batch_only);
 	void InitListCtrl();
-	void InsertListColumn(LVCOLUMN lvCol, int nSubItem, LPCTSTR name);
+	void InsertListColumn(LVCOLUMN lv_col, int sub_item, LPCTSTR name);
 	BOOL ReadSetting();
 	BOOL WriteSetting();
 	void WriteBatchFile(const CString& cmd);
-	void SetOption(DWORD mask, bool bOn);
-	void UpdateEnableBK(BOOL bChk);
+	void SetOption(DWORD mask, bool is_on);
+	void UpdateEnableBK(BOOL checked);
 	void UpdateSubDirectory(DWORD opt);
 	void UpdateDiffFile(DWORD opt);
 	void UpdateOverWrite(DWORD opt);
-	void UpdateCheckItem(int nCtrlId, int nSubItem, bool bOn, LPCTSTR pszOn, LPCTSTR pszOff);
-	void UpdatePath(int nEditId, int nSubItem, LPCTSTR path);
+	void UpdateCheckItem(int ctrl_id, int sub_item, bool is_on, LPCTSTR text_on, LPCTSTR text_off);
+	void UpdatePath(int edit_id, int sub_item, LPCTSTR path);
 	void Refresh();
 };

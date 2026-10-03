@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CBackUpApp : public CWinApp
+class BackUpApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;
@@ -16,4 +16,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CBackUpApp theApp;
+extern BackUpApp the_app;

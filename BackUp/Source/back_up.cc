@@ -8,19 +8,19 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CBackUpApp, CWinApp)
+BEGIN_MESSAGE_MAP(BackUpApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CBackUpApp theApp;
+BackUpApp the_app;
 
-BOOL CBackUpApp::InitInstance()
+BOOL BackUpApp::InitInstance()
 {
 	// visual スタイル（ComCtl32 v6）を使うにはコモンコントロールの初期化が要る
-	INITCOMMONCONTROLSEX initCtrls;
-	initCtrls.dwSize = sizeof(initCtrls);
-	initCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls;
+	init_ctrls.dwSize = sizeof(init_ctrls);
+	init_ctrls.dwICC = ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 
@@ -28,7 +28,7 @@ BOOL CBackUpApp::InitInstance()
 
 	SetRegistryKey(_T("アプリケーション ウィザードで生成されたローカル アプリケーション"));
 
-	CBackUpDlg dlg;
+	BackUpDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
