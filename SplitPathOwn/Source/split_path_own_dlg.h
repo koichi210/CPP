@@ -2,18 +2,18 @@
 
 #pragma once
 
-class CSplitPathOwnDlg : public CDialogEx
+class SplitPathOwnDlg : public CDialogEx
 {
 public:
-	explicit CSplitPathOwnDlg(CWnd* pParent = nullptr);
+	explicit SplitPathOwnDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_SPLITPATHOWN_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnSysCommand(UINT id, LPARAM param);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedButton1();
@@ -21,7 +21,7 @@ protected:
 
 private:
 	// _splitpath を使わずにパスを分解する自前実装（学習用）。区切りは '/' のみ対応
-	void SplitPath(const char* pFileFullPath, char* pDrive, char* pDir, char* pFile);
+	void SplitPath(const char* file_full_path, char* drive, char* dir, char* file);
 
-	HICON m_hIcon;
+	HICON icon_;
 };

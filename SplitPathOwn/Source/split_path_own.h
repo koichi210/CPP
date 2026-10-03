@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CSplitPathOwnApp : public CWinApp
+class SplitPathOwnApp : public CWinApp
 {
 public:
-	CSplitPathOwnApp();
+	SplitPathOwnApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CSplitPathOwnApp theApp;
+extern SplitPathOwnApp the_app;
