@@ -1,8 +1,8 @@
-﻿// TurnMemory.cpp : アプリケーションクラス
+﻿// turn_memory.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "TurnMemory.h"
-#include "TurnMemoryDlg.h"
+#include "turn_memory.h"
+#include "turn_memory_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

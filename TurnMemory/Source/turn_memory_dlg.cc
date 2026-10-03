@@ -1,9 +1,9 @@
-﻿// TurnMemoryDlg.cpp : メインダイアログ（出題）
+﻿// turn_memory_dlg.cc : メインダイアログ（出題）
 
 #include "stdafx.h"
-#include "TurnMemory.h"
-#include "TurnMemoryDlg.h"
-#include "AnsDlg.h"
+#include "turn_memory.h"
+#include "turn_memory_dlg.h"
+#include "ans_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

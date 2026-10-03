@@ -135,25 +135,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AnsDlg.cpp" />
+    <ClCompile Include="ans_dlg.cc" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="TurnMemory.cpp" />
-    <ClCompile Include="TurnMemoryDlg.cpp" />
+    <ClCompile Include="turn_memory.cc" />
+    <ClCompile Include="turn_memory_dlg.cc" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TurnMemory.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnsDlg.h" />
+    <ClInclude Include="ans_dlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="TurnMemory.h" />
-    <ClInclude Include="TurnMemoryDlg.h" />
+    <ClInclude Include="turn_memory.h" />
+    <ClInclude Include="turn_memory_dlg.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\TurnMemory.ico" />

@@ -1,9 +1,9 @@
-﻿// AnsDlg.cpp : 解答ダイアログ（答え合わせ）
+﻿// ans_dlg.cc : 解答ダイアログ（答え合わせ）
 
 #include "stdafx.h"
-#include "TurnMemory.h"
-#include "TurnMemoryDlg.h"
-#include "AnsDlg.h"
+#include "turn_memory.h"
+#include "turn_memory_dlg.h"
+#include "ans_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

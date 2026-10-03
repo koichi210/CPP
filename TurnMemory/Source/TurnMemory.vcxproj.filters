@@ -15,16 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnsDlg.cpp">
+    <ClCompile Include="ans_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TurnMemory.cpp">
+    <ClCompile Include="turn_memory.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TurnMemoryDlg.cpp">
+    <ClCompile Include="turn_memory_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -34,7 +34,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnsDlg.h">
+    <ClInclude Include="ans_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
@@ -43,10 +43,10 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TurnMemory.h">
+    <ClInclude Include="turn_memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TurnMemoryDlg.h">
+    <ClInclude Include="turn_memory_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

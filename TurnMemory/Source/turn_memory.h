@@ -1,4 +1,4 @@
-﻿// TurnMemory.h : アプリケーションクラス
+﻿// turn_memory.h : アプリケーションクラス
 
 #pragma once
 

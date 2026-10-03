@@ -1,4 +1,4 @@
-﻿// AnsDlg.h : 解答ダイアログ（答え合わせ）
+﻿// ans_dlg.h : 解答ダイアログ（答え合わせ）
 
 #pragma once
 

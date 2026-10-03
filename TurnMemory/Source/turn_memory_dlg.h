@@ -1,4 +1,4 @@
-﻿// TurnMemoryDlg.h : メインダイアログ（出題）
+﻿// turn_memory_dlg.h : メインダイアログ（出題）
 
 #pragma once
 
