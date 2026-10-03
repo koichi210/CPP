@@ -14,28 +14,28 @@ namespace
 	constexpr int kInputFileCount = 8;
 
 	// バージョン情報ダイアログ（システムメニューから開く）
-	class CAboutDlg : public CDialog
+	class AboutDlg : public CDialog
 	{
 	public:
-		CAboutDlg() : CDialog(IDD_ABOUTBOX) {}
+		AboutDlg() : CDialog(IDD_ABOUTBOX) {}
 	};
 }
 
-CJointMovieDlg::CJointMovieDlg(CWnd* pParent /*=nullptr*/)
-	: CDialog(CJointMovieDlg::IDD, pParent)
+JointMovieDlg::JointMovieDlg(CWnd* parent /*=nullptr*/)
+	: CDialog(JointMovieDlg::IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-BEGIN_MESSAGE_MAP(CJointMovieDlg, CDialog)
+BEGIN_MESSAGE_MAP(JointMovieDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_CONTROL_RANGE(BN_CLICKED, IDC_OUT_BROWSE, IDC_IN8_BROWSE, &CJointMovieDlg::OnBrowse)
-	ON_BN_CLICKED(IDC_EXECUTE, &CJointMovieDlg::OnExecute)
+	ON_CONTROL_RANGE(BN_CLICKED, IDC_OUT_BROWSE, IDC_IN8_BROWSE, &JointMovieDlg::OnBrowse)
+	ON_BN_CLICKED(IDC_EXECUTE, &JointMovieDlg::OnExecute)
 END_MESSAGE_MAP()
 
-BOOL CJointMovieDlg::OnInitDialog()
+BOOL JointMovieDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -44,39 +44,39 @@ BOOL CJointMovieDlg::OnInitDialog()
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != nullptr)
+	CMenu* sys_menu = GetSystemMenu(FALSE);
+	if (sys_menu != nullptr)
 	{
-		CString strAboutMenu;
-		strAboutMenu.LoadString(IDS_ABOUTBOX);
-		if (!strAboutMenu.IsEmpty())
+		CString about_menu;
+		about_menu.LoadString(IDS_ABOUTBOX);
+		if (!about_menu.IsEmpty())
 		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			sys_menu->AppendMenu(MF_SEPARATOR);
+			sys_menu->AppendMenu(MF_STRING, IDM_ABOUTBOX, about_menu);
 		}
 	}
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
-void CJointMovieDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void JointMovieDlg::OnSysCommand(UINT id, LPARAM param)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	if ((id & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
+		AboutDlg about_dlg;
+		about_dlg.DoModal();
 	}
 	else
 	{
-		CDialog::OnSysCommand(nID, lParam);
+		CDialog::OnSysCommand(id, param);
 	}
 }
 
 // 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
-void CJointMovieDlg::OnPaint()
+void JointMovieDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -84,14 +84,14 @@ void CJointMovieDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		const int x = (rect.Width() - cxIcon + 1) / 2;
-		const int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -99,36 +99,36 @@ void CJointMovieDlg::OnPaint()
 	}
 }
 
-HCURSOR CJointMovieDlg::OnQueryDragIcon()
+HCURSOR JointMovieDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // 「参照」ボタン：選んだファイル名を対応する入力欄へ設定する
-void CJointMovieDlg::OnBrowse(UINT nID)
+void JointMovieDlg::OnBrowse(UINT id)
 {
-	const int editId = (nID == IDC_OUT_BROWSE)
+	const int edit_id = (id == IDC_OUT_BROWSE)
 		? IDC_OUTPUTFILE
-		: IDC_INPUTFILE1 + static_cast<int>(nID - IDC_IN1_BROWSE);
+		: IDC_INPUTFILE1 + static_cast<int>(id - IDC_IN1_BROWSE);
 
-	TCHAR fileNames[MAX_PATH] = {};
+	TCHAR file_names[MAX_PATH] = {};
 	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT,
 		_T("動画（*.mpg; *.mpeg;）|*.mpg; *.mpeg;|すべてのﾌｧｲﾙ （*.*）|*.*||"), this);
-	dlg.GetOFN().lpstrFile = fileNames;
-	dlg.GetOFN().nMaxFile = _countof(fileNames);
+	dlg.GetOFN().lpstrFile = file_names;
+	dlg.GetOFN().nMaxFile = _countof(file_names);
 	if (dlg.DoModal() == IDOK)
 	{
-		SetDlgItemText(editId, fileNames);
+		SetDlgItemText(edit_id, file_names);
 	}
 }
 
 // 「実行」ボタン：copy /B 入力1+入力2+... 出力 で連結する（空欄の入力は飛ばす）
-void CJointMovieDlg::OnExecute()
+void JointMovieDlg::OnExecute()
 {
-	CString outputFile;
-	GetDlgItemText(IDC_OUTPUTFILE, outputFile);
+	CString output_file;
+	GetDlgItemText(IDC_OUTPUTFILE, output_file);
 
-	CString inputFiles;
+	CString input_files;
 	for (int i = 0; i < kInputFileCount; i++)
 	{
 		CString file;
@@ -137,26 +137,26 @@ void CJointMovieDlg::OnExecute()
 		{
 			continue;
 		}
-		if (!inputFiles.IsEmpty())
+		if (!input_files.IsEmpty())
 		{
-			inputFiles += _T("+");
+			input_files += _T("+");
 		}
 		// 空白を含むパスでも copy に1つの引数として渡るよう引用符で囲む
-		inputFiles += _T("\"") + file + _T("\"");
+		input_files += _T("\"") + file + _T("\"");
 	}
 
-	if (outputFile.IsEmpty())
+	if (output_file.IsEmpty())
 	{
 		MessageBox(_T("結合先ファイル名が不正"));
 	}
-	else if (inputFiles.IsEmpty())
+	else if (input_files.IsEmpty())
 	{
 		MessageBox(_T("元ファイル名が不正"));
 	}
 	else
 	{
 		CString command;
-		command.Format(_T("copy /B /-Y %s \"%s\""), static_cast<LPCTSTR>(inputFiles), static_cast<LPCTSTR>(outputFile));
+		command.Format(_T("copy /B /-Y %s \"%s\""), static_cast<LPCTSTR>(input_files), static_cast<LPCTSTR>(output_file));
 		_tsystem(command);
 	}
 }

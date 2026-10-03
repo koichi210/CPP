@@ -2,23 +2,23 @@
 
 #pragma once
 
-class CJointMovieDlg : public CDialog
+class JointMovieDlg : public CDialog
 {
 public:
-	explicit CJointMovieDlg(CWnd* pParent = nullptr);
+	explicit JointMovieDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_JOINTMOVIE_DIALOG };
 
 protected:
 	virtual BOOL OnInitDialog() override;
 
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnSysCommand(UINT id, LPARAM param);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnBrowse(UINT nID);
+	afx_msg void OnBrowse(UINT id);
 	afx_msg void OnExecute();
 	DECLARE_MESSAGE_MAP()
 
 private:
-	HICON m_hIcon;
+	HICON icon_;
 };

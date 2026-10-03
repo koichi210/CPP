@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CJointMovieApp : public CWinApp
+class JointMovieApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;
