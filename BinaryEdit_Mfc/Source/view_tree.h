@@ -1,4 +1,4 @@
-﻿// ViewTree.h : ドッキングペイン内のツリー
+﻿// view_tree.h : ドッキングペイン内のツリー
 
 #pragma once
 

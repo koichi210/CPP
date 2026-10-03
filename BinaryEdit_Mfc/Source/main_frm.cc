@@ -1,8 +1,8 @@
-﻿// MainFrm.cpp : MDI メインフレーム
+﻿// main_frm.cc : MDI メインフレーム
 
 #include "stdafx.h"
-#include "BinaryEdit_Mfc.h"
-#include "MainFrm.h"
+#include "binary_edit_mfc.h"
+#include "main_frm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

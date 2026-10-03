@@ -1,13 +1,13 @@
-﻿// BinaryEdit_Mfc.cpp : アプリケーションクラス
+﻿// binary_edit_mfc.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "afxwinappex.h"
 #include "afxdialogex.h"
-#include "BinaryEdit_Mfc.h"
-#include "MainFrm.h"
-#include "ChildFrm.h"
-#include "BinaryEdit_MfcDoc.h"
-#include "BinaryEdit_MfcView.h"
+#include "binary_edit_mfc.h"
+#include "main_frm.h"
+#include "child_frm.h"
+#include "binary_edit_mfc_doc.h"
+#include "binary_edit_mfc_view.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

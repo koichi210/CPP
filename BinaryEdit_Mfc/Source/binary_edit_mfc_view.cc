@@ -1,9 +1,9 @@
-﻿// BinaryEdit_MfcView.cpp : ビュークラス
+﻿// binary_edit_mfc_view.cc : ビュークラス
 
 #include "stdafx.h"
-#include "BinaryEdit_Mfc.h"
-#include "BinaryEdit_MfcDoc.h"
-#include "BinaryEdit_MfcView.h"
+#include "binary_edit_mfc.h"
+#include "binary_edit_mfc_doc.h"
+#include "binary_edit_mfc_view.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -1,7 +1,7 @@
-﻿// ViewTree.cpp : ドッキングペイン内のツリー
+﻿// view_tree.cc : ドッキングペイン内のツリー
 
 #include "stdafx.h"
-#include "ViewTree.h"
+#include "view_tree.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

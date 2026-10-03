@@ -1,4 +1,4 @@
-﻿// BinaryEdit_Mfc.h : アプリケーションクラス
+﻿// binary_edit_mfc.h : アプリケーションクラス
 
 #pragma once
 

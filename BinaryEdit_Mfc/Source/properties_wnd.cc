@@ -1,10 +1,10 @@
-﻿// PropertiesWnd.cpp : プロパティ ウィンドウ（ドッキングペイン）
+﻿// properties_wnd.cc : プロパティ ウィンドウ（ドッキングペイン）
 
 #include "stdafx.h"
-#include "PropertiesWnd.h"
+#include "properties_wnd.h"
 #include "Resource.h"
-#include "MainFrm.h"
-#include "BinaryEdit_Mfc.h"
+#include "main_frm.h"
+#include "binary_edit_mfc.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

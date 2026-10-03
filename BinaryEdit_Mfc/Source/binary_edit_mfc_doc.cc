@@ -1,8 +1,8 @@
-﻿// BinaryEdit_MfcDoc.cpp : ドキュメントクラス
+﻿// binary_edit_mfc_doc.cc : ドキュメントクラス
 
 #include "stdafx.h"
-#include "BinaryEdit_Mfc.h"
-#include "BinaryEdit_MfcDoc.h"
+#include "binary_edit_mfc.h"
+#include "binary_edit_mfc_doc.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

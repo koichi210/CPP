@@ -1,9 +1,9 @@
-﻿// OutputWnd.cpp : 出力ウィンドウ（ドッキングペイン）
+﻿// output_wnd.cc : 出力ウィンドウ（ドッキングペイン）
 
 #include "stdafx.h"
-#include "OutputWnd.h"
+#include "output_wnd.h"
 #include "Resource.h"
-#include "MainFrm.h"
+#include "main_frm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

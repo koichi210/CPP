@@ -1,11 +1,11 @@
-﻿// MainFrm.h : MDI メインフレーム
+﻿// main_frm.h : MDI メインフレーム
 
 #pragma once
 
-#include "FileView.h"
-#include "ClassView.h"
-#include "OutputWnd.h"
-#include "PropertiesWnd.h"
+#include "file_view.h"
+#include "class_view.h"
+#include "output_wnd.h"
+#include "properties_wnd.h"
 
 class CMainFrame : public CMDIFrameWndEx
 {

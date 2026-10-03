@@ -1,8 +1,8 @@
-﻿// ChildFrm.cpp : MDI 子フレーム
+﻿// child_frm.cc : MDI 子フレーム
 
 #include "stdafx.h"
-#include "BinaryEdit_Mfc.h"
-#include "ChildFrm.h"
+#include "binary_edit_mfc.h"
+#include "child_frm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

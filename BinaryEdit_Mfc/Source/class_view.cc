@@ -1,10 +1,10 @@
-﻿// ClassView.cpp : クラス ビュー（ドッキングペイン）
+﻿// class_view.cc : クラス ビュー（ドッキングペイン）
 
 #include "stdafx.h"
-#include "MainFrm.h"
-#include "ClassView.h"
+#include "main_frm.h"
+#include "class_view.h"
 #include "Resource.h"
-#include "BinaryEdit_Mfc.h"
+#include "binary_edit_mfc.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

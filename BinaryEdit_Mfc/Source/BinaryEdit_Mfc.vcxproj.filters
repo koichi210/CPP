@@ -97,7 +97,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BinaryEdit_Mfc.h">
+    <ClInclude Include="binary_edit_mfc.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -106,69 +106,69 @@
     <ClInclude Include="targetver.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="MainFrm.h">
+    <ClInclude Include="main_frm.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ChildFrm.h">
+    <ClInclude Include="child_frm.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="BinaryEdit_MfcDoc.h">
+    <ClInclude Include="binary_edit_mfc_doc.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="BinaryEdit_MfcView.h">
+    <ClInclude Include="binary_edit_mfc_view.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="FileView.h">
+    <ClInclude Include="file_view.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ClassView.h">
+    <ClInclude Include="class_view.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ViewTree.h">
+    <ClInclude Include="view_tree.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="OutputWnd.h">
+    <ClInclude Include="output_wnd.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="PropertiesWnd.h">
+    <ClInclude Include="properties_wnd.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BinaryEdit_Mfc.cpp">
+    <ClCompile Include="binary_edit_mfc.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="MainFrm.cpp">
+    <ClCompile Include="main_frm.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ChildFrm.cpp">
+    <ClCompile Include="child_frm.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="BinaryEdit_MfcDoc.cpp">
+    <ClCompile Include="binary_edit_mfc_doc.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="BinaryEdit_MfcView.cpp">
+    <ClCompile Include="binary_edit_mfc_view.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="FileView.cpp">
+    <ClCompile Include="file_view.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ClassView.cpp">
+    <ClCompile Include="class_view.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ViewTree.cpp">
+    <ClCompile Include="view_tree.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="OutputWnd.cpp">
+    <ClCompile Include="output_wnd.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="PropertiesWnd.cpp">
+    <ClCompile Include="properties_wnd.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

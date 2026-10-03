@@ -1,4 +1,4 @@
-﻿// ChildFrm.h : MDI 子フレーム
+﻿// child_frm.h : MDI 子フレーム
 
 #pragma once
 

@@ -133,35 +133,35 @@
     <None Include="UserImages.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BinaryEdit_Mfc.h" />
-    <ClInclude Include="BinaryEdit_MfcDoc.h" />
-    <ClInclude Include="BinaryEdit_MfcView.h" />
-    <ClInclude Include="ChildFrm.h" />
-    <ClInclude Include="ClassView.h" />
-    <ClInclude Include="FileView.h" />
-    <ClInclude Include="MainFrm.h" />
-    <ClInclude Include="OutputWnd.h" />
-    <ClInclude Include="PropertiesWnd.h" />
+    <ClInclude Include="binary_edit_mfc.h" />
+    <ClInclude Include="binary_edit_mfc_doc.h" />
+    <ClInclude Include="binary_edit_mfc_view.h" />
+    <ClInclude Include="child_frm.h" />
+    <ClInclude Include="class_view.h" />
+    <ClInclude Include="file_view.h" />
+    <ClInclude Include="main_frm.h" />
+    <ClInclude Include="output_wnd.h" />
+    <ClInclude Include="properties_wnd.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="ViewTree.h" />
+    <ClInclude Include="view_tree.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BinaryEdit_Mfc.cpp" />
-    <ClCompile Include="BinaryEdit_MfcDoc.cpp" />
-    <ClCompile Include="BinaryEdit_MfcView.cpp" />
-    <ClCompile Include="ChildFrm.cpp" />
-    <ClCompile Include="ClassView.cpp" />
-    <ClCompile Include="FileView.cpp" />
-    <ClCompile Include="MainFrm.cpp" />
-    <ClCompile Include="OutputWnd.cpp" />
-    <ClCompile Include="PropertiesWnd.cpp" />
+    <ClCompile Include="binary_edit_mfc.cc" />
+    <ClCompile Include="binary_edit_mfc_doc.cc" />
+    <ClCompile Include="binary_edit_mfc_view.cc" />
+    <ClCompile Include="child_frm.cc" />
+    <ClCompile Include="class_view.cc" />
+    <ClCompile Include="file_view.cc" />
+    <ClCompile Include="main_frm.cc" />
+    <ClCompile Include="output_wnd.cc" />
+    <ClCompile Include="properties_wnd.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ViewTree.cpp" />
+    <ClCompile Include="view_tree.cc" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BinaryEdit_Mfc.rc" />

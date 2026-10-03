@@ -1,8 +1,8 @@
-﻿// FileView.h : ファイル ビュー（ドッキングペイン）
+﻿// file_view.h : ファイル ビュー（ドッキングペイン）
 
 #pragma once
 
-#include "ViewTree.h"
+#include "view_tree.h"
 
 class CFileViewToolBar : public CMFCToolBar
 {

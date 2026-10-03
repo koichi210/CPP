@@ -1,4 +1,4 @@
-﻿// OutputWnd.h : 出力ウィンドウ（ドッキングペイン）
+﻿// output_wnd.h : 出力ウィンドウ（ドッキングペイン）
 
 #pragma once
 

@@ -1,4 +1,4 @@
-﻿// BinaryEdit_MfcDoc.h : ドキュメントクラス
+﻿// binary_edit_mfc_doc.h : ドキュメントクラス
 
 #pragma once
 

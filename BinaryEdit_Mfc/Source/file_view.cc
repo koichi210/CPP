@@ -1,10 +1,10 @@
-﻿// FileView.cpp : ファイル ビュー（ドッキングペイン）
+﻿// file_view.cc : ファイル ビュー（ドッキングペイン）
 
 #include "stdafx.h"
-#include "MainFrm.h"
-#include "FileView.h"
+#include "main_frm.h"
+#include "file_view.h"
 #include "Resource.h"
-#include "BinaryEdit_Mfc.h"
+#include "binary_edit_mfc.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -81,7 +81,7 @@ void CFileView::FillFileView()
 	m_wndFileView.InsertItem(_T("FakeApp.rc"), 1, 1, hSrc);
 	m_wndFileView.InsertItem(_T("FakeAppDoc.cpp"), 1, 1, hSrc);
 	m_wndFileView.InsertItem(_T("FakeAppView.cpp"), 1, 1, hSrc);
-	m_wndFileView.InsertItem(_T("MainFrm.cpp"), 1, 1, hSrc);
+	m_wndFileView.InsertItem(_T("main_frm.cc"), 1, 1, hSrc);
 	m_wndFileView.InsertItem(_T("StdAfx.cpp"), 1, 1, hSrc);
 
 	HTREEITEM hInc = m_wndFileView.InsertItem(_T("FakeApp ヘッダー ファイル"), 0, 0, hRoot);
@@ -90,7 +90,7 @@ void CFileView::FillFileView()
 	m_wndFileView.InsertItem(_T("FakeAppDoc.h"), 2, 2, hInc);
 	m_wndFileView.InsertItem(_T("FakeAppView.h"), 2, 2, hInc);
 	m_wndFileView.InsertItem(_T("Resource.h"), 2, 2, hInc);
-	m_wndFileView.InsertItem(_T("MainFrm.h"), 2, 2, hInc);
+	m_wndFileView.InsertItem(_T("main_frm.h"), 2, 2, hInc);
 	m_wndFileView.InsertItem(_T("StdAfx.h"), 2, 2, hInc);
 
 	HTREEITEM hRes = m_wndFileView.InsertItem(_T("FakeApp リソース ファイル"), 0, 0, hRoot);

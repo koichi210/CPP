@@ -1,4 +1,4 @@
-﻿// BinaryEdit_MfcView.h : ビュークラス
+﻿// binary_edit_mfc_view.h : ビュークラス
 
 #pragma once
 
@@ -22,7 +22,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG	// デバッグ版は BinaryEdit_MfcView.cpp で型チェック付き
+#ifndef _DEBUG	// デバッグ版は binary_edit_mfc_view.cc で型チェック付き
 inline CBinaryEdit_MfcDoc* CBinaryEdit_MfcView::GetDocument() const
 {
 	return reinterpret_cast<CBinaryEdit_MfcDoc*>(m_pDocument);

@@ -1,8 +1,8 @@
-﻿// ClassView.h : クラス ビュー（ドッキングペイン）
+﻿// class_view.h : クラス ビュー（ドッキングペイン）
 
 #pragma once
 
-#include "ViewTree.h"
+#include "view_tree.h"
 
 class CClassToolBar : public CMFCToolBar
 {

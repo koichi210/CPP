@@ -1,4 +1,4 @@
-﻿// PropertiesWnd.h : プロパティ ウィンドウ（ドッキングペイン）
+﻿// properties_wnd.h : プロパティ ウィンドウ（ドッキングペイン）
 
 #pragma once
 
