@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "zodiac.h"
-#include "zodiacDlg.h"
+#include "zodiac_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

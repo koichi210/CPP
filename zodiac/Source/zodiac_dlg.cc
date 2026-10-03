@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "zodiac.h"
-#include "zodiacDlg.h"
+#include "zodiac_dlg.h"
 #include <ctime>
 
 #ifdef _DEBUG

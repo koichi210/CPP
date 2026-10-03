@@ -18,10 +18,10 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="zodiac.cpp">
+    <ClCompile Include="zodiac.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="zodiacDlg.cpp">
+    <ClCompile Include="zodiac_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,7 +40,7 @@
     <ClInclude Include="zodiac.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="zodiacDlg.h">
+    <ClInclude Include="zodiac_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
