@@ -107,14 +107,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="StandardTemplateLibrarySample.h" />
-    <ClInclude Include="StandardTemplateLibrarySampleDlg.h" />
+    <ClInclude Include="standard_template_library_sample.h" />
+    <ClInclude Include="standard_template_library_sample_dlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StandardTemplateLibrarySample.cpp" />
-    <ClCompile Include="StandardTemplateLibrarySampleDlg.cpp" />
+    <ClCompile Include="standard_template_library_sample.cc" />
+    <ClCompile Include="standard_template_library_sample_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

@@ -1,8 +1,8 @@
-﻿// StandardTemplateLibrarySample.cpp : アプリケーションクラス
+﻿// standard_template_library_sample.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "StandardTemplateLibrarySample.h"
-#include "StandardTemplateLibrarySampleDlg.h"
+#include "standard_template_library_sample.h"
+#include "standard_template_library_sample_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

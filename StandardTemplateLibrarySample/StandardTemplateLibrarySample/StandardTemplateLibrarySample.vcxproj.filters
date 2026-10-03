@@ -24,10 +24,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StandardTemplateLibrarySample.h">
+    <ClInclude Include="standard_template_library_sample.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="StandardTemplateLibrarySampleDlg.h">
+    <ClInclude Include="standard_template_library_sample_dlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -41,10 +41,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StandardTemplateLibrarySample.cpp">
+    <ClCompile Include="standard_template_library_sample.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="StandardTemplateLibrarySampleDlg.cpp">
+    <ClCompile Include="standard_template_library_sample_dlg.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">

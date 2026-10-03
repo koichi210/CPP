@@ -1,8 +1,8 @@
-﻿// StandardTemplateLibrarySampleDlg.cpp : メインダイアログ
+﻿// standard_template_library_sample_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "StandardTemplateLibrarySample.h"
-#include "StandardTemplateLibrarySampleDlg.h"
+#include "standard_template_library_sample.h"
+#include "standard_template_library_sample_dlg.h"
 #include "afxdialogex.h"
 #include <string>
 

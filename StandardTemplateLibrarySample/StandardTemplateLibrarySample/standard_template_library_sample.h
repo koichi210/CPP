@@ -1,4 +1,4 @@
-﻿// StandardTemplateLibrarySample.h : アプリケーションクラス
+﻿// standard_template_library_sample.h : アプリケーションクラス
 
 #pragma once
 

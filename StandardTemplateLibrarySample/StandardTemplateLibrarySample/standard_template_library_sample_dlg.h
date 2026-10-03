@@ -1,4 +1,4 @@
-﻿// StandardTemplateLibrarySampleDlg.h : メインダイアログ
+﻿// standard_template_library_sample_dlg.h : メインダイアログ
 
 #pragma once
 
