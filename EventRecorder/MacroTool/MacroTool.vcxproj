@@ -96,34 +96,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MacroTool.cpp" />
-    <ClCompile Include="MacroToolDlg.cpp" />
-    <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="macro_tool.cc" />
+    <ClCompile Include="macro_tool_dlg.cc" />
+    <ClCompile Include="main_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Util.cpp" />
-    <ClCompile Include="..\..\_Common\CommonCtrl.cpp">
+    <ClCompile Include="util.cc" />
+    <ClCompile Include="..\..\_Common\common_ctrl.cc">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\_Common\CommonUtil.cpp">
+    <ClCompile Include="..\..\_Common\common_util.cc">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\_Common\InputSimulator.cpp">
+    <ClCompile Include="..\..\_Common\input_simulator.cc">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MacroDefs.h" />
-    <ClInclude Include="MacroTool.h" />
-    <ClInclude Include="MacroToolDlg.h" />
-    <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="macro_defs.h" />
+    <ClInclude Include="macro_tool.h" />
+    <ClInclude Include="macro_tool_dlg.h" />
+    <ClInclude Include="main_dlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Util.h" />
-    <ClInclude Include="..\..\_Common\CommonCtrl.h" />
-    <ClInclude Include="..\..\_Common\CommonUtil.h" />
-    <ClInclude Include="..\..\_Common\InputSimulator.h" />
+    <ClInclude Include="util.h" />
+    <ClInclude Include="..\..\_Common\common_ctrl.h" />
+    <ClInclude Include="..\..\_Common\common_util.h" />
+    <ClInclude Include="..\..\_Common\input_simulator.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MacroTool.rc" />

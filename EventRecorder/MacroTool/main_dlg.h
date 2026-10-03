@@ -1,8 +1,8 @@
-﻿// MainDlg.h : メインダイアログ（マクロの実行・停止と設定画面の呼び出し）
+﻿// main_dlg.h : メインダイアログ（マクロの実行・停止と設定画面の呼び出し）
 
 #pragma once
 
-#include "MacroDefs.h"
+#include "macro_defs.h"
 
 class CMainDlg : public CDialog
 {

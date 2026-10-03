@@ -1,8 +1,8 @@
-﻿// MacroTool.cpp : アプリケーションクラス
+﻿// macro_tool.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "MacroTool.h"
-#include "MainDlg.h"
+#include "macro_tool.h"
+#include "main_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

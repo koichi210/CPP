@@ -1,11 +1,11 @@
-﻿// MainDlg.cpp : メインダイアログ（マクロの実行・停止と設定画面の呼び出し）
+﻿// main_dlg.cc : メインダイアログ（マクロの実行・停止と設定画面の呼び出し）
 
 #include "stdafx.h"
-#include "MacroTool.h"
-#include "MainDlg.h"
-#include "MacroToolDlg.h"
-#include "InputSimulator.h"
-#include "CommonUtil.h"
+#include "macro_tool.h"
+#include "main_dlg.h"
+#include "macro_tool_dlg.h"
+#include "input_simulator.h"
+#include "common_util.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,7 +22,7 @@ namespace
 	constexpr TCHAR START_TITLE[] = _T("[開始]");
 
 	// 待ち時間の間、1秒ごとに押すキー（画面のロック防止用。VK_CAPITAL 等を指定する）
-	constexpr int FLICKER_KEY = VK_NONE;
+	constexpr int FLICKER_KEY = kVkNone;
 
 	// 実行スレッドに渡す設定（スレッド側で解放する）
 	struct PLAYSETTINGS
@@ -43,7 +43,7 @@ namespace
 		int count = 0;
 		for (int i = 0; i < sleepMsec / 1000 && running; i++)
 		{
-			CInputSimulator::FunctionKeyAction(static_cast<BYTE>(FLICKER_KEY));
+			InputSimulator::FunctionKeyAction(static_cast<BYTE>(FLICKER_KEY));
 			count++;
 			Sleep(1000);
 		}
@@ -51,22 +51,22 @@ namespace
 		// トグルするキーを元の状態に戻す
 		if (count % 2)
 		{
-			CInputSimulator::FunctionKeyAction(static_cast<BYTE>(FLICKER_KEY));
+			InputSimulator::FunctionKeyAction(static_cast<BYTE>(FLICKER_KEY));
 		}
 	}
 
 	void PlayMouse(const MACROMOUSE& mouse)
 	{
-		CInputSimulator::MouseMove(mouse.pt);
+		InputSimulator::MouseMove(mouse.pt);
 		switch (mouse.operation)
 		{
 		default:
-		case MOUSEOP_LCLICK:	CInputSimulator::MouseLButtonClick();	break;
-		case MOUSEOP_LDOWN:		CInputSimulator::MouseLButtonDown();	break;
-		case MOUSEOP_LUP:		CInputSimulator::MouseLButtonUp();		break;
-		case MOUSEOP_RCLICK:	CInputSimulator::MouseRButtonClick();	break;
-		case MOUSEOP_RDOWN:		CInputSimulator::MouseRButtonDown();	break;
-		case MOUSEOP_RUP:		CInputSimulator::MouseRButtonUp();		break;
+		case MOUSEOP_LCLICK:	InputSimulator::MouseLButtonClick();	break;
+		case MOUSEOP_LDOWN:		InputSimulator::MouseLButtonDown();	break;
+		case MOUSEOP_LUP:		InputSimulator::MouseLButtonUp();		break;
+		case MOUSEOP_RCLICK:	InputSimulator::MouseRButtonClick();	break;
+		case MOUSEOP_RDOWN:		InputSimulator::MouseRButtonDown();	break;
+		case MOUSEOP_RUP:		InputSimulator::MouseRButtonUp();		break;
 		case MOUSEOP_MOVE:												break;
 		}
 	}
@@ -74,25 +74,25 @@ namespace
 	void PlayKey(const MACROKEY& key)
 	{
 		// 修飾キーを押したまま入力する
-		if (key.modifiers & MODIFIER_SHIFT)	CInputSimulator::KeyAction(VK_SHIFT, TRUE);
-		if (key.modifiers & MODIFIER_CTRL)	CInputSimulator::KeyAction(VK_CONTROL, TRUE);
-		if (key.modifiers & MODIFIER_ALT)	CInputSimulator::KeyAction(VK_MENU, TRUE);
+		if (key.modifiers & MODIFIER_SHIFT)	InputSimulator::KeyAction(VK_SHIFT, TRUE);
+		if (key.modifiers & MODIFIER_CTRL)	InputSimulator::KeyAction(VK_CONTROL, TRUE);
+		if (key.modifiers & MODIFIER_ALT)	InputSimulator::KeyAction(VK_MENU, TRUE);
 
 		if (KEYKIND_F1 <= key.keyKind && key.keyKind <= KEYKIND_F12)
 		{
-			CInputSimulator::FunctionKeyAction(static_cast<BYTE>(VK_F1 + key.keyKind - KEYKIND_F1));
+			InputSimulator::FunctionKeyAction(static_cast<BYTE>(VK_F1 + key.keyKind - KEYKIND_F1));
 		}
 		else
 		{
 			for (const char* p = key.text; *p != '\0'; p++)
 			{
-				CInputSimulator::KeyAction(static_cast<WORD>(*p));
+				InputSimulator::KeyAction(static_cast<WORD>(*p));
 			}
 		}
 
-		if (key.modifiers & MODIFIER_SHIFT)	CInputSimulator::KeyAction(VK_SHIFT, FALSE);
-		if (key.modifiers & MODIFIER_CTRL)	CInputSimulator::KeyAction(VK_CONTROL, FALSE);
-		if (key.modifiers & MODIFIER_ALT)	CInputSimulator::KeyAction(VK_MENU, FALSE);
+		if (key.modifiers & MODIFIER_SHIFT)	InputSimulator::KeyAction(VK_SHIFT, FALSE);
+		if (key.modifiers & MODIFIER_CTRL)	InputSimulator::KeyAction(VK_CONTROL, FALSE);
+		if (key.modifiers & MODIFIER_ALT)	InputSimulator::KeyAction(VK_MENU, FALSE);
 	}
 
 	UINT PlayThreadProc(LPVOID pParam)

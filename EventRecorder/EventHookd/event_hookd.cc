@@ -1,7 +1,7 @@
-﻿// EventHookd.cpp : マウス・キーボードのグローバルフック DLL
+﻿// event_hookd.cc : マウス・キーボードのグローバルフック DLL
 
 #include "stdafx.h"
-#include "EventHookd.h"
+#include "event_hookd.h"
 
 #include <cctype>
 #include <cstdio>

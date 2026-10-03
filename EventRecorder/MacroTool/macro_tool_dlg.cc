@@ -1,11 +1,11 @@
-﻿// MacroToolDlg.cpp : 設定ダイアログ（イベントの一覧編集・ファイル読み書き・記録）
+﻿// macro_tool_dlg.cc : 設定ダイアログ（イベントの一覧編集・ファイル読み書き・記録）
 
 #include "stdafx.h"
-#include "MacroTool.h"
-#include "MacroToolDlg.h"
-#include "Util.h"
-#include "InputSimulator.h"
-#include "CommonUtil.h"
+#include "macro_tool.h"
+#include "macro_tool_dlg.h"
+#include "util.h"
+#include "input_simulator.h"
+#include "common_util.h"
 
 #include <cstdio>
 
@@ -841,9 +841,9 @@ void CMacroToolDlg::OnHelp()
 	{
 		for (BYTE key : lockKeys)
 		{
-			CInputSimulator::FunctionKeyAction(key, TRUE);
+			InputSimulator::FunctionKeyAction(key, TRUE);
 			Sleep(100);
-			CInputSimulator::FunctionKeyAction(key, FALSE);
+			InputSimulator::FunctionKeyAction(key, FALSE);
 			Sleep(100);
 		}
 	}

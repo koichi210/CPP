@@ -1,4 +1,4 @@
-﻿// MacroTool.h : アプリケーションクラス
+﻿// macro_tool.h : アプリケーションクラス
 
 #pragma once
 

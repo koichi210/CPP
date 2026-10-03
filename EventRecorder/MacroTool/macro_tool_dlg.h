@@ -1,9 +1,9 @@
-﻿// MacroToolDlg.h : 設定ダイアログ（イベントの一覧編集・ファイル読み書き・記録）
+﻿// macro_tool_dlg.h : 設定ダイアログ（イベントの一覧編集・ファイル読み書き・記録）
 
 #pragma once
 
-#include "MacroDefs.h"
-#include "CommonCtrl.h"
+#include "macro_defs.h"
+#include "common_ctrl.h"
 
 class CMacroToolDlg : public CDialog
 {
@@ -102,8 +102,8 @@ private:
 	BOOL ConfirmSettings();
 
 	HICON					m_hIcon;
-	CSimpleListCtrl			m_list;
-	CRestrictedEdit			m_keyEdit;
+	SimpleListCtrl			m_list;
+	RestrictedEdit			m_keyEdit;
 	CComboBox				m_mouseCombo;
 	CComboBox				m_keyCombo;
 

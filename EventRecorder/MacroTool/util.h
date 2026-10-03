@@ -1,4 +1,4 @@
-﻿// Util.h : INI 形式の設定ファイルの読み書き
+﻿// util.h : INI 形式の設定ファイルの読み書き
 
 #pragma once
 

@@ -1,7 +1,7 @@
-﻿// Util.cpp : INI 形式の設定ファイルの読み書き
+﻿// util.cc : INI 形式の設定ファイルの読み書き
 
 #include "stdafx.h"
-#include "Util.h"
+#include "util.h"
 
 CString GetIniFileParam(LPCTSTR fileName, LPCTSTR sectionName, LPCTSTR keyName, LPCTSTR defaultValue)
 {
