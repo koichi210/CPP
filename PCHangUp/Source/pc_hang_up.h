@@ -8,10 +8,10 @@
 
 #include "resource.h"
 
-class CPCHangUpApp : public CWinApp
+class PCHangUpApp : public CWinApp
 {
 public:
-	CPCHangUpApp();
+	PCHangUpApp();
 
 	virtual BOOL InitInstance() override;
 

@@ -12,30 +12,30 @@
 // ******** ここを有効にするとPCがハングします。 ********
 //#define PC_HANG_UP
 
-CPCHangUpDlg::CPCHangUpDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(CPCHangUpDlg::IDD, pParent)
+PCHangUpDlg::PCHangUpDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(PCHangUpDlg::IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-BEGIN_MESSAGE_MAP(CPCHangUpDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(PCHangUpDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CPCHangUpDlg::OnBnClickedHangUp)
+	ON_BN_CLICKED(IDC_BUTTON1, &PCHangUpDlg::OnBnClickedHangUp)
 END_MESSAGE_MAP()
 
-BOOL CPCHangUpDlg::OnInitDialog()
+BOOL PCHangUpDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
-void CPCHangUpDlg::OnPaint()
+void PCHangUpDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -43,14 +43,14 @@ void CPCHangUpDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		const int x = (rect.Width() - cxIcon + 1) / 2;
-		const int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -58,12 +58,12 @@ void CPCHangUpDlg::OnPaint()
 	}
 }
 
-HCURSOR CPCHangUpDlg::OnQueryDragIcon()
+HCURSOR PCHangUpDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CPCHangUpDlg::OnBnClickedHangUp()
+void PCHangUpDlg::OnBnClickedHangUp()
 {
 #ifdef PC_HANG_UP
 	MessageBox(_T("PCがハングします"));
@@ -78,7 +78,7 @@ void CPCHangUpDlg::OnBnClickedHangUp()
 #endif
 }
 
-UINT CPCHangUpDlg::HangUpThreadProc(LPVOID /*pParam*/)
+UINT PCHangUpDlg::HangUpThreadProc(LPVOID /*param*/)
 {
 	// ここがスレッドで実行される処理
 	// 重い処理を書いたらPC負荷が増大していく

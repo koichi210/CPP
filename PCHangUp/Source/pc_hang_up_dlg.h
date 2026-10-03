@@ -2,10 +2,10 @@
 
 #pragma once
 
-class CPCHangUpDlg : public CDialogEx
+class PCHangUpDlg : public CDialogEx
 {
 public:
-	explicit CPCHangUpDlg(CWnd* pParent = nullptr);
+	explicit PCHangUpDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_PCHANGUP_DIALOG };
 
@@ -18,7 +18,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	static UINT HangUpThreadProc(LPVOID pParam);
+	static UINT HangUpThreadProc(LPVOID param);
 
-	HICON m_hIcon;
+	HICON icon_;
 };
