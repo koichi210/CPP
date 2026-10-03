@@ -1,10 +1,10 @@
-﻿// MotionCaptureDlg.cpp : メインダイアログ
+﻿// motion_capture_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
 #include "afxdialogex.h"
-#include "MotionCapture.h"
-#include "MotionCaptureDlg.h"
-#include "SampleCaptAreaDlg.h"
+#include "motion_capture.h"
+#include "motion_capture_dlg.h"
+#include "sample_capt_area_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

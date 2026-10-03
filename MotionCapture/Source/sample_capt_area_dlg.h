@@ -1,4 +1,4 @@
-﻿// SampleCaptAreaDlg.h : 記録領域の確認ダイアログ
+﻿// sample_capt_area_dlg.h : 記録領域の確認ダイアログ
 
 #pragma once
 

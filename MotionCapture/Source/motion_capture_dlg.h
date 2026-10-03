@@ -1,8 +1,8 @@
-﻿// MotionCaptureDlg.h : メインダイアログ
+﻿// motion_capture_dlg.h : メインダイアログ
 
 #pragma once
 
-#include "ManageAvi.h"
+#include "manage_avi.h"
 
 class CMotionCaptureDlg : public CDialogEx
 {

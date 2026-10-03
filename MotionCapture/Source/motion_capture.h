@@ -1,4 +1,4 @@
-﻿// MotionCapture.h : アプリケーションクラス
+﻿// motion_capture.h : アプリケーションクラス
 
 #pragma once
 

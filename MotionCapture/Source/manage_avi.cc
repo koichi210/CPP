@@ -1,7 +1,7 @@
-﻿// ManageAvi.cpp : 画面を AVI ファイルに録画する
+﻿// manage_avi.cc : 画面を AVI ファイルに録画する
 
 #include "stdafx.h"
-#include "ManageAvi.h"
+#include "manage_avi.h"
 
 namespace
 {

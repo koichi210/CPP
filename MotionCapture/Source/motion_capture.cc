@@ -1,8 +1,8 @@
-﻿// MotionCapture.cpp : アプリケーションクラス
+﻿// motion_capture.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "MotionCapture.h"
-#include "MotionCaptureDlg.h"
+#include "motion_capture.h"
+#include "motion_capture_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

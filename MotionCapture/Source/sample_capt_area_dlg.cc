@@ -1,8 +1,8 @@
-﻿// SampleCaptAreaDlg.cpp : 記録領域の確認ダイアログ
+﻿// sample_capt_area_dlg.cc : 記録領域の確認ダイアログ
 
 #include "stdafx.h"
-#include "MotionCapture.h"
-#include "SampleCaptAreaDlg.h"
+#include "motion_capture.h"
+#include "sample_capt_area_dlg.h"
 #include "afxdialogex.h"
 
 #include <shlwapi.h>

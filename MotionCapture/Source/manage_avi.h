@@ -1,4 +1,4 @@
-﻿// ManageAvi.h : 画面を AVI ファイルに録画する
+﻿// manage_avi.h : 画面を AVI ファイルに録画する
 
 #pragma once
 
