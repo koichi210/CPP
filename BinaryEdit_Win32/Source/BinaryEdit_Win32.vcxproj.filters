@@ -33,7 +33,7 @@
     <ClInclude Include="Resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="BinaryEdit_Win32.h">
+    <ClInclude Include="binary_edit_win32.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="BinaryEdit_Win32.cpp">
+    <ClCompile Include="binary_edit_win32.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

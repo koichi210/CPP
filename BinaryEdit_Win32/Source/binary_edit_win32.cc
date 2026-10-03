@@ -1,7 +1,7 @@
-﻿// BinaryEdit_Win32.cpp : アプリケーションのエントリ ポイント
+﻿// binary_edit_win32.cc : アプリケーションのエントリ ポイント
 
 #include "stdafx.h"
-#include "BinaryEdit_Win32.h"
+#include "binary_edit_win32.h"
 
 namespace
 {
