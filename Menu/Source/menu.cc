@@ -1,8 +1,8 @@
-﻿// Menu.cpp : アプリケーションのエントリ ポイント
+﻿// menu.cc : アプリケーションのエントリ ポイント
 //            「機能」メニューから「テスト領域」メニューへ項目を追加・削除して挙動を確かめる
 
 #include "stdafx.h"
-#include "Menu.h"
+#include "menu.h"
 
 namespace
 {
