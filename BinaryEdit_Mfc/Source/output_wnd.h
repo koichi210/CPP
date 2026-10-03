@@ -3,10 +3,10 @@
 #pragma once
 
 // 出力タブ1枚分のリスト
-class COutputList : public CListBox
+class OutputList : public CListBox
 {
 protected:
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	afx_msg void OnContextMenu(CWnd* wnd, CPoint point);
 	afx_msg void OnEditCopy();
 	afx_msg void OnEditClear();
 	afx_msg void OnViewOutput();
@@ -14,22 +14,22 @@ protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-class COutputWnd : public CDockablePane
+class OutputWnd : public CDockablePane
 {
 public:
 	void UpdateFonts();
 
 protected:
-	CMFCTabCtrl	m_wndTabs;
+	CMFCTabCtrl	tabs_;
 
-	COutputList	m_wndOutputBuild;
-	COutputList	m_wndOutputDebug;
-	COutputList	m_wndOutputFind;
+	OutputList	output_build_;
+	OutputList	output_debug_;
+	OutputList	output_find_;
 
-	void FillWindow(COutputList& wndList, LPCTSTR kind);
+	void FillWindow(OutputList& output_list, LPCTSTR kind);
 
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg int OnCreate(LPCREATESTRUCT create_struct);
+	afx_msg void OnSize(UINT type, int cx, int cy);
 
 	DECLARE_MESSAGE_MAP()
 };

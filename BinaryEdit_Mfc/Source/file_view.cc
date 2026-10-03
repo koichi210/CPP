@@ -10,52 +10,52 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
+BEGIN_MESSAGE_MAP(FileView, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
 	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_PROPERTIES, &CFileView::OnProperties)
-	ON_COMMAND(ID_OPEN, &CFileView::OnNotImplemented)
-	ON_COMMAND(ID_OPEN_WITH, &CFileView::OnNotImplemented)
-	ON_COMMAND(ID_DUMMY_COMPILE, &CFileView::OnNotImplemented)
-	ON_COMMAND(ID_EDIT_CUT, &CFileView::OnNotImplemented)
-	ON_COMMAND(ID_EDIT_COPY, &CFileView::OnNotImplemented)
-	ON_COMMAND(ID_EDIT_CLEAR, &CFileView::OnNotImplemented)
+	ON_COMMAND(ID_PROPERTIES, &FileView::OnProperties)
+	ON_COMMAND(ID_OPEN, &FileView::OnNotImplemented)
+	ON_COMMAND(ID_OPEN_WITH, &FileView::OnNotImplemented)
+	ON_COMMAND(ID_DUMMY_COMPILE, &FileView::OnNotImplemented)
+	ON_COMMAND(ID_EDIT_CUT, &FileView::OnNotImplemented)
+	ON_COMMAND(ID_EDIT_COPY, &FileView::OnNotImplemented)
+	ON_COMMAND(ID_EDIT_CLEAR, &FileView::OnNotImplemented)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
-int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+int FileView::OnCreate(LPCREATESTRUCT create_struct)
 {
-	if (CDockablePane::OnCreate(lpCreateStruct) == -1)
+	if (CDockablePane::OnCreate(create_struct) == -1)
 		return -1;
 
-	CRect rectDummy;
-	rectDummy.SetRectEmpty();
+	CRect rect_dummy;
+	rect_dummy.SetRectEmpty();
 
-	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS;
+	const DWORD view_style = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS;
 
-	if (!m_wndFileView.Create(dwViewStyle, rectDummy, this, 4))
+	if (!file_tree_.Create(view_style, rect_dummy, this, 4))
 	{
 		TRACE0("ファイル ビューを作成できませんでした\n");
 		return -1;
 	}
 
-	m_FileViewImages.Create(IDB_FILE_VIEW, 16, 0, RGB(255, 0, 255));
-	m_wndFileView.SetImageList(&m_FileViewImages, TVSIL_NORMAL);
+	file_view_images_.Create(IDB_FILE_VIEW, 16, 0, RGB(255, 0, 255));
+	file_tree_.SetImageList(&file_view_images_, TVSIL_NORMAL);
 
-	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_EXPLORER);
-	m_wndToolBar.LoadToolBar(IDR_EXPLORER, 0, 0, TRUE /* ロック */);
+	tool_bar_.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_EXPLORER);
+	tool_bar_.LoadToolBar(IDR_EXPLORER, 0, 0, TRUE /* ロック */);
 
 	OnChangeVisualStyle();
 
-	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
-	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
+	tool_bar_.SetPaneStyle(tool_bar_.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
+	tool_bar_.SetPaneStyle(tool_bar_.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
 
-	m_wndToolBar.SetOwner(this);
+	tool_bar_.SetOwner(this);
 
 	// コマンドを親フレーム経由ではなくこのペインで受ける
-	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
+	tool_bar_.SetRouteCommandsViaFrame(FALSE);
 
 	// 表示確認用のダミーデータ
 	FillFileView();
@@ -64,145 +64,145 @@ int CFileView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-void CFileView::OnSize(UINT nType, int cx, int cy)
+void FileView::OnSize(UINT type, int cx, int cy)
 {
-	CDockablePane::OnSize(nType, cx, cy);
+	CDockablePane::OnSize(type, cx, cy);
 	AdjustLayout();
 }
 
-void CFileView::FillFileView()
+void FileView::FillFileView()
 {
-	HTREEITEM hRoot = m_wndFileView.InsertItem(_T("FakeApp ファイル"), 0, 0);
-	m_wndFileView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+	HTREEITEM root = file_tree_.InsertItem(_T("FakeApp ファイル"), 0, 0);
+	file_tree_.SetItemState(root, TVIS_BOLD, TVIS_BOLD);
 
-	HTREEITEM hSrc = m_wndFileView.InsertItem(_T("FakeApp ソース ファイル"), 0, 0, hRoot);
+	HTREEITEM src_item = file_tree_.InsertItem(_T("FakeApp ソース ファイル"), 0, 0, root);
 
-	m_wndFileView.InsertItem(_T("FakeApp.cpp"), 1, 1, hSrc);
-	m_wndFileView.InsertItem(_T("FakeApp.rc"), 1, 1, hSrc);
-	m_wndFileView.InsertItem(_T("FakeAppDoc.cpp"), 1, 1, hSrc);
-	m_wndFileView.InsertItem(_T("FakeAppView.cpp"), 1, 1, hSrc);
-	m_wndFileView.InsertItem(_T("main_frm.cc"), 1, 1, hSrc);
-	m_wndFileView.InsertItem(_T("StdAfx.cpp"), 1, 1, hSrc);
+	file_tree_.InsertItem(_T("FakeApp.cpp"), 1, 1, src_item);
+	file_tree_.InsertItem(_T("FakeApp.rc"), 1, 1, src_item);
+	file_tree_.InsertItem(_T("FakeAppDoc.cpp"), 1, 1, src_item);
+	file_tree_.InsertItem(_T("FakeAppView.cpp"), 1, 1, src_item);
+	file_tree_.InsertItem(_T("main_frm.cc"), 1, 1, src_item);
+	file_tree_.InsertItem(_T("StdAfx.cpp"), 1, 1, src_item);
 
-	HTREEITEM hInc = m_wndFileView.InsertItem(_T("FakeApp ヘッダー ファイル"), 0, 0, hRoot);
+	HTREEITEM inc_item = file_tree_.InsertItem(_T("FakeApp ヘッダー ファイル"), 0, 0, root);
 
-	m_wndFileView.InsertItem(_T("FakeApp.h"), 2, 2, hInc);
-	m_wndFileView.InsertItem(_T("FakeAppDoc.h"), 2, 2, hInc);
-	m_wndFileView.InsertItem(_T("FakeAppView.h"), 2, 2, hInc);
-	m_wndFileView.InsertItem(_T("Resource.h"), 2, 2, hInc);
-	m_wndFileView.InsertItem(_T("main_frm.h"), 2, 2, hInc);
-	m_wndFileView.InsertItem(_T("StdAfx.h"), 2, 2, hInc);
+	file_tree_.InsertItem(_T("FakeApp.h"), 2, 2, inc_item);
+	file_tree_.InsertItem(_T("FakeAppDoc.h"), 2, 2, inc_item);
+	file_tree_.InsertItem(_T("FakeAppView.h"), 2, 2, inc_item);
+	file_tree_.InsertItem(_T("Resource.h"), 2, 2, inc_item);
+	file_tree_.InsertItem(_T("main_frm.h"), 2, 2, inc_item);
+	file_tree_.InsertItem(_T("StdAfx.h"), 2, 2, inc_item);
 
-	HTREEITEM hRes = m_wndFileView.InsertItem(_T("FakeApp リソース ファイル"), 0, 0, hRoot);
+	HTREEITEM res_item = file_tree_.InsertItem(_T("FakeApp リソース ファイル"), 0, 0, root);
 
-	m_wndFileView.InsertItem(_T("FakeApp.ico"), 2, 2, hRes);
-	m_wndFileView.InsertItem(_T("FakeApp.rc2"), 2, 2, hRes);
-	m_wndFileView.InsertItem(_T("FakeAppDoc.ico"), 2, 2, hRes);
-	m_wndFileView.InsertItem(_T("FakeToolbar.bmp"), 2, 2, hRes);
+	file_tree_.InsertItem(_T("FakeApp.ico"), 2, 2, res_item);
+	file_tree_.InsertItem(_T("FakeApp.rc2"), 2, 2, res_item);
+	file_tree_.InsertItem(_T("FakeAppDoc.ico"), 2, 2, res_item);
+	file_tree_.InsertItem(_T("FakeToolbar.bmp"), 2, 2, res_item);
 
-	m_wndFileView.Expand(hRoot, TVE_EXPAND);
-	m_wndFileView.Expand(hSrc, TVE_EXPAND);
-	m_wndFileView.Expand(hInc, TVE_EXPAND);
+	file_tree_.Expand(root, TVE_EXPAND);
+	file_tree_.Expand(src_item, TVE_EXPAND);
+	file_tree_.Expand(inc_item, TVE_EXPAND);
 }
 
-void CFileView::OnContextMenu(CWnd* pWnd, CPoint point)
+void FileView::OnContextMenu(CWnd* wnd, CPoint point)
 {
-	CTreeCtrl* pWndTree = &m_wndFileView;
-	ASSERT_VALID(pWndTree);
+	CTreeCtrl* wnd_tree = &file_tree_;
+	ASSERT_VALID(wnd_tree);
 
-	if (pWnd != pWndTree)
+	if (wnd != wnd_tree)
 	{
-		CDockablePane::OnContextMenu(pWnd, point);
+		CDockablePane::OnContextMenu(wnd, point);
 		return;
 	}
 
 	// キーボード（Shift+F10 等）から開いたときは (-1, -1) が来る
 	if (point != CPoint(-1, -1))
 	{
-		CPoint ptTree = point;
-		pWndTree->ScreenToClient(&ptTree);
+		CPoint pt_tree = point;
+		wnd_tree->ScreenToClient(&pt_tree);
 
 		UINT flags = 0;
-		HTREEITEM hTreeItem = pWndTree->HitTest(ptTree, &flags);
-		if (hTreeItem != nullptr)
+		HTREEITEM tree_item = wnd_tree->HitTest(pt_tree, &flags);
+		if (tree_item != nullptr)
 		{
-			pWndTree->SelectItem(hTreeItem);
+			wnd_tree->SelectItem(tree_item);
 		}
 	}
 
-	pWndTree->SetFocus();
-	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EXPLORER, point.x, point.y, this, TRUE);
+	wnd_tree->SetFocus();
+	the_app.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EXPLORER, point.x, point.y, this, TRUE);
 }
 
-void CFileView::AdjustLayout()
+void FileView::AdjustLayout()
 {
 	if (GetSafeHwnd() == nullptr)
 	{
 		return;
 	}
 
-	CRect rectClient;
-	GetClientRect(rectClient);
+	CRect rect_client;
+	GetClientRect(rect_client);
 
-	int cyTlb = m_wndToolBar.CalcFixedLayout(FALSE, TRUE).cy;
+	int toolbar_height = tool_bar_.CalcFixedLayout(FALSE, TRUE).cy;
 
-	m_wndToolBar.SetWindowPos(nullptr, rectClient.left, rectClient.top, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
-	m_wndFileView.SetWindowPos(nullptr, rectClient.left + 1, rectClient.top + cyTlb + 1, rectClient.Width() - 2, rectClient.Height() - cyTlb - 2, SWP_NOACTIVATE | SWP_NOZORDER);
+	tool_bar_.SetWindowPos(nullptr, rect_client.left, rect_client.top, rect_client.Width(), toolbar_height, SWP_NOACTIVATE | SWP_NOZORDER);
+	file_tree_.SetWindowPos(nullptr, rect_client.left + 1, rect_client.top + toolbar_height + 1, rect_client.Width() - 2, rect_client.Height() - toolbar_height - 2, SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
-void CFileView::OnProperties()
+void FileView::OnProperties()
 {
 	AfxMessageBox(_T("プロパティ..."));
 }
 
 // 未実装のメニュー項目。ハンドラーが無いとメニューが灰色になるため空で受ける
-void CFileView::OnNotImplemented()
+void FileView::OnNotImplemented()
 {
 }
 
-void CFileView::OnPaint()
+void FileView::OnPaint()
 {
 	CPaintDC dc(this);
 
-	CRect rectTree;
-	m_wndFileView.GetWindowRect(rectTree);
-	ScreenToClient(rectTree);
+	CRect rect_tree;
+	file_tree_.GetWindowRect(rect_tree);
+	ScreenToClient(rect_tree);
 
-	rectTree.InflateRect(1, 1);
-	dc.Draw3dRect(rectTree, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DSHADOW));
+	rect_tree.InflateRect(1, 1);
+	dc.Draw3dRect(rect_tree, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DSHADOW));
 }
 
-void CFileView::OnSetFocus(CWnd* pOldWnd)
+void FileView::OnSetFocus(CWnd* old_wnd)
 {
-	CDockablePane::OnSetFocus(pOldWnd);
+	CDockablePane::OnSetFocus(old_wnd);
 
-	m_wndFileView.SetFocus();
+	file_tree_.SetFocus();
 }
 
-void CFileView::OnChangeVisualStyle()
+void FileView::OnChangeVisualStyle()
 {
-	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_EXPLORER_24 : IDR_EXPLORER, 0, 0, TRUE /* ロック */);
+	tool_bar_.CleanUpLockedImages();
+	tool_bar_.LoadBitmap(the_app.hi_color_icons_ ? IDB_EXPLORER_24 : IDR_EXPLORER, 0, 0, TRUE /* ロック */);
 
-	m_FileViewImages.DeleteImageList();
+	file_view_images_.DeleteImageList();
 
-	UINT uiBmpId = theApp.m_bHiColorIcons ? IDB_FILE_VIEW_24 : IDB_FILE_VIEW;
+	UINT bmp_id = the_app.hi_color_icons_ ? IDB_FILE_VIEW_24 : IDB_FILE_VIEW;
 
 	CBitmap bmp;
-	if (!bmp.LoadBitmap(uiBmpId))
+	if (!bmp.LoadBitmap(bmp_id))
 	{
-		TRACE(_T("ビットマップを読み込めませんでした: %x\n"), uiBmpId);
+		TRACE(_T("ビットマップを読み込めませんでした: %x\n"), bmp_id);
 		ASSERT(FALSE);
 		return;
 	}
 
-	BITMAP bmpObj;
-	bmp.GetBitmap(&bmpObj);
+	BITMAP bmp_obj;
+	bmp.GetBitmap(&bmp_obj);
 
-	UINT nFlags = ILC_MASK | (theApp.m_bHiColorIcons ? ILC_COLOR24 : ILC_COLOR4);
+	UINT flags = ILC_MASK | (the_app.hi_color_icons_ ? ILC_COLOR24 : ILC_COLOR4);
 
-	m_FileViewImages.Create(16, bmpObj.bmHeight, nFlags, 0, 0);
-	m_FileViewImages.Add(&bmp, RGB(255, 0, 255));
+	file_view_images_.Create(16, bmp_obj.bmHeight, flags, 0, 0);
+	file_view_images_.Add(&bmp, RGB(255, 0, 255));
 
-	m_wndFileView.SetImageList(&m_FileViewImages, TVSIL_NORMAL);
+	file_tree_.SetImageList(&file_view_images_, TVSIL_NORMAL);
 }

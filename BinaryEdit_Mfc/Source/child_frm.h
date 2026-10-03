@@ -2,7 +2,7 @@
 
 #pragma once
 
-class CChildFrame : public CMDIChildWndEx
+class ChildFrame : public CMDIChildWndEx
 {
-	DECLARE_DYNCREATE(CChildFrame)
+	DECLARE_DYNCREATE(ChildFrame)
 };

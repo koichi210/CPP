@@ -7,18 +7,18 @@
 #define new DEBUG_NEW
 #endif
 
-BOOL CViewTree::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
+BOOL ViewTree::OnNotify(WPARAM w_param, LPARAM l_param, LRESULT* result)
 {
-	BOOL bRes = CTreeCtrl::OnNotify(wParam, lParam, pResult);
+	BOOL res = CTreeCtrl::OnNotify(w_param, l_param, result);
 
-	const NMHDR* pNMHDR = reinterpret_cast<const NMHDR*>(lParam);
-	ASSERT(pNMHDR != nullptr);
+	const NMHDR* nmhdr = reinterpret_cast<const NMHDR*>(l_param);
+	ASSERT(nmhdr != nullptr);
 
 	// ツールチップがドッキングペインの後ろに隠れないよう最前面に出す
-	if (pNMHDR && pNMHDR->code == TTN_SHOW && GetToolTips() != nullptr)
+	if (nmhdr && nmhdr->code == TTN_SHOW && GetToolTips() != nullptr)
 	{
 		GetToolTips()->SetWindowPos(&wndTop, -1, -1, -1, -1, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOSIZE);
 	}
 
-	return bRes;
+	return res;
 }

@@ -9,47 +9,47 @@
 #define new DEBUG_NEW
 #endif
 
-IMPLEMENT_DYNCREATE(CBinaryEdit_MfcView, CView)
+IMPLEMENT_DYNCREATE(BinaryEditMfcView, CView)
 
-BEGIN_MESSAGE_MAP(CBinaryEdit_MfcView, CView)
+BEGIN_MESSAGE_MAP(BinaryEditMfcView, CView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CBinaryEdit_MfcView::OnFilePrintPreview)
+	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &BinaryEditMfcView::OnFilePrintPreview)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
 
-void CBinaryEdit_MfcView::OnDraw(CDC* /*pDC*/)
+void BinaryEditMfcView::OnDraw(CDC* /*dc*/)
 {
 	// 描画は未実装（ウィザード生成の雛形のまま）
 	ASSERT_VALID(GetDocument());
 }
 
-void CBinaryEdit_MfcView::OnFilePrintPreview()
+void BinaryEditMfcView::OnFilePrintPreview()
 {
 	AFXPrintPreview(this);
 }
 
-BOOL CBinaryEdit_MfcView::OnPreparePrinting(CPrintInfo* pInfo)
+BOOL BinaryEditMfcView::OnPreparePrinting(CPrintInfo* info)
 {
-	return DoPreparePrinting(pInfo);
+	return DoPreparePrinting(info);
 }
 
-void CBinaryEdit_MfcView::OnRButtonUp(UINT /*nFlags*/, CPoint point)
+void BinaryEditMfcView::OnRButtonUp(UINT /*flags*/, CPoint point)
 {
 	ClientToScreen(&point);
 	OnContextMenu(this, point);
 }
 
-void CBinaryEdit_MfcView::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
+void BinaryEditMfcView::OnContextMenu(CWnd* /*wnd*/, CPoint point)
 {
-	theApp.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
+	the_app.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
 }
 
 #ifdef _DEBUG
-CBinaryEdit_MfcDoc* CBinaryEdit_MfcView::GetDocument() const
+BinaryEditMfcDoc* BinaryEditMfcView::GetDocument() const
 {
-	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CBinaryEdit_MfcDoc)));
-	return static_cast<CBinaryEdit_MfcDoc*>(m_pDocument);
+	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(BinaryEditMfcDoc)));
+	return static_cast<BinaryEditMfcDoc*>(m_pDocument);
 }
 #endif

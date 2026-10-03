@@ -9,30 +9,30 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(COutputWnd, CDockablePane)
+BEGIN_MESSAGE_MAP(OutputWnd, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
-int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
+int OutputWnd::OnCreate(LPCREATESTRUCT create_struct)
 {
-	if (CDockablePane::OnCreate(lpCreateStruct) == -1)
+	if (CDockablePane::OnCreate(create_struct) == -1)
 		return -1;
 
-	CRect rectDummy;
-	rectDummy.SetRectEmpty();
+	CRect rect_dummy;
+	rect_dummy.SetRectEmpty();
 
-	if (!m_wndTabs.Create(CMFCTabCtrl::STYLE_FLAT, rectDummy, this, 1))
+	if (!tabs_.Create(CMFCTabCtrl::STYLE_FLAT, rect_dummy, this, 1))
 	{
 		TRACE0("タブ付き出力ウィンドウを作成できませんでした\n");
 		return -1;
 	}
 
-	const DWORD dwStyle = LBS_NOINTEGRALHEIGHT | WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL;
+	const DWORD style = LBS_NOINTEGRALHEIGHT | WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL;
 
-	if (!m_wndOutputBuild.Create(dwStyle, rectDummy, &m_wndTabs, 2) ||
-		!m_wndOutputDebug.Create(dwStyle, rectDummy, &m_wndTabs, 3) ||
-		!m_wndOutputFind.Create(dwStyle, rectDummy, &m_wndTabs, 4))
+	if (!output_build_.Create(style, rect_dummy, &tabs_, 2) ||
+		!output_debug_.Create(style, rect_dummy, &tabs_, 3) ||
+		!output_find_.Create(style, rect_dummy, &tabs_, 4))
 	{
 		TRACE0("出力ウィンドウを作成できませんでした\n");
 		return -1;
@@ -42,103 +42,103 @@ int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	struct TabDef
 	{
-		COutputList*	pList;
-		UINT			nNameId;
+		OutputList*	list;
+		UINT			name_id;
 	};
 	const TabDef tabs[] =
 	{
-		{ &m_wndOutputBuild, IDS_BUILD_TAB },
-		{ &m_wndOutputDebug, IDS_DEBUG_TAB },
-		{ &m_wndOutputFind,  IDS_FIND_TAB },
+		{ &output_build_, IDS_BUILD_TAB },
+		{ &output_debug_, IDS_DEBUG_TAB },
+		{ &output_find_,  IDS_FIND_TAB },
 	};
 	for (UINT i = 0; i < _countof(tabs); i++)
 	{
-		CString strTabName;
-		VERIFY(strTabName.LoadString(tabs[i].nNameId));
-		m_wndTabs.AddTab(tabs[i].pList, strTabName, i);
+		CString tab_name;
+		VERIFY(tab_name.LoadString(tabs[i].name_id));
+		tabs_.AddTab(tabs[i].list, tab_name, i);
 	}
 
 	// 表示確認用のダミーデータ
-	FillWindow(m_wndOutputBuild, _T("ビルド"));
-	FillWindow(m_wndOutputDebug, _T("デバッグ"));
-	FillWindow(m_wndOutputFind, _T("検索"));
+	FillWindow(output_build_, _T("ビルド"));
+	FillWindow(output_debug_, _T("デバッグ"));
+	FillWindow(output_find_, _T("検索"));
 
 	return 0;
 }
 
-void COutputWnd::OnSize(UINT nType, int cx, int cy)
+void OutputWnd::OnSize(UINT type, int cx, int cy)
 {
-	CDockablePane::OnSize(nType, cx, cy);
+	CDockablePane::OnSize(type, cx, cy);
 
 	// タブはクライアント領域全体を覆う
-	m_wndTabs.SetWindowPos(nullptr, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
+	tabs_.SetWindowPos(nullptr, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
-void COutputWnd::FillWindow(COutputList& wndList, LPCTSTR kind)
+void OutputWnd::FillWindow(OutputList& output_list, LPCTSTR kind)
 {
-	wndList.AddString(CString(kind) + _T("出力データがここに表示されます。"));
-	wndList.AddString(_T("出力データはリスト ビューの各行に表示されます"));
-	wndList.AddString(_T("表示方法を変更することもできます..."));
+	output_list.AddString(CString(kind) + _T("出力データがここに表示されます。"));
+	output_list.AddString(_T("出力データはリスト ビューの各行に表示されます"));
+	output_list.AddString(_T("表示方法を変更することもできます..."));
 }
 
-void COutputWnd::UpdateFonts()
+void OutputWnd::UpdateFonts()
 {
-	m_wndOutputBuild.SetFont(&afxGlobalData.fontRegular);
-	m_wndOutputDebug.SetFont(&afxGlobalData.fontRegular);
-	m_wndOutputFind.SetFont(&afxGlobalData.fontRegular);
+	output_build_.SetFont(&afxGlobalData.fontRegular);
+	output_debug_.SetFont(&afxGlobalData.fontRegular);
+	output_find_.SetFont(&afxGlobalData.fontRegular);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// COutputList
+// OutputList
 
-BEGIN_MESSAGE_MAP(COutputList, CListBox)
+BEGIN_MESSAGE_MAP(OutputList, CListBox)
 	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_EDIT_COPY, &COutputList::OnEditCopy)
-	ON_COMMAND(ID_EDIT_CLEAR, &COutputList::OnEditClear)
-	ON_COMMAND(ID_VIEW_OUTPUTWND, &COutputList::OnViewOutput)
+	ON_COMMAND(ID_EDIT_COPY, &OutputList::OnEditCopy)
+	ON_COMMAND(ID_EDIT_CLEAR, &OutputList::OnEditClear)
+	ON_COMMAND(ID_VIEW_OUTPUTWND, &OutputList::OnViewOutput)
 END_MESSAGE_MAP()
 
-void COutputList::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
+void OutputList::OnContextMenu(CWnd* /*wnd*/, CPoint point)
 {
 	CMenu menu;
 	menu.LoadMenu(IDR_OUTPUT_POPUP);
 
-	CMenu* pSumMenu = menu.GetSubMenu(0);
+	CMenu* sum_menu = menu.GetSubMenu(0);
 
 	if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CMDIFrameWndEx)))
 	{
 		// CMFCPopupMenu は閉じたときに自分自身を delete する
-		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
+		CMFCPopupMenu* popup_menu = new CMFCPopupMenu;
 
-		if (!pPopupMenu->Create(this, point.x, point.y, pSumMenu->GetSafeHmenu(), FALSE, TRUE))
+		if (!popup_menu->Create(this, point.x, point.y, sum_menu->GetSafeHmenu(), FALSE, TRUE))
 			return;
 
-		static_cast<CMDIFrameWndEx*>(AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
+		static_cast<CMDIFrameWndEx*>(AfxGetMainWnd())->OnShowPopupMenu(popup_menu);
 		UpdateDialogControls(this, FALSE);
 	}
 
 	SetFocus();
 }
 
-void COutputList::OnEditCopy()
+void OutputList::OnEditCopy()
 {
 	MessageBox(_T("出力データをコピーします"));
 }
 
-void COutputList::OnEditClear()
+void OutputList::OnEditClear()
 {
 	MessageBox(_T("出力データをクリアします"));
 }
 
-void COutputList::OnViewOutput()
+void OutputList::OnViewOutput()
 {
-	CDockablePane* pParentBar = DYNAMIC_DOWNCAST(CDockablePane, GetOwner());
-	CMDIFrameWndEx* pMainFrame = DYNAMIC_DOWNCAST(CMDIFrameWndEx, GetTopLevelFrame());
+	CDockablePane* parent_bar = DYNAMIC_DOWNCAST(CDockablePane, GetOwner());
+	CMDIFrameWndEx* main_frame = DYNAMIC_DOWNCAST(CMDIFrameWndEx, GetTopLevelFrame());
 
-	if (pMainFrame != nullptr && pParentBar != nullptr)
+	if (main_frame != nullptr && parent_bar != nullptr)
 	{
-		pMainFrame->SetFocus();
-		pMainFrame->ShowPane(pParentBar, FALSE, FALSE, FALSE);
-		pMainFrame->RecalcLayout();
+		main_frame->SetFocus();
+		main_frame->ShowPane(parent_bar, FALSE, FALSE, FALSE);
+		main_frame->RecalcLayout();
 	}
 }

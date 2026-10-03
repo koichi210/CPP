@@ -4,7 +4,7 @@
 
 #include "view_tree.h"
 
-class CFileViewToolBar : public CMFCToolBar
+class FileViewToolBar : public CMFCToolBar
 {
 	// コマンドの更新を親フレームではなくペインに回す
 	virtual void OnUpdateCmdUI(CFrameWnd* /*pTarget*/, BOOL bDisableIfNoHndler) override
@@ -15,26 +15,26 @@ class CFileViewToolBar : public CMFCToolBar
 	virtual BOOL AllowShowOnList() const { return FALSE; }
 };
 
-class CFileView : public CDockablePane
+class FileView : public CDockablePane
 {
 public:
 	void AdjustLayout();
 	void OnChangeVisualStyle();
 
 protected:
-	CViewTree			m_wndFileView;
-	CImageList			m_FileViewImages;
-	CFileViewToolBar	m_wndToolBar;
+	ViewTree			file_tree_;
+	CImageList			file_view_images_;
+	FileViewToolBar	tool_bar_;
 
 	void FillFileView();
 
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	afx_msg int OnCreate(LPCREATESTRUCT create_struct);
+	afx_msg void OnSize(UINT type, int cx, int cy);
+	afx_msg void OnContextMenu(CWnd* wnd, CPoint point);
 	afx_msg void OnProperties();
 	afx_msg void OnNotImplemented();
 	afx_msg void OnPaint();
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnSetFocus(CWnd* old_wnd);
 
 	DECLARE_MESSAGE_MAP()
 };

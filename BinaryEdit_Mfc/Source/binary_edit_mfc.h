@@ -8,21 +8,21 @@
 
 #include "resource.h"
 
-class CBinaryEdit_MfcApp : public CWinAppEx
+class BinaryEditMfcApp : public CWinAppEx
 {
 public:
-	CBinaryEdit_MfcApp();
+	BinaryEditMfcApp();
 
 	virtual BOOL InitInstance() override;
 	virtual int ExitInstance() override;
 	virtual void PreLoadState() override;
 
-	UINT	m_nAppLook = 0;			// 選択中の外観（ID_VIEW_APPLOOK_*）
-	BOOL	m_bHiColorIcons = TRUE;	// 24bit カラーのアイコン・ツールバーを使う
+	UINT	app_look_ = 0;			// 選択中の外観（ID_VIEW_APPLOOK_*）
+	BOOL	hi_color_icons_ = TRUE;	// 24bit カラーのアイコン・ツールバーを使う
 
 protected:
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CBinaryEdit_MfcApp theApp;
+extern BinaryEditMfcApp the_app;

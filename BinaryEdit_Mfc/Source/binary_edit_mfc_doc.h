@@ -2,11 +2,11 @@
 
 #pragma once
 
-class CBinaryEdit_MfcDoc : public CDocument
+class BinaryEditMfcDoc : public CDocument
 {
 protected:	// シリアル化からのみ作成する
-	CBinaryEdit_MfcDoc() = default;
-	DECLARE_DYNCREATE(CBinaryEdit_MfcDoc)
+	BinaryEditMfcDoc() = default;
+	DECLARE_DYNCREATE(BinaryEditMfcDoc)
 
 public:
 	virtual void Serialize(CArchive& ar) override;

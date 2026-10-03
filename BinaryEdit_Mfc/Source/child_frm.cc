@@ -8,4 +8,4 @@
 #define new DEBUG_NEW
 #endif
 
-IMPLEMENT_DYNCREATE(CChildFrame, CMDIChildWndEx)
+IMPLEMENT_DYNCREATE(ChildFrame, CMDIChildWndEx)

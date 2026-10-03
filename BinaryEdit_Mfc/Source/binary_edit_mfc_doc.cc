@@ -8,9 +8,9 @@
 #define new DEBUG_NEW
 #endif
 
-IMPLEMENT_DYNCREATE(CBinaryEdit_MfcDoc, CDocument)
+IMPLEMENT_DYNCREATE(BinaryEditMfcDoc, CDocument)
 
-void CBinaryEdit_MfcDoc::Serialize(CArchive& /*ar*/)
+void BinaryEditMfcDoc::Serialize(CArchive& /*ar*/)
 {
 	// バイナリの読み書きは未実装（ウィザード生成の雛形のまま）
 }

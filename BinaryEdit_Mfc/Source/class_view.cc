@@ -11,95 +11,95 @@
 #endif
 
 // 並べ替えメニュー付きのツールバーボタン
-class CClassViewMenuButton : public CMFCToolBarMenuButton
+class ClassViewMenuButton : public CMFCToolBarMenuButton
 {
-	friend class CClassView;
+	friend class ClassView;
 
-	DECLARE_SERIAL(CClassViewMenuButton)
+	DECLARE_SERIAL(ClassViewMenuButton)
 
 public:
-	CClassViewMenuButton(HMENU hMenu = nullptr) : CMFCToolBarMenuButton(static_cast<UINT>(-1), hMenu, -1)
+	ClassViewMenuButton(HMENU menu = nullptr) : CMFCToolBarMenuButton(static_cast<UINT>(-1), menu, -1)
 	{
 	}
 
-	virtual void OnDraw(CDC* pDC, const CRect& rect, CMFCToolBarImages* pImages, BOOL bHorz = TRUE,
-		BOOL bCustomizeMode = FALSE, BOOL bHighlight = FALSE, BOOL bDrawBorder = TRUE, BOOL bGrayDisabledButtons = TRUE)
+	virtual void OnDraw(CDC* dc, const CRect& rect, CMFCToolBarImages* images, BOOL horz = TRUE,
+		BOOL customize_mode = FALSE, BOOL highlight = FALSE, BOOL draw_border = TRUE, BOOL gray_disabled_buttons = TRUE)
 	{
 		// ペインのツールバーではなく共通のコマンドイメージで描く
-		pImages = CMFCToolBar::GetImages();
+		images = CMFCToolBar::GetImages();
 
 		CAfxDrawState ds;
-		pImages->PrepareDrawImage(ds);
+		images->PrepareDrawImage(ds);
 
-		CMFCToolBarMenuButton::OnDraw(pDC, rect, pImages, bHorz, bCustomizeMode, bHighlight, bDrawBorder, bGrayDisabledButtons);
+		CMFCToolBarMenuButton::OnDraw(dc, rect, images, horz, customize_mode, highlight, draw_border, gray_disabled_buttons);
 
-		pImages->EndDrawImage(ds);
+		images->EndDrawImage(ds);
 	}
 };
 
-IMPLEMENT_SERIAL(CClassViewMenuButton, CMFCToolBarMenuButton, 1)
+IMPLEMENT_SERIAL(ClassViewMenuButton, CMFCToolBarMenuButton, 1)
 
-CClassView::CClassView()
-	: m_nCurrSort(ID_SORTING_GROUPBYTYPE)
+ClassView::ClassView()
+	: curr_sort_(ID_SORTING_GROUPBYTYPE)
 {
 }
 
-BEGIN_MESSAGE_MAP(CClassView, CDockablePane)
+BEGIN_MESSAGE_MAP(ClassView, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
 	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_CLASS_ADD_MEMBER_FUNCTION, &CClassView::OnClassAddMemberFunction)
-	ON_COMMAND(ID_CLASS_ADD_MEMBER_VARIABLE, &CClassView::OnNotImplemented)
-	ON_COMMAND(ID_CLASS_DEFINITION, &CClassView::OnNotImplemented)
-	ON_COMMAND(ID_CLASS_PROPERTIES, &CClassView::OnNotImplemented)
-	ON_COMMAND(ID_NEW_FOLDER, &CClassView::OnNewFolder)
+	ON_COMMAND(ID_CLASS_ADD_MEMBER_FUNCTION, &ClassView::OnClassAddMemberFunction)
+	ON_COMMAND(ID_CLASS_ADD_MEMBER_VARIABLE, &ClassView::OnNotImplemented)
+	ON_COMMAND(ID_CLASS_DEFINITION, &ClassView::OnNotImplemented)
+	ON_COMMAND(ID_CLASS_PROPERTIES, &ClassView::OnNotImplemented)
+	ON_COMMAND(ID_NEW_FOLDER, &ClassView::OnNewFolder)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
-	ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, &CClassView::OnSort)
-	ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, &CClassView::OnUpdateSort)
+	ON_COMMAND_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, &ClassView::OnSort)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_SORTING_GROUPBYTYPE, ID_SORTING_SORTBYACCESS, &ClassView::OnUpdateSort)
 END_MESSAGE_MAP()
 
-int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+int ClassView::OnCreate(LPCREATESTRUCT create_struct)
 {
-	if (CDockablePane::OnCreate(lpCreateStruct) == -1)
+	if (CDockablePane::OnCreate(create_struct) == -1)
 		return -1;
 
-	CRect rectDummy;
-	rectDummy.SetRectEmpty();
+	CRect rect_dummy;
+	rect_dummy.SetRectEmpty();
 
-	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+	const DWORD view_style = WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
-	if (!m_wndClassView.Create(dwViewStyle, rectDummy, this, 2))
+	if (!class_tree_.Create(view_style, rect_dummy, this, 2))
 	{
 		TRACE0("クラス ビューを作成できませんでした\n");
 		return -1;
 	}
 
-	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_SORT);
-	m_wndToolBar.LoadToolBar(IDR_SORT, 0, 0, TRUE /* ロック */);
+	tool_bar_.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_SORT);
+	tool_bar_.LoadToolBar(IDR_SORT, 0, 0, TRUE /* ロック */);
 
 	OnChangeVisualStyle();
 
-	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
-	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
+	tool_bar_.SetPaneStyle(tool_bar_.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
+	tool_bar_.SetPaneStyle(tool_bar_.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
 
-	m_wndToolBar.SetOwner(this);
+	tool_bar_.SetOwner(this);
 
 	// コマンドを親フレーム経由ではなくこのペインで受ける
-	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
+	tool_bar_.SetRouteCommandsViaFrame(FALSE);
 
-	CMenu menuSort;
-	menuSort.LoadMenu(IDR_POPUP_SORT);
+	CMenu menu_sort;
+	menu_sort.LoadMenu(IDR_POPUP_SORT);
 
-	m_wndToolBar.ReplaceButton(ID_SORT_MENU, CClassViewMenuButton(menuSort.GetSubMenu(0)->GetSafeHmenu()));
+	tool_bar_.ReplaceButton(ID_SORT_MENU, ClassViewMenuButton(menu_sort.GetSubMenu(0)->GetSafeHmenu()));
 
-	CClassViewMenuButton* pButton = DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
-	if (pButton != nullptr)
+	ClassViewMenuButton* button = DYNAMIC_DOWNCAST(ClassViewMenuButton, tool_bar_.GetButton(0));
+	if (button != nullptr)
 	{
-		pButton->m_bText = FALSE;
-		pButton->m_bImage = TRUE;
-		pButton->SetImage(GetCmdMgr()->GetCmdImage(m_nCurrSort));
-		pButton->SetMessageWnd(this);
+		button->m_bText = FALSE;
+		button->m_bImage = TRUE;
+		button->SetImage(GetCmdMgr()->GetCmdImage(curr_sort_));
+		button->SetMessageWnd(this);
 	}
 
 	// 表示確認用のダミーデータ
@@ -108,191 +108,191 @@ int CClassView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-void CClassView::OnSize(UINT nType, int cx, int cy)
+void ClassView::OnSize(UINT type, int cx, int cy)
 {
-	CDockablePane::OnSize(nType, cx, cy);
+	CDockablePane::OnSize(type, cx, cy);
 	AdjustLayout();
 }
 
-void CClassView::FillClassView()
+void ClassView::FillClassView()
 {
-	HTREEITEM hRoot = m_wndClassView.InsertItem(_T("FakeApp クラス"), 0, 0);
-	m_wndClassView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+	HTREEITEM root = class_tree_.InsertItem(_T("FakeApp クラス"), 0, 0);
+	class_tree_.SetItemState(root, TVIS_BOLD, TVIS_BOLD);
 
-	HTREEITEM hClass = m_wndClassView.InsertItem(_T("CFakeAboutDlg"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAboutDlg()"), 3, 3, hClass);
+	HTREEITEM class_item = class_tree_.InsertItem(_T("CFakeAboutDlg"), 1, 1, root);
+	class_tree_.InsertItem(_T("CFakeAboutDlg()"), 3, 3, class_item);
 
-	m_wndClassView.Expand(hRoot, TVE_EXPAND);
+	class_tree_.Expand(root, TVE_EXPAND);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeApp"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeApp()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("InitInstance()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("OnAppAbout()"), 3, 3, hClass);
+	class_item = class_tree_.InsertItem(_T("CFakeApp"), 1, 1, root);
+	class_tree_.InsertItem(_T("CFakeApp()"), 3, 3, class_item);
+	class_tree_.InsertItem(_T("InitInstance()"), 3, 3, class_item);
+	class_tree_.InsertItem(_T("OnAppAbout()"), 3, 3, class_item);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppDoc"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppDoc()"), 4, 4, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppDoc()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("OnNewDocument()"), 3, 3, hClass);
+	class_item = class_tree_.InsertItem(_T("CFakeAppDoc"), 1, 1, root);
+	class_tree_.InsertItem(_T("CFakeAppDoc()"), 4, 4, class_item);
+	class_tree_.InsertItem(_T("~CFakeAppDoc()"), 3, 3, class_item);
+	class_tree_.InsertItem(_T("OnNewDocument()"), 3, 3, class_item);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppView"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppView()"), 4, 4, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppView()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("GetDocument()"), 3, 3, hClass);
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
+	class_item = class_tree_.InsertItem(_T("CFakeAppView"), 1, 1, root);
+	class_tree_.InsertItem(_T("CFakeAppView()"), 4, 4, class_item);
+	class_tree_.InsertItem(_T("~CFakeAppView()"), 3, 3, class_item);
+	class_tree_.InsertItem(_T("GetDocument()"), 3, 3, class_item);
+	class_tree_.Expand(class_item, TVE_EXPAND);
 
-	hClass = m_wndClassView.InsertItem(_T("CFakeAppFrame"), 1, 1, hRoot);
-	m_wndClassView.InsertItem(_T("CFakeAppFrame()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("~CFakeAppFrame()"), 3, 3, hClass);
-	m_wndClassView.InsertItem(_T("m_wndMenuBar"), 6, 6, hClass);
-	m_wndClassView.InsertItem(_T("m_wndToolBar"), 6, 6, hClass);
-	m_wndClassView.InsertItem(_T("m_wndStatusBar"), 6, 6, hClass);
+	class_item = class_tree_.InsertItem(_T("CFakeAppFrame"), 1, 1, root);
+	class_tree_.InsertItem(_T("CFakeAppFrame()"), 3, 3, class_item);
+	class_tree_.InsertItem(_T("~CFakeAppFrame()"), 3, 3, class_item);
+	class_tree_.InsertItem(_T("m_wndMenuBar"), 6, 6, class_item);
+	class_tree_.InsertItem(_T("m_wndToolBar"), 6, 6, class_item);
+	class_tree_.InsertItem(_T("m_wndStatusBar"), 6, 6, class_item);
 
-	hClass = m_wndClassView.InsertItem(_T("Globals"), 2, 2, hRoot);
-	m_wndClassView.InsertItem(_T("theFakeApp"), 5, 5, hClass);
-	m_wndClassView.Expand(hClass, TVE_EXPAND);
+	class_item = class_tree_.InsertItem(_T("Globals"), 2, 2, root);
+	class_tree_.InsertItem(_T("theFakeApp"), 5, 5, class_item);
+	class_tree_.Expand(class_item, TVE_EXPAND);
 }
 
-void CClassView::OnContextMenu(CWnd* pWnd, CPoint point)
+void ClassView::OnContextMenu(CWnd* wnd, CPoint point)
 {
-	CTreeCtrl* pWndTree = &m_wndClassView;
-	ASSERT_VALID(pWndTree);
+	CTreeCtrl* wnd_tree = &class_tree_;
+	ASSERT_VALID(wnd_tree);
 
-	if (pWnd != pWndTree)
+	if (wnd != wnd_tree)
 	{
-		CDockablePane::OnContextMenu(pWnd, point);
+		CDockablePane::OnContextMenu(wnd, point);
 		return;
 	}
 
 	// キーボード（Shift+F10 等）から開いたときは (-1, -1) が来る
 	if (point != CPoint(-1, -1))
 	{
-		CPoint ptTree = point;
-		pWndTree->ScreenToClient(&ptTree);
+		CPoint pt_tree = point;
+		wnd_tree->ScreenToClient(&pt_tree);
 
 		UINT flags = 0;
-		HTREEITEM hTreeItem = pWndTree->HitTest(ptTree, &flags);
-		if (hTreeItem != nullptr)
+		HTREEITEM tree_item = wnd_tree->HitTest(pt_tree, &flags);
+		if (tree_item != nullptr)
 		{
-			pWndTree->SelectItem(hTreeItem);
+			wnd_tree->SelectItem(tree_item);
 		}
 	}
 
-	pWndTree->SetFocus();
+	wnd_tree->SetFocus();
 	CMenu menu;
 	menu.LoadMenu(IDR_POPUP_SORT);
 
-	CMenu* pSumMenu = menu.GetSubMenu(0);
+	CMenu* sum_menu = menu.GetSubMenu(0);
 
 	if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CMDIFrameWndEx)))
 	{
 		// CMFCPopupMenu は閉じたときに自分自身を delete する
-		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
+		CMFCPopupMenu* popup_menu = new CMFCPopupMenu;
 
-		if (!pPopupMenu->Create(this, point.x, point.y, pSumMenu->GetSafeHmenu(), FALSE, TRUE))
+		if (!popup_menu->Create(this, point.x, point.y, sum_menu->GetSafeHmenu(), FALSE, TRUE))
 			return;
 
-		static_cast<CMDIFrameWndEx*>(AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
+		static_cast<CMDIFrameWndEx*>(AfxGetMainWnd())->OnShowPopupMenu(popup_menu);
 		UpdateDialogControls(this, FALSE);
 	}
 }
 
-void CClassView::AdjustLayout()
+void ClassView::AdjustLayout()
 {
 	if (GetSafeHwnd() == nullptr)
 	{
 		return;
 	}
 
-	CRect rectClient;
-	GetClientRect(rectClient);
+	CRect rect_client;
+	GetClientRect(rect_client);
 
-	int cyTlb = m_wndToolBar.CalcFixedLayout(FALSE, TRUE).cy;
+	int toolbar_height = tool_bar_.CalcFixedLayout(FALSE, TRUE).cy;
 
-	m_wndToolBar.SetWindowPos(nullptr, rectClient.left, rectClient.top, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
-	m_wndClassView.SetWindowPos(nullptr, rectClient.left + 1, rectClient.top + cyTlb + 1, rectClient.Width() - 2, rectClient.Height() - cyTlb - 2, SWP_NOACTIVATE | SWP_NOZORDER);
+	tool_bar_.SetWindowPos(nullptr, rect_client.left, rect_client.top, rect_client.Width(), toolbar_height, SWP_NOACTIVATE | SWP_NOZORDER);
+	class_tree_.SetWindowPos(nullptr, rect_client.left + 1, rect_client.top + toolbar_height + 1, rect_client.Width() - 2, rect_client.Height() - toolbar_height - 2, SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
-void CClassView::OnSort(UINT id)
+void ClassView::OnSort(UINT id)
 {
-	if (m_nCurrSort == id)
+	if (curr_sort_ == id)
 	{
 		return;
 	}
 
-	m_nCurrSort = id;
+	curr_sort_ = id;
 
-	CClassViewMenuButton* pButton = DYNAMIC_DOWNCAST(CClassViewMenuButton, m_wndToolBar.GetButton(0));
-	if (pButton != nullptr)
+	ClassViewMenuButton* button = DYNAMIC_DOWNCAST(ClassViewMenuButton, tool_bar_.GetButton(0));
+	if (button != nullptr)
 	{
-		pButton->SetImage(GetCmdMgr()->GetCmdImage(id));
-		m_wndToolBar.Invalidate();
-		m_wndToolBar.UpdateWindow();
+		button->SetImage(GetCmdMgr()->GetCmdImage(id));
+		tool_bar_.Invalidate();
+		tool_bar_.UpdateWindow();
 	}
 }
 
-void CClassView::OnUpdateSort(CCmdUI* pCmdUI)
+void ClassView::OnUpdateSort(CCmdUI* cmd_ui)
 {
-	pCmdUI->SetCheck(pCmdUI->m_nID == m_nCurrSort);
+	cmd_ui->SetCheck(cmd_ui->m_nID == curr_sort_);
 }
 
-void CClassView::OnClassAddMemberFunction()
+void ClassView::OnClassAddMemberFunction()
 {
 	AfxMessageBox(_T("メンバー関数の追加..."));
 }
 
-void CClassView::OnNewFolder()
+void ClassView::OnNewFolder()
 {
 	AfxMessageBox(_T("新しいフォルダー..."));
 }
 
 // 未実装のメニュー項目。ハンドラーが無いとメニューが灰色になるため空で受ける
-void CClassView::OnNotImplemented()
+void ClassView::OnNotImplemented()
 {
 }
 
-void CClassView::OnPaint()
+void ClassView::OnPaint()
 {
 	CPaintDC dc(this);
 
-	CRect rectTree;
-	m_wndClassView.GetWindowRect(rectTree);
-	ScreenToClient(rectTree);
+	CRect rect_tree;
+	class_tree_.GetWindowRect(rect_tree);
+	ScreenToClient(rect_tree);
 
-	rectTree.InflateRect(1, 1);
-	dc.Draw3dRect(rectTree, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DSHADOW));
+	rect_tree.InflateRect(1, 1);
+	dc.Draw3dRect(rect_tree, ::GetSysColor(COLOR_3DSHADOW), ::GetSysColor(COLOR_3DSHADOW));
 }
 
-void CClassView::OnSetFocus(CWnd* pOldWnd)
+void ClassView::OnSetFocus(CWnd* old_wnd)
 {
-	CDockablePane::OnSetFocus(pOldWnd);
+	CDockablePane::OnSetFocus(old_wnd);
 
-	m_wndClassView.SetFocus();
+	class_tree_.SetFocus();
 }
 
-void CClassView::OnChangeVisualStyle()
+void ClassView::OnChangeVisualStyle()
 {
-	m_ClassViewImages.DeleteImageList();
+	class_view_images_.DeleteImageList();
 
-	UINT uiBmpId = theApp.m_bHiColorIcons ? IDB_CLASS_VIEW_24 : IDB_CLASS_VIEW;
+	UINT bmp_id = the_app.hi_color_icons_ ? IDB_CLASS_VIEW_24 : IDB_CLASS_VIEW;
 
 	CBitmap bmp;
-	if (!bmp.LoadBitmap(uiBmpId))
+	if (!bmp.LoadBitmap(bmp_id))
 	{
-		TRACE(_T("ビットマップを読み込めませんでした: %x\n"), uiBmpId);
+		TRACE(_T("ビットマップを読み込めませんでした: %x\n"), bmp_id);
 		ASSERT(FALSE);
 		return;
 	}
 
-	BITMAP bmpObj;
-	bmp.GetBitmap(&bmpObj);
+	BITMAP bmp_obj;
+	bmp.GetBitmap(&bmp_obj);
 
-	UINT nFlags = ILC_MASK | (theApp.m_bHiColorIcons ? ILC_COLOR24 : ILC_COLOR4);
+	UINT flags = ILC_MASK | (the_app.hi_color_icons_ ? ILC_COLOR24 : ILC_COLOR4);
 
-	m_ClassViewImages.Create(16, bmpObj.bmHeight, nFlags, 0, 0);
-	m_ClassViewImages.Add(&bmp, RGB(255, 0, 0));
+	class_view_images_.Create(16, bmp_obj.bmHeight, flags, 0, 0);
+	class_view_images_.Add(&bmp, RGB(255, 0, 0));
 
-	m_wndClassView.SetImageList(&m_ClassViewImages, TVSIL_NORMAL);
+	class_tree_.SetImageList(&class_view_images_, TVSIL_NORMAL);
 
-	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* ロック */);
+	tool_bar_.CleanUpLockedImages();
+	tool_bar_.LoadBitmap(the_app.hi_color_icons_ ? IDB_SORT_24 : IDR_SORT, 0, 0, TRUE /* ロック */);
 }

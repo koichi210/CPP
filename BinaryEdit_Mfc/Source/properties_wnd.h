@@ -2,7 +2,7 @@
 
 #pragma once
 
-class CPropertiesToolBar : public CMFCToolBar
+class PropertiesToolBar : public CMFCToolBar
 {
 public:
 	// コマンドの更新を親フレームではなくペインに回す
@@ -14,31 +14,31 @@ public:
 	virtual BOOL AllowShowOnList() const { return FALSE; }
 };
 
-class CPropertiesWnd : public CDockablePane
+class PropertiesWnd : public CDockablePane
 {
 public:
 	void AdjustLayout();
 
-	void SetVSDotNetLook(BOOL bSet)
+	void SetVSDotNetLook(BOOL set)
 	{
-		m_wndPropList.SetVSDotNetLook(bSet);
-		m_wndPropList.SetGroupNameFullWidth(bSet);
+		prop_list_.SetVSDotNetLook(set);
+		prop_list_.SetGroupNameFullWidth(set);
 	}
 
 protected:
-	CFont m_fntPropList;
-	CComboBox m_wndObjectCombo;
-	CPropertiesToolBar m_wndToolBar;
-	CMFCPropertyGridCtrl m_wndPropList;
+	CFont prop_list_font_;
+	CComboBox object_combo_;
+	PropertiesToolBar tool_bar_;
+	CMFCPropertyGridCtrl prop_list_;
 
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg int OnCreate(LPCREATESTRUCT create_struct);
+	afx_msg void OnSize(UINT type, int cx, int cy);
 	afx_msg void OnExpandAllProperties();
 	afx_msg void OnSortProperties();
-	afx_msg void OnUpdateSortProperties(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateSortProperties(CCmdUI* cmd_ui);
 	afx_msg void OnNotImplemented();
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
+	afx_msg void OnSetFocus(CWnd* old_wnd);
+	afx_msg void OnSettingChange(UINT flags, LPCTSTR section);
 
 	DECLARE_MESSAGE_MAP()
 

@@ -10,59 +10,59 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CPropertiesWnd, CDockablePane)
+BEGIN_MESSAGE_MAP(PropertiesWnd, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
-	ON_COMMAND(ID_EXPAND_ALL, &CPropertiesWnd::OnExpandAllProperties)
-	ON_COMMAND(ID_SORTPROPERTIES, &CPropertiesWnd::OnSortProperties)
-	ON_UPDATE_COMMAND_UI(ID_SORTPROPERTIES, &CPropertiesWnd::OnUpdateSortProperties)
-	ON_COMMAND(ID_PROPERTIES1, &CPropertiesWnd::OnNotImplemented)
-	ON_COMMAND(ID_PROPERTIES2, &CPropertiesWnd::OnNotImplemented)
+	ON_COMMAND(ID_EXPAND_ALL, &PropertiesWnd::OnExpandAllProperties)
+	ON_COMMAND(ID_SORTPROPERTIES, &PropertiesWnd::OnSortProperties)
+	ON_UPDATE_COMMAND_UI(ID_SORTPROPERTIES, &PropertiesWnd::OnUpdateSortProperties)
+	ON_COMMAND(ID_PROPERTIES1, &PropertiesWnd::OnNotImplemented)
+	ON_COMMAND(ID_PROPERTIES2, &PropertiesWnd::OnNotImplemented)
 	ON_WM_SETFOCUS()
 	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
 
-void CPropertiesWnd::AdjustLayout()
+void PropertiesWnd::AdjustLayout()
 {
 	if (GetSafeHwnd() == nullptr)
 	{
 		return;
 	}
 
-	CRect rectClient, rectCombo;
-	GetClientRect(rectClient);
+	CRect rect_client, rect_combo;
+	GetClientRect(rect_client);
 
-	m_wndObjectCombo.GetWindowRect(&rectCombo);
+	object_combo_.GetWindowRect(&rect_combo);
 
-	int cyCmb = rectCombo.Size().cy;
-	int cyTlb = m_wndToolBar.CalcFixedLayout(FALSE, TRUE).cy;
+	int combo_height = rect_combo.Size().cy;
+	int toolbar_height = tool_bar_.CalcFixedLayout(FALSE, TRUE).cy;
 
-	m_wndObjectCombo.SetWindowPos(nullptr, rectClient.left, rectClient.top, rectClient.Width(), 200, SWP_NOACTIVATE | SWP_NOZORDER);
-	m_wndToolBar.SetWindowPos(nullptr, rectClient.left, rectClient.top + cyCmb, rectClient.Width(), cyTlb, SWP_NOACTIVATE | SWP_NOZORDER);
-	m_wndPropList.SetWindowPos(nullptr, rectClient.left, rectClient.top + cyCmb + cyTlb, rectClient.Width(), rectClient.Height() - (cyCmb + cyTlb), SWP_NOACTIVATE | SWP_NOZORDER);
+	object_combo_.SetWindowPos(nullptr, rect_client.left, rect_client.top, rect_client.Width(), 200, SWP_NOACTIVATE | SWP_NOZORDER);
+	tool_bar_.SetWindowPos(nullptr, rect_client.left, rect_client.top + combo_height, rect_client.Width(), toolbar_height, SWP_NOACTIVATE | SWP_NOZORDER);
+	prop_list_.SetWindowPos(nullptr, rect_client.left, rect_client.top + combo_height + toolbar_height, rect_client.Width(), rect_client.Height() - (combo_height + toolbar_height), SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
-int CPropertiesWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
+int PropertiesWnd::OnCreate(LPCREATESTRUCT create_struct)
 {
-	if (CDockablePane::OnCreate(lpCreateStruct) == -1)
+	if (CDockablePane::OnCreate(create_struct) == -1)
 		return -1;
 
-	CRect rectDummy;
-	rectDummy.SetRectEmpty();
+	CRect rect_dummy;
+	rect_dummy.SetRectEmpty();
 
-	const DWORD dwViewStyle = WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_BORDER | CBS_SORT | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+	const DWORD view_style = WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_BORDER | CBS_SORT | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
-	if (!m_wndObjectCombo.Create(dwViewStyle, rectDummy, this, 1))
+	if (!object_combo_.Create(view_style, rect_dummy, this, 1))
 	{
 		TRACE0("プロパティ コンボ ボックスを作成できませんでした\n");
 		return -1;
 	}
 
-	m_wndObjectCombo.AddString(_T("アプリケーション"));
-	m_wndObjectCombo.AddString(_T("プロパティ ウィンドウ"));
-	m_wndObjectCombo.SetCurSel(0);
+	object_combo_.AddString(_T("アプリケーション"));
+	object_combo_.AddString(_T("プロパティ ウィンドウ"));
+	object_combo_.SetCurSel(0);
 
-	if (!m_wndPropList.Create(WS_VISIBLE | WS_CHILD, rectDummy, this, 2))
+	if (!prop_list_.Create(WS_VISIBLE | WS_CHILD, rect_dummy, this, 2))
 	{
 		TRACE0("プロパティ グリッドを作成できませんでした\n");
 		return -1;
@@ -70,87 +70,87 @@ int CPropertiesWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	InitPropList();
 
-	m_wndToolBar.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_PROPERTIES);
-	m_wndToolBar.LoadToolBar(IDR_PROPERTIES, 0, 0, TRUE /* ロック */);
-	m_wndToolBar.CleanUpLockedImages();
-	m_wndToolBar.LoadBitmap(theApp.m_bHiColorIcons ? IDB_PROPERTIES_HC : IDR_PROPERTIES, 0, 0, TRUE /* ロック */);
+	tool_bar_.Create(this, AFX_DEFAULT_TOOLBAR_STYLE, IDR_PROPERTIES);
+	tool_bar_.LoadToolBar(IDR_PROPERTIES, 0, 0, TRUE /* ロック */);
+	tool_bar_.CleanUpLockedImages();
+	tool_bar_.LoadBitmap(the_app.hi_color_icons_ ? IDB_PROPERTIES_HC : IDR_PROPERTIES, 0, 0, TRUE /* ロック */);
 
-	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
-	m_wndToolBar.SetPaneStyle(m_wndToolBar.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
-	m_wndToolBar.SetOwner(this);
+	tool_bar_.SetPaneStyle(tool_bar_.GetPaneStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
+	tool_bar_.SetPaneStyle(tool_bar_.GetPaneStyle() & ~(CBRS_GRIPPER | CBRS_SIZE_DYNAMIC | CBRS_BORDER_TOP | CBRS_BORDER_BOTTOM | CBRS_BORDER_LEFT | CBRS_BORDER_RIGHT));
+	tool_bar_.SetOwner(this);
 
 	// コマンドを親フレーム経由ではなくこのペインで受ける
-	m_wndToolBar.SetRouteCommandsViaFrame(FALSE);
+	tool_bar_.SetRouteCommandsViaFrame(FALSE);
 
 	AdjustLayout();
 	return 0;
 }
 
-void CPropertiesWnd::OnSize(UINT nType, int cx, int cy)
+void PropertiesWnd::OnSize(UINT type, int cx, int cy)
 {
-	CDockablePane::OnSize(nType, cx, cy);
+	CDockablePane::OnSize(type, cx, cy);
 	AdjustLayout();
 }
 
-void CPropertiesWnd::OnExpandAllProperties()
+void PropertiesWnd::OnExpandAllProperties()
 {
-	m_wndPropList.ExpandAll();
+	prop_list_.ExpandAll();
 }
 
-void CPropertiesWnd::OnSortProperties()
+void PropertiesWnd::OnSortProperties()
 {
-	m_wndPropList.SetAlphabeticMode(!m_wndPropList.IsAlphabeticMode());
+	prop_list_.SetAlphabeticMode(!prop_list_.IsAlphabeticMode());
 }
 
-void CPropertiesWnd::OnUpdateSortProperties(CCmdUI* pCmdUI)
+void PropertiesWnd::OnUpdateSortProperties(CCmdUI* cmd_ui)
 {
-	pCmdUI->SetCheck(m_wndPropList.IsAlphabeticMode());
+	cmd_ui->SetCheck(prop_list_.IsAlphabeticMode());
 }
 
 // 未実装のボタン。ハンドラーが無いと灰色になるため空で受ける
-void CPropertiesWnd::OnNotImplemented()
+void PropertiesWnd::OnNotImplemented()
 {
 }
 
-void CPropertiesWnd::InitPropList()
+void PropertiesWnd::InitPropList()
 {
 	SetPropListFont();
 
 	// 表示確認用のダミーデータ
-	m_wndPropList.EnableHeaderCtrl(FALSE);
-	m_wndPropList.EnableDescriptionArea();
-	m_wndPropList.SetVSDotNetLook();
-	m_wndPropList.MarkModifiedProperties();
+	prop_list_.EnableHeaderCtrl(FALSE);
+	prop_list_.EnableDescriptionArea();
+	prop_list_.SetVSDotNetLook();
+	prop_list_.MarkModifiedProperties();
 
-	CMFCPropertyGridProperty* pGroup1 = new CMFCPropertyGridProperty(_T("表示"));
+	CMFCPropertyGridProperty* group1 = new CMFCPropertyGridProperty(_T("表示"));
 
-	pGroup1->AddSubItem(new CMFCPropertyGridProperty(_T("3D 表示"), (_variant_t) false, _T("ウィンドウのフォントが太字以外になり、また、コントロールが 3D ボーダーで描画されます")));
+	group1->AddSubItem(new CMFCPropertyGridProperty(_T("3D 表示"), (_variant_t) false, _T("ウィンドウのフォントが太字以外になり、また、コントロールが 3D ボーダーで描画されます")));
 
-	CMFCPropertyGridProperty* pProp = new CMFCPropertyGridProperty(_T("罫線"), _T("ダイアログ枠"), _T("次のうちのどれかです : なし、細枠、サイズ変更可能枠、ダイアログ枠"));
-	pProp->AddOption(_T("なし"));
-	pProp->AddOption(_T("細枠"));
-	pProp->AddOption(_T("サイズ変更可能枠"));
-	pProp->AddOption(_T("ダイアログ枠"));
-	pProp->AllowEdit(FALSE);
+	CMFCPropertyGridProperty* prop = new CMFCPropertyGridProperty(_T("罫線"), _T("ダイアログ枠"), _T("次のうちのどれかです : なし、細枠、サイズ変更可能枠、ダイアログ枠"));
+	prop->AddOption(_T("なし"));
+	prop->AddOption(_T("細枠"));
+	prop->AddOption(_T("サイズ変更可能枠"));
+	prop->AddOption(_T("ダイアログ枠"));
+	prop->AllowEdit(FALSE);
 
-	pGroup1->AddSubItem(pProp);
-	pGroup1->AddSubItem(new CMFCPropertyGridProperty(_T("キャプション"), (_variant_t) _T("バージョン情報"), _T("ウィンドウのタイトル バーに表示されるテキストを指定します")));
+	group1->AddSubItem(prop);
+	group1->AddSubItem(new CMFCPropertyGridProperty(_T("キャプション"), (_variant_t) _T("バージョン情報"), _T("ウィンドウのタイトル バーに表示されるテキストを指定します")));
 
-	m_wndPropList.AddProperty(pGroup1);
+	prop_list_.AddProperty(group1);
 
-	CMFCPropertyGridProperty* pSize = new CMFCPropertyGridProperty(_T("ウィンドウ サイズ"), 0, TRUE);
+	CMFCPropertyGridProperty* size_group = new CMFCPropertyGridProperty(_T("ウィンドウ サイズ"), 0, TRUE);
 
-	pProp = new CMFCPropertyGridProperty(_T("高さ"), (_variant_t) 250l, _T("ウィンドウの高さを指定します"));
-	pProp->EnableSpinControl(TRUE, 50, 300);
-	pSize->AddSubItem(pProp);
+	prop = new CMFCPropertyGridProperty(_T("高さ"), (_variant_t) 250l, _T("ウィンドウの高さを指定します"));
+	prop->EnableSpinControl(TRUE, 50, 300);
+	size_group->AddSubItem(prop);
 
-	pProp = new CMFCPropertyGridProperty( _T("幅"), (_variant_t) 150l, _T("ウィンドウの幅を指定します"));
-	pProp->EnableSpinControl(TRUE, 50, 200);
-	pSize->AddSubItem(pProp);
+	prop = new CMFCPropertyGridProperty( _T("幅"), (_variant_t) 150l, _T("ウィンドウの幅を指定します"));
+	prop->EnableSpinControl(TRUE, 50, 200);
+	size_group->AddSubItem(prop);
 
-	m_wndPropList.AddProperty(pSize);
+	prop_list_.AddProperty(size_group);
 
-	CMFCPropertyGridProperty* pGroup2 = new CMFCPropertyGridProperty(_T("フォント"));
+	CMFCPropertyGridProperty* group2 = new CMFCPropertyGridProperty(_T("フォント"));
 
 	LOGFONT lf;
 	CFont* font = CFont::FromHandle((HFONT) GetStockObject(DEFAULT_GUI_FONT));
@@ -158,59 +158,59 @@ void CPropertiesWnd::InitPropList()
 
 	lstrcpy(lf.lfFaceName, _T("ＭＳ Ｐゴシック"));
 
-	pGroup2->AddSubItem(new CMFCPropertyGridFontProperty(_T("フォント"), lf, CF_EFFECTS | CF_SCREENFONTS, _T("ウィンドウの既定フォントを指定します")));
-	pGroup2->AddSubItem(new CMFCPropertyGridProperty(_T("システム フォントを使用する"), (_variant_t) true, _T("ウィンドウで MS Shell Dlg フォントを使用するように指定します")));
+	group2->AddSubItem(new CMFCPropertyGridFontProperty(_T("フォント"), lf, CF_EFFECTS | CF_SCREENFONTS, _T("ウィンドウの既定フォントを指定します")));
+	group2->AddSubItem(new CMFCPropertyGridProperty(_T("システム フォントを使用する"), (_variant_t) true, _T("ウィンドウで MS Shell Dlg フォントを使用するように指定します")));
 
-	m_wndPropList.AddProperty(pGroup2);
+	prop_list_.AddProperty(group2);
 
-	CMFCPropertyGridProperty* pGroup3 = new CMFCPropertyGridProperty(_T("その他"));
-	pProp = new CMFCPropertyGridProperty(_T("(名前)"), _T("アプリケーション"));
-	pProp->Enable(FALSE);
-	pGroup3->AddSubItem(pProp);
+	CMFCPropertyGridProperty* group3 = new CMFCPropertyGridProperty(_T("その他"));
+	prop = new CMFCPropertyGridProperty(_T("(名前)"), _T("アプリケーション"));
+	prop->Enable(FALSE);
+	group3->AddSubItem(prop);
 
-	CMFCPropertyGridColorProperty* pColorProp = new CMFCPropertyGridColorProperty(_T("ウィンドウの色"), RGB(210, 192, 254), nullptr, _T("ウィンドウの既定の色を指定します"));
-	pColorProp->EnableOtherButton(_T("その他..."));
-	pColorProp->EnableAutomaticButton(_T("既定値"), ::GetSysColor(COLOR_3DFACE));
-	pGroup3->AddSubItem(pColorProp);
+	CMFCPropertyGridColorProperty* color_prop = new CMFCPropertyGridColorProperty(_T("ウィンドウの色"), RGB(210, 192, 254), nullptr, _T("ウィンドウの既定の色を指定します"));
+	color_prop->EnableOtherButton(_T("その他..."));
+	color_prop->EnableAutomaticButton(_T("既定値"), ::GetSysColor(COLOR_3DFACE));
+	group3->AddSubItem(color_prop);
 
-	static const TCHAR szFilter[] = _T("アイコン ファイル (*.ico)|*.ico|すべてのファイル (*.*)|*.*||");
-	pGroup3->AddSubItem(new CMFCPropertyGridFileProperty(_T("アイコン"), TRUE, _T(""), _T("ico"), 0, szFilter, _T("ウィンドウ アイコンを指定します")));
+	static const TCHAR kFilter[] = _T("アイコン ファイル (*.ico)|*.ico|すべてのファイル (*.*)|*.*||");
+	group3->AddSubItem(new CMFCPropertyGridFileProperty(_T("アイコン"), TRUE, _T(""), _T("ico"), 0, kFilter, _T("ウィンドウ アイコンを指定します")));
 
-	pGroup3->AddSubItem(new CMFCPropertyGridFileProperty(_T("フォルダー"), _T("c:\\")));
+	group3->AddSubItem(new CMFCPropertyGridFileProperty(_T("フォルダー"), _T("c:\\")));
 
-	m_wndPropList.AddProperty(pGroup3);
+	prop_list_.AddProperty(group3);
 
-	CMFCPropertyGridProperty* pGroup4 = new CMFCPropertyGridProperty(_T("階層"));
+	CMFCPropertyGridProperty* group4 = new CMFCPropertyGridProperty(_T("階層"));
 
-	CMFCPropertyGridProperty* pGroup41 = new CMFCPropertyGridProperty(_T("1 番目のサブレベル"));
-	pGroup4->AddSubItem(pGroup41);
+	CMFCPropertyGridProperty* group41 = new CMFCPropertyGridProperty(_T("1 番目のサブレベル"));
+	group4->AddSubItem(group41);
 
-	CMFCPropertyGridProperty* pGroup411 = new CMFCPropertyGridProperty(_T("2 番目のサブレベル"));
-	pGroup41->AddSubItem(pGroup411);
+	CMFCPropertyGridProperty* group411 = new CMFCPropertyGridProperty(_T("2 番目のサブレベル"));
+	group41->AddSubItem(group411);
 
-	pGroup411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 1"), (_variant_t) _T("値 1"), _T("これは説明です")));
-	pGroup411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 2"), (_variant_t) _T("値 2"), _T("これは説明です")));
-	pGroup411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 3"), (_variant_t) _T("値 3"), _T("これは説明です")));
+	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 1"), (_variant_t) _T("値 1"), _T("これは説明です")));
+	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 2"), (_variant_t) _T("値 2"), _T("これは説明です")));
+	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 3"), (_variant_t) _T("値 3"), _T("これは説明です")));
 
-	pGroup4->Expand(FALSE);
-	m_wndPropList.AddProperty(pGroup4);
+	group4->Expand(FALSE);
+	prop_list_.AddProperty(group4);
 }
 
-void CPropertiesWnd::OnSetFocus(CWnd* pOldWnd)
+void PropertiesWnd::OnSetFocus(CWnd* old_wnd)
 {
-	CDockablePane::OnSetFocus(pOldWnd);
-	m_wndPropList.SetFocus();
+	CDockablePane::OnSetFocus(old_wnd);
+	prop_list_.SetFocus();
 }
 
-void CPropertiesWnd::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
+void PropertiesWnd::OnSettingChange(UINT flags, LPCTSTR section)
 {
-	CDockablePane::OnSettingChange(uFlags, lpszSection);
+	CDockablePane::OnSettingChange(flags, section);
 	SetPropListFont();
 }
 
-void CPropertiesWnd::SetPropListFont()
+void PropertiesWnd::SetPropListFont()
 {
-	::DeleteObject(m_fntPropList.Detach());
+	::DeleteObject(prop_list_font_.Detach());
 
 	LOGFONT lf;
 	afxGlobalData.fontRegular.GetLogFont(&lf);
@@ -224,8 +224,8 @@ void CPropertiesWnd::SetPropListFont()
 	lf.lfWeight = info.lfMenuFont.lfWeight;
 	lf.lfItalic = info.lfMenuFont.lfItalic;
 
-	m_fntPropList.CreateFontIndirect(&lf);
+	prop_list_font_.CreateFontIndirect(&lf);
 
-	m_wndPropList.SetFont(&m_fntPropList);
-	m_wndObjectCombo.SetFont(&m_fntPropList);
+	prop_list_.SetFont(&prop_list_font_);
+	object_combo_.SetFont(&prop_list_font_);
 }

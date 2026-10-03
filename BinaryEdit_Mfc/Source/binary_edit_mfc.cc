@@ -13,28 +13,28 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CBinaryEdit_MfcApp, CWinAppEx)
-	ON_COMMAND(ID_APP_ABOUT, &CBinaryEdit_MfcApp::OnAppAbout)
+BEGIN_MESSAGE_MAP(BinaryEditMfcApp, CWinAppEx)
+	ON_COMMAND(ID_APP_ABOUT, &BinaryEditMfcApp::OnAppAbout)
 	ON_COMMAND(ID_FILE_NEW, &CWinAppEx::OnFileNew)
 	ON_COMMAND(ID_FILE_OPEN, &CWinAppEx::OnFileOpen)
 	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinAppEx::OnFilePrintSetup)
 END_MESSAGE_MAP()
 
-CBinaryEdit_MfcApp theApp;
+BinaryEditMfcApp the_app;
 
-CBinaryEdit_MfcApp::CBinaryEdit_MfcApp()
+BinaryEditMfcApp::BinaryEditMfcApp()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_ALL_ASPECTS;
 	SetAppID(_T("BinaryEdit_Mfc.AppID.NoVersion"));
 }
 
-BOOL CBinaryEdit_MfcApp::InitInstance()
+BOOL BinaryEditMfcApp::InitInstance()
 {
 	// visual スタイル（ComCtl32 v6）を使うにはコモンコントロールの初期化が要る
-	INITCOMMONCONTROLSEX initCtrls;
-	initCtrls.dwSize = sizeof(initCtrls);
-	initCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls;
+	init_ctrls.dwSize = sizeof(init_ctrls);
+	init_ctrls.dwICC = ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinAppEx::InitInstance();
 
@@ -55,71 +55,71 @@ BOOL CBinaryEdit_MfcApp::InitInstance()
 	InitKeyboardManager();
 	InitTooltipManager();
 
-	CMFCToolTipInfo ttParams;
-	ttParams.m_bVislManagerTheme = TRUE;
-	GetTooltipManager()->SetTooltipParams(AFX_TOOLTIP_TYPE_ALL, RUNTIME_CLASS(CMFCToolTipCtrl), &ttParams);
+	CMFCToolTipInfo tt_params;
+	tt_params.m_bVislManagerTheme = TRUE;
+	GetTooltipManager()->SetTooltipParams(AFX_TOOLTIP_TYPE_ALL, RUNTIME_CLASS(CMFCToolTipCtrl), &tt_params);
 
 	AddDocTemplate(new CMultiDocTemplate(IDR_BinaryEdit_MfcTYPE,
-		RUNTIME_CLASS(CBinaryEdit_MfcDoc),
-		RUNTIME_CLASS(CChildFrame),
-		RUNTIME_CLASS(CBinaryEdit_MfcView)));
+		RUNTIME_CLASS(BinaryEditMfcDoc),
+		RUNTIME_CLASS(ChildFrame),
+		RUNTIME_CLASS(BinaryEditMfcView)));
 
-	CMainFrame* pMainFrame = new CMainFrame;
-	if (!pMainFrame->LoadFrame(IDR_MAINFRAME))
+	MainFrame* main_frame = new MainFrame;
+	if (!main_frame->LoadFrame(IDR_MAINFRAME))
 	{
-		delete pMainFrame;
+		delete main_frame;
 		return FALSE;
 	}
-	m_pMainWnd = pMainFrame;
+	m_pMainWnd = main_frame;
 
 	// MDI では m_pMainWnd を設定した直後に呼ぶ必要がある
 	m_pMainWnd->DragAcceptFiles();
 
-	CCommandLineInfo cmdInfo;
-	ParseCommandLine(cmdInfo);
+	CCommandLineInfo cmd_info;
+	ParseCommandLine(cmd_info);
 
 	EnableShellOpen();
 	RegisterShellFileTypes(TRUE);
 
 	// /RegServer 等で起動されたときは FALSE が返り、そのまま終了する
-	if (!ProcessShellCommand(cmdInfo))
+	if (!ProcessShellCommand(cmd_info))
 		return FALSE;
 
-	pMainFrame->ShowWindow(m_nCmdShow);
-	pMainFrame->UpdateWindow();
+	main_frame->ShowWindow(m_nCmdShow);
+	main_frame->UpdateWindow();
 
 	return TRUE;
 }
 
-int CBinaryEdit_MfcApp::ExitInstance()
+int BinaryEditMfcApp::ExitInstance()
 {
 	AfxOleTerm(FALSE);
 
 	return CWinAppEx::ExitInstance();
 }
 
-void CBinaryEdit_MfcApp::PreLoadState()
+void BinaryEditMfcApp::PreLoadState()
 {
-	CString strName;
-	VERIFY(strName.LoadString(IDS_EDIT_MENU));
-	GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EDIT);
-	VERIFY(strName.LoadString(IDS_EXPLORER));
-	GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EXPLORER);
+	CString name;
+	VERIFY(name.LoadString(IDS_EDIT_MENU));
+	GetContextMenuManager()->AddMenu(name, IDR_POPUP_EDIT);
+	VERIFY(name.LoadString(IDS_EXPLORER));
+	GetContextMenuManager()->AddMenu(name, IDR_POPUP_EXPLORER);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報ダイアログ
 
-class CAboutDlg : public CDialogEx
+class AboutDlg : public CDialogEx
 {
 public:
 	enum { IDD = IDD_ABOUTBOX };
 
-	CAboutDlg() : CDialogEx(IDD) {}
+	AboutDlg() : CDialogEx(IDD) {}
 };
 
-void CBinaryEdit_MfcApp::OnAppAbout()
+void BinaryEditMfcApp::OnAppAbout()
 {
-	CAboutDlg aboutDlg;
-	aboutDlg.DoModal();
+	AboutDlg about_dlg;
+	about_dlg.DoModal();
 }

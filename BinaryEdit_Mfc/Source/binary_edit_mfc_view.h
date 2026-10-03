@@ -2,29 +2,29 @@
 
 #pragma once
 
-class CBinaryEdit_MfcView : public CView
+class BinaryEditMfcView : public CView
 {
 protected:	// シリアル化からのみ作成する
-	CBinaryEdit_MfcView() = default;
-	DECLARE_DYNCREATE(CBinaryEdit_MfcView)
+	BinaryEditMfcView() = default;
+	DECLARE_DYNCREATE(BinaryEditMfcView)
 
 public:
-	CBinaryEdit_MfcDoc* GetDocument() const;
+	BinaryEditMfcDoc* GetDocument() const;
 
-	virtual void OnDraw(CDC* pDC) override;
+	virtual void OnDraw(CDC* dc) override;
 
 protected:
-	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo) override;
+	virtual BOOL OnPreparePrinting(CPrintInfo* info) override;
 
 	afx_msg void OnFilePrintPreview();
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	afx_msg void OnRButtonUp(UINT flags, CPoint point);
+	afx_msg void OnContextMenu(CWnd* wnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
 };
 
 #ifndef _DEBUG	// デバッグ版は binary_edit_mfc_view.cc で型チェック付き
-inline CBinaryEdit_MfcDoc* CBinaryEdit_MfcView::GetDocument() const
+inline BinaryEditMfcDoc* BinaryEditMfcView::GetDocument() const
 {
-	return reinterpret_cast<CBinaryEdit_MfcDoc*>(m_pDocument);
+	return reinterpret_cast<BinaryEditMfcDoc*>(m_pDocument);
 }
 #endif
