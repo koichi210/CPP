@@ -20,15 +20,15 @@ S FuncMul(T x, S y)
 
 // クラステンプレート
 template <typename T>
-class CCalc
+class Calc
 {
 public:
-	T m_n1;
-	T m_n2;
+	T n1_;
+	T n2_;
 
-	T add() const
+	T Add() const
 	{
-		return m_n1 + m_n2;
+		return n1_ + n2_;
 	}
 };
 
@@ -40,15 +40,15 @@ int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 
 	std::cout << FuncMul<int, double>(20, 1.5) << std::endl;		// 型引数を複数指定
 
-	CCalc<int> calc1;
-	calc1.m_n1 = 7;
-	calc1.m_n2 = 8;
-	std::cout << calc1.add() << std::endl;
+	Calc<int> calc1;
+	calc1.n1_ = 7;
+	calc1.n2_ = 8;
+	std::cout << calc1.Add() << std::endl;
 
-	CCalc<std::string> calc2;
-	calc2.m_n1 = "GHI";
-	calc2.m_n2 = "jkl";
-	std::cout << calc2.add() << std::endl;
+	Calc<std::string> calc2;
+	calc2.n1_ = "GHI";
+	calc2.n2_ = "jkl";
+	std::cout << calc2.Add() << std::endl;
 
 	return 0;
 }
