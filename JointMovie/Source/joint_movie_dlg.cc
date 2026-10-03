@@ -112,7 +112,7 @@ void JointMovieDlg::OnBrowse(UINT id)
 		: IDC_INPUTFILE1 + static_cast<int>(id - IDC_IN1_BROWSE);
 
 	TCHAR file_names[MAX_PATH] = {};
-	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT,
+	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_HIDEREADONLY,
 		_T("動画（*.mpg; *.mpeg;）|*.mpg; *.mpeg;|すべてのﾌｧｲﾙ （*.*）|*.*||"), this);
 	dlg.GetOFN().lpstrFile = file_names;
 	dlg.GetOFN().nMaxFile = _countof(file_names);
