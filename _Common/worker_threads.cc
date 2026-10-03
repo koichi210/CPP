@@ -5,42 +5,42 @@
 #include <algorithm>
 
 // 通常は WaitAll() 済み。呼び忘れても、終了前に CWinThread を消さないよう待つ
-CWorkerThreads::~CWorkerThreads()
+WorkerThreads::~WorkerThreads()
 {
 	WaitAll();
 }
 
-BOOL CWorkerThreads::Start(AFX_THREADPROC pfnThreadProc, LPVOID pParam)
+BOOL WorkerThreads::Start(AFX_THREADPROC thread_proc, LPVOID param)
 {
 	RemoveFinished();
 
 	// 終了後もハンドルで待てるよう、自動削除を止めてから動かす
-	CWinThread* pThread = AfxBeginThread(pfnThreadProc, pParam, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
-	if (pThread == nullptr)
+	CWinThread* thread = AfxBeginThread(thread_proc, param, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+	if (thread == nullptr)
 	{
 		return FALSE;
 	}
-	pThread->m_bAutoDelete = FALSE;
-	m_threads.emplace_back(pThread);
-	pThread->ResumeThread();
+	thread->m_bAutoDelete = FALSE;
+	threads_.emplace_back(thread);
+	thread->ResumeThread();
 	return TRUE;
 }
 
-BOOL CWorkerThreads::IsRunning()
+BOOL WorkerThreads::IsRunning()
 {
 	RemoveFinished();
-	return !m_threads.empty();
+	return !threads_.empty();
 }
 
-void CWorkerThreads::WaitAll()
+void WorkerThreads::WaitAll()
 {
-	bool quitReceived = false;
-	int quitCode = 0;
+	bool quit_received = false;
+	int quit_code = 0;
 
 	while (IsRunning())
 	{
 		std::vector<HANDLE> handles;
-		for (const auto& thread : m_threads)
+		for (const auto& thread : threads_)
 		{
 			if (handles.size() < MAXIMUM_WAIT_OBJECTS - 1)
 			{
@@ -57,8 +57,8 @@ void CWorkerThreads::WaitAll()
 			// 終了要求は待ち終わってから出し直す
 			if (msg.message == WM_QUIT)
 			{
-				quitReceived = true;
-				quitCode = static_cast<int>(msg.wParam);
+				quit_received = true;
+				quit_code = static_cast<int>(msg.wParam);
 				continue;
 			}
 			::TranslateMessage(&msg);
@@ -66,19 +66,19 @@ void CWorkerThreads::WaitAll()
 		}
 	}
 
-	if (quitReceived)
+	if (quit_received)
 	{
-		::PostQuitMessage(quitCode);
+		::PostQuitMessage(quit_code);
 	}
 }
 
-void CWorkerThreads::RemoveFinished()
+void WorkerThreads::RemoveFinished()
 {
-	m_threads.erase(
-		std::remove_if(m_threads.begin(), m_threads.end(),
+	threads_.erase(
+		std::remove_if(threads_.begin(), threads_.end(),
 			[](const std::unique_ptr<CWinThread>& thread)
 			{
 				return ::WaitForSingleObject(thread->m_hThread, 0) == WAIT_OBJECT_0;
 			}),
-		m_threads.end());
+		threads_.end());
 }

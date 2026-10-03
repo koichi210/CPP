@@ -26,13 +26,13 @@ void AppendPath(CString& path, LPCTSTR element);
 void AppendExt(CString& path, LPCTSTR ext);
 
 // フォルダ選択ダイアログ
-BOOL BrowseFolder(HWND hOwner, LPCTSTR title, CString& path);
+BOOL BrowseFolder(HWND owner, LPCTSTR title, CString& path);
 
 /////////////////////////////////////////////////////////////////////////////
 // 文字列
 
 // search を replace に置換する（replace が nullptr なら削除）
-CString ReplaceString(const CString& source, LPCTSTR search, LPCTSTR replace, BOOL bCaseSensitive);
+CString ReplaceString(const CString& source, LPCTSTR search, LPCTSTR replace, BOOL case_sensitive);
 
 // 半角英数記号 ⇔ 全角英数記号
 CString HankakuToZenkaku(const CString& source);
@@ -42,11 +42,11 @@ CString ZenkakuToHankaku(const CString& source);
 // ダイアログ
 
 // コントロールIDと文字列リソースIDの組
-struct DLGITEMTEXT
+struct DlgItemText
 {
-	int		ctrlId;
-	int		stringId;	// 0 なら設定しない
+	int		ctrl_id;
+	int		string_id;	// 0 なら設定しない
 };
 
 // 文字列リソースをまとめてコントロールに設定する
-BOOL SetDlgItemTextAll(HWND hDlg, const DLGITEMTEXT* table, int count);
+BOOL SetDlgItemTextAll(HWND dlg, const DlgItemText* table, int count);

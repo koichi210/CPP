@@ -57,20 +57,20 @@ void MergePath(CString& path, LPCTSTR drive, LPCTSTR dir, LPCTSTR file, LPCTSTR 
 
 void SplitPath(LPCTSTR path, CString* drive, CString* dir, CString* file, CString* ext)
 {
-	TCHAR driveBuf[_MAX_DRIVE] = {};
-	TCHAR dirBuf[_MAX_DIR] = {};
-	TCHAR fileBuf[_MAX_FNAME] = {};
-	TCHAR extBuf[_MAX_EXT] = {};
+	TCHAR drive_buf[_MAX_DRIVE] = {};
+	TCHAR dir_buf[_MAX_DIR] = {};
+	TCHAR file_buf[_MAX_FNAME] = {};
+	TCHAR ext_buf[_MAX_EXT] = {};
 
 	if (path != nullptr)
 	{
-		_tsplitpath_s(path, driveBuf, _countof(driveBuf), dirBuf, _countof(dirBuf), fileBuf, _countof(fileBuf), extBuf, _countof(extBuf));
+		_tsplitpath_s(path, drive_buf, _countof(drive_buf), dir_buf, _countof(dir_buf), file_buf, _countof(file_buf), ext_buf, _countof(ext_buf));
 	}
 
-	if (drive != nullptr)	*drive = driveBuf;
-	if (dir != nullptr)		*dir = dirBuf;
-	if (file != nullptr)	*file = fileBuf;
-	if (ext != nullptr)		*ext = extBuf;
+	if (drive != nullptr)	*drive = drive_buf;
+	if (dir != nullptr)		*dir = dir_buf;
+	if (file != nullptr)	*file = file_buf;
+	if (ext != nullptr)		*ext = ext_buf;
 }
 
 void AppendPath(CString& path, LPCTSTR element)
@@ -85,14 +85,14 @@ void AppendPath(CString& path, LPCTSTR element)
 		return;
 	}
 
-	const bool pathHasSeparator = EndsWithSeparator(path);
-	const bool elementHasSeparator = IsSeparator(*element);
+	const bool path_has_separator = EndsWithSeparator(path);
+	const bool element_has_separator = IsSeparator(*element);
 
-	if (pathHasSeparator && elementHasSeparator)
+	if (path_has_separator && element_has_separator)
 	{
 		path += element + 1;
 	}
-	else if (!pathHasSeparator && !elementHasSeparator)
+	else if (!path_has_separator && !element_has_separator)
 	{
 		path += _T('\\');
 		path += element;
@@ -116,40 +116,40 @@ void AppendExt(CString& path, LPCTSTR ext)
 	path += ext;
 }
 
-BOOL BrowseFolder(HWND hOwner, LPCTSTR title, CString& path)
+BOOL BrowseFolder(HWND owner, LPCTSTR title, CString& path)
 {
 	TCHAR folder[MAX_PATH] = {};
 
-	BROWSEINFO browseInfo = {};
-	browseInfo.hwndOwner = hOwner;
-	browseInfo.pszDisplayName = folder;
-	browseInfo.lpszTitle = title;
-	browseInfo.ulFlags = BIF_NEWDIALOGSTYLE | BIF_RETURNONLYFSDIRS;
+	BROWSEINFO browse_info = {};
+	browse_info.hwndOwner = owner;
+	browse_info.pszDisplayName = folder;
+	browse_info.lpszTitle = title;
+	browse_info.ulFlags = BIF_NEWDIALOGSTYLE | BIF_RETURNONLYFSDIRS;
 
-	PIDLIST_ABSOLUTE pidl = ::SHBrowseForFolder(&browseInfo);
+	PIDLIST_ABSOLUTE pidl = ::SHBrowseForFolder(&browse_info);
 	if (pidl == nullptr)
 	{
 		return FALSE;
 	}
 
-	const BOOL bResult = ::SHGetPathFromIDList(pidl, folder);
+	const BOOL result = ::SHGetPathFromIDList(pidl, folder);
 	::CoTaskMemFree(pidl);
 
-	if (bResult)
+	if (result)
 	{
 		path = folder;
 	}
-	return bResult;
+	return result;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // 文字列
 
 // 2バイト文字の途中から一致させないよう、1文字ずつ進めながら比較する
-CString ReplaceString(const CString& source, LPCTSTR search, LPCTSTR replace, BOOL bCaseSensitive)
+CString ReplaceString(const CString& source, LPCTSTR search, LPCTSTR replace, BOOL case_sensitive)
 {
-	const int searchLength = (search != nullptr) ? lstrlen(search) : 0;
-	if (searchLength == 0)
+	const int search_length = (search != nullptr) ? lstrlen(search) : 0;
+	if (search_length == 0)
 	{
 		return source;
 	}
@@ -158,9 +158,9 @@ CString ReplaceString(const CString& source, LPCTSTR search, LPCTSTR replace, BO
 	LPCTSTR p = source;
 	while (*p != _T('\0'))
 	{
-		const int compare = bCaseSensitive
-			? _tcsncmp(p, search, searchLength)
-			: _tcsnicmp(p, search, searchLength);
+		const int compare = case_sensitive
+			? _tcsncmp(p, search, search_length)
+			: _tcsnicmp(p, search, search_length);
 
 		if (compare == 0)
 		{
@@ -168,7 +168,7 @@ CString ReplaceString(const CString& source, LPCTSTR search, LPCTSTR replace, BO
 			{
 				result += replace;
 			}
-			p += searchLength;
+			p += search_length;
 		}
 		else
 		{
@@ -250,7 +250,7 @@ CString ZenkakuToHankaku(const CString& source)
 /////////////////////////////////////////////////////////////////////////////
 // ダイアログ
 
-BOOL SetDlgItemTextAll(HWND hDlg, const DLGITEMTEXT* table, int count)
+BOOL SetDlgItemTextAll(HWND dlg, const DlgItemText* table, int count)
 {
 	if (table == nullptr)
 	{
@@ -259,11 +259,11 @@ BOOL SetDlgItemTextAll(HWND hDlg, const DLGITEMTEXT* table, int count)
 
 	for (int i = 0; i < count; i++)
 	{
-		if (table[i].stringId != 0)
+		if (table[i].string_id != 0)
 		{
 			CString text;
-			text.LoadString(table[i].stringId);
-			::SetDlgItemText(hDlg, table[i].ctrlId, text);
+			text.LoadString(table[i].string_id);
+			::SetDlgItemText(dlg, table[i].ctrl_id, text);
 		}
 	}
 	return TRUE;

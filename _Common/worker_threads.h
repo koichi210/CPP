@@ -13,16 +13,16 @@
 // 使い方:
 //   1. Start() でスレッドを起動する
 //   2. 閉じるとき（OnCancel など）は、停止フラグを立ててから WaitAll() で終了を待つ
-class CWorkerThreads
+class WorkerThreads
 {
 public:
-	CWorkerThreads() = default;
-	~CWorkerThreads();
+	WorkerThreads() = default;
+	~WorkerThreads();
 
-	CWorkerThreads(const CWorkerThreads&) = delete;
-	CWorkerThreads& operator=(const CWorkerThreads&) = delete;
+	WorkerThreads(const WorkerThreads&) = delete;
+	WorkerThreads& operator=(const WorkerThreads&) = delete;
 
-	BOOL Start(AFX_THREADPROC pfnThreadProc, LPVOID pParam);
+	BOOL Start(AFX_THREADPROC thread_proc, LPVOID param);
 	BOOL IsRunning();
 
 	// すべてのスレッドの終了を待つ。待っている間もメッセージを処理するので、
@@ -33,5 +33,5 @@ public:
 private:
 	void RemoveFinished();
 
-	std::vector<std::unique_ptr<CWinThread>> m_threads;
+	std::vector<std::unique_ptr<CWinThread>> threads_;
 };

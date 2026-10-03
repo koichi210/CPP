@@ -5,13 +5,13 @@
 namespace
 {
 	// スクリーン座標を SendInput の絶対座標（0〜65535）に変換
-	LONG ToAbsolute(LONG pos, int screenSize)
+	LONG ToAbsolute(LONG pos, int screen_size)
 	{
-		return pos * 65535 / (screenSize - 1);
+		return pos * 65535 / (screen_size - 1);
 	}
 }
 
-void CInputSimulator::SendMouse(DWORD flags, LONG dx, LONG dy)
+void InputSimulator::SendMouse(DWORD flags, LONG dx, LONG dy)
 {
 	INPUT input = {};
 	input.type = INPUT_MOUSE;
@@ -21,59 +21,59 @@ void CInputSimulator::SendMouse(DWORD flags, LONG dx, LONG dy)
 	::SendInput(1, &input, sizeof(INPUT));
 }
 
-void CInputSimulator::MouseMove(CPoint pt)
+void InputSimulator::MouseMove(CPoint pt)
 {
 	SendMouse(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE,
 		ToAbsolute(pt.x, ::GetSystemMetrics(SM_CXSCREEN)),
 		ToAbsolute(pt.y, ::GetSystemMetrics(SM_CYSCREEN)));
 }
 
-void CInputSimulator::MouseLButtonDown()	{ SendMouse(MOUSEEVENTF_LEFTDOWN); }
-void CInputSimulator::MouseLButtonUp()		{ SendMouse(MOUSEEVENTF_LEFTUP); }
-void CInputSimulator::MouseRButtonDown()	{ SendMouse(MOUSEEVENTF_RIGHTDOWN); }
-void CInputSimulator::MouseRButtonUp()		{ SendMouse(MOUSEEVENTF_RIGHTUP); }
+void InputSimulator::MouseLButtonDown()	{ SendMouse(MOUSEEVENTF_LEFTDOWN); }
+void InputSimulator::MouseLButtonUp()		{ SendMouse(MOUSEEVENTF_LEFTUP); }
+void InputSimulator::MouseRButtonDown()	{ SendMouse(MOUSEEVENTF_RIGHTDOWN); }
+void InputSimulator::MouseRButtonUp()		{ SendMouse(MOUSEEVENTF_RIGHTUP); }
 
-void CInputSimulator::MouseLButtonClick()
+void InputSimulator::MouseLButtonClick()
 {
 	MouseLButtonDown();
 	MouseLButtonUp();
 }
 
-void CInputSimulator::MouseRButtonClick()
+void InputSimulator::MouseRButtonClick()
 {
 	MouseRButtonDown();
 	MouseRButtonUp();
 }
 
-void CInputSimulator::KeyAction(WORD virtualKey, BOOL bHold)
+void InputSimulator::KeyAction(WORD virtual_key, BOOL hold)
 {
 	// 仮想キーコードの 'A'〜'Z' は大文字側なので、小文字の文字コードを変換する
-	if (_T('a') <= virtualKey && virtualKey <= _T('z'))
+	if (_T('a') <= virtual_key && virtual_key <= _T('z'))
 	{
-		virtualKey = static_cast<WORD>(virtualKey - (_T('a') - _T('A')));
+		virtual_key = static_cast<WORD>(virtual_key - (_T('a') - _T('A')));
 	}
-	SendInputKey(virtualKey, bHold);
+	SendInputKey(virtual_key, hold);
 }
 
-void CInputSimulator::FunctionKeyAction(BYTE virtualKey, BOOL bHold)
+void InputSimulator::FunctionKeyAction(BYTE virtual_key, BOOL hold)
 {
-	if (virtualKey != static_cast<BYTE>(VK_NONE))
+	if (virtual_key != static_cast<BYTE>(kVkNone))
 	{
-		SendInputKey(virtualKey, bHold);
+		SendInputKey(virtual_key, hold);
 	}
 }
 
-void CInputSimulator::SendInputKey(WORD virtualKey, BOOL bHold)
+void InputSimulator::SendInputKey(WORD virtual_key, BOOL hold)
 {
 	INPUT input = {};
 	input.type = INPUT_KEYBOARD;
-	input.ki.wVk = virtualKey;
-	input.ki.wScan = static_cast<WORD>(::MapVirtualKey(virtualKey, MAPVK_VK_TO_VSC));
+	input.ki.wVk = virtual_key;
+	input.ki.wScan = static_cast<WORD>(::MapVirtualKey(virtual_key, MAPVK_VK_TO_VSC));
 	input.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
 	input.ki.dwExtraInfo = ::GetMessageExtraInfo();
 	::SendInput(1, &input, sizeof(INPUT));
 
-	if (!bHold)
+	if (!hold)
 	{
 		input.ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
 		::SendInput(1, &input, sizeof(INPUT));

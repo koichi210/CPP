@@ -4,9 +4,9 @@
 
 #include <afxwin.h>
 
-constexpr int VK_NONE = -1;		// キー指定なし
+constexpr int kVkNone = -1;		// キー指定なし
 
-class CInputSimulator
+class InputSimulator
 {
 public:
 	// マウス（座標はスクリーン座標）
@@ -18,10 +18,10 @@ public:
 	static void MouseRButtonUp();
 	static void MouseRButtonClick();
 
-	// キーボード（bHold = TRUE なら押しっぱなし、FALSE なら押して離す）
-	static void KeyAction(WORD virtualKey, BOOL bHold = FALSE);			// 'a'〜'z' は 'A'〜'Z' のキーとして送る
-	static void FunctionKeyAction(BYTE virtualKey, BOOL bHold = FALSE);	// VK_NONE なら何もしない
-	static void SendInputKey(WORD virtualKey, BOOL bHold = FALSE);
+	// キーボード（hold = TRUE なら押しっぱなし、FALSE なら押して離す）
+	static void KeyAction(WORD virtual_key, BOOL hold = FALSE);			// 'a'〜'z' は 'A'〜'Z' のキーとして送る
+	static void FunctionKeyAction(BYTE virtual_key, BOOL hold = FALSE);	// kVkNone なら何もしない
+	static void SendInputKey(WORD virtual_key, BOOL hold = FALSE);
 
 private:
 	static void SendMouse(DWORD flags, LONG dx = 0, LONG dy = 0);

@@ -4,25 +4,25 @@
 
 #include <afxwin.h>
 
-class CFileComparer
+class FileComparer
 {
 public:
 	enum Error
 	{
-		ERR_NONE		= 0,
-		ERR_FILE1_OPEN	= -1,
-		ERR_FILE2_OPEN	= -2,
+		kErrNone		= 0,
+		kErrFile1Open	= -1,
+		kErrFile2Open	= -2,
 	};
 
-	CFileComparer() = default;
-	CFileComparer(LPCTSTR file1, LPCTSTR file2) : m_file1(file1), m_file2(file2) {}
+	FileComparer() = default;
+	FileComparer(LPCTSTR file1, LPCTSTR file2) : file1_(file1), file2_(file2) {}
 
 	BOOL CompareBinary();								// 同じ内容なら TRUE
 	BOOL CompareBinary(LPCTSTR file1, LPCTSTR file2);
-	int GetError() const	{ return m_error; }		// 直前の比較で開けなかったファイル
+	int GetError() const	{ return error_; }		// 直前の比較で開けなかったファイル
 
 private:
-	CString	m_file1;
-	CString	m_file2;
-	int		m_error = ERR_NONE;
+	CString	file1_;
+	CString	file2_;
+	int		error_ = kErrNone;
 };
