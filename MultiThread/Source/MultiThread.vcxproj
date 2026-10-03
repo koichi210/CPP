@@ -110,21 +110,21 @@
     <None Include="res\MultiThread.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MultiThread.h" />
-    <ClInclude Include="MultiThreadDlg.h" />
+    <ClInclude Include="multi_thread.h" />
+    <ClInclude Include="multi_thread_dlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\_Common\WorkerThreads.h" />
+    <ClInclude Include="..\..\_Common\worker_threads.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MultiThread.cpp" />
-    <ClCompile Include="MultiThreadDlg.cpp" />
+    <ClCompile Include="multi_thread.cc" />
+    <ClCompile Include="multi_thread_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\_Common\WorkerThreads.cpp">
+    <ClCompile Include="..\..\_Common\worker_threads.cc">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>

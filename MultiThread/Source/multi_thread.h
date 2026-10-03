@@ -1,4 +1,4 @@
-﻿// MultiThread.h : アプリケーションクラス
+﻿// multi_thread.h : アプリケーションクラス
 
 #pragma once
 

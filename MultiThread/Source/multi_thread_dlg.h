@@ -1,8 +1,8 @@
-﻿// MultiThreadDlg.h : メインダイアログ（ワーカースレッドからタイトルを更新する）
+﻿// multi_thread_dlg.h : メインダイアログ（ワーカースレッドからタイトルを更新する）
 
 #pragma once
 
-#include "WorkerThreads.h"
+#include "worker_threads.h"
 
 class CMultiThreadDlg : public CDialogEx
 {
@@ -30,5 +30,5 @@ private:
 	HICON m_hIcon;
 	// UI スレッドが書き、ワーカースレッドが読むので atomic にする
 	std::atomic<bool> m_bStop{ false };
-	CWorkerThreads m_workers;
+	WorkerThreads m_workers;
 };

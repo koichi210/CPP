@@ -1,8 +1,8 @@
-﻿// MultiThread.cpp : アプリケーションクラス
+﻿// multi_thread.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "MultiThread.h"
-#include "MultiThreadDlg.h"
+#include "multi_thread.h"
+#include "multi_thread_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

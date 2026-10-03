@@ -1,8 +1,8 @@
-﻿// MultiThreadDlg.cpp : メインダイアログ
+﻿// multi_thread_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "MultiThread.h"
-#include "MultiThreadDlg.h"
+#include "multi_thread.h"
+#include "multi_thread_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
