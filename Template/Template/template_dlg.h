@@ -1,4 +1,4 @@
-﻿// TemplateDlg.h : メインダイアログ
+﻿// template_dlg.h : メインダイアログ
 
 #pragma once
 

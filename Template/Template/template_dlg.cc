@@ -1,8 +1,8 @@
-﻿// TemplateDlg.cpp : メインダイアログ
+﻿// template_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "Template.h"
-#include "TemplateDlg.h"
+#include "template.h"
+#include "template_dlg.h"
 #include "afxdialogex.h"
 
 #include <string>

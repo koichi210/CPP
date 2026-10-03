@@ -1,8 +1,8 @@
-﻿// Template.cpp : アプリケーションクラス
+﻿// template.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "Template.h"
-#include "TemplateDlg.h"
+#include "template.h"
+#include "template_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

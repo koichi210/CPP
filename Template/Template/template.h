@@ -1,4 +1,4 @@
-﻿// Template.h : アプリケーションクラス
+﻿// template.h : アプリケーションクラス
 
 #pragma once
 
