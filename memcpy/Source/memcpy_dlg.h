@@ -1,4 +1,4 @@
-﻿// memcpyDlg.h : メインダイアログ
+﻿// memcpy_dlg.h : メインダイアログ
 
 #pragma once
 

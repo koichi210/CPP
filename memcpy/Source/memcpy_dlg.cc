@@ -1,8 +1,8 @@
-﻿// memcpyDlg.cpp : メインダイアログ
+﻿// memcpy_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
 #include "memcpy.h"
-#include "memcpyDlg.h"
+#include "memcpy_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

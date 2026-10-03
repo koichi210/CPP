@@ -109,14 +109,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="memcpy.h" />
-    <ClInclude Include="memcpyDlg.h" />
+    <ClInclude Include="memcpy_dlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="memcpy.cpp" />
-    <ClCompile Include="memcpyDlg.cpp" />
+    <ClCompile Include="memcpy.cc" />
+    <ClCompile Include="memcpy_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

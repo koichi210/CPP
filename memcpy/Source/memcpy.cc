@@ -1,8 +1,8 @@
-﻿// memcpy.cpp : アプリケーションクラス
+﻿// memcpy.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "memcpy.h"
-#include "memcpyDlg.h"
+#include "memcpy_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
