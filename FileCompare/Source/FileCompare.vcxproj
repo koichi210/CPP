@@ -90,6 +90,9 @@
     <ClCompile Include="..\..\_Common\file_comparer.cc">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\_Common\worker_threads.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="file_compare.h" />
@@ -98,6 +101,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="..\..\_Common\file_comparer.h" />
+    <ClInclude Include="..\..\_Common\worker_threads.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FileCompare.rc" />

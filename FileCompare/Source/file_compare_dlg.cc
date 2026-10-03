@@ -20,6 +20,12 @@ namespace
 	constexpr LPCTSTR	kStartLabel		= _T("比較");
 	constexpr LPCTSTR	kStopLabel		= _T("停止");
 	constexpr LPCTSTR	kNewLine		= _T("\r\n");
+
+	// プログレスバーの範囲は int なので、総数がそれを超えるときは整数の除数で縮尺する（比率は保たれる）
+	long long GetProgressDivisor(long long end)
+	{
+		return end / INT_MAX + 1;
+	}
 }
 
 FileCompareDlg::FileCompareDlg(CWnd* parent /*=nullptr*/)
@@ -39,6 +45,7 @@ void FileCompareDlg::DoDataExchange(CDataExchange* dx)
 }
 
 BEGIN_MESSAGE_MAP(FileCompareDlg, CDialogEx)
+	ON_WM_ENDSESSION()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDBT_EXECUTE, &FileCompareDlg::OnBnClickedExecute)
@@ -57,6 +64,38 @@ BOOL FileCompareDlg::OnInitDialog()
 	path_edit->SetFocus();
 	path_edit->SetSel(0, -1);
 	return FALSE;	// フォーカスを自分で設定したので FALSE
+}
+
+void FileCompareDlg::OnOK()
+{
+	StopWorkers();
+	CDialogEx::OnOK();
+}
+
+void FileCompareDlg::OnCancel()
+{
+	StopWorkers();
+	CDialogEx::OnCancel();
+}
+
+// シャットダウン・ログオフでは、この後すぐプロセスごと終了させられるので、比較を止めて終了を待つ
+void FileCompareDlg::OnEndSession(BOOL ending)
+{
+	if (ending)
+	{
+		StopWorkers();
+	}
+	CDialogEx::OnEndSession(ending);
+}
+
+// ワーカーはダイアログを触るので、閉じる（ダイアログが破棄される）前や、
+// 新しい比較を始める前に、止めて終了を待つ（停止フラグを新しい比較と共有しているため）
+void FileCompareDlg::StopWorkers()
+{
+	running_ = false;
+	EnableWindow(FALSE);	// 待っている間に操作させない
+	workers_.WaitAll();
+	EnableWindow(TRUE);
 }
 
 // 最小化時のアイコン描画（ダイアログアプリでは自前で描く必要がある）
@@ -99,6 +138,10 @@ void FileCompareDlg::OnBnClickedExecute()
 
 void FileCompareDlg::StartCompare()
 {
+	// 「停止」直後は前の比較スレッドがまだ動いていることがある。
+	// そのまま始めると、前のスレッドが新しい比較の停止フラグや配列を触ってしまうので終了を待つ
+	StopWorkers();
+
 	file_count_ = 0;
 	next_group_ = 1;
 	running_ = true;
@@ -108,9 +151,9 @@ void FileCompareDlg::StartCompare()
 	CollectFiles(GetFolders());
 
 	// 総当たりの進捗。表示上の位置は「行 * ファイル数 + 列」で数える
-	progress_.SetRange32(0, GetProgressEnd());
+	progress_.SetRange32(0, static_cast<int>(GetProgressEnd() / GetProgressDivisor(GetProgressEnd())));
 	UpdateProgress(0, 0);
-	AfxBeginThread(CompareThread, this);
+	workers_.Start(CompareThread, this);
 }
 
 void FileCompareDlg::StopCompare()
@@ -184,11 +227,12 @@ UINT FileCompareDlg::CompareThread(LPVOID param)
 void FileCompareDlg::CompareFiles()
 {
 	FileComparer comparer;
-	const int end = GetProgressEnd();
+	const long long end = GetProgressEnd();
 
 	for (int i = 0; i < file_count_ && running_; i++)
 	{
-		UpdateProgress(i * file_count_, end);
+		// int の範囲を超えないよう 64bit で計算する
+		UpdateProgress(static_cast<long long>(i) * file_count_, end);
 		if (files_[i].group != kNoGroup)
 		{
 			continue;	// すでにどこかの組に入っている
@@ -196,7 +240,7 @@ void FileCompareDlg::CompareFiles()
 
 		for (int j = i + 1; j < file_count_ && running_; j++)
 		{
-			UpdateProgress(i * file_count_ + j, end);
+			UpdateProgress(static_cast<long long>(i) * file_count_ + j, end);
 			if (files_[j].group != kNoGroup)
 			{
 				continue;
@@ -218,17 +262,17 @@ void FileCompareDlg::CompareFiles()
 	ShowResult();
 }
 
-int FileCompareDlg::GetProgressEnd() const
+long long FileCompareDlg::GetProgressEnd() const
 {
-	return file_count_ * (file_count_ - 1);
+	return static_cast<long long>(file_count_) * (file_count_ - 1);
 }
 
-void FileCompareDlg::UpdateProgress(int pos, int end)
+void FileCompareDlg::UpdateProgress(long long pos, long long end)
 {
-	progress_.SetPos(pos);
+	progress_.SetPos(static_cast<int>(pos / GetProgressDivisor(end)));
 
 	CString text;
-	text.Format(_T("(%d / %d)"), pos, end);
+	text.Format(_T("(%lld / %lld)"), pos, end);
 	SetDlgItemText(IDST_COMPARE, text);
 }
 
