@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CVariableArgumentApp : public CWinApp
+class VariableArgumentApp : public CWinApp
 {
 public:
-	CVariableArgumentApp();
+	VariableArgumentApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CVariableArgumentApp theApp;
+extern VariableArgumentApp the_app;

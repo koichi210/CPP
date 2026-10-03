@@ -9,43 +9,43 @@
 #define new DEBUG_NEW
 #endif
 
-CVariableArgumentDlg::CVariableArgumentDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+VariableArgumentDlg::VariableArgumentDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CVariableArgumentDlg::DoDataExchange(CDataExchange* pDX)
+void VariableArgumentDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT_INPUT, m_strInput);
-	DDX_Text(pDX, IDC_EDIT_REPLACE, m_strReplace);
-	DDX_Text(pDX, IDC_EDIT_OUTPUT, m_strOutput);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Text(dx, IDC_EDIT_INPUT, input_);
+	DDX_Text(dx, IDC_EDIT_REPLACE, replace_);
+	DDX_Text(dx, IDC_EDIT_OUTPUT, output_);
 }
 
-BEGIN_MESSAGE_MAP(CVariableArgumentDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(VariableArgumentDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON_EXEC_C, &CVariableArgumentDlg::OnBnClickedButtonExecC)
-	ON_BN_CLICKED(IDC_BUTTON_EXE_CPP, &CVariableArgumentDlg::OnBnClickedButtonExeCpp)
+	ON_BN_CLICKED(IDC_BUTTON_EXEC_C, &VariableArgumentDlg::OnBnClickedButtonExecC)
+	ON_BN_CLICKED(IDC_BUTTON_EXE_CPP, &VariableArgumentDlg::OnBnClickedButtonExeCpp)
 END_MESSAGE_MAP()
 
-BOOL CVariableArgumentDlg::OnInitDialog()
+BOOL VariableArgumentDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
-	m_strInput = "Filename_%d.bin";
-	m_strReplace = "1";
+	input_ = "Filename_%d.bin";
+	replace_ = "1";
 	UpdateData(FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CVariableArgumentDlg::OnPaint()
+void VariableArgumentDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -53,14 +53,14 @@ void CVariableArgumentDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -68,35 +68,35 @@ void CVariableArgumentDlg::OnPaint()
 	}
 }
 
-HCURSOR CVariableArgumentDlg::OnQueryDragIcon()
+HCURSOR VariableArgumentDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // C言語風：入力文字列をそのまま書式として sprintf に渡す。
 // 比較用にあえて固定長バッファと可変長引数のまま残している
 // （%d 以外の書式や長い文字列を入れると壊れるのが C 版の弱点）
-void CVariableArgumentDlg::OnBnClickedButtonExecC()
+void VariableArgumentDlg::OnBnClickedButtonExecC()
 {
-	char Input[256] = "";
-	char Output[256] = "";
-	int Replace = 0;
+	char input[256] = "";
+	char output[256] = "";
+	int replace = 0;
 
 	UpdateData(TRUE);
 
-	strcpy(Input, m_strInput);
-	Replace = atoi(m_strReplace);
-	sprintf(Output, Input, Replace);
+	strcpy(input, input_);
+	replace = atoi(replace_);
+	sprintf(output, input, replace);
 
-	m_strOutput = Output;
+	output_ = output;
 	UpdateData(FALSE);
 }
 
 // C++風：CString の置換で "%d" を値の文字列に置き換える
-void CVariableArgumentDlg::OnBnClickedButtonExeCpp()
+void VariableArgumentDlg::OnBnClickedButtonExeCpp()
 {
 	UpdateData(TRUE);
-	m_strOutput = m_strInput;
-	m_strOutput.Replace("%d", m_strReplace);
+	output_ = input_;
+	output_.Replace("%d", replace_);
 	UpdateData(FALSE);
 }

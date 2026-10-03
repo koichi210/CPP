@@ -2,15 +2,15 @@
 
 #pragma once
 
-class CVariableArgumentDlg : public CDialogEx
+class VariableArgumentDlg : public CDialogEx
 {
 public:
-	explicit CVariableArgumentDlg(CWnd* pParent = nullptr);
+	explicit VariableArgumentDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_VARIABLEARGUMENT_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -20,8 +20,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	HICON m_hIcon;
-	CString m_strInput;
-	CString m_strReplace;
-	CString m_strOutput;
+	HICON icon_;
+	CString input_;
+	CString replace_;
+	CString output_;
 };

@@ -8,27 +8,27 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CVariableArgumentApp, CWinApp)
+BEGIN_MESSAGE_MAP(VariableArgumentApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CVariableArgumentApp::CVariableArgumentApp()
+VariableArgumentApp::VariableArgumentApp()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 }
 
-CVariableArgumentApp theApp;
+VariableArgumentApp the_app;
 
-BOOL CVariableArgumentApp::InitInstance()
+BOOL VariableArgumentApp::InitInstance()
 {
 	// ComCtl32 v6 を使うマニフェストのとき、これが無いとウィンドウ作成に失敗する
-	INITCOMMONCONTROLSEX initCtrls = { sizeof(initCtrls), ICC_WIN95_CLASSES };
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls = { sizeof(init_ctrls), ICC_WIN95_CLASSES };
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 	AfxEnableControlContainer();
 
-	CVariableArgumentDlg dlg;
+	VariableArgumentDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
