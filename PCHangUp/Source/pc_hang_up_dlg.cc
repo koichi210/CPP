@@ -1,8 +1,8 @@
-﻿// PCHangUpDlg.cpp : メインダイアログ
+﻿// pc_hang_up_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "PCHangUp.h"
-#include "PCHangUpDlg.h"
+#include "pc_hang_up.h"
+#include "pc_hang_up_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

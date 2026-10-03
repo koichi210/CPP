@@ -1,4 +1,4 @@
-﻿// PCHangUp.h : アプリケーションクラス
+﻿// pc_hang_up.h : アプリケーションクラス
 
 #pragma once
 

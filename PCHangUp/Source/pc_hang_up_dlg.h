@@ -1,4 +1,4 @@
-﻿// PCHangUpDlg.h : メインダイアログ（スレッドを作り続けて PC をハングさせる実験）
+﻿// pc_hang_up_dlg.h : メインダイアログ（スレッドを作り続けて PC をハングさせる実験）
 
 #pragma once
 

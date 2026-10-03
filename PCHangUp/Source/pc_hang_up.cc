@@ -1,8 +1,8 @@
-﻿// PCHangUp.cpp : アプリケーションクラス
+﻿// pc_hang_up.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "PCHangUp.h"
-#include "PCHangUpDlg.h"
+#include "pc_hang_up.h"
+#include "pc_hang_up_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

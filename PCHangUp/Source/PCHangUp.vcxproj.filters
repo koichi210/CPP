@@ -24,10 +24,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PCHangUp.h">
+    <ClInclude Include="pc_hang_up.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="PCHangUpDlg.h">
+    <ClInclude Include="pc_hang_up_dlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -41,10 +41,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PCHangUp.cpp">
+    <ClCompile Include="pc_hang_up.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="PCHangUpDlg.cpp">
+    <ClCompile Include="pc_hang_up_dlg.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
