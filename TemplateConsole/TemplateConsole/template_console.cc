@@ -1,4 +1,4 @@
-﻿// TemplateConsole.cpp : 関数テンプレート・クラステンプレートの確認用コンソールアプリ
+﻿// template_console.cc : 関数テンプレート・クラステンプレートの確認用コンソールアプリ
 
 #include "stdafx.h"
 #include <iostream>
