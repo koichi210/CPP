@@ -1,8 +1,8 @@
-﻿// ProgressBar_MultiThreadDlg.cpp : メインダイアログ
+﻿// progress_bar_multi_thread_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "ProgressBar_MultiThread.h"
-#include "ProgressBar_MultiThreadDlg.h"
+#include "progress_bar_multi_thread.h"
+#include "progress_bar_multi_thread_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

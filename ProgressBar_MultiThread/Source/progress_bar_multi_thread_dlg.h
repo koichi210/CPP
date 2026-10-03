@@ -1,10 +1,10 @@
-﻿// ProgressBar_MultiThreadDlg.h : メインダイアログ
+﻿// progress_bar_multi_thread_dlg.h : メインダイアログ
 
 #pragma once
 
 #include <atomic>
 
-#include "WorkerThreads.h"
+#include "worker_threads.h"
 
 class CProgressBarDlg : public CDialogEx
 {
@@ -35,5 +35,5 @@ private:
 	CProgressCtrl m_progress;
 	CString m_strStatus;
 	std::atomic<bool> m_stopRequested{ false };	// UI スレッドとワーカースレッドで共有
-	CWorkerThreads m_workers;
+	WorkerThreads m_workers;
 };

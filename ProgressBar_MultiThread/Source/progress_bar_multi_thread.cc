@@ -1,8 +1,8 @@
-﻿// ProgressBar_MultiThread.cpp : アプリケーションクラス
+﻿// progress_bar_multi_thread.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "ProgressBar_MultiThread.h"
-#include "ProgressBar_MultiThreadDlg.h"
+#include "progress_bar_multi_thread.h"
+#include "progress_bar_multi_thread_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
