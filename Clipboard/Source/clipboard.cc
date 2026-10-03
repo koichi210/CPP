@@ -8,28 +8,28 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CClipboardApp, CWinApp)
+BEGIN_MESSAGE_MAP(ClipboardApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CClipboardApp theApp;
+ClipboardApp the_app;
 
-CClipboardApp::CClipboardApp()
+ClipboardApp::ClipboardApp()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 }
 
-BOOL CClipboardApp::InitInstance()
+BOOL ClipboardApp::InitInstance()
 {
 	// ComCtl32.dll Version 6 を使うマニフェストの場合、これが無いとウィンドウ作成に失敗する
-	INITCOMMONCONTROLSEX initCtrls = {};
-	initCtrls.dwSize = sizeof(initCtrls);
-	initCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls = {};
+	init_ctrls.dwSize = sizeof(init_ctrls);
+	init_ctrls.dwICC = ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 
-	CClipboardDlg dlg;
+	ClipboardDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 

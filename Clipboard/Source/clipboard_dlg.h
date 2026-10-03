@@ -2,15 +2,15 @@
 
 #pragma once
 
-class CClipboardDlg : public CDialogEx
+class ClipboardDlg : public CDialogEx
 {
 public:
-	explicit CClipboardDlg(CWnd* pParent = nullptr);
+	explicit ClipboardDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_CLIPBOARD_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -21,6 +21,6 @@ protected:
 private:
 	bool SetClipboardText(const CStringA& text);
 
-	HICON m_hIcon;
-	CString m_strText;
+	HICON icon_;
+	CString text_;
 };

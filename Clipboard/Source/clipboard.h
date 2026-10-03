@@ -8,10 +8,10 @@
 
 #include "resource.h"
 
-class CClipboardApp : public CWinApp
+class ClipboardApp : public CWinApp
 {
 public:
-	CClipboardApp();
+	ClipboardApp();
 
 	virtual BOOL InitInstance() override;
 

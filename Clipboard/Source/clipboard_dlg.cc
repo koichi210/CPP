@@ -9,36 +9,36 @@
 #define new DEBUG_NEW
 #endif
 
-CClipboardDlg::CClipboardDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(CClipboardDlg::IDD, pParent)
+ClipboardDlg::ClipboardDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(ClipboardDlg::IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CClipboardDlg::DoDataExchange(CDataExchange* pDX)
+void ClipboardDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDET_TEXT, m_strText);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Text(dx, IDET_TEXT, text_);
 }
 
-BEGIN_MESSAGE_MAP(CClipboardDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(ClipboardDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDBT_COPY_CLIPBOARD, &CClipboardDlg::OnBnClickedCopyClipboard)
+	ON_BN_CLICKED(IDBT_COPY_CLIPBOARD, &ClipboardDlg::OnBnClickedCopyClipboard)
 END_MESSAGE_MAP()
 
-BOOL CClipboardDlg::OnInitDialog()
+BOOL ClipboardDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
-void CClipboardDlg::OnPaint()
+void ClipboardDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -46,14 +46,14 @@ void CClipboardDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		const int x = (rect.Width() - cxIcon + 1) / 2;
-		const int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -61,55 +61,55 @@ void CClipboardDlg::OnPaint()
 	}
 }
 
-HCURSOR CClipboardDlg::OnQueryDragIcon()
+HCURSOR ClipboardDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CClipboardDlg::OnBnClickedCopyClipboard()
+void ClipboardDlg::OnBnClickedCopyClipboard()
 {
 	UpdateData(TRUE);
-	if (!SetClipboardText(m_strText))
+	if (!SetClipboardText(text_))
 	{
 		MessageBox(_T("エラーが発生しました"));
 	}
 }
 
 // CF_TEXT（マルチバイト文字列）としてクリップボードに設定する
-bool CClipboardDlg::SetClipboardText(const CStringA& text)
+bool ClipboardDlg::SetClipboardText(const CStringA& text)
 {
 	// 終端の '\0' も含めて渡す
 	const SIZE_T size = static_cast<SIZE_T>(text.GetLength()) + 1;
 
 	// クリップボードに渡すメモリは移動可能な共有メモリでなければならない
-	HGLOBAL hMem = GlobalAlloc(GMEM_SHARE | GMEM_MOVEABLE, size);
-	if (hMem == nullptr)
+	HGLOBAL mem = GlobalAlloc(GMEM_SHARE | GMEM_MOVEABLE, size);
+	if (mem == nullptr)
 	{
 		return false;
 	}
 
-	void* pBuf = GlobalLock(hMem);
-	if (pBuf == nullptr)
+	void* buf = GlobalLock(mem);
+	if (buf == nullptr)
 	{
-		GlobalFree(hMem);
+		GlobalFree(mem);
 		return false;
 	}
-	memcpy(pBuf, static_cast<LPCSTR>(text), size);
-	GlobalUnlock(hMem);
+	memcpy(buf, static_cast<LPCSTR>(text), size);
+	GlobalUnlock(mem);
 
 	if (!OpenClipboard())
 	{
-		GlobalFree(hMem);
+		GlobalFree(mem);
 		return false;
 	}
 	EmptyClipboard();
 	// 成功するとメモリの所有権はクリップボードへ移る
-	const bool succeeded = (SetClipboardData(CF_TEXT, hMem) != nullptr);
+	const bool succeeded = (SetClipboardData(CF_TEXT, mem) != nullptr);
 	CloseClipboard();
 
 	if (!succeeded)
 	{
-		GlobalFree(hMem);
+		GlobalFree(mem);
 	}
 	return succeeded;
 }
