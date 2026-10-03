@@ -10,35 +10,35 @@
 #define new DEBUG_NEW
 #endif
 
-CStandardTemplateLibrarySampleDlg::CStandardTemplateLibrarySampleDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+StandardTemplateLibrarySampleDlg::StandardTemplateLibrarySampleDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CStandardTemplateLibrarySampleDlg::DoDataExchange(CDataExchange* pDX)
+void StandardTemplateLibrarySampleDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(dx);
 }
 
-BEGIN_MESSAGE_MAP(CStandardTemplateLibrarySampleDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(StandardTemplateLibrarySampleDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CStandardTemplateLibrarySampleDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &StandardTemplateLibrarySampleDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-BOOL CStandardTemplateLibrarySampleDlg::OnInitDialog()
+BOOL StandardTemplateLibrarySampleDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CStandardTemplateLibrarySampleDlg::OnPaint()
+void StandardTemplateLibrarySampleDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -46,14 +46,14 @@ void CStandardTemplateLibrarySampleDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -61,25 +61,25 @@ void CStandardTemplateLibrarySampleDlg::OnPaint()
 	}
 }
 
-HCURSOR CStandardTemplateLibrarySampleDlg::OnQueryDragIcon()
+HCURSOR StandardTemplateLibrarySampleDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // std::string の find_first_not_of / find_last_not_of で両端の空白を取り除く
-void CStandardTemplateLibrarySampleDlg::OnBnClickedButton1()
+void StandardTemplateLibrarySampleDlg::OnBnClickedButton1()
 {
-	const char* SrcName = " Sample Test !! ";
-	const char* TrimCharList = " ";
+	const char* src_name = " Sample Test !! ";
+	const char* trim_char_list = " ";
 
-	std::string strFileName = SrcName;
-	std::string::size_type left = strFileName.find_first_not_of(TrimCharList);
-	std::string::size_type right = strFileName.find_last_not_of(TrimCharList);
-	std::string strResult = strFileName.substr(left, right - left + 1);
+	std::string file_name = src_name;
+	std::string::size_type left = file_name.find_first_not_of(trim_char_list);
+	std::string::size_type right = file_name.find_last_not_of(trim_char_list);
+	std::string result = file_name.substr(left, right - left + 1);
 
-	CString ResultMsg;
-	ResultMsg.Format("Src[%d]  = %s\nDest[%d]=%s",
-		static_cast<int>(strFileName.size()), SrcName,
-		static_cast<int>(strResult.size()), strResult.c_str());
-	MessageBox(ResultMsg, "両端のスペース削除", MB_OK);
+	CString result_msg;
+	result_msg.Format("Src[%d]  = %s\nDest[%d]=%s",
+		static_cast<int>(file_name.size()), src_name,
+		static_cast<int>(result.size()), result.c_str());
+	MessageBox(result_msg, "両端のスペース削除", MB_OK);
 }
