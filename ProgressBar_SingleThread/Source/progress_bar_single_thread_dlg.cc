@@ -11,40 +11,40 @@
 
 namespace
 {
-	constexpr int PROGRESS_MAX = 100000;
+	constexpr int kProgressMax = 100000;
 }
 
-CProgressBar_SingleThreadDlg::CProgressBar_SingleThreadDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+ProgressBarSingleThreadDlg::ProgressBarSingleThreadDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CProgressBar_SingleThreadDlg::DoDataExchange(CDataExchange* pDX)
+void ProgressBarSingleThreadDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_PROGRESS1, m_progress);
+	CDialogEx::DoDataExchange(dx);
+	DDX_Control(dx, IDC_PROGRESS1, progress_);
 }
 
-BEGIN_MESSAGE_MAP(CProgressBar_SingleThreadDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(ProgressBarSingleThreadDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_START, &CProgressBar_SingleThreadDlg::OnBnClickedStart)
-	ON_BN_CLICKED(IDC_STOP, &CProgressBar_SingleThreadDlg::OnBnClickedStop)
+	ON_BN_CLICKED(IDC_START, &ProgressBarSingleThreadDlg::OnBnClickedStart)
+	ON_BN_CLICKED(IDC_STOP, &ProgressBarSingleThreadDlg::OnBnClickedStop)
 END_MESSAGE_MAP()
 
-BOOL CProgressBar_SingleThreadDlg::OnInitDialog()
+BOOL ProgressBarSingleThreadDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CProgressBar_SingleThreadDlg::OnPaint()
+void ProgressBarSingleThreadDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -52,14 +52,14 @@ void CProgressBar_SingleThreadDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -67,24 +67,24 @@ void CProgressBar_SingleThreadDlg::OnPaint()
 	}
 }
 
-HCURSOR CProgressBar_SingleThreadDlg::OnQueryDragIcon()
+HCURSOR ProgressBarSingleThreadDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // UI スレッドでループを回すので、終わるまで他のボタンは反応しない（マルチスレッド版との比較用）
-void CProgressBar_SingleThreadDlg::OnBnClickedStart()
+void ProgressBarSingleThreadDlg::OnBnClickedStart()
 {
-	m_progress.SetRange32(0, PROGRESS_MAX - 1);
+	progress_.SetRange32(0, kProgressMax - 1);
 
-	for (int i = 0; i < PROGRESS_MAX; i++)
+	for (int i = 0; i < kProgressMax; i++)
 	{
-		m_progress.SetPos(i);
+		progress_.SetPos(i);
 	}
-	m_progress.SetPos(0);
+	progress_.SetPos(0);
 }
 
-void CProgressBar_SingleThreadDlg::OnBnClickedStop()
+void ProgressBarSingleThreadDlg::OnBnClickedStop()
 {
 	// シングルスレッドなので、処理中には呼ばれない
 	MessageBox("処理を中断します。");

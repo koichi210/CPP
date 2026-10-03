@@ -2,15 +2,15 @@
 
 #pragma once
 
-class CProgressBar_SingleThreadDlg : public CDialogEx
+class ProgressBarSingleThreadDlg : public CDialogEx
 {
 public:
-	explicit CProgressBar_SingleThreadDlg(CWnd* pParent = nullptr);
+	explicit ProgressBarSingleThreadDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_PROGRESSBAR_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -20,6 +20,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	HICON m_hIcon;
-	CProgressCtrl m_progress;
+	HICON icon_;
+	CProgressCtrl progress_;
 };

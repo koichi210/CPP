@@ -8,27 +8,27 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CProgressBar_SingleThreadApp, CWinApp)
+BEGIN_MESSAGE_MAP(ProgressBarSingleThreadApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CProgressBar_SingleThreadApp::CProgressBar_SingleThreadApp()
+ProgressBarSingleThreadApp::ProgressBarSingleThreadApp()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 }
 
-CProgressBar_SingleThreadApp theApp;
+ProgressBarSingleThreadApp the_app;
 
-BOOL CProgressBar_SingleThreadApp::InitInstance()
+BOOL ProgressBarSingleThreadApp::InitInstance()
 {
 	// ComCtl32 v6 を使うマニフェストのとき、これが無いとウィンドウ作成に失敗する
-	INITCOMMONCONTROLSEX initCtrls = { sizeof(initCtrls), ICC_WIN95_CLASSES };
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls = { sizeof(init_ctrls), ICC_WIN95_CLASSES };
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 	AfxEnableControlContainer();
 
-	CProgressBar_SingleThreadDlg dlg;
+	ProgressBarSingleThreadDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
