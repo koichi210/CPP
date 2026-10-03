@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CZodiacApp : public CWinApp
+class ZodiacApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;

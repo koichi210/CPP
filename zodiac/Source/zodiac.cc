@@ -8,17 +8,17 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CZodiacApp, CWinApp)
+BEGIN_MESSAGE_MAP(ZodiacApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CZodiacApp theApp;
+ZodiacApp the_app;
 
-BOOL CZodiacApp::InitInstance()
+BOOL ZodiacApp::InitInstance()
 {
 	AfxEnableControlContainer();
 
-	CZodiacDlg dlg;
+	ZodiacDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 

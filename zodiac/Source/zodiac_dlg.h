@@ -2,15 +2,15 @@
 
 #pragma once
 
-class CZodiacDlg : public CDialog
+class ZodiacDlg : public CDialog
 {
 public:
-	explicit CZodiacDlg(CWnd* pParent = nullptr);
+	explicit ZodiacDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_ZODIAC_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -25,16 +25,16 @@ protected:
 
 private:
 	// 下段のリストに何を並べるか
-	enum class Mode { None, Birth, Age, Zodiac };
+	enum class Mode { kNone, kBirth, kAge, kZodiac };
 
 	void ChangeMode(Mode mode);
 	void Refresh();
 	void AddListItem(LPCTSTR text, int data);
 	CString GetZodiac(int year) const;
 
-	HICON m_hIcon;
-	CComboBox m_yearCombo;
-	CComboBox m_listCombo;
-	Mode m_mode = Mode::None;
-	int m_year = 0;		// 閲覧基準の年（今年）
+	HICON icon_;
+	CComboBox year_combo_;
+	CComboBox list_combo_;
+	Mode mode_ = Mode::kNone;
+	int year_ = 0;		// 閲覧基準の年（今年）
 };

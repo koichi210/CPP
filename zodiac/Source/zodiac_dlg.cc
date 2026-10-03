@@ -11,78 +11,78 @@
 
 namespace
 {
-	constexpr int MIN_YEAR = 1900;
-	constexpr int MAX_YEAR = 2100;
-	constexpr int MIN_AGE = 0;
-	constexpr int MAX_AGE = 130;
-	constexpr int ZODIAC_COUNT = 12;
+	constexpr int kMinYear = 1900;
+	constexpr int kMaxYear = 2100;
+	constexpr int kMinAge = 0;
+	constexpr int kMaxAge = 130;
+	constexpr int kZodiacCount = 12;
 
-	constexpr int DEFAULT_AGE = 20;
-	constexpr int DEFAULT_BIRTH = 1980;
+	constexpr int kDefaultAge = 20;
+	constexpr int kDefaultBirth = 1980;
 
-	constexpr const char* AGE_FORMAT = "満%d才";
-	constexpr const char* BIRTH_FORMAT = "%d年";
+	constexpr const char* kAgeFormat = "満%d才";
+	constexpr const char* kBirthFormat = "%d年";
 
-	// MIN_YEAR（1900年）が子年なので、(年 - MIN_YEAR) % 12 で引ける並び
-	constexpr const char* ZODIAC_NAMES[ZODIAC_COUNT] = {
+	// MIN_YEAR（1900年）が子年なので、(年 - kMinYear) % 12 で引ける並び
+	constexpr const char* kZodiacNames[kZodiacCount] = {
 		"子(ねずみ)", "丑(うし)", "寅(とら)", "卯(うさぎ)", "辰(たつ)", "巳(み)",
 		"午(うま)", "未(ひつじ)", "申(さる)", "酉(とり)", "戌(いぬ)", "亥(いのしし)" };
 }
 
-CZodiacDlg::CZodiacDlg(CWnd* pParent /*=nullptr*/)
-	: CDialog(IDD, pParent)
+ZodiacDlg::ZodiacDlg(CWnd* parent /*=nullptr*/)
+	: CDialog(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CZodiacDlg::DoDataExchange(CDataExchange* pDX)
+void ZodiacDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_YEAR, m_yearCombo);
-	DDX_Control(pDX, IDC_LIST, m_listCombo);
+	CDialog::DoDataExchange(dx);
+	DDX_Control(dx, IDC_YEAR, year_combo_);
+	DDX_Control(dx, IDC_LIST, list_combo_);
 }
 
-BEGIN_MESSAGE_MAP(CZodiacDlg, CDialog)
+BEGIN_MESSAGE_MAP(ZodiacDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_AGE, &CZodiacDlg::OnAge)
-	ON_BN_CLICKED(IDC_CHINEZODIAC, &CZodiacDlg::OnChineZodiac)
-	ON_BN_CLICKED(IDC_VIEW, &CZodiacDlg::OnView)
-	ON_BN_CLICKED(IDC_BIRTH, &CZodiacDlg::OnBirth)
-	ON_CBN_SELCHANGE(IDC_YEAR, &CZodiacDlg::OnSelchangeYear)
-	ON_BN_CLICKED(IDC_ALL_VIEW, &CZodiacDlg::OnAllView)
+	ON_BN_CLICKED(IDC_AGE, &ZodiacDlg::OnAge)
+	ON_BN_CLICKED(IDC_CHINEZODIAC, &ZodiacDlg::OnChineZodiac)
+	ON_BN_CLICKED(IDC_VIEW, &ZodiacDlg::OnView)
+	ON_BN_CLICKED(IDC_BIRTH, &ZodiacDlg::OnBirth)
+	ON_CBN_SELCHANGE(IDC_YEAR, &ZodiacDlg::OnSelchangeYear)
+	ON_BN_CLICKED(IDC_ALL_VIEW, &ZodiacDlg::OnAllView)
 END_MESSAGE_MAP()
 
-BOOL CZodiacDlg::OnInitDialog()
+BOOL ZodiacDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	// 年の選択肢を作り、今年を選んでおく
 	time_t now = time(nullptr);
 	const tm* local = localtime(&now);
 
-	m_yearCombo.ResetContent();
+	year_combo_.ResetContent();
 	int idx = 0;
-	for (int year = MIN_YEAR; year <= MAX_YEAR; year++)
+	for (int year = kMinYear; year <= kMaxYear; year++)
 	{
 		CString text;
 		text.Format("%d", year);
-		int ind = m_yearCombo.InsertString(-1, text);
-		m_yearCombo.SetItemData(ind, year);
+		int ind = year_combo_.InsertString(-1, text);
+		year_combo_.SetItemData(ind, year);
 
 		if (local->tm_year + 1900 == year)
 		{
 			idx = ind;
 		}
 	}
-	m_yearCombo.SetCurSel(idx);
+	year_combo_.SetCurSel(idx);
 
-	CString yearText;
-	m_yearCombo.GetWindowText(yearText);
-	m_year = atoi(yearText);
+	CString year_text;
+	year_combo_.GetWindowText(year_text);
+	year_ = atoi(year_text);
 
 	CheckDlgButton(IDC_AGE, BST_CHECKED);
 	OnAge();
@@ -91,7 +91,7 @@ BOOL CZodiacDlg::OnInitDialog()
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CZodiacDlg::OnPaint()
+void ZodiacDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -99,14 +99,14 @@ void CZodiacDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -114,113 +114,113 @@ void CZodiacDlg::OnPaint()
 	}
 }
 
-HCURSOR CZodiacDlg::OnQueryDragIcon()
+HCURSOR ZodiacDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CZodiacDlg::OnSelchangeYear()
+void ZodiacDlg::OnSelchangeYear()
 {
-	CString yearText;
-	m_yearCombo.GetWindowText(yearText);
-	m_year = atoi(yearText);
+	CString year_text;
+	year_combo_.GetWindowText(year_text);
+	year_ = atoi(year_text);
 	Refresh();
 }
 
-void CZodiacDlg::OnBirth()
+void ZodiacDlg::OnBirth()
 {
-	ChangeMode(Mode::Birth);
+	ChangeMode(Mode::kBirth);
 }
 
-void CZodiacDlg::OnAge()
+void ZodiacDlg::OnAge()
 {
-	ChangeMode(Mode::Age);
+	ChangeMode(Mode::kAge);
 }
 
-void CZodiacDlg::OnChineZodiac()
+void ZodiacDlg::OnChineZodiac()
 {
-	ChangeMode(Mode::Zodiac);
+	ChangeMode(Mode::kZodiac);
 }
 
-void CZodiacDlg::ChangeMode(Mode mode)
+void ZodiacDlg::ChangeMode(Mode mode)
 {
-	if (m_mode != mode)
+	if (mode_ != mode)
 	{
-		m_mode = mode;
+		mode_ = mode;
 		Refresh();
 	}
 }
 
 // 表示モードに合わせて下段のリストを作り直す
-void CZodiacDlg::Refresh()
+void ZodiacDlg::Refresh()
 {
-	m_listCombo.ResetContent();
+	list_combo_.ResetContent();
 
 	CString text;
 	int current = 0;
-	switch (m_mode)
+	switch (mode_)
 	{
-	case Mode::Birth:
-		for (int year = MIN_YEAR; year <= m_year; year++)
+	case Mode::kBirth:
+		for (int year = kMinYear; year <= year_; year++)
 		{
-			text.Format(BIRTH_FORMAT, year);
+			text.Format(kBirthFormat, year);
 			AddListItem(text, year);
 		}
-		current = DEFAULT_BIRTH - MIN_YEAR;
+		current = kDefaultBirth - kMinYear;
 		break;
 
-	case Mode::Age:
-		for (int age = MIN_AGE; age <= MAX_AGE; age++)
+	case Mode::kAge:
+		for (int age = kMinAge; age <= kMaxAge; age++)
 		{
-			text.Format(AGE_FORMAT, age);
+			text.Format(kAgeFormat, age);
 			AddListItem(text, age);
 		}
-		current = DEFAULT_AGE - MIN_AGE;
+		current = kDefaultAge - kMinAge;
 		break;
 
-	case Mode::Zodiac:
+	case Mode::kZodiac:
 	default:
-		for (int i = 0; i < ZODIAC_COUNT; i++)
+		for (int i = 0; i < kZodiacCount; i++)
 		{
-			AddListItem(ZODIAC_NAMES[i], i);
+			AddListItem(kZodiacNames[i], i);
 		}
 		current = 0;
 		break;
 	}
-	m_listCombo.SetCurSel(current);
+	list_combo_.SetCurSel(current);
 }
 
 // 項目データには年・年齢・干支の番号を持たせ、表示時に文字列を解析しなくて済むようにする
-void CZodiacDlg::AddListItem(LPCTSTR text, int data)
+void ZodiacDlg::AddListItem(LPCTSTR text, int data)
 {
-	int ind = m_listCombo.InsertString(-1, text);
-	m_listCombo.SetItemData(ind, data);
+	int ind = list_combo_.InsertString(-1, text);
+	list_combo_.SetItemData(ind, data);
 }
 
-void CZodiacDlg::OnView()
+void ZodiacDlg::OnView()
 {
-	int sel = m_listCombo.GetCurSel();
+	int sel = list_combo_.GetCurSel();
 	if (sel == CB_ERR)
 	{
 		return;
 	}
-	int value = static_cast<int>(m_listCombo.GetItemData(sel));
+	int value = static_cast<int>(list_combo_.GetItemData(sel));
 
-	CString yearText;
-	m_yearCombo.GetWindowText(yearText);
-	int year = atoi(yearText);
+	CString year_text;
+	year_combo_.GetWindowText(year_text);
+	int year = atoi(year_text);
 
 	CString view;
-	if (m_mode == Mode::Zodiac)
+	if (mode_ == Mode::kZodiac)
 	{
 		view.Format("%s年のヒト\r\n\r\n"
-					"生まれた年    年齢\r\n", ZODIAC_NAMES[value]);
+					"生まれた年    年齢\r\n", kZodiacNames[value]);
 
-		for (int birth = MIN_YEAR + value; birth < m_year; birth += ZODIAC_COUNT)
+		for (int birth = kMinYear + value; birth < year_; birth += kZodiacCount)
 		{
-			view.AppendFormat(BIRTH_FORMAT, birth);
+			view.AppendFormat(kBirthFormat, birth);
 			view += "        ";
-			view.AppendFormat(AGE_FORMAT, m_year - birth);
+			view.AppendFormat(kAgeFormat, year_ - birth);
 			view += "\r\n";
 		}
 	}
@@ -228,7 +228,7 @@ void CZodiacDlg::OnView()
 	{
 		int birth;
 		int age;
-		if (m_mode == Mode::Age)
+		if (mode_ == Mode::kAge)
 		{
 			age = value;
 			birth = year - age;
@@ -247,28 +247,28 @@ void CZodiacDlg::OnView()
 	SetDlgItemText(IDC_PREVIEW, view);
 }
 
-CString CZodiacDlg::GetZodiac(int year) const
+CString ZodiacDlg::GetZodiac(int year) const
 {
-	if (year < MIN_YEAR || year > m_year)
+	if (year < kMinYear || year > year_)
 	{
 		AfxMessageBox("プログラムエラー", MB_OK);
 		return CString();
 	}
-	return CString(ZODIAC_NAMES[(year - MIN_YEAR) % ZODIAC_COUNT]);
+	return CString(kZodiacNames[(year - kMinYear) % kZodiacCount]);
 }
 
-void CZodiacDlg::OnAllView()
+void ZodiacDlg::OnAllView()
 {
 	CString table;
-	for (int i = 0; i < ZODIAC_COUNT; i++)
+	for (int i = 0; i < kZodiacCount; i++)
 	{
-		table.AppendFormat("%14s", ZODIAC_NAMES[i]);
+		table.AppendFormat("%14s", kZodiacNames[i]);
 	}
 	table += "\r\n";
 
-	for (int year = MIN_YEAR; year <= m_year; year++)
+	for (int year = kMinYear; year <= year_; year++)
 	{
-		if ((year - MIN_YEAR) % ZODIAC_COUNT == 0)
+		if ((year - kMinYear) % kZodiacCount == 0)
 		{
 			table += "\r\n";
 		}
