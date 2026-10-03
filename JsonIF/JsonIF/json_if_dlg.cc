@@ -1,9 +1,9 @@
-﻿// JsonIFDlg.cpp : メインダイアログ
+﻿// json_if_dlg.cc : メインダイアログ
 
 #include "pch.h"
 #include "framework.h"
-#include "JsonIF.h"
-#include "JsonIFDlg.h"
+#include "json_if.h"
+#include "json_if_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

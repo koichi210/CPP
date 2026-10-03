@@ -195,15 +195,15 @@
     <ClInclude Include="External\picojson.h" />
     <ClInclude Include="External\rapidjson.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="JsonIF.h" />
-    <ClInclude Include="JsonIFDlg.h" />
+    <ClInclude Include="json_if.h" />
+    <ClInclude Include="json_if_dlg.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="JsonIF.cpp" />
-    <ClCompile Include="JsonIFDlg.cpp" />
+    <ClCompile Include="json_if.cc" />
+    <ClCompile Include="json_if_dlg.cc" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

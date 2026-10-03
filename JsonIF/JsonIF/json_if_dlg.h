@@ -1,4 +1,4 @@
-﻿// JsonIFDlg.h : メインダイアログ（JSON ライブラリの使い方を試す）
+﻿// json_if_dlg.h : メインダイアログ（JSON ライブラリの使い方を試す）
 
 #pragma once
 

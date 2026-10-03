@@ -1,4 +1,4 @@
-﻿// JsonIF.h : アプリケーションクラス
+﻿// json_if.h : アプリケーションクラス
 
 #pragma once
 

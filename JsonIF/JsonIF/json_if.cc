@@ -1,9 +1,9 @@
-﻿// JsonIF.cpp : アプリケーションクラス
+﻿// json_if.cc : アプリケーションクラス
 
 #include "pch.h"
 #include "framework.h"
-#include "JsonIF.h"
-#include "JsonIFDlg.h"
+#include "json_if.h"
+#include "json_if_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
