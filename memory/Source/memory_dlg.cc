@@ -1,9 +1,9 @@
-﻿// memoryDlg.cpp : メインダイアログ（出題）
+﻿// memory_dlg.cc : メインダイアログ（出題）
 
 #include "stdafx.h"
 #include "memory.h"
-#include "memoryDlg.h"
-#include "AnserDlg.h"
+#include "memory_dlg.h"
+#include "anser_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

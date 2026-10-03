@@ -15,13 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnserDlg.cpp">
+    <ClCompile Include="anser_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="memory.cpp">
+    <ClCompile Include="memory.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="memoryDlg.cpp">
+    <ClCompile Include="memory_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
@@ -34,16 +34,16 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnserDlg.h">
+    <ClInclude Include="anser_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="memoryDef.h">
+    <ClInclude Include="memory_def.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="memoryDlg.h">
+    <ClInclude Include="memory_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">

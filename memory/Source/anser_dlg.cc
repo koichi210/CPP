@@ -1,9 +1,9 @@
-﻿// AnserDlg.cpp : 解答ダイアログ
+﻿// anser_dlg.cc : 解答ダイアログ
 
 #include "stdafx.h"
 #include "memory.h"
-#include "memoryDlg.h"
-#include "AnserDlg.h"
+#include "memory_dlg.h"
+#include "anser_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -1,8 +1,8 @@
-﻿// AnserDlg.h : 解答ダイアログ
+﻿// anser_dlg.h : 解答ダイアログ
 
 #pragma once
 
-#include "memoryDef.h"
+#include "memory_def.h"
 
 class CMemoryDlg;
 

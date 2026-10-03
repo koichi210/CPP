@@ -1,8 +1,8 @@
-﻿// memory.cpp : アプリケーションクラス
+﻿// memory.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "memory.h"
-#include "memoryDlg.h"
+#include "memory_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

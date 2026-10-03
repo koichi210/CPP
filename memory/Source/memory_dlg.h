@@ -1,8 +1,8 @@
-﻿// memoryDlg.h : メインダイアログ（出題）
+﻿// memory_dlg.h : メインダイアログ（出題）
 
 #pragma once
 
-#include "memoryDef.h"
+#include "memory_def.h"
 
 class CMemoryDlg : public CDialog
 {

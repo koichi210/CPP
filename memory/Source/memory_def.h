@@ -1,4 +1,4 @@
-﻿// memoryDef.h : 定数と型
+﻿// memory_def.h : 定数と型
 
 #pragma once
 
