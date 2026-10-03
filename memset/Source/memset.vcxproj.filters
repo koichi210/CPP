@@ -27,7 +27,7 @@
     <ClInclude Include="memset.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="memsetDlg.h">
+    <ClInclude Include="memset_dlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -41,10 +41,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="memset.cpp">
+    <ClCompile Include="memset.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="memsetDlg.cpp">
+    <ClCompile Include="memset_dlg.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">

@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "memset.h"
-#include "memsetDlg.h"
+#include "memset_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

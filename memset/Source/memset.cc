@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "memset.h"
-#include "memsetDlg.h"
+#include "memset_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
