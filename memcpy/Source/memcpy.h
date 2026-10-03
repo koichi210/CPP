@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CMemcpyApp : public CWinApp
+class MemcpyApp : public CWinApp
 {
 public:
-	CMemcpyApp();
+	MemcpyApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CMemcpyApp theApp;
+extern MemcpyApp the_app;

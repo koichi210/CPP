@@ -2,15 +2,15 @@
 
 #pragma once
 
-class CMemcpyDlg : public CDialogEx
+class MemcpyDlg : public CDialogEx
 {
 public:
-	explicit CMemcpyDlg(CWnd* pParent = nullptr);
+	explicit MemcpyDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_MEMCPY_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -19,5 +19,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	HICON m_hIcon;
+	HICON icon_;
 };
