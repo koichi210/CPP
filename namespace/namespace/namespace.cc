@@ -1,4 +1,4 @@
-﻿// namespace.cpp : 名前空間の使い方を確認するコンソールアプリ
+﻿// namespace.cc : 名前空間の使い方を確認するコンソールアプリ
 
 #include "stdafx.h"
 #include <iostream>
