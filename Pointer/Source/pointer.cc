@@ -1,8 +1,8 @@
-﻿// Pointer.cpp : アプリケーションクラス
+﻿// pointer.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "Pointer.h"
-#include "PointerDlg.h"
+#include "pointer.h"
+#include "pointer_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

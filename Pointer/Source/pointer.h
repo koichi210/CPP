@@ -1,4 +1,4 @@
-﻿// Pointer.h : アプリケーションクラス
+﻿// pointer.h : アプリケーションクラス
 
 #pragma once
 

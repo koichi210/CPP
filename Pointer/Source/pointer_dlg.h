@@ -1,4 +1,4 @@
-﻿// PointerDlg.h : メインダイアログ
+﻿// pointer_dlg.h : メインダイアログ
 
 #pragma once
 

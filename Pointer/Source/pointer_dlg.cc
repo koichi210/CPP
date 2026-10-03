@@ -1,8 +1,8 @@
-﻿// PointerDlg.cpp : メインダイアログ
+﻿// pointer_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "Pointer.h"
-#include "PointerDlg.h"
+#include "pointer.h"
+#include "pointer_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
