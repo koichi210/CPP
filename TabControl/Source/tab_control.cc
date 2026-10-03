@@ -1,8 +1,8 @@
 ﻿// TabControl.cpp : アプリケーションクラス
 
 #include "stdafx.h"
-#include "TabControl.h"
-#include "TabControlDlg.h"
+#include "tab_control.h"
+#include "tab_control_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

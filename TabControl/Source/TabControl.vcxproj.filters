@@ -24,10 +24,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TabControl.h">
+    <ClInclude Include="tab_control.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="TabControlDlg.h">
+    <ClInclude Include="tab_control_dlg.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -39,27 +39,27 @@
     <ClInclude Include="Resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Child1.h">
+    <ClInclude Include="child1.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Child2.h">
+    <ClInclude Include="child2.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TabControl.cpp">
+    <ClCompile Include="tab_control.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="TabControlDlg.cpp">
+    <ClCompile Include="tab_control_dlg.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Child1.cpp">
+    <ClCompile Include="child1.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Child2.cpp">
+    <ClCompile Include="child2.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

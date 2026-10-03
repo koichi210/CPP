@@ -1,8 +1,8 @@
 ﻿// TabControlDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
-#include "TabControl.h"
-#include "TabControlDlg.h"
+#include "tab_control.h"
+#include "tab_control_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

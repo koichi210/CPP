@@ -1,8 +1,8 @@
 ﻿// Child1.cpp : タブ（PageA）に表示する子ダイアログ
 
 #include "stdafx.h"
-#include "TabControl.h"
-#include "Child1.h"
+#include "tab_control.h"
+#include "child1.h"
 #include "afxdialogex.h"
 
 IMPLEMENT_DYNAMIC(CChild1, CDialogEx)

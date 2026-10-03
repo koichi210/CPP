@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "Child1.h"
-#include "Child2.h"
+#include "child1.h"
+#include "child2.h"
 
 class CTabControlDlg : public CDialogEx
 {
