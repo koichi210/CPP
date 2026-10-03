@@ -1,4 +1,4 @@
-﻿// list.cpp : std::list の操作を確認するコンソールアプリ
+﻿// list.cc : std::list の操作を確認するコンソールアプリ
 
 #include "stdafx.h"
 #include <iostream>
