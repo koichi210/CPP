@@ -1,8 +1,8 @@
 ﻿// SplitPathOwn.cpp : アプリケーションクラス
 
 #include "stdafx.h"
-#include "SplitPathOwn.h"
-#include "SplitPathOwnDlg.h"
+#include "split_path_own.h"
+#include "split_path_own_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

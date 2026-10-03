@@ -1,8 +1,8 @@
 ﻿// SplitPathOwnDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
-#include "SplitPathOwn.h"
-#include "SplitPathOwnDlg.h"
+#include "split_path_own.h"
+#include "split_path_own_dlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
