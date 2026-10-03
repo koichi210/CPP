@@ -35,7 +35,10 @@ namespace
 			}
 
 			const size_t name_len = _tcslen(device_name);
-			if (_tcsnicmp(device_path, device_name, name_len) == 0)
+			// \Device\HarddiskVolume1 が \Device\HarddiskVolume10 に前方一致しないよう、
+			// デバイス名の直後が '\' または文字列の終端のときだけ一致とする
+			if (_tcsnicmp(device_path, device_name, name_len) == 0 &&
+				(device_path[name_len] == _T('\\') || device_path[name_len] == _T('\0')))
 			{
 				dos_path = CString(drive) + (device_path + name_len);
 				return true;
