@@ -16,37 +16,37 @@ SYSTEMTIME	g_lastEventTime = {0,0,0,0,0,0,0,0};
 
 namespace
 {
-	HINSTANCE	g_hInstance = nullptr;
-	BOOL		g_isDebug = FALSE;
+	HINSTANCE	instance = nullptr;
+	BOOL		debug_enabled = FALSE;
 
-	constexpr char LOG_FILE_NAME[] = "MacroLog.txt";
+	constexpr char kLogFileName[] = "MacroLog.txt";
 
 	// MacroTool の設定ファイル1行と同じ並び
 	// 実行回数, 遅延(ms), イベント種別, X, Y, マウス操作, 修飾キー, キー種別, キー文字列, コメント
-	constexpr char LOG_FORMAT[] = "%3d,%8d,%2d,%4d,%4d,%2d,%2d,%2d,%s,%s\n";
+	constexpr char kLogFormat[] = "%3d,%8d,%2d,%4d,%4d,%2d,%2d,%2d,%s,%s\n";
 
-	constexpr int DEFAULT_EXECUTE_COUNT = 1;
-	constexpr int EVENT_MOUSE = 1;
-	constexpr int EVENT_KEY = 2;
+	constexpr int kDefaultExecuteCount = 1;
+	constexpr int kEventMouse = 1;
+	constexpr int kEventKey = 2;
 
-	constexpr DWORD MODIFIER_SHIFT = 0x0001;
-	constexpr DWORD MODIFIER_CTRL = 0x0002;
+	constexpr DWORD kModifierShift = 0x0001;
+	constexpr DWORD kModifierCtrl = 0x0002;
 
 	// MacroTool のマウス操作の番号
-	constexpr int MOUSEOP_LDOWN = 1;
-	constexpr int MOUSEOP_LUP = 2;
-	constexpr int MOUSEOP_RDOWN = 4;
-	constexpr int MOUSEOP_RUP = 5;
-	constexpr int MOUSEOP_NONE = -1;		// 記録しない
+	constexpr int kMouseOpLDown = 1;
+	constexpr int kMouseOpLUp = 2;
+	constexpr int kMouseOpRDown = 4;
+	constexpr int kMouseOpRUp = 5;
+	constexpr int kMouseOpNone = -1;		// 記録しない
 
-	constexpr int HOURS_PER_DAY = 24;
-	constexpr int MINUTES_PER_HOUR = 60;
-	constexpr int SECONDS_PER_MINUTE = 60;
-	constexpr int MSEC_PER_SECOND = 1000;
+	constexpr int kHoursPerDay = 24;
+	constexpr int kMinutesPerHour = 60;
+	constexpr int kSecondsPerMinute = 60;
+	constexpr int kMsecPerSecond = 1000;
 
-	bool IsPressed(int virtualKey)
+	bool IsPressed(int virtual_key)
 	{
-		return (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
+		return (GetAsyncKeyState(virtual_key) & 0x8000) != 0;
 	}
 
 	bool IsShiftPressed()	{ return IsPressed(VK_LSHIFT) || IsPressed(VK_RSHIFT); }
@@ -62,13 +62,13 @@ namespace
 		if (now.wYear != 0)	// まれに取得できないことがあった
 		{
 			msec += now.wDay - g_lastEventTime.wDay;
-			msec *= HOURS_PER_DAY;
+			msec *= kHoursPerDay;
 			msec += now.wHour - g_lastEventTime.wHour;
-			msec *= MINUTES_PER_HOUR;
+			msec *= kMinutesPerHour;
 			msec += now.wMinute - g_lastEventTime.wMinute;
-			msec *= SECONDS_PER_MINUTE;
+			msec *= kSecondsPerMinute;
 			msec += now.wSecond - g_lastEventTime.wSecond;
-			msec *= MSEC_PER_SECOND;
+			msec *= kMsecPerSecond;
 			msec += now.wMilliseconds - g_lastEventTime.wMilliseconds;
 
 			g_lastEventTime = now;
@@ -78,12 +78,12 @@ namespace
 
 	void WriteLog(const char* text)
 	{
-		if (!g_isDebug)
+		if (!debug_enabled)
 		{
 			return;
 		}
 
-		FILE* fp = fopen(LOG_FILE_NAME, "a");
+		FILE* fp = fopen(kLogFileName, "a");
 		if (fp)
 		{
 			fputs(text, fp);
@@ -92,36 +92,36 @@ namespace
 	}
 
 	// 押された英数字キーと修飾キーを取り出す（英数字以外・キーを離したときは false）
-	bool GetKeyParameter(WPARAM wParam, DWORD& modifiers, char& key)
+	bool GetKeyParameter(WPARAM w_param, DWORD& modifiers, char& key)
 	{
-		int virtualKey = static_cast<int>(wParam);
+		int virtual_key = static_cast<int>(w_param);
 
 		// ファンクションキー等には未対応
-		if (!isalpha(virtualKey) && !isdigit(virtualKey))
+		if (!isalpha(virtual_key) && !isdigit(virtual_key))
 		{
 			return false;
 		}
 
-		// wParam だけではキーを押したときと離したとき両方が来るので、押されているかを確かめる
-		if (!IsPressed(virtualKey))
+		// w_param だけではキーを押したときと離したとき両方が来るので、押されているかを確かめる
+		if (!IsPressed(virtual_key))
 		{
 			return false;
 		}
 
 		if (IsControlPressed())
 		{
-			modifiers |= MODIFIER_CTRL;
+			modifiers |= kModifierCtrl;
 		}
 		if (IsShiftPressed())
 		{
-			modifiers |= MODIFIER_SHIFT;
+			modifiers |= kModifierShift;
 		}
-		else if ('A' <= virtualKey && virtualKey <= 'Z')
+		else if ('A' <= virtual_key && virtual_key <= 'Z')
 		{
 			// Shift が押されていなければ小文字にする
-			virtualKey += 'a' - 'A';
+			virtual_key += 'a' - 'A';
 		}
-		key = static_cast<char>(virtualKey);
+		key = static_cast<char>(virtual_key);
 		return true;
 	}
 
@@ -130,67 +130,67 @@ namespace
 	{
 		switch (message)
 		{
-		case WM_LBUTTONDOWN:	return MOUSEOP_LDOWN;
-		case WM_LBUTTONUP:		return MOUSEOP_LUP;
-		case WM_RBUTTONDOWN:	return MOUSEOP_RDOWN;
-		case WM_RBUTTONUP:		return MOUSEOP_RUP;
-		default:				return MOUSEOP_NONE;
+		case WM_LBUTTONDOWN:	return kMouseOpLDown;
+		case WM_LBUTTONUP:		return kMouseOpLUp;
+		case WM_RBUTTONDOWN:	return kMouseOpRDown;
+		case WM_RBUTTONUP:		return kMouseOpRUp;
+		default:				return kMouseOpNone;
 		}
 	}
 
-	LRESULT CALLBACK KeyHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK KeyHookProc(int code, WPARAM w_param, LPARAM l_param)
 	{
-		if (nCode == HC_ACTION)
+		if (code == HC_ACTION)
 		{
 			DWORD modifiers = 0;
 			char key[2] = {};
-			if (GetKeyParameter(wParam, modifiers, key[0]))
+			if (GetKeyParameter(w_param, modifiers, key[0]))
 			{
 				char text[MAX_PATH];
-				sprintf_s(text, LOG_FORMAT,
-					DEFAULT_EXECUTE_COUNT, ElapsedTime(), EVENT_KEY,
+				sprintf_s(text, kLogFormat,
+					kDefaultExecuteCount, ElapsedTime(), kEventKey,
 					0, 0, 0,
 					modifiers, 0, key, "");
 				WriteLog(text);
 			}
 		}
-		return CallNextHookEx(g_hKeyHook, nCode, wParam, lParam);
+		return CallNextHookEx(g_hKeyHook, code, w_param, l_param);
 	}
 
-	LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK MouseHookProc(int code, WPARAM w_param, LPARAM l_param)
 	{
-		if (nCode == HC_ACTION)
+		if (code == HC_ACTION)
 		{
-			const int operation = ToMouseOperation(wParam);
-			if (operation != MOUSEOP_NONE)
+			const int operation = ToMouseOperation(w_param);
+			if (operation != kMouseOpNone)
 			{
 				POINT pt;
 				GetCursorPos(&pt);
 
 				char text[MAX_PATH];
-				sprintf_s(text, LOG_FORMAT,
-					DEFAULT_EXECUTE_COUNT, ElapsedTime(), EVENT_MOUSE,
+				sprintf_s(text, kLogFormat,
+					kDefaultExecuteCount, ElapsedTime(), kEventMouse,
 					pt.x, pt.y, operation,
 					0, 0, "", "");
 				WriteLog(text);
 			}
 		}
-		return CallNextHookEx(g_hMouseHook, nCode, wParam, lParam);
+		return CallNextHookEx(g_hMouseHook, code, w_param, l_param);
 	}
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
+BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID /*lpReserved*/)
 {
 	if (reason == DLL_PROCESS_ATTACH)
 	{
-		g_hInstance = hModule;
+		instance = module;
 	}
 	return TRUE;
 }
 
 HOOKD_API BOOL StartKeyHook()
 {
-	g_hKeyHook = SetWindowsHookEx(WH_KEYBOARD, KeyHookProc, g_hInstance, 0);
+	g_hKeyHook = SetWindowsHookEx(WH_KEYBOARD, KeyHookProc, instance, 0);
 	if (!g_hKeyHook)
 	{
 		return FALSE;
@@ -201,7 +201,7 @@ HOOKD_API BOOL StartKeyHook()
 
 HOOKD_API BOOL StartMouseHook()
 {
-	g_hMouseHook = SetWindowsHookEx(WH_MOUSE, MouseHookProc, g_hInstance, 0);
+	g_hMouseHook = SetWindowsHookEx(WH_MOUSE, MouseHookProc, instance, 0);
 	if (!g_hMouseHook)
 	{
 		return FALSE;
@@ -220,7 +220,7 @@ HOOKD_API BOOL StopMouseHook()
 	return UnhookWindowsHookEx(g_hMouseHook) ? TRUE : FALSE;
 }
 
-HOOKD_API void DebugMode(BOOL IsDebug)
+HOOKD_API void DebugMode(BOOL is_debug)
 {
-	g_isDebug = IsDebug;
+	debug_enabled = is_debug;
 }

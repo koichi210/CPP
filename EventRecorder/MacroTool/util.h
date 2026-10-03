@@ -2,7 +2,7 @@
 
 #pragma once
 
-CString GetIniFileParam(LPCTSTR fileName, LPCTSTR sectionName, LPCTSTR keyName, LPCTSTR defaultValue = _T(""));
+CString GetIniFileParam(LPCTSTR file_name, LPCTSTR section_name, LPCTSTR key_name, LPCTSTR default_value = _T(""));
 
-void SetIniFileParam(LPCTSTR fileName, LPCTSTR sectionName, LPCTSTR keyName, LPCTSTR value);
-void SetIniFileParam(LPCTSTR fileName, LPCTSTR sectionName, LPCTSTR keyName, int value);
+void SetIniFileParam(LPCTSTR file_name, LPCTSTR section_name, LPCTSTR key_name, LPCTSTR value);
+void SetIniFileParam(LPCTSTR file_name, LPCTSTR section_name, LPCTSTR key_name, int value);

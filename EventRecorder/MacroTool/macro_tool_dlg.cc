@@ -15,102 +15,102 @@
 
 namespace
 {
-	constexpr bool USE_KEY_HOOK = false;	// キーボードの記録は未完成
+	constexpr bool kUseKeyHook = false;	// キーボードの記録は未完成
 
 #ifdef _DEBUG
-	constexpr TCHAR HOOK_DLL_NAME[] = _T("../Release/EventHookd.dll");
+	constexpr TCHAR kHookDllName[] = _T("../Release/EventHookd.dll");
 #else
-	constexpr TCHAR HOOK_DLL_NAME[] = _T("EventHookd.dll");
+	constexpr TCHAR kHookDllName[] = _T("EventHookd.dll");
 #endif
-	constexpr TCHAR HOOK_LOG_FILE_NAME[] = _T("MacroLog.txt");
+	constexpr TCHAR kHookLogFileName[] = _T("MacroLog.txt");
 
 	// 設定ファイル（INI 形式）
-	constexpr TCHAR SECTION_TABLE[] = _T("TABLE");
-	constexpr TCHAR SECTION_COMMON[] = _T("COMMON");
-	constexpr TCHAR KEY_TABLE_PARAM[] = _T("Param");
-	constexpr TCHAR KEY_REPEAT_NUM[] = _T("RepeatNum");
-	constexpr TCHAR KEY_REPEAT_DELAY_MSEC[] = _T("DelayMsec");
+	constexpr TCHAR kSectionTable[] = _T("TABLE");
+	constexpr TCHAR kSectionCommon[] = _T("COMMON");
+	constexpr TCHAR kKeyTableParam[] = _T("Param");
+	constexpr TCHAR kKeyRepeatNum[] = _T("RepeatNum");
+	constexpr TCHAR kKeyRepeatDelayMsec[] = _T("DelayMsec");
 	// 1行の書式。末尾の改行も従来どおり書き込む
 	// 実行回数, 遅延(ms), イベント種別, X, Y, マウス操作, 修飾キー, キー種別, キー文字列, コメント
-	constexpr TCHAR EVENT_FORMAT[] = _T("%d,%d,%d,%d,%d,%d,%d,%d,%s,%s\n");
-	constexpr size_t EVENT_FIELD_COUNT = 10;
-	constexpr TCHAR INVALID_KEY_TEXT[] = _T("(null)");
+	constexpr TCHAR kEventFormat[] = _T("%d,%d,%d,%d,%d,%d,%d,%d,%s,%s\n");
+	constexpr size_t kEventFieldCount = 10;
+	constexpr TCHAR kInvalidKeyText[] = _T("(null)");
 
-	constexpr TCHAR FILE_FILTER[] = _T("Files (*.txt)|*.txt|All Files (*.*)|*.*|");
-	constexpr TCHAR FILE_DIALOG_TITLE[] = _T("ファイルを選択");
-	constexpr TCHAR DEFAULT_EXT[] = _T(".txt");
+	constexpr TCHAR kFileFilter[] = _T("Files (*.txt)|*.txt|All Files (*.*)|*.*|");
+	constexpr TCHAR kFileDialogTitle[] = _T("ファイルを選択");
+	constexpr TCHAR kDefaultExt[] = _T(".txt");
 
-	constexpr TCHAR SETTING_TITLE[] = _T("設定");
-	constexpr TCHAR TOTAL_TIME_FORMAT[] = _T("　（総計： %02dh %02dm %02ds %03dmsec）");
-	constexpr TCHAR MSG_SELECT_LAST_ROW[] = _T("最終行を選択しました。処理を中断します");
+	constexpr TCHAR kSettingTitle[] = _T("設定");
+	constexpr TCHAR kTotalTimeFormat[] = _T("　（総計： %02dh %02dm %02ds %03dmsec）");
+	constexpr TCHAR kMsgSelectLastRow[] = _T("最終行を選択しました。処理を中断します");
 
-	constexpr int CHECK_CRISIS_MSEC = 2000;		// 事故防止のため、1周がこれ以下で繰り返す設定は警告する
-	constexpr int MAX_MOUSE_POINT_VALUE = 9999;
-	constexpr int MAX_SLEEP_VALUE = 99999999;
-	constexpr int EXECUTE_NONE = 0;
-	constexpr int EXECUTE_MAX = 32767;
+	constexpr int kCheckCrisisMsec = 2000;		// 事故防止のため、1周がこれ以下で繰り返す設定は警告する
+	constexpr int kMaxMousePointValue = 9999;
+	constexpr int kMaxSleepValue = 99999999;
+	constexpr int kExecuteNone = 0;
+	constexpr int kExecuteMax = 32767;
 
 	// 一覧の列
 	enum ListColumn
 	{
-		COLUMN_NO,
-		COLUMN_EXECUTE,
-		COLUMN_SLEEP,
-		COLUMN_EVENT,
-		COLUMN_DETAIL,
-		COLUMN_COMMENT,
+		kColumnNo,
+		kColumnExecute,
+		kColumnSleep,
+		kColumnEvent,
+		kColumnDetail,
+		kColumnComment,
 	};
 
 	// 一覧の「詳細設定」列の文字列
-	CString FormatEventDetail(const MACROEVENT& ev)
+	CString FormatEventDetail(const MacroEvent& ev)
 	{
 		CString text;
-		if (ev.kind == EventKind::Key)
+		if (ev.kind == EventKind::kKey)
 		{
-			if (ev.key.keyKind == KEYKIND_USER)
+			if (ev.key.key_kind == kKeyKindUser)
 			{
 				if (ev.key.text[0] != '\0')
 				{
 					text.Format(_T("[%s]"), ev.key.text);
 				}
 			}
-			else if (0 <= ev.key.keyKind && ev.key.keyKind < KEYKIND_COUNT)
+			else if (0 <= ev.key.key_kind && ev.key.key_kind < kKeyKindCount)
 			{
-				text = KEY_KIND_NAMES[ev.key.keyKind];
+				text = kKeyKindNames[ev.key.key_kind];
 			}
 
-			if (ev.key.modifiers & MODIFIER_SHIFT)	text += _T("　Shift");
-			if (ev.key.modifiers & MODIFIER_CTRL)	text += _T("　Ctrl");
-			if (ev.key.modifiers & MODIFIER_ALT)	text += _T("　Alt");
+			if (ev.key.modifiers & kModifierShift)	text += _T("　Shift");
+			if (ev.key.modifiers & kModifierCtrl)	text += _T("　Ctrl");
+			if (ev.key.modifiers & kModifierAlt)	text += _T("　Alt");
 		}
-		else if (ev.kind == EventKind::Mouse)
+		else if (ev.kind == EventKind::kMouse)
 		{
-			const bool valid = (0 <= ev.mouse.operation && ev.mouse.operation < MOUSEOP_COUNT);
+			const bool valid = (0 <= ev.mouse.operation && ev.mouse.operation < kMouseOpCount);
 			text.Format(_T("%s X[%4d] Y[%4d]"),
-				valid ? MOUSE_OPERATION_NAMES[ev.mouse.operation] : _T(""), ev.mouse.pt.x, ev.mouse.pt.y);
+				valid ? kMouseOperationNames[ev.mouse.operation] : _T(""), ev.mouse.pt.x, ev.mouse.pt.y);
 		}
 		return text;
 	}
 
-	CString FormatEventString(const MACROEVENT& ev)
+	CString FormatEventString(const MacroEvent& ev)
 	{
 		CString text;
-		text.Format(EVENT_FORMAT,
-			ev.execCount,
-			ev.sleepMsec,
+		text.Format(kEventFormat,
+			ev.exec_count,
+			ev.sleep_msec,
 			static_cast<int>(ev.kind),
 			ev.mouse.pt.x,
 			ev.mouse.pt.y,
 			ev.mouse.operation,
 			ev.key.modifiers,
-			ev.key.keyKind,
+			ev.key.key_kind,
 			ev.key.text,
 			ev.comment);
 		return text;
 	}
 
 	// 区切りは ',' と ';'。空のフィールドも1つと数え、足りないフィールドは空とみなす
-	MACROEVENT ParseEventString(const CString& line)
+	MacroEvent ParseEventString(const CString& line)
 	{
 		std::vector<CString> fields;
 		int start = 0;
@@ -122,54 +122,54 @@ namespace
 				start = i + 1;
 			}
 		}
-		while (fields.size() < EVENT_FIELD_COUNT)
+		while (fields.size() < kEventFieldCount)
 		{
 			fields.emplace_back();
 		}
 
-		MACROEVENT ev{};
-		ev.execCount		= _ttoi(fields[0]);
-		ev.sleepMsec		= _ttoi(fields[1]);
+		MacroEvent ev{};
+		ev.exec_count		= _ttoi(fields[0]);
+		ev.sleep_msec		= _ttoi(fields[1]);
 		ev.kind				= static_cast<EventKind>(_ttoi(fields[2]));
 		ev.mouse.pt.x		= _ttoi(fields[3]);
 		ev.mouse.pt.y		= _ttoi(fields[4]);
 		ev.mouse.operation	= _ttoi(fields[5]);
 		ev.key.modifiers	= _ttoi(fields[6]);
-		ev.key.keyKind		= _ttoi(fields[7]);
+		ev.key.key_kind		= _ttoi(fields[7]);
 		strcpy_s(ev.key.text, fields[8]);
 		strcpy_s(ev.comment, fields[9]);
 		return ev;
 	}
 
-	bool IsValidEvent(const MACROEVENT& ev)
+	bool IsValidEvent(const MacroEvent& ev)
 	{
-		if (!(EXECUTE_NONE <= ev.execCount && ev.execCount <= EXECUTE_MAX))
+		if (!(kExecuteNone <= ev.exec_count && ev.exec_count <= kExecuteMax))
 		{
 			return false;
 		}
-		if (ev.kind != EventKind::Mouse && ev.kind != EventKind::Key)
+		if (ev.kind != EventKind::kMouse && ev.kind != EventKind::kKey)
 		{
 			return false;
 		}
-		if (ev.kind == EventKind::Mouse && !(0 <= ev.mouse.operation && ev.mouse.operation < MOUSEOP_COUNT))
+		if (ev.kind == EventKind::kMouse && !(0 <= ev.mouse.operation && ev.mouse.operation < kMouseOpCount))
 		{
 			return false;
 		}
-		if (ev.kind == EventKind::Key && !(0 <= ev.key.keyKind && ev.key.keyKind < KEYKIND_COUNT))
+		if (ev.kind == EventKind::kKey && !(0 <= ev.key.key_kind && ev.key.key_kind < kKeyKindCount))
 		{
 			return false;
 		}
-		return strcmp(ev.key.text, INVALID_KEY_TEXT) != 0;
+		return strcmp(ev.key.text, kInvalidKeyText) != 0;
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CAboutDlg : バージョン情報
+// AboutDlg : バージョン情報
 
-class CAboutDlg : public CDialog
+class AboutDlg : public CDialog
 {
 public:
-	CAboutDlg() : CDialog(IDD) {}
+	AboutDlg() : CDialog(IDD) {}
 
 	enum { IDD = IDD_ABOUTBOX };
 
@@ -186,61 +186,61 @@ protected:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CMacroToolDlg
+// MacroToolDlg
 
-CMacroToolDlg::CMacroToolDlg(CWnd* pParent, const CString& fileName, const std::vector<MACROEVENT>& events,
-	UINT& repeatCount, UINT& repeatDelayMsec)
-	: CDialog(IDD, pParent)
-	, m_events(MAX_EVENT_COUNT)
-	, m_clipboard()
-	, m_fileName(fileName)
-	, m_repeatCount(repeatCount)
-	, m_repeatDelayMsec(repeatDelayMsec)
+MacroToolDlg::MacroToolDlg(CWnd* parent, const CString& file_name, const std::vector<MacroEvent>& events,
+	UINT& repeat_count, UINT& repeat_delay_msec)
+	: CDialog(IDD, parent)
+	, events_(kMaxEventCount)
+	, clipboard_()
+	, file_name_(file_name)
+	, repeat_count_(repeat_count)
+	, repeat_delay_msec_(repeat_delay_msec)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	m_hHookDll = LoadLibrary(HOOK_DLL_NAME);
-	if (m_hHookDll)
+	hook_dll_ = LoadLibrary(kHookDllName);
+	if (hook_dll_)
 	{
-		if constexpr (USE_KEY_HOOK)
+		if constexpr (kUseKeyHook)
 		{
-			m_pfnStartKeyHook = reinterpret_cast<HookFunc>(GetProcAddress(m_hHookDll, "StartKeyHook"));
-			m_pfnStopKeyHook = reinterpret_cast<HookFunc>(GetProcAddress(m_hHookDll, "StopKeyHook"));
+			start_key_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StartKeyHook"));
+			stop_key_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StopKeyHook"));
 		}
-		m_pfnStartMouseHook = reinterpret_cast<HookFunc>(GetProcAddress(m_hHookDll, "StartMouseHook"));
-		m_pfnStopMouseHook = reinterpret_cast<HookFunc>(GetProcAddress(m_hHookDll, "StopMouseHook"));
-		m_pfnDebugMode = reinterpret_cast<DebugModeFunc>(GetProcAddress(m_hHookDll, "DebugMode"));
+		start_mouse_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StartMouseHook"));
+		stop_mouse_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StopMouseHook"));
+		debug_mode_ = reinterpret_cast<DebugModeFunc>(GetProcAddress(hook_dll_, "DebugMode"));
 	}
 
 	// 呼び出し元の設定を引き継ぐ
-	for (int i = 0; i < MAX_EVENT_COUNT && i < static_cast<int>(events.size()); i++)
+	for (int i = 0; i < kMaxEventCount && i < static_cast<int>(events.size()); i++)
 	{
-		if (events[i].kind == EventKind::None)
+		if (events[i].kind == EventKind::kNone)
 		{
 			break;
 		}
-		m_events[i] = events[i];
+		events_[i] = events[i];
 	}
 }
 
-CMacroToolDlg::~CMacroToolDlg()
+MacroToolDlg::~MacroToolDlg()
 {
-	if (m_bRecording)
+	if (recording_)
 	{
 		StopRecord();
 	}
 }
 
-void CMacroToolDlg::DoDataExchange(CDataExchange* pDX)
+void MacroToolDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LISTCTRL, m_list);
-	DDX_Control(pDX, IDCB_MOUSE, m_mouseCombo);
-	DDX_Control(pDX, IDET_KEY, m_keyEdit);
-	DDX_Control(pDX, IDCB_KEY, m_keyCombo);
+	CDialog::DoDataExchange(dx);
+	DDX_Control(dx, IDC_LISTCTRL, list_);
+	DDX_Control(dx, IDCB_MOUSE, mouse_combo_);
+	DDX_Control(dx, IDET_KEY, key_edit_);
+	DDX_Control(dx, IDCB_KEY, key_combo_);
 }
 
-BEGIN_MESSAGE_MAP(CMacroToolDlg, CDialog)
+BEGIN_MESSAGE_MAP(MacroToolDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -248,40 +248,40 @@ BEGIN_MESSAGE_MAP(CMacroToolDlg, CDialog)
 	ON_WM_LBUTTONUP()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_MOUSEMOVE()
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTCTRL, &CMacroToolDlg::OnLvnItemchangedList)
-	ON_BN_CLICKED(IDBT_LIST_INSERT, &CMacroToolDlg::OnListInsert)
-	ON_BN_CLICKED(IDBT_LIST_DELETE, &CMacroToolDlg::OnListDelete)
-	ON_BN_CLICKED(IDBT_LIST_COPY, &CMacroToolDlg::OnListCopy)
-	ON_BN_CLICKED(IDBT_LIST_PASTE, &CMacroToolDlg::OnListPaste)
-	ON_BN_CLICKED(IDBT_ALLCLEAR, &CMacroToolDlg::OnAllClear)
-	ON_EN_CHANGE(IDET_EXECUTE, &CMacroToolDlg::OnEnChangeExecute)
-	ON_EN_CHANGE(IDET_SLEEP, &CMacroToolDlg::OnEnChangeSleep)
-	ON_EN_CHANGE(IDET_COMMENT, &CMacroToolDlg::OnEnChangeComment)
-	ON_BN_CLICKED(IDRB_MOUSE, &CMacroToolDlg::OnMouse)
-	ON_CBN_SELCHANGE(IDCB_MOUSE, &CMacroToolDlg::OnCbnSelchangeMouse)
-	ON_EN_CHANGE(IDET_MOUSE_X, &CMacroToolDlg::OnEnChangeMouseX)
-	ON_EN_CHANGE(IDET_MOUSE_Y, &CMacroToolDlg::OnEnChangeMouseY)
-	ON_BN_CLICKED(IDRB_KEY, &CMacroToolDlg::OnKey)
-	ON_CBN_SELCHANGE(IDCB_KEY, &CMacroToolDlg::OnCbnSelchangeKey)
-	ON_EN_CHANGE(IDET_KEY, &CMacroToolDlg::OnEnChangeKey)
-	ON_BN_CLICKED(IDCH_KEY_SHIFT, &CMacroToolDlg::OnKeyShift)
-	ON_BN_CLICKED(IDCH_KEY_CTRL, &CMacroToolDlg::OnKeyCtrl)
-	ON_BN_CLICKED(IDCH_KEY_ALT, &CMacroToolDlg::OnKeyAlt)
-	ON_EN_CHANGE(IDET_REPEAT_NUM, &CMacroToolDlg::OnEnChangeRepeatNum)
-	ON_EN_CHANGE(IDET_REPEAT_TIME, &CMacroToolDlg::OnEnChangeRepeatTime)
-	ON_BN_CLICKED(IDBT_READ, &CMacroToolDlg::OnRead)
-	ON_BN_CLICKED(IDBT_WRITE, &CMacroToolDlg::OnWrite)
-	ON_BN_CLICKED(IDBT_RECORD, &CMacroToolDlg::OnRecord)
-	ON_BN_CLICKED(IDBT_HELP, &CMacroToolDlg::OnHelp)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTCTRL, &MacroToolDlg::OnLvnItemchangedList)
+	ON_BN_CLICKED(IDBT_LIST_INSERT, &MacroToolDlg::OnListInsert)
+	ON_BN_CLICKED(IDBT_LIST_DELETE, &MacroToolDlg::OnListDelete)
+	ON_BN_CLICKED(IDBT_LIST_COPY, &MacroToolDlg::OnListCopy)
+	ON_BN_CLICKED(IDBT_LIST_PASTE, &MacroToolDlg::OnListPaste)
+	ON_BN_CLICKED(IDBT_ALLCLEAR, &MacroToolDlg::OnAllClear)
+	ON_EN_CHANGE(IDET_EXECUTE, &MacroToolDlg::OnEnChangeExecute)
+	ON_EN_CHANGE(IDET_SLEEP, &MacroToolDlg::OnEnChangeSleep)
+	ON_EN_CHANGE(IDET_COMMENT, &MacroToolDlg::OnEnChangeComment)
+	ON_BN_CLICKED(IDRB_MOUSE, &MacroToolDlg::OnMouse)
+	ON_CBN_SELCHANGE(IDCB_MOUSE, &MacroToolDlg::OnCbnSelchangeMouse)
+	ON_EN_CHANGE(IDET_MOUSE_X, &MacroToolDlg::OnEnChangeMouseX)
+	ON_EN_CHANGE(IDET_MOUSE_Y, &MacroToolDlg::OnEnChangeMouseY)
+	ON_BN_CLICKED(IDRB_KEY, &MacroToolDlg::OnKey)
+	ON_CBN_SELCHANGE(IDCB_KEY, &MacroToolDlg::OnCbnSelchangeKey)
+	ON_EN_CHANGE(IDET_KEY, &MacroToolDlg::OnEnChangeKey)
+	ON_BN_CLICKED(IDCH_KEY_SHIFT, &MacroToolDlg::OnKeyShift)
+	ON_BN_CLICKED(IDCH_KEY_CTRL, &MacroToolDlg::OnKeyCtrl)
+	ON_BN_CLICKED(IDCH_KEY_ALT, &MacroToolDlg::OnKeyAlt)
+	ON_EN_CHANGE(IDET_REPEAT_NUM, &MacroToolDlg::OnEnChangeRepeatNum)
+	ON_EN_CHANGE(IDET_REPEAT_TIME, &MacroToolDlg::OnEnChangeRepeatTime)
+	ON_BN_CLICKED(IDBT_READ, &MacroToolDlg::OnRead)
+	ON_BN_CLICKED(IDBT_WRITE, &MacroToolDlg::OnWrite)
+	ON_BN_CLICKED(IDBT_RECORD, &MacroToolDlg::OnRecord)
+	ON_BN_CLICKED(IDBT_HELP, &MacroToolDlg::OnHelp)
 END_MESSAGE_MAP()
 
-std::vector<MACROEVENT> CMacroToolDlg::GetEvents() const
+std::vector<MacroEvent> MacroToolDlg::GetEvents() const
 {
-	std::vector<MACROEVENT> events(MAX_EVENT_COUNT);
+	std::vector<MacroEvent> events(kMaxEventCount);
 	int count = 0;
-	for (const MACROEVENT& ev : m_events)
+	for (const MacroEvent& ev : events_)
 	{
-		if (ev.kind != EventKind::None)
+		if (ev.kind != EventKind::kNone)
 		{
 			events[count++] = ev;
 		}
@@ -289,68 +289,68 @@ std::vector<MACROEVENT> CMacroToolDlg::GetEvents() const
 	return events;
 }
 
-BOOL CMacroToolDlg::OnInitDialog()
+BOOL MacroToolDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
 	// システムメニューに「バージョン情報」を追加する
 	static_assert((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX && IDM_ABOUTBOX < 0xF000, "IDM_ABOUTBOX はシステムコマンドの範囲内にする");
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != nullptr)
+	CMenu* sys_menu = GetSystemMenu(FALSE);
+	if (sys_menu != nullptr)
 	{
-		CString aboutMenu;
-		aboutMenu.LoadString(IDS_ABOUTBOX);
-		if (!aboutMenu.IsEmpty())
+		CString about_menu;
+		about_menu.LoadString(IDS_ABOUTBOX);
+		if (!about_menu.IsEmpty())
 		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, aboutMenu);
+			sys_menu->AppendMenu(MF_SEPARATOR);
+			sys_menu->AppendMenu(MF_STRING, IDM_ABOUTBOX, about_menu);
 		}
 	}
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	InitControls();
 
 	return TRUE;
 }
 
-void CMacroToolDlg::InitControls()
+void MacroToolDlg::InitControls()
 {
-	m_list.SetRowCount(MAX_EVENT_COUNT);
-	m_list.EnableFullRowSelect();
-	m_list.AddColumn(COLUMN_NO, 25, _T("No"));
-	m_list.AddColumn(COLUMN_EXECUTE, 45, _T("実行"));
-	m_list.AddColumn(COLUMN_SLEEP, 45, _T("遅延時間"));
-	m_list.AddColumn(COLUMN_EVENT, 40, _T("イベント"));
-	m_list.AddColumn(COLUMN_DETAIL, 165, _T("詳細設定"));
-	m_list.AddColumn(COLUMN_COMMENT, 46, _T("コメント"));
-	m_list.FillColumn(COLUMN_NO, _T(""));
+	list_.SetRowCount(kMaxEventCount);
+	list_.EnableFullRowSelect();
+	list_.AddColumn(kColumnNo, 25, _T("No"));
+	list_.AddColumn(kColumnExecute, 45, _T("実行"));
+	list_.AddColumn(kColumnSleep, 45, _T("遅延時間"));
+	list_.AddColumn(kColumnEvent, 40, _T("イベント"));
+	list_.AddColumn(kColumnDetail, 165, _T("詳細設定"));
+	list_.AddColumn(kColumnComment, 46, _T("コメント"));
+	list_.FillColumn(kColumnNo, _T(""));
 
-	m_keyEdit.DisableCopyAndPaste(TRUE);
+	key_edit_.DisableCopyAndPaste(TRUE);
 
 	CheckRadioButton(IDRB_MOUSE, IDRB_KEY, IDRB_MOUSE);
 
-	SetDlgItemInt(IDET_REPEAT_NUM, m_repeatCount);
-	SetDlgItemInt(IDET_REPEAT_TIME, m_repeatDelayMsec);
+	SetDlgItemInt(IDET_REPEAT_NUM, repeat_count_);
+	SetDlgItemInt(IDET_REPEAT_TIME, repeat_delay_msec_);
 
-	m_mouseCombo.ResetContent();
-	for (int i = 0; i < MOUSEOP_COUNT; i++)
+	mouse_combo_.ResetContent();
+	for (int i = 0; i < kMouseOpCount; i++)
 	{
-		m_mouseCombo.InsertString(i, MOUSE_OPERATION_NAMES[i]);
-		m_mouseCombo.SetItemData(i, i);
+		mouse_combo_.InsertString(i, kMouseOperationNames[i]);
+		mouse_combo_.SetItemData(i, i);
 	}
-	m_mouseCombo.SetCurSel(0);
+	mouse_combo_.SetCurSel(0);
 
-	m_keyCombo.ResetContent();
-	for (int i = 0; i < KEYKIND_COUNT; i++)
+	key_combo_.ResetContent();
+	for (int i = 0; i < kKeyKindCount; i++)
 	{
-		m_keyCombo.InsertString(i, KEY_KIND_NAMES[i]);
-		m_keyCombo.SetItemData(i, i);
+		key_combo_.InsertString(i, kKeyKindNames[i]);
+		key_combo_.SetItemData(i, i);
 	}
-	m_keyCombo.SetCurSel(0);
+	key_combo_.SetCurSel(0);
 
-	if (!m_hHookDll)
+	if (!hook_dll_)
 	{
 		GetDlgItem(IDBT_RECORD)->EnableWindow(FALSE);
 	}
@@ -359,20 +359,20 @@ void CMacroToolDlg::InitControls()
 	UpdateControl();
 }
 
-void CMacroToolDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void MacroToolDlg::OnSysCommand(UINT id, LPARAM l_param)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	if ((id & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
+		AboutDlg dlg_about;
+		dlg_about.DoModal();
 	}
 	else
 	{
-		CDialog::OnSysCommand(nID, lParam);
+		CDialog::OnSysCommand(id, l_param);
 	}
 }
 
-void CMacroToolDlg::OnPaint()
+void MacroToolDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -381,11 +381,11 @@ void CMacroToolDlg::OnPaint()
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
 		// アイコンをクライアント領域の中央に描く
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		dc.DrawIcon((rect.Width() - cxIcon + 1) / 2, (rect.Height() - cyIcon + 1) / 2, m_hIcon);
+		dc.DrawIcon((rect.Width() - icon_width + 1) / 2, (rect.Height() - icon_height + 1) / 2, icon_);
 	}
 	else
 	{
@@ -393,25 +393,25 @@ void CMacroToolDlg::OnPaint()
 	}
 }
 
-HCURSOR CMacroToolDlg::OnQueryDragIcon()
+HCURSOR MacroToolDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // ダイアログ外にドラッグしてもカーソル位置を表示し続けるためにキャプチャする
-void CMacroToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
+void MacroToolDlg::OnLButtonDown(UINT flags, CPoint point)
 {
 	SetCapture();
-	CDialog::OnLButtonDown(nFlags, point);
+	CDialog::OnLButtonDown(flags, point);
 }
 
-void CMacroToolDlg::OnLButtonUp(UINT nFlags, CPoint point)
+void MacroToolDlg::OnLButtonUp(UINT flags, CPoint point)
 {
 	ReleaseCapture();
-	CDialog::OnLButtonUp(nFlags, point);
+	CDialog::OnLButtonUp(flags, point);
 }
 
-void CMacroToolDlg::OnMouseMove(UINT nFlags, CPoint point)
+void MacroToolDlg::OnMouseMove(UINT flags, CPoint point)
 {
 	POINT pt;
 	GetCursorPos(&pt);
@@ -420,83 +420,83 @@ void CMacroToolDlg::OnMouseMove(UINT nFlags, CPoint point)
 	text.Format(_T("(%4d:%4d)"), pt.x, pt.y);
 	SetDlgItemText(IDLB_STATES, text);
 
-	CDialog::OnMouseMove(nFlags, point);
+	CDialog::OnMouseMove(flags, point);
 }
 
 // 隠し機能：ダブルクリックでフック DLL のログ出力を切り替える
-void CMacroToolDlg::OnLButtonDblClk(UINT nFlags, CPoint point)
+void MacroToolDlg::OnLButtonDblClk(UINT flags, CPoint point)
 {
-	m_bDebug = !m_bDebug;
+	debug_ = !debug_;
 
 	CString text;
-	text.Format(_T("DebugMode=%d"), m_bDebug);
+	text.Format(_T("DebugMode=%d"), debug_);
 	MessageBox(text);
 
-	if (m_pfnDebugMode)
+	if (debug_mode_)
 	{
-		m_pfnDebugMode(m_bDebug);
+		debug_mode_(debug_);
 	}
 
-	CDialog::OnLButtonDblClk(nFlags, point);
+	CDialog::OnLButtonDblClk(flags, point);
 }
 
-void CMacroToolDlg::OnLvnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult)
+void MacroToolDlg::OnLvnItemchangedList(NMHDR* nmhdr, LRESULT* result)
 {
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	if (pNMLV && pNMLV->iItem != m_index)
+	LPNMLISTVIEW nmlv = reinterpret_cast<LPNMLISTVIEW>(nmhdr);
+	if (nmlv && nmlv->iItem != index_)
 	{
-		m_index = pNMLV->iItem;
+		index_ = nmlv->iItem;
 		UpdateControl();
 	}
-	*pResult = 0;
+	*result = 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // 一覧の編集
 
-void CMacroToolDlg::OnListInsert()
+void MacroToolDlg::OnListInsert()
 {
-	const int lastIndex = MAX_EVENT_COUNT - 1;
-	if (m_index == lastIndex)
+	const int last_index = kMaxEventCount - 1;
+	if (index_ == last_index)
 	{
-		MessageBox(MSG_SELECT_LAST_ROW);
+		MessageBox(kMsgSelectLastRow);
 		return;
 	}
 
-	for (int i = lastIndex; i > m_index; i--)
+	for (int i = last_index; i > index_; i--)
 	{
-		m_events[i] = m_events[i - 1];
+		events_[i] = events_[i - 1];
 	}
-	CurrentEvent() = MACROEVENT{};
+	CurrentEvent() = MacroEvent{};
 	UpdateListControl(TRUE);
 }
 
-void CMacroToolDlg::OnListDelete()
+void MacroToolDlg::OnListDelete()
 {
-	const int lastIndex = MAX_EVENT_COUNT - 1;
-	for (int i = m_index; i < lastIndex; i++)
+	const int last_index = kMaxEventCount - 1;
+	for (int i = index_; i < last_index; i++)
 	{
-		m_events[i] = m_events[i + 1];
+		events_[i] = events_[i + 1];
 	}
-	m_events[lastIndex] = MACROEVENT{};
+	events_[last_index] = MacroEvent{};
 	UpdateListControl(TRUE);
 }
 
-void CMacroToolDlg::OnListCopy()
+void MacroToolDlg::OnListCopy()
 {
-	m_clipboard = CurrentEvent();
+	clipboard_ = CurrentEvent();
 }
 
-void CMacroToolDlg::OnListPaste()
+void MacroToolDlg::OnListPaste()
 {
-	CurrentEvent() = m_clipboard;
+	CurrentEvent() = clipboard_;
 	UpdateListControl();
 	UpdateControl();
 }
 
-void CMacroToolDlg::OnAllClear()
+void MacroToolDlg::OnAllClear()
 {
-	std::fill(m_events.begin(), m_events.end(), MACROEVENT{});
+	std::fill(events_.begin(), events_.end(), MacroEvent{});
 	UpdateListControl(TRUE);
 	UpdateControl();
 }
@@ -505,9 +505,9 @@ void CMacroToolDlg::OnAllClear()
 // 選択行の設定
 
 // 未設定の行を編集し始めたら、その種別のイベントにする
-void CMacroToolDlg::EnsureEventKind(EventKind kind)
+void MacroToolDlg::EnsureEventKind(EventKind kind)
 {
-	if (CurrentEvent().kind == EventKind::None)
+	if (CurrentEvent().kind == EventKind::kNone)
 	{
 		CurrentEvent().kind = kind;
 		UpdateControl();
@@ -515,11 +515,11 @@ void CMacroToolDlg::EnsureEventKind(EventKind kind)
 }
 
 // ラジオボタンで種別を選んだとき
-void CMacroToolDlg::SelectEventKind(EventKind kind)
+void MacroToolDlg::SelectEventKind(EventKind kind)
 {
-	if (CurrentEvent().kind == EventKind::None)
+	if (CurrentEvent().kind == EventKind::kNone)
 	{
-		CurrentEvent().execCount = 1;
+		CurrentEvent().exec_count = 1;
 	}
 	CurrentEvent().kind = kind;
 
@@ -528,13 +528,13 @@ void CMacroToolDlg::SelectEventKind(EventKind kind)
 }
 
 // 上限を超えた値は上限に書き換える
-int CMacroToolDlg::GetClampedDlgItemInt(UINT id, int maxValue, BOOL bSigned)
+int MacroToolDlg::GetClampedDlgItemInt(UINT id, int max_value, BOOL is_signed)
 {
-	BOOL bValid;
-	int value = static_cast<int>(GetDlgItemInt(id, &bValid, bSigned));
-	if (value > maxValue)
+	BOOL valid;
+	int value = static_cast<int>(GetDlgItemInt(id, &valid, is_signed));
+	if (value > max_value)
 	{
-		value = maxValue;
+		value = max_value;
 
 		CString text;
 		text.Format(_T("%d"), value);
@@ -543,21 +543,21 @@ int CMacroToolDlg::GetClampedDlgItemInt(UINT id, int maxValue, BOOL bSigned)
 	return value;
 }
 
-void CMacroToolDlg::OnEnChangeExecute()
+void MacroToolDlg::OnEnChangeExecute()
 {
-	CurrentEvent().execCount = GetClampedDlgItemInt(IDET_EXECUTE, EXECUTE_MAX, FALSE);
+	CurrentEvent().exec_count = GetClampedDlgItemInt(IDET_EXECUTE, kExecuteMax, FALSE);
 	SetTitleBar();
 	UpdateListControl();
 }
 
-void CMacroToolDlg::OnEnChangeSleep()
+void MacroToolDlg::OnEnChangeSleep()
 {
-	CurrentEvent().sleepMsec = GetClampedDlgItemInt(IDET_SLEEP, MAX_SLEEP_VALUE, FALSE);
+	CurrentEvent().sleep_msec = GetClampedDlgItemInt(IDET_SLEEP, kMaxSleepValue, FALSE);
 	SetTitleBar();
 	UpdateListControl();
 }
 
-void CMacroToolDlg::OnEnChangeComment()
+void MacroToolDlg::OnEnChangeComment()
 {
 	CString text;
 	GetDlgItemText(IDET_COMMENT, text);
@@ -565,56 +565,56 @@ void CMacroToolDlg::OnEnChangeComment()
 	UpdateListControl();
 }
 
-void CMacroToolDlg::OnMouse()
+void MacroToolDlg::OnMouse()
 {
-	SelectEventKind(EventKind::Mouse);
+	SelectEventKind(EventKind::kMouse);
 }
 
-void CMacroToolDlg::OnCbnSelchangeMouse()
+void MacroToolDlg::OnCbnSelchangeMouse()
 {
-	CurrentEvent().mouse.operation = m_mouseCombo.GetCurSel();
-	EnsureEventKind(EventKind::Mouse);
+	CurrentEvent().mouse.operation = mouse_combo_.GetCurSel();
+	EnsureEventKind(EventKind::kMouse);
 	UpdateListControl();
 }
 
-void CMacroToolDlg::OnEnChangeMouseX()
+void MacroToolDlg::OnEnChangeMouseX()
 {
-	CurrentEvent().mouse.pt.x = GetClampedDlgItemInt(IDET_MOUSE_X, MAX_MOUSE_POINT_VALUE, TRUE);
-	EnsureEventKind(EventKind::Mouse);
+	CurrentEvent().mouse.pt.x = GetClampedDlgItemInt(IDET_MOUSE_X, kMaxMousePointValue, TRUE);
+	EnsureEventKind(EventKind::kMouse);
 	UpdateListControl();
 }
 
-void CMacroToolDlg::OnEnChangeMouseY()
+void MacroToolDlg::OnEnChangeMouseY()
 {
-	CurrentEvent().mouse.pt.y = GetClampedDlgItemInt(IDET_MOUSE_Y, MAX_MOUSE_POINT_VALUE, TRUE);
-	EnsureEventKind(EventKind::Mouse);
+	CurrentEvent().mouse.pt.y = GetClampedDlgItemInt(IDET_MOUSE_Y, kMaxMousePointValue, TRUE);
+	EnsureEventKind(EventKind::kMouse);
 	UpdateListControl();
 }
 
-void CMacroToolDlg::OnKey()
+void MacroToolDlg::OnKey()
 {
-	SelectEventKind(EventKind::Key);
+	SelectEventKind(EventKind::kKey);
 }
 
-void CMacroToolDlg::OnCbnSelchangeKey()
+void MacroToolDlg::OnCbnSelchangeKey()
 {
-	CurrentEvent().key.keyKind = m_keyCombo.GetCurSel();
-	EnsureEventKind(EventKind::Key);
+	CurrentEvent().key.key_kind = key_combo_.GetCurSel();
+	EnsureEventKind(EventKind::kKey);
 	UpdateListControl();
 }
 
-void CMacroToolDlg::OnEnChangeKey()
+void MacroToolDlg::OnEnChangeKey()
 {
 	CString text;
 	GetDlgItemText(IDET_KEY, text);
 	strcpy_s(CurrentEvent().key.text, text);
-	EnsureEventKind(EventKind::Key);
+	EnsureEventKind(EventKind::kKey);
 	UpdateListControl();
 }
 
-void CMacroToolDlg::SetModifier(UINT checkId, DWORD modifier)
+void MacroToolDlg::SetModifier(UINT check_id, DWORD modifier)
 {
-	if (IsDlgButtonChecked(checkId) == BST_CHECKED)
+	if (IsDlgButtonChecked(check_id) == BST_CHECKED)
 	{
 		CurrentEvent().key.modifiers |= modifier;
 	}
@@ -622,60 +622,60 @@ void CMacroToolDlg::SetModifier(UINT checkId, DWORD modifier)
 	{
 		CurrentEvent().key.modifiers &= ~modifier;
 	}
-	EnsureEventKind(EventKind::Key);
+	EnsureEventKind(EventKind::kKey);
 	UpdateListControl();
 }
 
-void CMacroToolDlg::OnKeyShift()	{ SetModifier(IDCH_KEY_SHIFT, MODIFIER_SHIFT); }
-void CMacroToolDlg::OnKeyCtrl()		{ SetModifier(IDCH_KEY_CTRL, MODIFIER_CTRL); }
-void CMacroToolDlg::OnKeyAlt()		{ SetModifier(IDCH_KEY_ALT, MODIFIER_ALT); }
+void MacroToolDlg::OnKeyShift()	{ SetModifier(IDCH_KEY_SHIFT, kModifierShift); }
+void MacroToolDlg::OnKeyCtrl()		{ SetModifier(IDCH_KEY_CTRL, kModifierCtrl); }
+void MacroToolDlg::OnKeyAlt()		{ SetModifier(IDCH_KEY_ALT, kModifierAlt); }
 
 /////////////////////////////////////////////////////////////////////////////
 // 共通設定
 
-void CMacroToolDlg::OnEnChangeRepeatNum()
+void MacroToolDlg::OnEnChangeRepeatNum()
 {
-	BOOL bValid;
-	m_repeatCount = GetDlgItemInt(IDET_REPEAT_NUM, &bValid, FALSE);
+	BOOL valid;
+	repeat_count_ = GetDlgItemInt(IDET_REPEAT_NUM, &valid, FALSE);
 }
 
-void CMacroToolDlg::OnEnChangeRepeatTime()
+void MacroToolDlg::OnEnChangeRepeatTime()
 {
-	BOOL bValid;
-	m_repeatDelayMsec = GetDlgItemInt(IDET_REPEAT_TIME, &bValid, FALSE);
+	BOOL valid;
+	repeat_delay_msec_ = GetDlgItemInt(IDET_REPEAT_TIME, &valid, FALSE);
 	SetTitleBar();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // ファイル
 
-void CMacroToolDlg::OnRead()
+void MacroToolDlg::OnRead()
 {
 	if (SelectFile(TRUE))
 	{
-		LoadFile(m_fileName);
+		LoadFile(file_name_);
 	}
 }
 
-void CMacroToolDlg::LoadFile(const CString& fileName)
+void MacroToolDlg::LoadFile(const CString& file_name)
 {
-	std::fill(m_events.begin(), m_events.end(), MACROEVENT{});
+	std::fill(events_.begin(), events_.end(), MacroEvent{});
 
-	m_repeatCount = _ttoi(GetIniFileParam(fileName, SECTION_COMMON, KEY_REPEAT_NUM));
-	m_repeatDelayMsec = _ttoi(GetIniFileParam(fileName, SECTION_COMMON, KEY_REPEAT_DELAY_MSEC));
+	repeat_count_ = _ttoi(GetIniFileParam(file_name, kSectionCommon, kKeyRepeatNum));
+	repeat_delay_msec_ = _ttoi(GetIniFileParam(file_name, kSectionCommon, kKeyRepeatDelayMsec));
 
 	int count = 0;
-	for (int i = 0; i < MAX_EVENT_COUNT; i++)
+	for (int i = 0; i < kMaxEventCount; i++)
 	{
-		CString keyName;
-		keyName.Format(_T("%s%d"), KEY_TABLE_PARAM, i);
-		const CString line = GetIniFileParam(fileName, SECTION_TABLE, keyName);
+		CString key_name;
+		key_name.Format(_T("%s%d"), kKeyTableParam, i);
+		const CString line = GetIniFileParam(file_name, kSectionTable, key_name);
 		if (line.IsEmpty())
 		{
 			break;
 		}
 
-		const MACROEVENT ev = ParseEventString(line);
+		const MacroEvent ev = ParseEventString(line);
 		if (!IsValidEvent(ev))
 		{
 			continue;
@@ -684,76 +684,76 @@ void CMacroToolDlg::LoadFile(const CString& fileName)
 		// 同じ座標で「押す」の直後に「離す」が来たら、前の行を「クリック」にまとめる
 		if (count > 0)
 		{
-			MACROMOUSE& prev = m_events[count - 1].mouse;
+			MacroMouse& prev = events_[count - 1].mouse;
 			if (prev.pt == ev.mouse.pt)
 			{
-				if (ev.mouse.operation == MOUSEOP_LUP && prev.operation == MOUSEOP_LDOWN)
+				if (ev.mouse.operation == kMouseOpLUp && prev.operation == kMouseOpLDown)
 				{
-					prev.operation = MOUSEOP_LCLICK;
+					prev.operation = kMouseOpLClick;
 					continue;
 				}
-				if (ev.mouse.operation == MOUSEOP_RUP && prev.operation == MOUSEOP_RDOWN)
+				if (ev.mouse.operation == kMouseOpRUp && prev.operation == kMouseOpRDown)
 				{
-					prev.operation = MOUSEOP_RCLICK;
+					prev.operation = kMouseOpRClick;
 					continue;
 				}
 			}
 		}
 
-		m_events[count++] = ev;
+		events_[count++] = ev;
 	}
 
 	UpdateListControl(TRUE);
 	UpdateControl();
 
-	SetDlgItemInt(IDET_REPEAT_NUM, m_repeatCount);
-	SetDlgItemInt(IDET_REPEAT_TIME, m_repeatDelayMsec);
+	SetDlgItemInt(IDET_REPEAT_NUM, repeat_count_);
+	SetDlgItemInt(IDET_REPEAT_TIME, repeat_delay_msec_);
 }
 
-void CMacroToolDlg::OnWrite()
+void MacroToolDlg::OnWrite()
 {
 	if (!SelectFile(FALSE))
 	{
 		return;
 	}
 
-	SetIniFileParam(m_fileName, SECTION_COMMON, KEY_REPEAT_NUM, static_cast<int>(m_repeatCount));
-	SetIniFileParam(m_fileName, SECTION_COMMON, KEY_REPEAT_DELAY_MSEC, static_cast<int>(m_repeatDelayMsec));
+	SetIniFileParam(file_name_, kSectionCommon, kKeyRepeatNum, static_cast<int>(repeat_count_));
+	SetIniFileParam(file_name_, kSectionCommon, kKeyRepeatDelayMsec, static_cast<int>(repeat_delay_msec_));
 
 	// 未設定の行は飛ばし、番号を詰めて書く
 	int index = 0;
-	for (const MACROEVENT& ev : m_events)
+	for (const MacroEvent& ev : events_)
 	{
-		if (ev.kind == EventKind::None)
+		if (ev.kind == EventKind::kNone)
 		{
 			continue;
 		}
 
-		CString keyName;
-		keyName.Format(_T("%s%d"), KEY_TABLE_PARAM, index);
-		SetIniFileParam(m_fileName, SECTION_TABLE, keyName, FormatEventString(ev));
+		CString key_name;
+		key_name.Format(_T("%s%d"), kKeyTableParam, index);
+		SetIniFileParam(file_name_, kSectionTable, key_name, FormatEventString(ev));
 		index++;
 	}
 }
 
-BOOL CMacroToolDlg::SelectFile(BOOL bOpen)
+BOOL MacroToolDlg::SelectFile(BOOL is_open)
 {
-	CFileDialog dlg(bOpen, nullptr, m_fileName, OFN_HIDEREADONLY, FILE_FILTER);
-	dlg.m_ofn.lpstrTitle = FILE_DIALOG_TITLE;
+	CFileDialog dlg(is_open, nullptr, file_name_, OFN_HIDEREADONLY, kFileFilter);
+	dlg.m_ofn.lpstrTitle = kFileDialogTitle;
 	if (dlg.DoModal() != IDOK)
 	{
 		return FALSE;
 	}
 
-	m_fileName = dlg.GetPathName();
-	if (!bOpen)
+	file_name_ = dlg.GetPathName();
+	if (!is_open)
 	{
 		// 拡張子が無ければ .txt を付けて保存する
 		CString ext;
-		SplitPath(m_fileName, nullptr, nullptr, nullptr, &ext);
+		SplitPath(file_name_, nullptr, nullptr, nullptr, &ext);
 		if (ext.IsEmpty())
 		{
-			m_fileName += DEFAULT_EXT;
+			file_name_ += kDefaultExt;
 		}
 	}
 	return TRUE;
@@ -762,21 +762,21 @@ BOOL CMacroToolDlg::SelectFile(BOOL bOpen)
 /////////////////////////////////////////////////////////////////////////////
 // 記録
 
-void CMacroToolDlg::OnRecord()
+void MacroToolDlg::OnRecord()
 {
-	TCHAR tempDir[MAX_PATH];
-	GetTempPath(MAX_PATH, tempDir);
-	CString logPath;
-	logPath.Format(_T("%s\\%s"), tempDir, HOOK_LOG_FILE_NAME);
+	TCHAR temp_dir[MAX_PATH];
+	GetTempPath(MAX_PATH, temp_dir);
+	CString log_path;
+	log_path.Format(_T("%s\\%s"), temp_dir, kHookLogFileName);
 
-	if (!m_bRecording)
+	if (!recording_)
 	{
 		CString title;
-		title.Format(_T("%s(Record中)"), SETTING_TITLE);
+		title.Format(_T("%s(Record中)"), kSettingTitle);
 		SetWindowText(title);
 		SetDlgItemText(IDBT_RECORD, _T("記録終了"));
 
-		::remove(logPath);	// 前回のログを消しておく
+		::remove(log_path);	// 前回のログを消しておく
 		StartRecord();
 	}
 	else
@@ -785,25 +785,25 @@ void CMacroToolDlg::OnRecord()
 		SetDlgItemText(IDBT_RECORD, _T("記録"));
 		StopRecord();
 
-		LoadFile(logPath);
+		LoadFile(log_path);
 	}
 }
 
-void CMacroToolDlg::StartRecord()
+void MacroToolDlg::StartRecord()
 {
 	bool started;
-	if constexpr (USE_KEY_HOOK)
+	if constexpr (kUseKeyHook)
 	{
-		started = m_pfnStartKeyHook && m_pfnStartKeyHook() && m_pfnStartMouseHook && m_pfnStartMouseHook();
+		started = start_key_hook_ && start_key_hook_() && start_mouse_hook_ && start_mouse_hook_();
 	}
 	else
 	{
-		started = m_pfnStartMouseHook && m_pfnStartMouseHook();
+		started = start_mouse_hook_ && start_mouse_hook_();
 	}
 
 	if (started)
 	{
-		m_bRecording = TRUE;
+		recording_ = TRUE;
 	}
 	else
 	{
@@ -811,21 +811,21 @@ void CMacroToolDlg::StartRecord()
 	}
 }
 
-void CMacroToolDlg::StopRecord()
+void MacroToolDlg::StopRecord()
 {
 	bool stopped;
-	if constexpr (USE_KEY_HOOK)
+	if constexpr (kUseKeyHook)
 	{
-		stopped = m_pfnStopKeyHook && m_pfnStopKeyHook() && m_pfnStopMouseHook && m_pfnStopMouseHook();
+		stopped = stop_key_hook_ && stop_key_hook_() && stop_mouse_hook_ && stop_mouse_hook_();
 	}
 	else
 	{
-		stopped = m_pfnStopMouseHook && m_pfnStopMouseHook();
+		stopped = stop_mouse_hook_ && stop_mouse_hook_();
 	}
 
 	if (stopped)
 	{
-		m_bRecording = FALSE;
+		recording_ = FALSE;
 	}
 	else
 	{
@@ -834,12 +834,12 @@ void CMacroToolDlg::StopRecord()
 }
 
 // 「ヘルプ」ボタンは動作確認用：NumLock / CapsLock / ScrollLock を順に点滅させる
-void CMacroToolDlg::OnHelp()
+void MacroToolDlg::OnHelp()
 {
-	const BYTE lockKeys[] = { VK_NUMLOCK, VK_CAPITAL, VK_SCROLL };
+	const BYTE lock_keys[] = { VK_NUMLOCK, VK_CAPITAL, VK_SCROLL };
 	for (int i = 0; i < 10; i++)
 	{
-		for (BYTE key : lockKeys)
+		for (BYTE key : lock_keys)
 		{
 			InputSimulator::FunctionKeyAction(key, TRUE);
 			Sleep(100);
@@ -852,7 +852,7 @@ void CMacroToolDlg::OnHelp()
 /////////////////////////////////////////////////////////////////////////////
 // 設定欄の表示更新
 
-void CMacroToolDlg::SetDlgItemNumberIfChanged(UINT id, int value)
+void MacroToolDlg::SetDlgItemNumberIfChanged(UINT id, int value)
 {
 	CString current;
 	GetDlgItemText(id, current);
@@ -864,7 +864,7 @@ void CMacroToolDlg::SetDlgItemNumberIfChanged(UINT id, int value)
 	}
 }
 
-void CMacroToolDlg::SetDlgItemTextIfChanged(UINT id, LPCTSTR text)
+void MacroToolDlg::SetDlgItemTextIfChanged(UINT id, LPCTSTR text)
 {
 	CString current;
 	GetDlgItemText(id, current);
@@ -874,7 +874,7 @@ void CMacroToolDlg::SetDlgItemTextIfChanged(UINT id, LPCTSTR text)
 	}
 }
 
-void CMacroToolDlg::CheckDlgButtonIfChanged(UINT id, bool check)
+void MacroToolDlg::CheckDlgButtonIfChanged(UINT id, bool check)
 {
 	const UINT state = check ? BST_CHECKED : BST_UNCHECKED;
 	if (IsDlgButtonChecked(id) != state)
@@ -884,51 +884,51 @@ void CMacroToolDlg::CheckDlgButtonIfChanged(UINT id, bool check)
 }
 
 // 値を書き換えると EN_CHANGE で選択行が更新されるので、変わったものだけ書き換える
-void CMacroToolDlg::UpdateControl()
+void MacroToolDlg::UpdateControl()
 {
-	SetDlgItemNumberIfChanged(IDET_EXECUTE, CurrentEvent().execCount);
+	SetDlgItemNumberIfChanged(IDET_EXECUTE, CurrentEvent().exec_count);
 	UpdateControlEvent();
 	UpdateControlDetail();
-	SetDlgItemNumberIfChanged(IDET_SLEEP, static_cast<int>(CurrentEvent().sleepMsec));
+	SetDlgItemNumberIfChanged(IDET_SLEEP, static_cast<int>(CurrentEvent().sleep_msec));
 
 	SetTitleBar();
 }
 
-void CMacroToolDlg::UpdateControlEvent()
+void MacroToolDlg::UpdateControlEvent()
 {
-	const int checkId = (CurrentEvent().kind == EventKind::Key) ? IDRB_KEY : IDRB_MOUSE;
-	if (GetCheckedRadioButton(IDRB_MOUSE, IDRB_KEY) != checkId)
+	const int check_id = (CurrentEvent().kind == EventKind::kKey) ? IDRB_KEY : IDRB_MOUSE;
+	if (GetCheckedRadioButton(IDRB_MOUSE, IDRB_KEY) != check_id)
 	{
-		CheckRadioButton(IDRB_MOUSE, IDRB_KEY, checkId);
+		CheckRadioButton(IDRB_MOUSE, IDRB_KEY, check_id);
 	}
 }
 
-void CMacroToolDlg::UpdateControlDetail()
+void MacroToolDlg::UpdateControlDetail()
 {
 	SetDlgItemTextIfChanged(IDET_COMMENT, CurrentEvent().comment);
 	SetDlgItemNumberIfChanged(IDET_MOUSE_X, CurrentEvent().mouse.pt.x);
 	SetDlgItemNumberIfChanged(IDET_MOUSE_Y, CurrentEvent().mouse.pt.y);
 	SetDlgItemTextIfChanged(IDET_KEY, CurrentEvent().key.text);
 
-	CheckDlgButtonIfChanged(IDCH_KEY_SHIFT, (CurrentEvent().key.modifiers & MODIFIER_SHIFT) != 0);
-	CheckDlgButtonIfChanged(IDCH_KEY_CTRL, (CurrentEvent().key.modifiers & MODIFIER_CTRL) != 0);
-	CheckDlgButtonIfChanged(IDCH_KEY_ALT, (CurrentEvent().key.modifiers & MODIFIER_ALT) != 0);
+	CheckDlgButtonIfChanged(IDCH_KEY_SHIFT, (CurrentEvent().key.modifiers & kModifierShift) != 0);
+	CheckDlgButtonIfChanged(IDCH_KEY_CTRL, (CurrentEvent().key.modifiers & kModifierCtrl) != 0);
+	CheckDlgButtonIfChanged(IDCH_KEY_ALT, (CurrentEvent().key.modifiers & kModifierAlt) != 0);
 
-	m_mouseCombo.SetCurSel(CurrentEvent().mouse.operation);
-	m_keyCombo.SetCurSel(CurrentEvent().key.keyKind);
+	mouse_combo_.SetCurSel(CurrentEvent().mouse.operation);
+	key_combo_.SetCurSel(CurrentEvent().key.key_kind);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // 一覧の表示更新
 
-// bAll = FALSE なら選択行だけ
+// update_all = FALSE なら選択行だけ
 // （セルを書き換えると LVN_ITEMCHANGED で選択行が変わりうるので、選択行はセルごとに取り直す）
-void CMacroToolDlg::UpdateListControl(BOOL bAll)
+void MacroToolDlg::UpdateListControl(BOOL update_all)
 {
-	const int columns[] = { COLUMN_EXECUTE, COLUMN_SLEEP, COLUMN_EVENT, COLUMN_DETAIL, COLUMN_COMMENT };
-	if (bAll)
+	const int columns[] = { kColumnExecute, kColumnSleep, kColumnEvent, kColumnDetail, kColumnComment };
+	if (update_all)
 	{
-		for (int row = 0; row < MAX_EVENT_COUNT; row++)
+		for (int row = 0; row < kMaxEventCount; row++)
 		{
 			for (int column : columns)
 			{
@@ -940,65 +940,65 @@ void CMacroToolDlg::UpdateListControl(BOOL bAll)
 	{
 		for (int column : columns)
 		{
-			UpdateListCell(m_index, column);
+			UpdateListCell(index_, column);
 		}
 	}
 }
 
-void CMacroToolDlg::UpdateListCell(int row, int column)
+void MacroToolDlg::UpdateListCell(int row, int column)
 {
-	const MACROEVENT& ev = m_events[row];
+	const MacroEvent& ev = events_[row];
 
 	CString text;
-	if (ev.kind != EventKind::None)
+	if (ev.kind != EventKind::kNone)
 	{
 		switch (column)
 		{
-		case COLUMN_EXECUTE:
-			text.Format(_T("%d"), ev.execCount);
+		case kColumnExecute:
+			text.Format(_T("%d"), ev.exec_count);
 			break;
-		case COLUMN_SLEEP:
-			text.Format(_T("%d"), ev.sleepMsec);
+		case kColumnSleep:
+			text.Format(_T("%d"), ev.sleep_msec);
 			break;
-		case COLUMN_EVENT:
-			if (ev.kind == EventKind::Key)
+		case kColumnEvent:
+			if (ev.kind == EventKind::kKey)
 			{
 				text = _T("キー");
 			}
-			else if (ev.kind == EventKind::Mouse)
+			else if (ev.kind == EventKind::kMouse)
 			{
 				text = _T("マウス");
 			}
 			break;
-		case COLUMN_DETAIL:
+		case kColumnDetail:
 			text = FormatEventDetail(ev);
 			break;
-		case COLUMN_COMMENT:
+		case kColumnComment:
 			text = ev.comment;
 			break;
 		}
 	}
-	m_list.SetItemText(row, column, text);
+	list_.SetItemText(row, column, text);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // タイトル・確認
 
 // 1周にかかる時間(ms)
-int CMacroToolDlg::GetTotalTime() const
+int MacroToolDlg::GetTotalTime() const
 {
-	int msec = static_cast<int>(m_repeatDelayMsec);
-	for (const MACROEVENT& ev : m_events)
+	int msec = static_cast<int>(repeat_delay_msec_);
+	for (const MacroEvent& ev : events_)
 	{
-		if (ev.kind != EventKind::None)
+		if (ev.kind != EventKind::kNone)
 		{
-			msec += static_cast<int>(ev.sleepMsec * ev.execCount);
+			msec += static_cast<int>(ev.sleep_msec * ev.exec_count);
 		}
 	}
 	return msec;
 }
 
-void CMacroToolDlg::SetTitleBar()
+void MacroToolDlg::SetTitleBar()
 {
 	int rest = GetTotalTime();
 	const int msec = rest % 1000;	rest /= 1000;
@@ -1007,14 +1007,14 @@ void CMacroToolDlg::SetTitleBar()
 	const int hour = rest % 24;
 
 	CString total;
-	total.Format(TOTAL_TIME_FORMAT, hour, min, sec, msec);
-	SetWindowText(CString(SETTING_TITLE) + total);
+	total.Format(kTotalTimeFormat, hour, min, sec, msec);
+	SetWindowText(CString(kSettingTitle) + total);
 }
 
 // 2回以上繰り返すのに1周が短すぎる設定は、見直すか確認する
-BOOL CMacroToolDlg::ConfirmSettings()
+BOOL MacroToolDlg::ConfirmSettings()
 {
-	if (m_repeatCount <= 1 || GetTotalTime() > CHECK_CRISIS_MSEC)
+	if (repeat_count_ <= 1 || GetTotalTime() > kCheckCrisisMsec)
 	{
 		return TRUE;
 	}
@@ -1025,7 +1025,7 @@ BOOL CMacroToolDlg::ConfirmSettings()
 	return ret == IDNO;
 }
 
-void CMacroToolDlg::OnOK()
+void MacroToolDlg::OnOK()
 {
 	if (!ConfirmSettings())
 	{

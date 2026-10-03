@@ -3,21 +3,21 @@
 #include "stdafx.h"
 #include "util.h"
 
-CString GetIniFileParam(LPCTSTR fileName, LPCTSTR sectionName, LPCTSTR keyName, LPCTSTR defaultValue)
+CString GetIniFileParam(LPCTSTR file_name, LPCTSTR section_name, LPCTSTR key_name, LPCTSTR default_value)
 {
 	TCHAR value[MAX_PATH];
-	GetPrivateProfileString(sectionName, keyName, defaultValue, value, MAX_PATH, fileName);
+	GetPrivateProfileString(section_name, key_name, default_value, value, MAX_PATH, file_name);
 	return CString(value);
 }
 
-void SetIniFileParam(LPCTSTR fileName, LPCTSTR sectionName, LPCTSTR keyName, LPCTSTR value)
+void SetIniFileParam(LPCTSTR file_name, LPCTSTR section_name, LPCTSTR key_name, LPCTSTR value)
 {
-	WritePrivateProfileString(sectionName, keyName, value, fileName);
+	WritePrivateProfileString(section_name, key_name, value, file_name);
 }
 
-void SetIniFileParam(LPCTSTR fileName, LPCTSTR sectionName, LPCTSTR keyName, int value)
+void SetIniFileParam(LPCTSTR file_name, LPCTSTR section_name, LPCTSTR key_name, int value)
 {
 	CString text;
 	text.Format(_T("%d"), value);
-	WritePrivateProfileString(sectionName, keyName, text, fileName);
+	WritePrivateProfileString(section_name, key_name, text, file_name);
 }

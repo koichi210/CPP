@@ -5,32 +5,32 @@
 #include "macro_defs.h"
 #include "common_ctrl.h"
 
-class CMacroToolDlg : public CDialog
+class MacroToolDlg : public CDialog
 {
 public:
 	// 繰り返し回数と待ち時間は、キャンセルしても呼び出し元に反映される（従来どおり）
-	CMacroToolDlg(CWnd* pParent, const CString& fileName, const std::vector<MACROEVENT>& events,
-		UINT& repeatCount, UINT& repeatDelayMsec);
-	virtual ~CMacroToolDlg();
+	MacroToolDlg(CWnd* parent, const CString& file_name, const std::vector<MacroEvent>& events,
+		UINT& repeat_count, UINT& repeat_delay_msec);
+	virtual ~MacroToolDlg();
 
 	enum { IDD = IDD_MACROTOOL_DIALOG };
 
-	std::vector<MACROEVENT> GetEvents() const;			// 未設定の行を詰めたもの
-	const CString& GetFileName() const	{ return m_fileName; }
+	std::vector<MacroEvent> GetEvents() const;			// 未設定の行を詰めたもの
+	const CString& GetFileName() const	{ return file_name_; }
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 	virtual void OnOK() override;
 
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnSysCommand(UINT id, LPARAM l_param);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLvnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnLButtonDown(UINT flags, CPoint point);
+	afx_msg void OnLButtonUp(UINT flags, CPoint point);
+	afx_msg void OnLButtonDblClk(UINT flags, CPoint point);
+	afx_msg void OnMouseMove(UINT flags, CPoint point);
+	afx_msg void OnLvnItemchangedList(NMHDR* nmhdr, LRESULT* result);
 
 	// 一覧の編集
 	afx_msg void OnListInsert();
@@ -67,19 +67,19 @@ protected:
 private:
 	// EventHookd.dll の公開関数（extern "C" の __cdecl）
 	using HookFunc = BOOL (__cdecl*)();
-	using DebugModeFunc = void (__cdecl*)(BOOL isDebug);
+	using DebugModeFunc = void (__cdecl*)(BOOL is_debug);
 
-	MACROEVENT& CurrentEvent()	{ return m_events[m_index]; }
+	MacroEvent& CurrentEvent()	{ return events_[index_]; }
 
 	void InitControls();
 	void SelectEventKind(EventKind kind);
 	void EnsureEventKind(EventKind kind);
-	void SetModifier(UINT checkId, DWORD modifier);
-	int GetClampedDlgItemInt(UINT id, int maxValue, BOOL bSigned);
+	void SetModifier(UINT check_id, DWORD modifier);
+	int GetClampedDlgItemInt(UINT id, int max_value, BOOL is_signed);
 
 	// ファイル
-	void LoadFile(const CString& fileName);
-	BOOL SelectFile(BOOL bOpen);
+	void LoadFile(const CString& file_name);
+	BOOL SelectFile(BOOL is_open);
 
 	// 記録
 	void StartRecord();
@@ -94,32 +94,32 @@ private:
 	void CheckDlgButtonIfChanged(UINT id, bool check);
 
 	// 一覧の表示更新
-	void UpdateListControl(BOOL bAll = FALSE);
+	void UpdateListControl(BOOL update_all = FALSE);
 	void UpdateListCell(int row, int column);
 
 	int GetTotalTime() const;
 	void SetTitleBar();
 	BOOL ConfirmSettings();
 
-	HICON					m_hIcon;
-	SimpleListCtrl			m_list;
-	RestrictedEdit			m_keyEdit;
-	CComboBox				m_mouseCombo;
-	CComboBox				m_keyCombo;
+	HICON					icon_;
+	SimpleListCtrl			list_;
+	RestrictedEdit			key_edit_;
+	CComboBox				mouse_combo_;
+	CComboBox				key_combo_;
 
-	std::vector<MACROEVENT>	m_events;			// 一覧の全行
-	MACROEVENT				m_clipboard;		// コピーした行
-	int						m_index = 0;		// 選択中の行
-	CString					m_fileName;
-	UINT&					m_repeatCount;
-	UINT&					m_repeatDelayMsec;
+	std::vector<MacroEvent>	events_;			// 一覧の全行
+	MacroEvent				clipboard_;		// コピーした行
+	int						index_ = 0;		// 選択中の行
+	CString					file_name_;
+	UINT&					repeat_count_;
+	UINT&					repeat_delay_msec_;
 
-	BOOL					m_bRecording = FALSE;
-	BOOL					m_bDebug = FALSE;	// フック DLL にログを書かせる
-	HINSTANCE				m_hHookDll;
-	HookFunc				m_pfnStartKeyHook = nullptr;
-	HookFunc				m_pfnStopKeyHook = nullptr;
-	HookFunc				m_pfnStartMouseHook = nullptr;
-	HookFunc				m_pfnStopMouseHook = nullptr;
-	DebugModeFunc			m_pfnDebugMode = nullptr;
+	BOOL					recording_ = FALSE;
+	BOOL					debug_ = FALSE;	// フック DLL にログを書かせる
+	HINSTANCE				hook_dll_;
+	HookFunc				start_key_hook_ = nullptr;
+	HookFunc				stop_key_hook_ = nullptr;
+	HookFunc				start_mouse_hook_ = nullptr;
+	HookFunc				stop_mouse_hook_ = nullptr;
+	DebugModeFunc			debug_mode_ = nullptr;
 };

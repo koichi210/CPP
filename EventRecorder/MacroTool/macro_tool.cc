@@ -8,23 +8,23 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CMacroToolApp, CWinApp)
+BEGIN_MESSAGE_MAP(MacroToolApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CMacroToolApp theApp;
+MacroToolApp the_app;
 
-BOOL CMacroToolApp::InitInstance()
+BOOL MacroToolApp::InitInstance()
 {
 	// 一覧（リストビュー）などのコモンコントロールを使えるようにする
-	INITCOMMONCONTROLSEX initCtrls = {};
-	initCtrls.dwSize = sizeof(initCtrls);
-	initCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls = {};
+	init_ctrls.dwSize = sizeof(init_ctrls);
+	init_ctrls.dwICC = ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 
-	CMainDlg dlg;
+	MainDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 

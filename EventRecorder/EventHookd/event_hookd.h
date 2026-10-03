@@ -10,4 +10,4 @@ HOOKD_API BOOL StartKeyHook();
 HOOKD_API BOOL StartMouseHook();
 HOOKD_API BOOL StopKeyHook();
 HOOKD_API BOOL StopMouseHook();
-HOOKD_API void DebugMode(BOOL IsDebug);	// TRUE のときだけ操作をログファイルに書く
+HOOKD_API void DebugMode(BOOL is_debug);	// TRUE のときだけ操作をログファイルに書く

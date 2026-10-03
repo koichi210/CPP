@@ -13,37 +13,37 @@
 
 namespace
 {
-	constexpr UINT WM_PLAY_FINISHED = WM_USER + 100;	// 実行スレッドの終了通知
+	constexpr UINT kWmPlayFinished = WM_USER + 100;	// 実行スレッドの終了通知
 
-	constexpr UINT DEFAULT_REPEAT_COUNT = 1;
-	constexpr UINT DEFAULT_REPEAT_DELAY_MSEC = 100;
-	constexpr DWORD START_WAIT_MSEC = 1000;				// 「実行」を押してから動き出すまで
-	constexpr TCHAR DEFAULT_SETTING_FILE[] = _T("save.txt");
-	constexpr TCHAR START_TITLE[] = _T("[開始]");
+	constexpr UINT kDefaultRepeatCount = 1;
+	constexpr UINT kDefaultRepeatDelayMsec = 100;
+	constexpr DWORD kStartWaitMsec = 1000;				// 「実行」を押してから動き出すまで
+	constexpr TCHAR kDefaultSettingFile[] = _T("save.txt");
+	constexpr TCHAR kStartTitle[] = _T("[開始]");
 
 	// 待ち時間の間、1秒ごとに押すキー（画面のロック防止用。VK_CAPITAL 等を指定する）
-	constexpr int FLICKER_KEY = kVkNone;
+	constexpr int kFlickerKey = kVkNone;
 
 	// 実行スレッドに渡す設定（スレッド側で解放する）
-	struct PLAYSETTINGS
+	struct PlaySettings
 	{
-		HWND						hWnd;
-		const std::atomic<bool>*	pRunning;
-		UINT						repeatCount;
-		UINT						repeatDelayMsec;
-		std::vector<MACROEVENT>		events;
+		HWND						wnd;
+		const std::atomic<bool>*	running;
+		UINT						repeat_count;
+		UINT						repeat_delay_msec;
+		std::vector<MacroEvent>		events;
 	};
 
 	// 1秒ずつ待ちながら停止要求を確かめる
-	void SleepWithFlicker(int sleepMsec, const std::atomic<bool>& running)
+	void SleepWithFlicker(int sleep_msec, const std::atomic<bool>& running)
 	{
 		// 1秒未満の端数を先に待つ
-		Sleep(sleepMsec % 1000);
+		Sleep(sleep_msec % 1000);
 
 		int count = 0;
-		for (int i = 0; i < sleepMsec / 1000 && running; i++)
+		for (int i = 0; i < sleep_msec / 1000 && running; i++)
 		{
-			InputSimulator::FunctionKeyAction(static_cast<BYTE>(FLICKER_KEY));
+			InputSimulator::FunctionKeyAction(static_cast<BYTE>(kFlickerKey));
 			count++;
 			Sleep(1000);
 		}
@@ -51,36 +51,36 @@ namespace
 		// トグルするキーを元の状態に戻す
 		if (count % 2)
 		{
-			InputSimulator::FunctionKeyAction(static_cast<BYTE>(FLICKER_KEY));
+			InputSimulator::FunctionKeyAction(static_cast<BYTE>(kFlickerKey));
 		}
 	}
 
-	void PlayMouse(const MACROMOUSE& mouse)
+	void PlayMouse(const MacroMouse& mouse)
 	{
 		InputSimulator::MouseMove(mouse.pt);
 		switch (mouse.operation)
 		{
 		default:
-		case MOUSEOP_LCLICK:	InputSimulator::MouseLButtonClick();	break;
-		case MOUSEOP_LDOWN:		InputSimulator::MouseLButtonDown();	break;
-		case MOUSEOP_LUP:		InputSimulator::MouseLButtonUp();		break;
-		case MOUSEOP_RCLICK:	InputSimulator::MouseRButtonClick();	break;
-		case MOUSEOP_RDOWN:		InputSimulator::MouseRButtonDown();	break;
-		case MOUSEOP_RUP:		InputSimulator::MouseRButtonUp();		break;
-		case MOUSEOP_MOVE:												break;
+		case kMouseOpLClick:	InputSimulator::MouseLButtonClick();	break;
+		case kMouseOpLDown:		InputSimulator::MouseLButtonDown();	break;
+		case kMouseOpLUp:		InputSimulator::MouseLButtonUp();		break;
+		case kMouseOpRClick:	InputSimulator::MouseRButtonClick();	break;
+		case kMouseOpRDown:		InputSimulator::MouseRButtonDown();	break;
+		case kMouseOpRUp:		InputSimulator::MouseRButtonUp();		break;
+		case kMouseOpMove:												break;
 		}
 	}
 
-	void PlayKey(const MACROKEY& key)
+	void PlayKey(const MacroKey& key)
 	{
 		// 修飾キーを押したまま入力する
-		if (key.modifiers & MODIFIER_SHIFT)	InputSimulator::KeyAction(VK_SHIFT, TRUE);
-		if (key.modifiers & MODIFIER_CTRL)	InputSimulator::KeyAction(VK_CONTROL, TRUE);
-		if (key.modifiers & MODIFIER_ALT)	InputSimulator::KeyAction(VK_MENU, TRUE);
+		if (key.modifiers & kModifierShift)	InputSimulator::KeyAction(VK_SHIFT, TRUE);
+		if (key.modifiers & kModifierCtrl)	InputSimulator::KeyAction(VK_CONTROL, TRUE);
+		if (key.modifiers & kModifierAlt)	InputSimulator::KeyAction(VK_MENU, TRUE);
 
-		if (KEYKIND_F1 <= key.keyKind && key.keyKind <= KEYKIND_F12)
+		if (kKeyKindF1 <= key.key_kind && key.key_kind <= kKeyKindF12)
 		{
-			InputSimulator::FunctionKeyAction(static_cast<BYTE>(VK_F1 + key.keyKind - KEYKIND_F1));
+			InputSimulator::FunctionKeyAction(static_cast<BYTE>(VK_F1 + key.key_kind - kKeyKindF1));
 		}
 		else
 		{
@@ -90,41 +90,41 @@ namespace
 			}
 		}
 
-		if (key.modifiers & MODIFIER_SHIFT)	InputSimulator::KeyAction(VK_SHIFT, FALSE);
-		if (key.modifiers & MODIFIER_CTRL)	InputSimulator::KeyAction(VK_CONTROL, FALSE);
-		if (key.modifiers & MODIFIER_ALT)	InputSimulator::KeyAction(VK_MENU, FALSE);
+		if (key.modifiers & kModifierShift)	InputSimulator::KeyAction(VK_SHIFT, FALSE);
+		if (key.modifiers & kModifierCtrl)	InputSimulator::KeyAction(VK_CONTROL, FALSE);
+		if (key.modifiers & kModifierAlt)	InputSimulator::KeyAction(VK_MENU, FALSE);
 	}
 
-	UINT PlayThreadProc(LPVOID pParam)
+	UINT PlayThreadProc(LPVOID param)
 	{
-		std::unique_ptr<PLAYSETTINGS> pSettings(static_cast<PLAYSETTINGS*>(pParam));
-		const std::atomic<bool>& running = *pSettings->pRunning;
+		std::unique_ptr<PlaySettings> settings(static_cast<PlaySettings*>(param));
+		const std::atomic<bool>& running = *settings->running;
 
-		for (UINT i = 0; i < pSettings->repeatCount && running; i++)
+		for (UINT i = 0; i < settings->repeat_count && running; i++)
 		{
-			for (int j = 0; j < MAX_EVENT_COUNT && running; j++)
+			for (int j = 0; j < kMaxEventCount && running; j++)
 			{
-				const MACROEVENT& ev = pSettings->events[j];
-				if (ev.kind == EventKind::None)
+				const MacroEvent& ev = settings->events[j];
+				if (ev.kind == EventKind::kNone)
 				{
 					break;	// これ以降は未設定
 				}
 
-				for (int k = 0; k < ev.execCount; k++)
+				for (int k = 0; k < ev.exec_count; k++)
 				{
 					// タイトルに「何周目:何行目:何回目」を出す
 					CString title;
 					title.Format(_T("[(%d:%d:%d)]"), i + 1, j + 1, k + 1);
-					::SetWindowText(pSettings->hWnd, title);
+					::SetWindowText(settings->wnd, title);
 
 					// 待ってから、動かす前に停止要求を確かめる
-					SleepWithFlicker(static_cast<int>(ev.sleepMsec), running);
+					SleepWithFlicker(static_cast<int>(ev.sleep_msec), running);
 					if (!running)
 					{
 						break;
 					}
 
-					if (ev.kind == EventKind::Mouse)
+					if (ev.kind == EventKind::kMouse)
 					{
 						PlayMouse(ev.mouse);
 					}
@@ -134,103 +134,103 @@ namespace
 					}
 				}
 			}
-			SleepWithFlicker(static_cast<int>(pSettings->repeatDelayMsec), running);
+			SleepWithFlicker(static_cast<int>(settings->repeat_delay_msec), running);
 		}
-		::PostMessage(pSettings->hWnd, WM_PLAY_FINISHED, 0, 0);
+		::PostMessage(settings->wnd, kWmPlayFinished, 0, 0);
 
 		return TRUE;
 	}
 }
 
-CMainDlg::CMainDlg(CWnd* pParent)
-	: CDialog(IDD, pParent)
-	, m_events(MAX_EVENT_COUNT)
-	, m_repeatCount(DEFAULT_REPEAT_COUNT)
-	, m_repeatDelayMsec(DEFAULT_REPEAT_DELAY_MSEC)
+MainDlg::MainDlg(CWnd* parent)
+	: CDialog(IDD, parent)
+	, events_(kMaxEventCount)
+	, repeat_count_(kDefaultRepeatCount)
+	, repeat_delay_msec_(kDefaultRepeatDelayMsec)
 {
 }
 
-BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
-	ON_BN_CLICKED(IDBT_SETTING, &CMainDlg::OnSetting)
-	ON_BN_CLICKED(IDBT_EXEC, &CMainDlg::OnExec)
-	ON_BN_CLICKED(IDBT_STOP, &CMainDlg::OnStop)
-	ON_BN_CLICKED(IDCLOSE, &CMainDlg::OnBnClickedClose)
-	ON_MESSAGE(WM_PLAY_FINISHED, &CMainDlg::OnPlayFinished)
+BEGIN_MESSAGE_MAP(MainDlg, CDialog)
+	ON_BN_CLICKED(IDBT_SETTING, &MainDlg::OnSetting)
+	ON_BN_CLICKED(IDBT_EXEC, &MainDlg::OnExec)
+	ON_BN_CLICKED(IDBT_STOP, &MainDlg::OnStop)
+	ON_BN_CLICKED(IDCLOSE, &MainDlg::OnBnClickedClose)
+	ON_MESSAGE(kWmPlayFinished, &MainDlg::OnPlayFinished)
 END_MESSAGE_MAP()
 
-BOOL CMainDlg::OnInitDialog()
+BOOL MainDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_version.LoadString(IDS_VERSION);
-	SetWindowText(m_version);
+	version_.LoadString(IDS_VERSION);
+	SetWindowText(version_);
 
 	return TRUE;
 }
 
-void CMainDlg::OnSetting()
+void MainDlg::OnSetting()
 {
 	// 設定ファイルはカレントディレクトリに置く
 	CString name;
 	GetDlgItemText(IDET_SAMPLE, name);
 	CString path(_T(".\\"));
-	path += name.IsEmpty() ? CString(DEFAULT_SETTING_FILE) : name;
+	path += name.IsEmpty() ? CString(kDefaultSettingFile) : name;
 
-	CMacroToolDlg dlg(this, path, m_events, m_repeatCount, m_repeatDelayMsec);
+	MacroToolDlg dlg(this, path, events_, repeat_count_, repeat_delay_msec_);
 	if (dlg.DoModal() == IDOK)
 	{
-		m_events = dlg.GetEvents();
+		events_ = dlg.GetEvents();
 
 		// 拡張子を除いたファイル名を表示する
-		CString fileTitle;
-		SplitPath(dlg.GetFileName(), nullptr, nullptr, &fileTitle, nullptr);
-		SetDlgItemText(IDET_SAMPLE, fileTitle);
+		CString file_title;
+		SplitPath(dlg.GetFileName(), nullptr, nullptr, &file_title, nullptr);
+		SetDlgItemText(IDET_SAMPLE, file_title);
 	}
 }
 
-void CMainDlg::OnExec()
+void MainDlg::OnExec()
 {
 	GetDlgItem(IDBT_EXEC)->EnableWindow(FALSE);
 	GetDlgItem(IDBT_SETTING)->EnableWindow(FALSE);
 
 	CString title;
-	title.Format(_T("%s %s"), static_cast<LPCTSTR>(m_version), START_TITLE);
+	title.Format(_T("%s %s"), static_cast<LPCTSTR>(version_), kStartTitle);
 	SetWindowText(title);
 
-	Sleep(START_WAIT_MSEC);
+	Sleep(kStartWaitMsec);
 
-	auto pSettings = std::make_unique<PLAYSETTINGS>();
-	pSettings->hWnd = m_hWnd;
-	pSettings->pRunning = &m_running;
-	pSettings->repeatCount = m_repeatCount;
-	pSettings->repeatDelayMsec = m_repeatDelayMsec;
-	pSettings->events = m_events;
+	auto settings = std::make_unique<PlaySettings>();
+	settings->wnd = m_hWnd;
+	settings->running = &running_;
+	settings->repeat_count = repeat_count_;
+	settings->repeat_delay_msec = repeat_delay_msec_;
+	settings->events = events_;
 
-	m_running = true;
-	AfxBeginThread(PlayThreadProc, pSettings.release());
+	running_ = true;
+	AfxBeginThread(PlayThreadProc, settings.release());
 }
 
-LRESULT CMainDlg::OnPlayFinished(WPARAM /*wParam*/, LPARAM /*lParam*/)
+LRESULT MainDlg::OnPlayFinished(WPARAM /*w_param*/, LPARAM /*l_param*/)
 {
 	OnStop();
 	ShowWindow(SW_RESTORE);
 	return TRUE;
 }
 
-void CMainDlg::OnStop()
+void MainDlg::OnStop()
 {
-	if (m_running)
+	if (running_)
 	{
-		SetWindowText(m_version);
-		m_running = false;
+		SetWindowText(version_);
+		running_ = false;
 	}
 
 	GetDlgItem(IDBT_EXEC)->EnableWindow(TRUE);
 	GetDlgItem(IDBT_SETTING)->EnableWindow(TRUE);
 }
 
-void CMainDlg::OnBnClickedClose()
+void MainDlg::OnBnClickedClose()
 {
-	m_running = false;
+	running_ = false;
 	OnOK();
 }

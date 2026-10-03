@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CMacroToolApp : public CWinApp
+class MacroToolApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;
