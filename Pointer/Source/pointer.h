@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CPointerApp : public CWinApp
+class PointerApp : public CWinApp
 {
 public:
-	CPointerApp();
+	PointerApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CPointerApp theApp;
+extern PointerApp the_app;

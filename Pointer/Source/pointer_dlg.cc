@@ -9,40 +9,40 @@
 #define new DEBUG_NEW
 #endif
 
-CPointerDlg::CPointerDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
-	, m_test{}
+PointerDlg::PointerDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
+	, test_{}
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CPointerDlg::DoDataExchange(CDataExchange* pDX)
+void PointerDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(dx);
 }
 
-BEGIN_MESSAGE_MAP(CPointerDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(PointerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CPointerDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &PointerDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-BOOL CPointerDlg::OnInitDialog()
+BOOL PointerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
-	m_test.param1 = 1;
-	m_test.param2 = 20;
-	m_test.param3 = 300;
+	test_.param1 = 1;
+	test_.param2 = 20;
+	test_.param3 = 300;
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CPointerDlg::OnPaint()
+void PointerDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -50,14 +50,14 @@ void CPointerDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -65,23 +65,23 @@ void CPointerDlg::OnPaint()
 	}
 }
 
-HCURSOR CPointerDlg::OnQueryDragIcon()
+HCURSOR PointerDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-// どちらの受け取り方でも m_test 本体を指すこと、
+// どちらの受け取り方でも test_ 本体を指すこと、
 // ポインタ変数自体は別々の場所にあることを表示して確かめる
-void CPointerDlg::OnBnClickedButton1()
+void PointerDlg::OnBnClickedButton1()
 {
-	TEST_T*	pTest = nullptr;
-	TEST_T*	pTest2;
+	TestData*	test = nullptr;
+	TestData*	test2;
 
-	GetParam(&pTest);
-	pTest2 = GetParam();
+	GetParam(&test);
+	test2 = GetParam();
 
-	CString AddrStr;
-	AddrStr.Format(
+	CString addr_str;
+	addr_str.Format(
 		"Addr  m_test本体\t\t = %08x\n"
 		"Addr  pTestが指す先\t = %08x\n"
 		"Addr  pTest2が指す先\t = %08x\n"
@@ -91,26 +91,26 @@ void CPointerDlg::OnBnClickedButton1()
 		"Data  m_test.param2\t = %08x\n"
 		"Data  pTest->param2\t = %08x\n"
 		"Data  pTest2->param2\t = %08x\n" ,
-		&m_test,
-		pTest,
-		pTest2,
+		&test_,
+		test,
+		test2,
 
-		&pTest,
-		&pTest2,
+		&test,
+		&test2,
 
-		m_test.param2,
-		pTest->param2,
-		pTest2->param2);
+		test_.param2,
+		test->param2,
+		test2->param2);
 
-	MessageBox(AddrStr);
+	MessageBox(addr_str);
 }
 
-void CPointerDlg::GetParam(TEST_T** pp)
+void PointerDlg::GetParam(TestData** pp)
 {
-	*pp = &m_test;
+	*pp = &test_;
 }
 
-TEST_T* CPointerDlg::GetParam()
+TestData* PointerDlg::GetParam()
 {
-	return &m_test;
+	return &test_;
 }

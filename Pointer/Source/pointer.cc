@@ -8,27 +8,27 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CPointerApp, CWinApp)
+BEGIN_MESSAGE_MAP(PointerApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CPointerApp::CPointerApp()
+PointerApp::PointerApp()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 }
 
-CPointerApp theApp;
+PointerApp the_app;
 
-BOOL CPointerApp::InitInstance()
+BOOL PointerApp::InitInstance()
 {
 	// ComCtl32 v6 を使うマニフェストのとき、これが無いとウィンドウ作成に失敗する
-	INITCOMMONCONTROLSEX initCtrls = { sizeof(initCtrls), ICC_WIN95_CLASSES };
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls = { sizeof(init_ctrls), ICC_WIN95_CLASSES };
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 	AfxEnableControlContainer();
 
-	CPointerDlg dlg;
+	PointerDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
