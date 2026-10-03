@@ -2,15 +2,15 @@
 
 #pragma once
 
-class CSendSpoolFileDlg : public CDialog
+class SendSpoolFileDlg : public CDialog
 {
 public:
-	explicit CSendSpoolFileDlg(CWnd* pParent = nullptr);
+	explicit SendSpoolFileDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_SPOOLJOB2_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -20,7 +20,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	void AddPrinters(DWORD enumFlags);
+	void AddPrinters(DWORD enum_flags);
 
-	HICON m_hIcon;
+	HICON icon_;
 };

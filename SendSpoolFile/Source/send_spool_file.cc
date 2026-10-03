@@ -8,22 +8,22 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CSendSpoolFileApp, CWinApp)
+BEGIN_MESSAGE_MAP(SendSpoolFileApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CSendSpoolFileApp theApp;
+SendSpoolFileApp the_app;
 
-BOOL CSendSpoolFileApp::InitInstance()
+BOOL SendSpoolFileApp::InitInstance()
 {
 	// ComCtl32 v6 を使うマニフェストのとき、これが無いとウィンドウ作成に失敗する
-	INITCOMMONCONTROLSEX initCtrls = { sizeof(initCtrls), ICC_WIN95_CLASSES };
-	InitCommonControlsEx(&initCtrls);
+	INITCOMMONCONTROLSEX init_ctrls = { sizeof(init_ctrls), ICC_WIN95_CLASSES };
+	InitCommonControlsEx(&init_ctrls);
 
 	CWinApp::InitInstance();
 	AfxEnableControlContainer();
 
-	CSendSpoolFileDlg dlg;
+	SendSpoolFileDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 

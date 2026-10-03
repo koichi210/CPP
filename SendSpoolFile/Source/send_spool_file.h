@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CSendSpoolFileApp : public CWinApp
+class SendSpoolFileApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;
@@ -16,4 +16,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CSendSpoolFileApp theApp;
+extern SendSpoolFileApp the_app;

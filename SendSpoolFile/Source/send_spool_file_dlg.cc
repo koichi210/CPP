@@ -12,95 +12,95 @@
 
 namespace
 {
-	constexpr DWORD READ_BUFFER_SIZE = 4096;
+	constexpr DWORD kReadBufferSize = 4096;
 
 	// EMF スプールファイルの中身をそのままプリンタへ流し込む
-	BOOL SpoolJob(HANDLE hPrinter, const CString& spoolName)
+	BOOL SpoolJob(HANDLE printer, const CString& spool_name)
 	{
 		// DOC_INFO_1 のメンバは非 const の LPSTR なので、書き換え可能なバッファを渡す
-		CString docName = spoolName;
-		char dataType[] = "NT EMF 1.008";
+		CString doc_name = spool_name;
+		char data_type[] = "NT EMF 1.008";
 
-		DOC_INFO_1 docInfo = {};
-		docInfo.pDocName = docName.GetBuffer();
-		docInfo.pOutputFile = nullptr;
-		docInfo.pDatatype = dataType;
+		DOC_INFO_1 doc_info = {};
+		doc_info.pDocName = doc_name.GetBuffer();
+		doc_info.pOutputFile = nullptr;
+		doc_info.pDatatype = data_type;
 
-		BOOL bRtn = TRUE;
-		DWORD jobId = StartDocPrinter(hPrinter, 1, reinterpret_cast<LPBYTE>(&docInfo));
-		if (!jobId)
+		BOOL result = TRUE;
+		DWORD job_id = StartDocPrinter(printer, 1, reinterpret_cast<LPBYTE>(&doc_info));
+		if (!job_id)
 		{
-			bRtn = FALSE;
+			result = FALSE;
 		}
 		else
 		{
-			HANDLE hFile = CreateFile(
-				spoolName,
+			HANDLE file = CreateFile(
+				spool_name,
 				GENERIC_READ,
 				FILE_SHARE_READ | FILE_SHARE_WRITE,
 				nullptr,
 				OPEN_EXISTING,
 				FILE_ATTRIBUTE_NORMAL,
 				nullptr);
-			if (hFile == INVALID_HANDLE_VALUE)
+			if (file == INVALID_HANDLE_VALUE)
 			{
-				bRtn = FALSE;
+				result = FALSE;
 			}
 			else
 			{
-				DWORD fileSize = GetFileSize(hFile, nullptr);
+				DWORD file_size = GetFileSize(file, nullptr);
 				DWORD total = 0;
-				CHAR buff[READ_BUFFER_SIZE];
+				CHAR buff[kReadBufferSize];
 
-				while (total != fileSize)
+				while (total != file_size)
 				{
-					DWORD readSize = 0;
-					if (!ReadFile(hFile, buff, sizeof(buff), &readSize, nullptr) || readSize == 0)
+					DWORD read_size = 0;
+					if (!ReadFile(file, buff, sizeof(buff), &read_size, nullptr) || read_size == 0)
 					{
-						bRtn = FALSE;
+						result = FALSE;
 						break;
 					}
-					DWORD writeSize = 0;
-					if (!WritePrinter(hPrinter, buff, readSize, &writeSize))
+					DWORD write_size = 0;
+					if (!WritePrinter(printer, buff, read_size, &write_size))
 					{
 						::MessageBox(nullptr, "WritePrinter error\n", "Warning!!", MB_OK);
 					}
-					total += readSize;
+					total += read_size;
 				}
-				CloseHandle(hFile);
+				CloseHandle(file);
 			}
-			EndDocPrinter(hPrinter);
+			EndDocPrinter(printer);
 		}
-		docName.ReleaseBuffer();
+		doc_name.ReleaseBuffer();
 
-		return bRtn;
+		return result;
 	}
 }
 
-CSendSpoolFileDlg::CSendSpoolFileDlg(CWnd* pParent /*=nullptr*/)
-	: CDialog(IDD, pParent)
+SendSpoolFileDlg::SendSpoolFileDlg(CWnd* parent /*=nullptr*/)
+	: CDialog(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CSendSpoolFileDlg::DoDataExchange(CDataExchange* pDX)
+void SendSpoolFileDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialog::DoDataExchange(pDX);
+	CDialog::DoDataExchange(dx);
 }
 
-BEGIN_MESSAGE_MAP(CSendSpoolFileDlg, CDialog)
+BEGIN_MESSAGE_MAP(SendSpoolFileDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BROWSE, &CSendSpoolFileDlg::OnBrowse)
-	ON_BN_CLICKED(IDC_EXE, &CSendSpoolFileDlg::OnExecute)
+	ON_BN_CLICKED(IDC_BROWSE, &SendSpoolFileDlg::OnBrowse)
+	ON_BN_CLICKED(IDC_EXE, &SendSpoolFileDlg::OnExecute)
 END_MESSAGE_MAP()
 
-BOOL CSendSpoolFileDlg::OnInitDialog()
+BOOL SendSpoolFileDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	AddPrinters(PRINTER_ENUM_LOCAL);
 	AddPrinters(PRINTER_ENUM_FAVORITE);
@@ -108,32 +108,32 @@ BOOL CSendSpoolFileDlg::OnInitDialog()
 	return TRUE;
 }
 
-void CSendSpoolFileDlg::AddPrinters(DWORD enumFlags)
+void SendSpoolFileDlg::AddPrinters(DWORD enum_flags)
 {
-	DWORD dwNeeded = 0;
-	DWORD dwNum = 0;
+	DWORD needed = 0;
+	DWORD num = 0;
 
 	// 1回目で必要サイズを得て、2回目で実際に取得する
-	EnumPrinters(enumFlags, nullptr, 4, nullptr, 0, &dwNeeded, &dwNum);
-	std::vector<BYTE> buffer(dwNeeded);
-	auto* ppi4 = reinterpret_cast<PRINTER_INFO_4*>(buffer.data());
-	if (!EnumPrinters(enumFlags, nullptr, 4, buffer.data(), dwNeeded, &dwNeeded, &dwNum))
+	EnumPrinters(enum_flags, nullptr, 4, nullptr, 0, &needed, &num);
+	std::vector<BYTE> buffer(needed);
+	auto* printer_infos = reinterpret_cast<PRINTER_INFO_4*>(buffer.data());
+	if (!EnumPrinters(enum_flags, nullptr, 4, buffer.data(), needed, &needed, &num))
 	{
-		dwNum = 0;
+		num = 0;
 	}
 
-	for (DWORD i = 0; i < dwNum; i++)
+	for (DWORD i = 0; i < num; i++)
 	{
-		SendDlgItemMessage(IDCB_PRINTER_NAME, CB_INSERTSTRING, i, reinterpret_cast<LPARAM>(ppi4[i].pPrinterName));
+		SendDlgItemMessage(IDCB_PRINTER_NAME, CB_INSERTSTRING, i, reinterpret_cast<LPARAM>(printer_infos[i].pPrinterName));
 	}
-	if (dwNum > 0)
+	if (num > 0)
 	{
 		SendDlgItemMessage(IDCB_PRINTER_NAME, CB_SETCURSEL, 0, 0);
 	}
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CSendSpoolFileDlg::OnPaint()
+void SendSpoolFileDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -141,14 +141,14 @@ void CSendSpoolFileDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -156,49 +156,49 @@ void CSendSpoolFileDlg::OnPaint()
 	}
 }
 
-HCURSOR CSendSpoolFileDlg::OnQueryDragIcon()
+HCURSOR SendSpoolFileDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CSendSpoolFileDlg::OnBrowse()
+void SendSpoolFileDlg::OnBrowse()
 {
-	char szFileNames[MAX_PATH] = "";
+	char file_names[MAX_PATH] = "";
 
 	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT,
 		"スプールファイル（*.SPL）|*.spl;|すべてのﾌｧｲﾙ （*.*）|*.*||", this);
-	dlg.GetOFN().lpstrFile = szFileNames;
-	dlg.GetOFN().nMaxFile = _countof(szFileNames);
+	dlg.GetOFN().lpstrFile = file_names;
+	dlg.GetOFN().nMaxFile = _countof(file_names);
 	if (dlg.DoModal() == IDOK)
 	{
-		SetDlgItemText(IDC_SPOOL_NAME, szFileNames);
+		SetDlgItemText(IDC_SPOOL_NAME, file_names);
 	}
 }
 
-void CSendSpoolFileDlg::OnExecute()
+void SendSpoolFileDlg::OnExecute()
 {
-	CString strPrinterName;
-	CString strSpoolFileName;
-	GetDlgItemText(IDCB_PRINTER_NAME, strPrinterName);
-	GetDlgItemText(IDC_SPOOL_NAME, strSpoolFileName);
+	CString printer_name;
+	CString spool_file_name;
+	GetDlgItemText(IDCB_PRINTER_NAME, printer_name);
+	GetDlgItemText(IDC_SPOOL_NAME, spool_file_name);
 
-	if (strPrinterName.IsEmpty() || strSpoolFileName.IsEmpty())
+	if (printer_name.IsEmpty() || spool_file_name.IsEmpty())
 	{
 		MessageBox("Illegal input parameter");
 		return;
 	}
 
-	HANDLE hPrinter = nullptr;
-	PRINTER_DEFAULTS printerDefaults = {};
-	printerDefaults.DesiredAccess = PRINTER_ALL_ACCESS;
+	HANDLE printer = nullptr;
+	PRINTER_DEFAULTS printer_defaults = {};
+	printer_defaults.DesiredAccess = PRINTER_ALL_ACCESS;
 
 	// OpenPrinter の第1引数は非 const の LPSTR
-	BOOL bOpened = OpenPrinter(strPrinterName.GetBuffer(), &hPrinter, &printerDefaults);
-	strPrinterName.ReleaseBuffer();
-	if (bOpened)
+	BOOL opened = OpenPrinter(printer_name.GetBuffer(), &printer, &printer_defaults);
+	printer_name.ReleaseBuffer();
+	if (opened)
 	{
-		SpoolJob(hPrinter, strSpoolFileName);
-		ClosePrinter(hPrinter);
+		SpoolJob(printer, spool_file_name);
+		ClosePrinter(printer);
 	}
 	else
 	{
