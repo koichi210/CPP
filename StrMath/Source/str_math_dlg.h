@@ -2,15 +2,15 @@
 
 #pragma once
 
-class CStrMathDlg : public CDialog
+class StrMathDlg : public CDialog
 {
 public:
-	explicit CStrMathDlg(CWnd* pParent = nullptr);
+	explicit StrMathDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_STRMATH_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();
@@ -25,14 +25,14 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	enum class Operation { Sum, Sub };
+	enum class Operation { kSum, kSub };
 
 	int BuildNumber() const;
 
-	HICON m_hIcon;
-	CFont m_font;
-	int m_num1 = 0;
-	int m_num2 = 0;
-	int m_digits = 2;
-	Operation m_operation = Operation::Sum;
+	HICON icon_;
+	CFont font_;
+	int num1_ = 0;
+	int num2_ = 0;
+	int digits_ = 2;
+	Operation operation_ = Operation::kSum;
 };

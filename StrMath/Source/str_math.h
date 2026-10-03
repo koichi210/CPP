@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CStrMathApp : public CWinApp
+class StrMathApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;

@@ -8,17 +8,17 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CStrMathApp, CWinApp)
+BEGIN_MESSAGE_MAP(StrMathApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CStrMathApp theApp;
+StrMathApp the_app;
 
-BOOL CStrMathApp::InitInstance()
+BOOL StrMathApp::InitInstance()
 {
 	AfxEnableControlContainer();
 
-	CStrMathDlg dlg;
+	StrMathDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
