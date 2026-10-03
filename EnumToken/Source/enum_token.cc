@@ -1,8 +1,8 @@
-﻿// EnumToken.cpp : アプリケーションクラス
+﻿// enum_token.cc : アプリケーションクラス
 
 #include "stdafx.h"
-#include "EnumToken.h"
-#include "EnumTokenDlg.h"
+#include "enum_token.h"
+#include "enum_token_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

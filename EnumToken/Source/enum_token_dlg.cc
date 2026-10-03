@@ -1,8 +1,8 @@
-﻿// EnumTokenDlg.cpp : メインダイアログ
+﻿// enum_token_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
-#include "EnumToken.h"
-#include "EnumTokenDlg.h"
+#include "enum_token.h"
+#include "enum_token_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

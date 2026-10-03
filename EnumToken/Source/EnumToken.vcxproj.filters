@@ -18,10 +18,10 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EnumToken.cpp">
+    <ClCompile Include="enum_token.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EnumTokenDlg.cpp">
+    <ClCompile Include="enum_token_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -37,10 +37,10 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EnumToken.h">
+    <ClInclude Include="enum_token.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EnumTokenDlg.h">
+    <ClInclude Include="enum_token_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

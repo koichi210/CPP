@@ -1,4 +1,4 @@
-﻿// EnumToken.h : アプリケーションクラス
+﻿// enum_token.h : アプリケーションクラス
 
 #pragma once
 
