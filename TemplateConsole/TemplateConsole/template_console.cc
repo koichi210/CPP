@@ -18,17 +18,16 @@ S FuncMul(T x, S y)
 	return x * y;
 }
 
-// クラステンプレート
+// クラステンプレート（公開のデータを持つだけなので struct。データメンバに末尾の _ は付けない）
 template <typename T>
-class Calc
+struct Calc
 {
-public:
-	T n1_;
-	T n2_;
+	T n1;
+	T n2;
 
 	T Add() const
 	{
-		return n1_ + n2_;
+		return n1 + n2;
 	}
 };
 
@@ -41,13 +40,13 @@ int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 	std::cout << FuncMul<int, double>(20, 1.5) << std::endl;		// 型引数を複数指定
 
 	Calc<int> calc1;
-	calc1.n1_ = 7;
-	calc1.n2_ = 8;
+	calc1.n1 = 7;
+	calc1.n2 = 8;
 	std::cout << calc1.Add() << std::endl;
 
 	Calc<std::string> calc2;
-	calc2.n1_ = "GHI";
-	calc2.n2_ = "jkl";
+	calc2.n1 = "GHI";
+	calc2.n2 = "jkl";
 	std::cout << calc2.Add() << std::endl;
 
 	return 0;
