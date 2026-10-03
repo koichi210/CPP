@@ -12,7 +12,7 @@
 #include <GL/glut.h>
 
 // 描画関数は glutDisplayFunc に渡すものを差し替えて見比べる
-void dispMonochrome(void) {
+void DispMonochrome(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glBegin(GL_TRIANGLES);
@@ -28,7 +28,7 @@ void dispMonochrome(void) {
 	glFlush();
 }
 
-void dispColor(void) {
+void DispColor(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glBegin(GL_TRIANGLES);
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
 
 	glutCreateWindow("図形描画");
-	glutDisplayFunc(dispColor);
+	glutDisplayFunc(DispColor);
 	glutMainLoop();
 	return 0;
 }
