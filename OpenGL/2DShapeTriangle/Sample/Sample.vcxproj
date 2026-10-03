@@ -153,7 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Sample.cpp" />
+    <ClCompile Include="sample.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
