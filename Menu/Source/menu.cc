@@ -15,44 +15,44 @@ namespace
 	// 実行時に追加する項目のコマンド ID（ハンドラは無い）
 	constexpr UINT_PTR kAddedItemId = 1;
 
-	HINSTANCE g_hInst = nullptr;
-	TCHAR g_szTitle[kMaxLoadString];
-	TCHAR g_szWindowClass[kMaxLoadString];
+	HINSTANCE inst = nullptr;
+	TCHAR title[kMaxLoadString];
+	TCHAR window_class[kMaxLoadString];
 
-	HMENU GetTestAreaMenu(HWND hWnd)
+	HMENU GetTestAreaMenu(HWND wnd)
 	{
-		return GetSubMenu(GetMenu(hWnd), kTestAreaPosition);
+		return GetSubMenu(GetMenu(wnd), kTestAreaPosition);
 	}
 
-	HMENU GetTestSubMenu(HWND hWnd)
+	HMENU GetTestSubMenu(HWND wnd)
 	{
-		return GetSubMenu(GetTestAreaMenu(hWnd), kTestSubMenuPosition);
+		return GetSubMenu(GetTestAreaMenu(wnd), kTestSubMenuPosition);
 	}
 
 	// 末尾に項目を追加する
-	void AppendTestItem(HMENU hMenu, LPCTSTR text)
+	void AppendTestItem(HMENU menu, LPCTSTR text)
 	{
-		AppendMenu(hMenu, MF_BYPOSITION, kAddedItemId, text);
+		AppendMenu(menu, MF_BYPOSITION, kAddedItemId, text);
 	}
 
 	// 先頭の項目を削除する
-	void DeleteFirstItem(HMENU hMenu)
+	void DeleteFirstItem(HMENU menu)
 	{
-		DeleteMenu(hMenu, 0, MF_BYPOSITION);
+		DeleteMenu(menu, 0, MF_BYPOSITION);
 	}
 
-	INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+	INT_PTR CALLBACK About(HWND dlg, UINT message, WPARAM w_param, LPARAM l_param)
 	{
-		UNREFERENCED_PARAMETER(lParam);
+		UNREFERENCED_PARAMETER(l_param);
 		switch (message)
 		{
 		case WM_INITDIALOG:
 			return static_cast<INT_PTR>(TRUE);
 
 		case WM_COMMAND:
-			if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+			if (LOWORD(w_param) == IDOK || LOWORD(w_param) == IDCANCEL)
 			{
-				EndDialog(hDlg, LOWORD(wParam));
+				EndDialog(dlg, LOWORD(w_param));
 				return static_cast<INT_PTR>(TRUE);
 			}
 			break;
@@ -60,105 +60,105 @@ namespace
 		return static_cast<INT_PTR>(FALSE);
 	}
 
-	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK WndProc(HWND wnd, UINT message, WPARAM w_param, LPARAM l_param)
 	{
 		switch (message)
 		{
 		case WM_COMMAND:
-			switch (LOWORD(wParam))
+			switch (LOWORD(w_param))
 			{
 			case IDM_ADD_MENU:
-				AppendTestItem(GetTestAreaMenu(hWnd), _T("Create Menu!!"));
+				AppendTestItem(GetTestAreaMenu(wnd), _T("Create Menu!!"));
 				break;
 			case IDM_DEL_MENU:
-				DeleteFirstItem(GetTestAreaMenu(hWnd));
+				DeleteFirstItem(GetTestAreaMenu(wnd));
 				break;
 			case IDM_ADD_SUB_MENU:
-				AppendTestItem(GetTestSubMenu(hWnd), _T("Create SubMenu!!"));
+				AppendTestItem(GetTestSubMenu(wnd), _T("Create SubMenu!!"));
 				break;
 			case IDM_DEL_SUB_MENU:
-				DeleteFirstItem(GetTestSubMenu(hWnd));
+				DeleteFirstItem(GetTestSubMenu(wnd));
 				break;
 			case IDM_ABOUT:
-				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+				DialogBox(inst, MAKEINTRESOURCE(IDD_ABOUTBOX), wnd, About);
 				break;
 			case IDM_EXIT:
-				DestroyWindow(hWnd);
+				DestroyWindow(wnd);
 				break;
 			default:
-				return DefWindowProc(hWnd, message, wParam, lParam);
+				return DefWindowProc(wnd, message, w_param, l_param);
 			}
 			break;
 		case WM_PAINT:
 		{
 			PAINTSTRUCT ps;
-			BeginPaint(hWnd, &ps);
-			EndPaint(hWnd, &ps);
+			BeginPaint(wnd, &ps);
+			EndPaint(wnd, &ps);
 			break;
 		}
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
 		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
+			return DefWindowProc(wnd, message, w_param, l_param);
 		}
 		return 0;
 	}
 
-	ATOM MyRegisterClass(HINSTANCE hInstance)
+	ATOM MyRegisterClass(HINSTANCE instance)
 	{
 		WNDCLASSEX wcex = {};
 		wcex.cbSize = sizeof(WNDCLASSEX);
 		wcex.style = CS_HREDRAW | CS_VREDRAW;
 		wcex.lpfnWndProc = WndProc;
-		wcex.hInstance = hInstance;
-		wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MENU));
+		wcex.hInstance = instance;
+		wcex.hIcon = LoadIcon(instance, MAKEINTRESOURCE(IDI_MENU));
 		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 		wcex.lpszMenuName = MAKEINTRESOURCE(IDC_MENU);
-		wcex.lpszClassName = g_szWindowClass;
-		wcex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SMALL));
+		wcex.lpszClassName = window_class;
+		wcex.hIconSm = LoadIcon(instance, MAKEINTRESOURCE(IDI_SMALL));
 
 		return RegisterClassEx(&wcex);
 	}
 
-	BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+	BOOL InitInstance(HINSTANCE instance, int cmd_show)
 	{
-		g_hInst = hInstance;
+		inst = instance;
 
-		HWND hWnd = CreateWindow(g_szWindowClass, g_szTitle, WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-		if (!hWnd)
+		HWND wnd = CreateWindow(window_class, title, WS_OVERLAPPEDWINDOW,
+			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, instance, nullptr);
+		if (!wnd)
 		{
 			return FALSE;
 		}
 
-		ShowWindow(hWnd, nCmdShow);
-		UpdateWindow(hWnd);
+		ShowWindow(wnd, cmd_show);
+		UpdateWindow(wnd);
 		return TRUE;
 	}
 }
 
-int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+int APIENTRY _tWinMain(HINSTANCE instance, HINSTANCE prev_instance, LPTSTR cmd_line, int cmd_show)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(prev_instance);
+	UNREFERENCED_PARAMETER(cmd_line);
 
-	LoadString(hInstance, IDS_APP_TITLE, g_szTitle, kMaxLoadString);
-	LoadString(hInstance, IDC_MENU, g_szWindowClass, kMaxLoadString);
-	MyRegisterClass(hInstance);
+	LoadString(instance, IDS_APP_TITLE, title, kMaxLoadString);
+	LoadString(instance, IDC_MENU, window_class, kMaxLoadString);
+	MyRegisterClass(instance);
 
-	if (!InitInstance(hInstance, nCmdShow))
+	if (!InitInstance(instance, cmd_show))
 	{
 		return FALSE;
 	}
 
-	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MENU));
+	HACCEL accel_table = LoadAccelerators(instance, MAKEINTRESOURCE(IDC_MENU));
 
 	MSG msg;
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		if (!TranslateAccelerator(msg.hwnd, accel_table, &msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
