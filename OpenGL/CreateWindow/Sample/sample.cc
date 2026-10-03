@@ -11,7 +11,7 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 
-void disp(void) {
+void Disp(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glFlush();
 }
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	glutCreateWindow("Kitty on your lap");
 
 	// ウィンドウの再描画が必要なときに呼ばれるコールバック
-	glutDisplayFunc(disp);
+	glutDisplayFunc(Disp);
 
 	// Windowを塗り潰す色（RGBA）
 	glClearColor(0, 0, 1, 0);
