@@ -1,8 +1,8 @@
-﻿// fname_exchange.cpp : アプリケーションクラス
+﻿// fname_exchange.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "fname_exchange.h"
-#include "fname_exchangeDlg.h"
+#include "fname_exchange_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -84,21 +84,21 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="fname_exchange.cpp" />
-    <ClCompile Include="fname_exchangeDlg.cpp" />
+    <ClCompile Include="fname_exchange.cc" />
+    <ClCompile Include="fname_exchange_dlg.cc" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\_Common\CommonUtil.cpp">
+    <ClCompile Include="..\..\_Common\common_util.cc">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fname_exchange.h" />
-    <ClInclude Include="fname_exchangeDlg.h" />
+    <ClInclude Include="fname_exchange_dlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="..\..\_Common\CommonUtil.h" />
+    <ClInclude Include="..\..\_Common\common_util.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="fname_exchange.rc" />

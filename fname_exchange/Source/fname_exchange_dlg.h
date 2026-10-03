@@ -1,4 +1,4 @@
-﻿// fname_exchangeDlg.h : メインダイアログ（選んだファイル/フォルダの名前を一括で変換する）
+﻿// fname_exchange_dlg.h : メインダイアログ（選んだファイル/フォルダの名前を一括で変換する）
 
 #pragma once
 

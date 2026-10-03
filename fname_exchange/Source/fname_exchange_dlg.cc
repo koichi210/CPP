@@ -1,9 +1,9 @@
-﻿// fname_exchangeDlg.cpp : メインダイアログ（選んだファイル/フォルダの名前を一括で変換する）
+﻿// fname_exchange_dlg.cc : メインダイアログ（選んだファイル/フォルダの名前を一括で変換する）
 
 #include "stdafx.h"
 #include "fname_exchange.h"
-#include "fname_exchangeDlg.h"
-#include "CommonUtil.h"
+#include "fname_exchange_dlg.h"
+#include "common_util.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -19,7 +19,7 @@ namespace
 	constexpr int		kListCharWidth		= 6;	// 一覧の横スクロール幅を決める1文字の幅(px)
 	constexpr LPCTSTR	kBrowseTitle		= _T("Select a destination folder");
 
-	const DLGITEMTEXT kItemTexts[] =
+	const DlgItemText kItemTexts[] =
 	{
 		{ IDST_DIR,            IDSTR_DIR },
 		{ IDBT_BROWSE,         IDSTR_BROWSE },

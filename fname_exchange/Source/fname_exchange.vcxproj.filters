@@ -18,16 +18,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="fname_exchange.cpp">
+    <ClCompile Include="fname_exchange.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="fname_exchangeDlg.cpp">
+    <ClCompile Include="fname_exchange_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_Common\CommonUtil.cpp">
+    <ClCompile Include="..\..\_Common\common_util.cc">
       <Filter>_Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,7 +40,7 @@
     <ClInclude Include="fname_exchange.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="fname_exchangeDlg.h">
+    <ClInclude Include="fname_exchange_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -49,7 +49,7 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\_Common\CommonUtil.h">
+    <ClInclude Include="..\..\_Common\common_util.h">
       <Filter>_Common</Filter>
     </ClInclude>
   </ItemGroup>
