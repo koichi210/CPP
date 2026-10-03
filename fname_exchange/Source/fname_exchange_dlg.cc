@@ -648,7 +648,8 @@ void FnameExchangeDlg::RenameFile(const CString& old_path, const CString& new_pa
 	CString title;
 	CString message;
 
-	if (old_path.CompareNoCase(new_path) == 0)
+	// 「変わったか」は大文字小文字を区別して判定する（abc.TXT -> abc.txt も名前変更）
+	if (old_path.Compare(new_path) == 0)
 	{
 		if (!ignore_alert_)
 		{
