@@ -1,8 +1,8 @@
 ﻿// StrMathDlg.cpp : メインダイアログ（ひらがなで足し算／引き算）
 
 #include "stdafx.h"
-#include "StrMath.h"
-#include "StrMathDlg.h"
+#include "str_math.h"
+#include "str_math_dlg.h"
 #include <ctime>
 #include <utility>
 

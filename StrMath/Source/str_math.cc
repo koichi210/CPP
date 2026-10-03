@@ -1,8 +1,8 @@
 ﻿// StrMath.cpp : アプリケーションクラス
 
 #include "stdafx.h"
-#include "StrMath.h"
-#include "StrMathDlg.h"
+#include "str_math.h"
+#include "str_math_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

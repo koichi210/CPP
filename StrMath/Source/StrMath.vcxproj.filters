@@ -18,10 +18,10 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StrMath.cpp">
+    <ClCompile Include="str_math.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StrMathDlg.cpp">
+    <ClCompile Include="str_math_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -37,10 +37,10 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StrMath.h">
+    <ClInclude Include="str_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StrMathDlg.h">
+    <ClInclude Include="str_math_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
