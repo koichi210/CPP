@@ -8,10 +8,10 @@
 
 #include "resource.h"
 
-class CMultiThreadApp : public CWinApp
+class MultiThreadApp : public CWinApp
 {
 public:
-	CMultiThreadApp();
+	MultiThreadApp();
 
 	virtual BOOL InitInstance() override;
 
