@@ -1,8 +1,8 @@
 ﻿// SendSpoolFile.cpp : アプリケーションクラス
 
 #include "stdafx.h"
-#include "SendSpoolFile.h"
-#include "SendSpoolFileDlg.h"
+#include "send_spool_file.h"
+#include "send_spool_file_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

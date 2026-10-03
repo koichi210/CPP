@@ -1,8 +1,8 @@
 ﻿// SendSpoolFileDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
-#include "SendSpoolFile.h"
-#include "SendSpoolFileDlg.h"
+#include "send_spool_file.h"
+#include "send_spool_file_dlg.h"
 #include <winspool.h>
 #include <vector>
 

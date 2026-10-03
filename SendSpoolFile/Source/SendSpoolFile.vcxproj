@@ -212,8 +212,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SendSpoolFile.cpp" />
-    <ClCompile Include="SendSpoolFileDlg.cpp" />
+    <ClCompile Include="send_spool_file.cc" />
+    <ClCompile Include="send_spool_file_dlg.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -223,8 +223,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SendSpoolFile.h" />
-    <ClInclude Include="SendSpoolFileDlg.h" />
+    <ClInclude Include="send_spool_file.h" />
+    <ClInclude Include="send_spool_file_dlg.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
