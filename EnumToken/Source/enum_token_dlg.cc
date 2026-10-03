@@ -11,27 +11,27 @@
 namespace
 {
 	// バージョン情報ダイアログ（システムメニューから開く）
-	class CAboutDlg : public CDialog
+	class AboutDlg : public CDialog
 	{
 	public:
-		CAboutDlg() : CDialog(IDD_ABOUTBOX) {}
+		AboutDlg() : CDialog(IDD_ABOUTBOX) {}
 	};
 }
 
-CEnumTokenDlg::CEnumTokenDlg(CWnd* pParent /*=nullptr*/)
-	: CDialog(CEnumTokenDlg::IDD, pParent)
+EnumTokenDlg::EnumTokenDlg(CWnd* parent /*=nullptr*/)
+	: CDialog(EnumTokenDlg::IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-BEGIN_MESSAGE_MAP(CEnumTokenDlg, CDialog)
+BEGIN_MESSAGE_MAP(EnumTokenDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_GETPROC, &CEnumTokenDlg::OnGetproc)
+	ON_BN_CLICKED(IDC_GETPROC, &EnumTokenDlg::OnGetproc)
 END_MESSAGE_MAP()
 
-BOOL CEnumTokenDlg::OnInitDialog()
+BOOL EnumTokenDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -40,39 +40,39 @@ BOOL CEnumTokenDlg::OnInitDialog()
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != nullptr)
+	CMenu* sys_menu = GetSystemMenu(FALSE);
+	if (sys_menu != nullptr)
 	{
-		CString strAboutMenu;
-		strAboutMenu.LoadString(IDS_ABOUTBOX);
-		if (!strAboutMenu.IsEmpty())
+		CString about_menu;
+		about_menu.LoadString(IDS_ABOUTBOX);
+		if (!about_menu.IsEmpty())
 		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			sys_menu->AppendMenu(MF_SEPARATOR);
+			sys_menu->AppendMenu(MF_STRING, IDM_ABOUTBOX, about_menu);
 		}
 	}
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
-void CEnumTokenDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void EnumTokenDlg::OnSysCommand(UINT id, LPARAM l_param)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	if ((id & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
+		AboutDlg about_dlg;
+		about_dlg.DoModal();
 	}
 	else
 	{
-		CDialog::OnSysCommand(nID, lParam);
+		CDialog::OnSysCommand(id, l_param);
 	}
 }
 
 // 最小化時のアイコン描画（ダイアログはフレームワークが描いてくれないため）
-void CEnumTokenDlg::OnPaint()
+void EnumTokenDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -80,14 +80,14 @@ void CEnumTokenDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		const int cxIcon = GetSystemMetrics(SM_CXICON);
-		const int cyIcon = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		const int x = (rect.Width() - cxIcon + 1) / 2;
-		const int y = (rect.Height() - cyIcon + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -95,40 +95,40 @@ void CEnumTokenDlg::OnPaint()
 	}
 }
 
-HCURSOR CEnumTokenDlg::OnQueryDragIcon()
+HCURSOR EnumTokenDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
 // 自プロセスのアクセストークンが属するグループの名前とドメインを表示する
-void CEnumTokenDlg::OnGetproc()
+void EnumTokenDlg::OnGetproc()
 {
-	HANDLE hToken = nullptr;
-	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
+	HANDLE token = nullptr;
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token))
 	{
 		return;
 	}
 
 	// 1回目はサイズ 0 で呼んで必要なバッファサイズを得る
 	DWORD size = 0;
-	if (!GetTokenInformation(hToken, TokenGroups, nullptr, 0, &size)
+	if (!GetTokenInformation(token, TokenGroups, nullptr, 0, &size)
 		&& GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 	{
 		std::vector<BYTE> buffer(size);
-		auto* pGroups = reinterpret_cast<TOKEN_GROUPS*>(buffer.data());
-		if (GetTokenInformation(hToken, TokenGroups, pGroups, size, &size))
+		auto* groups = reinterpret_cast<TOKEN_GROUPS*>(buffer.data());
+		if (GetTokenInformation(token, TokenGroups, groups, size, &size))
 		{
 			CString names;
 			CString domains;
-			for (DWORD i = 0; i < pGroups->GroupCount; i++)
+			for (DWORD i = 0; i < groups->GroupCount; i++)
 			{
 				TCHAR name[256];
-				DWORD nameLen = _countof(name);
+				DWORD name_len = _countof(name);
 				TCHAR domain[256];
-				DWORD domainLen = _countof(domain);
+				DWORD domain_len = _countof(domain);
 				SID_NAME_USE use;
 
-				if (!LookupAccountSid(nullptr, pGroups->Groups[i].Sid, name, &nameLen, domain, &domainLen, &use))
+				if (!LookupAccountSid(nullptr, groups->Groups[i].Sid, name, &name_len, domain, &domain_len, &use))
 				{
 					// 名前を引けない SID（ログオン SID など）は空欄扱い
 					name[0] = _T('\0');
@@ -152,5 +152,5 @@ void CEnumTokenDlg::OnGetproc()
 		}
 	}
 
-	CloseHandle(hToken);
+	CloseHandle(token);
 }

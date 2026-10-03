@@ -8,15 +8,15 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CEnumTokenApp, CWinApp)
+BEGIN_MESSAGE_MAP(EnumTokenApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CEnumTokenApp theApp;
+EnumTokenApp the_app;
 
-BOOL CEnumTokenApp::InitInstance()
+BOOL EnumTokenApp::InitInstance()
 {
-	CEnumTokenDlg dlg;
+	EnumTokenDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 

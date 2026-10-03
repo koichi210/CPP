@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CEnumTokenApp : public CWinApp
+class EnumTokenApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;
