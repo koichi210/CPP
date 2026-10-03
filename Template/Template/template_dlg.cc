@@ -15,41 +15,41 @@ namespace
 {
 	// 関数テンプレートの確認用
 	template <typename T>
-	T add(T x, T y)
+	T Add(T x, T y)
 	{
 		return x + y;
 	}
 }
 
-CTemplateDlg::CTemplateDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD, pParent)
+TemplateDlg::TemplateDlg(CWnd* parent /*=nullptr*/)
+	: CDialogEx(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CTemplateDlg::DoDataExchange(CDataExchange* pDX)
+void TemplateDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(dx);
 }
 
-BEGIN_MESSAGE_MAP(CTemplateDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(TemplateDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CTemplateDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &TemplateDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-BOOL CTemplateDlg::OnInitDialog()
+BOOL TemplateDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
 	return TRUE;
 }
 
 // 最小化時のアイコン描画（ダイアログベースのアプリでは自前で描く必要がある）
-void CTemplateDlg::OnPaint()
+void TemplateDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -57,14 +57,14 @@ void CTemplateDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -72,18 +72,18 @@ void CTemplateDlg::OnPaint()
 	}
 }
 
-HCURSOR CTemplateDlg::OnQueryDragIcon()
+HCURSOR TemplateDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CTemplateDlg::OnBnClickedButton1()
+void TemplateDlg::OnBnClickedButton1()
 {
 	// 関数名の後ろに <型> を書いて、テンプレート引数を明示できる
-	CString Msg;
-	Msg.AppendFormat("%s + %s = %s\n", "ABC", "def", add<std::string>("ABC", "def").c_str());	// string を明示的に指定
-	Msg.AppendFormat("%d + %d = %d\n", 12, 34, add<int>(12, 34));								// int を明示的に指定
-	Msg.AppendFormat("%d + %d = %d\n", 5, 6, add(5, 6));										// 引数から推論できるので省略可能
+	CString msg;
+	msg.AppendFormat("%s + %s = %s\n", "ABC", "def", Add<std::string>("ABC", "def").c_str());	// string を明示的に指定
+	msg.AppendFormat("%d + %d = %d\n", 12, 34, Add<int>(12, 34));								// int を明示的に指定
+	msg.AppendFormat("%d + %d = %d\n", 5, 6, Add(5, 6));										// 引数から推論できるので省略可能
 
-	MessageBox(Msg);
+	MessageBox(msg);
 }

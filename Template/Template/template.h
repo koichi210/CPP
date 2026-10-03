@@ -8,14 +8,14 @@
 
 #include "resource.h"
 
-class CTemplateApp : public CWinApp
+class TemplateApp : public CWinApp
 {
 public:
-	CTemplateApp();
+	TemplateApp();
 
 	virtual BOOL InitInstance() override;
 
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CTemplateApp theApp;
+extern TemplateApp the_app;
