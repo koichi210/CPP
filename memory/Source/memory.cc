@@ -8,17 +8,17 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CMemoryApp, CWinApp)
+BEGIN_MESSAGE_MAP(MemoryApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CMemoryApp theApp;
+MemoryApp the_app;
 
-BOOL CMemoryApp::InitInstance()
+BOOL MemoryApp::InitInstance()
 {
 	AfxEnableControlContainer();
 
-	CMemoryDlg dlg;
+	MemoryDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 

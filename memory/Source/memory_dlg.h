@@ -4,32 +4,32 @@
 
 #include "memory_def.h"
 
-class CMemoryDlg : public CDialog
+class MemoryDlg : public CDialog
 {
 public:
-	CMemoryDlg(CWnd* pParent = nullptr);
+	MemoryDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_MEMORY_DIALOG };
 
 	// 解答ダイアログが参照する直前の出題内容
-	int GetProblemCount() const { return m_problemCount; }
-	PlayMode GetPlayMode() const { return m_playMode; }
-	const CString& GetRecord(int index) const { return m_record[index]; }
+	int GetProblemCount() const { return problem_count_; }
+	PlayMode GetPlayMode() const { return play_mode_; }
+	const CString& GetRecord(int index) const { return record_[index]; }
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX) override;
+	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnSysCommand(UINT id, LPARAM l_param);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnTimer(UINT_PTR id_event);
 	afx_msg void OnStart();
 	afx_msg void OnAns();
 	afx_msg void OnKeisan();
 	afx_msg void OnAnki();
-	afx_msg void OnTypeCheck(UINT nID);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnTypeCheck(UINT id);
+	afx_msg void OnHScroll(UINT sb_code, UINT pos, CScrollBar* scroll_bar);
 	afx_msg void OnHelp();
 	DECLARE_MESSAGE_MAP()
 
@@ -42,23 +42,23 @@ private:
 	void SelectMode(PlayMode mode);
 	CString KeyGen();
 	int GetKeyGenType(int val) const;
-	TCHAR GetKeyGenChar(int strType, int val);
-	static int MatchProc(int orgVal, int current);
+	TCHAR GetKeyGenChar(int char_type, int val);
+	static int MatchProc(int org_val, int current);
 	int StartCheck();
-	void SetType(int setType, BOOL flg);
+	void SetType(int set_type, BOOL flg);
 
-	HICON		m_hIcon;
-	CScrollBar	m_cycleBar;		// 表示速度を設定
-	CFont		m_showFont;		// 出題文字の表示フォント
+	HICON		icon_;
+	CScrollBar	cycle_bar_;		// 表示速度を設定
+	CFont		show_font_;		// 出題文字の表示フォント
 
-	CString		m_record[PR_NUM_MAX];	// 表示した値を覚えておく
-	int			m_timerCycle = CYC_INIT_VAL;	// タイマ起動周期
-	int			m_count = 0;			// 現在の個数
-	PlayState	m_state = PlayState::Init;
-	int			m_problemCount = 0;		// 表示回数（出題数）
-	int			m_digits = 0;			// 桁数
-	int			m_typeFlags = 0;		// 数字・アルファベットの組み合わせ（TYPE_*）
-	PlayMode	m_playMode = PlayMode::Anki;	// 出題中（直前）のモード
-	PlayMode	m_selectedMode = PlayMode::Anki;	// 画面で選んでいるモード
-	int			m_prevChar = -1;		// 直前に出題した文字（同じ文字が続かないようにする）
+	CString		record_[kPrNumMax];	// 表示した値を覚えておく
+	int			timer_cycle_ = kCycInitVal;	// タイマ起動周期
+	int			count_ = 0;			// 現在の個数
+	PlayState	state_ = PlayState::kInit;
+	int			problem_count_ = 0;		// 表示回数（出題数）
+	int			digits_ = 0;			// 桁数
+	int			type_flags_ = 0;		// 数字・アルファベットの組み合わせ（TYPE_*）
+	PlayMode	play_mode_ = PlayMode::kAnki;	// 出題中（直前）のモード
+	PlayMode	selected_mode_ = PlayMode::kAnki;	// 画面で選んでいるモード
+	int			prev_char_ = -1;		// 直前に出題した文字（同じ文字が続かないようにする）
 };

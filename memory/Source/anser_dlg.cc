@@ -9,37 +9,37 @@
 #define new DEBUG_NEW
 #endif
 
-CAnserDlg::CAnserDlg(const CMemoryDlg& game, CWnd* pParent)
-	: CDialog(IDD, pParent)
-	, m_game(game)
+AnserDlg::AnserDlg(const MemoryDlg& game, CWnd* parent)
+	: CDialog(IDD, parent)
+	, game_(game)
 {
 }
 
-BEGIN_MESSAGE_MAP(CAnserDlg, CDialog)
-	ON_BN_CLICKED(ID_ANS_CHK, &CAnserDlg::OnAnserCheck)
-	ON_BN_CLICKED(ID_ANSOK, &CAnserDlg::OnAnsok)
-	ON_BN_CLICKED(ID_ANS_SHOW, &CAnserDlg::OnAnsShow)
+BEGIN_MESSAGE_MAP(AnserDlg, CDialog)
+	ON_BN_CLICKED(ID_ANS_CHK, &AnserDlg::OnAnserCheck)
+	ON_BN_CLICKED(ID_ANSOK, &AnserDlg::OnAnsok)
+	ON_BN_CLICKED(ID_ANS_SHOW, &AnserDlg::OnAnsShow)
 	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
-BOOL CAnserDlg::OnInitDialog()
+BOOL AnserDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_bCheat = FALSE;
+	cheat_ = FALSE;
 
 	// 計算は合計値の1欄だけ、暗記は出題数ぶんの欄だけ入力できるようにする
-	for (int i = 0; i < PR_NUM_MAX; i++)
+	for (int i = 0; i < kPrNumMax; i++)
 	{
 		GetDlgItem(IDC_ANS_TEXT1 + i)->EnableWindow(FALSE);
 		GetDlgItem(ANS_NO1 + i)->EnableWindow(FALSE);
 
-		if (m_game.GetPlayMode() == PlayMode::Keisan)
+		if (game_.GetPlayMode() == PlayMode::kKeisan)
 		{
 			GetDlgItem(IDC_ANS_TEXT1)->EnableWindow(TRUE);
 			GetDlgItem(ANS_NO1)->EnableWindow(TRUE);
 		}
-		else if (i < m_game.GetProblemCount())
+		else if (i < game_.GetProblemCount())
 		{
 			GetDlgItem(IDC_ANS_TEXT1 + i)->EnableWindow(TRUE);
 			GetDlgItem(ANS_NO1 + i)->EnableWindow(TRUE);
@@ -48,35 +48,35 @@ BOOL CAnserDlg::OnInitDialog()
 	return TRUE;
 }
 
-void CAnserDlg::OnAnsok()
+void AnserDlg::OnAnsok()
 {
 	CDialog::OnOK();
 }
 
 // 答えの表示・非表示を切り替える（一度でも見たら「答え閲覧済み」）
-void CAnserDlg::OnAnsShow()
+void AnserDlg::OnAnsShow()
 {
-	const int count = m_game.GetProblemCount();
-	const bool bKeisan = (m_game.GetPlayMode() == PlayMode::Keisan);
+	const int count = game_.GetProblemCount();
+	const bool keisan = (game_.GetPlayMode() == PlayMode::kKeisan);
 
-	m_bCheat = !m_bCheat;
+	cheat_ = !cheat_;
 
-	if (m_bCheat)
+	if (cheat_)
 	{
 		long sum = 0;
 		for (int i = 0; i < count; i++)
 		{
-			if (bKeisan)
+			if (keisan)
 			{
-				sum += _ttol(m_game.GetRecord(i));
+				sum += _ttol(game_.GetRecord(i));
 			}
 			else
 			{
-				GetDlgItem(IDC_ANSER1 + i)->SetWindowText(m_game.GetRecord(i));
+				GetDlgItem(IDC_ANSER1 + i)->SetWindowText(game_.GetRecord(i));
 			}
 		}
 
-		if (bKeisan)
+		if (keisan)
 		{
 			CString wk;
 			wk.Format(_T("%ld"), sum);
@@ -97,27 +97,27 @@ void CAnserDlg::OnAnsShow()
 	GetDlgItem(IDC_CHEAT)->SetWindowText(_T("答え閲覧済み"));
 }
 
-void CAnserDlg::OnAnserCheck()
+void AnserDlg::OnAnserCheck()
 {
-	const int count = m_game.GetProblemCount();
-	const bool bKeisan = (m_game.GetPlayMode() == PlayMode::Keisan);
+	const int count = game_.GetProblemCount();
+	const bool keisan = (game_.GetPlayMode() == PlayMode::kKeisan);
 	long sum = 0;
 
 	for (int i = 0; i < count; i++)
 	{
-		if (bKeisan)
+		if (keisan)
 		{
-			sum += _ttol(m_game.GetRecord(i));
+			sum += _ttol(game_.GetRecord(i));
 		}
 		else
 		{
 			CString input;
 			GetDlgItemText(IDC_ANS_TEXT1 + i, input);
 
-			if (m_game.GetRecord(i) == input)
+			if (game_.GetRecord(i) == input)
 			{
 				GetDlgItem(IDC_JUDGE1 + i)->SetWindowText(_T("○"));
-				GetDlgItem(IDC_ANSER1 + i)->SetWindowText(m_game.GetRecord(i));
+				GetDlgItem(IDC_ANSER1 + i)->SetWindowText(game_.GetRecord(i));
 			}
 			else
 			{
@@ -127,16 +127,16 @@ void CAnserDlg::OnAnserCheck()
 	}
 
 	// 計算は入力した合計値を判定する
-	if (bKeisan)
+	if (keisan)
 	{
 		CString input;
 		GetDlgItemText(IDC_ANS_TEXT1, input);
-		const long inputVal = _ttol(input);
+		const long input_val = _ttol(input);
 
-		if (sum == inputVal)
+		if (sum == input_val)
 		{
 			CString wk;
-			wk.Format(_T("%d"), inputVal);
+			wk.Format(_T("%d"), input_val);
 			GetDlgItem(IDC_JUDGE1)->SetWindowText(_T("○"));
 			GetDlgItem(IDC_ANSER1)->SetWindowText(wk);
 		}
@@ -147,13 +147,13 @@ void CAnserDlg::OnAnserCheck()
 	}
 }
 
-HBRUSH CAnserDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+HBRUSH AnserDlg::OnCtlColor(CDC* dc, CWnd* wnd, UINT ctl_color)
 {
-	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	HBRUSH hbr = CDialog::OnCtlColor(dc, wnd, ctl_color);
 
-	if (pWnd->GetDlgCtrlID() == IDC_CHEAT)
+	if (wnd->GetDlgCtrlID() == IDC_CHEAT)
 	{
-		pDC->SetTextColor(RGB(0xFF0, 0, 0));	// 文字色は赤
+		dc->SetTextColor(RGB(0xFF0, 0, 0));	// 文字色は赤
 	}
 
 	return hbr;

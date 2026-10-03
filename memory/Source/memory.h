@@ -8,7 +8,7 @@
 
 #include "resource.h"
 
-class CMemoryApp : public CWinApp
+class MemoryApp : public CWinApp
 {
 public:
 	virtual BOOL InitInstance() override;

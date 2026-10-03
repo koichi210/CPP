@@ -12,44 +12,44 @@
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報ダイアログ
 
-class CAboutDlg : public CDialog
+class AboutDlg : public CDialog
 {
 public:
 	enum { IDD = IDD_ABOUTBOX };
 
-	CAboutDlg() : CDialog(IDD) {}
+	AboutDlg() : CDialog(IDD) {}
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CMemoryDlg
+// MemoryDlg
 
-CMemoryDlg::CMemoryDlg(CWnd* pParent)
-	: CDialog(IDD, pParent)
+MemoryDlg::MemoryDlg(CWnd* parent)
+	: CDialog(IDD, parent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CMemoryDlg::DoDataExchange(CDataExchange* pDX)
+void MemoryDlg::DoDataExchange(CDataExchange* dx)
 {
-	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_VIEW_SPEED, m_cycleBar);
+	CDialog::DoDataExchange(dx);
+	DDX_Control(dx, IDC_VIEW_SPEED, cycle_bar_);
 }
 
-BEGIN_MESSAGE_MAP(CMemoryDlg, CDialog)
+BEGIN_MESSAGE_MAP(MemoryDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_START, &CMemoryDlg::OnStart)
-	ON_BN_CLICKED(IDC_ANS, &CMemoryDlg::OnAns)
-	ON_BN_CLICKED(IDC_KEISAN, &CMemoryDlg::OnKeisan)
-	ON_BN_CLICKED(IDC_ANKI, &CMemoryDlg::OnAnki)
-	ON_CONTROL_RANGE(BN_CLICKED, IDC_ENG_SMALL, IDC_NUMBER, &CMemoryDlg::OnTypeCheck)
+	ON_BN_CLICKED(IDC_START, &MemoryDlg::OnStart)
+	ON_BN_CLICKED(IDC_ANS, &MemoryDlg::OnAns)
+	ON_BN_CLICKED(IDC_KEISAN, &MemoryDlg::OnKeisan)
+	ON_BN_CLICKED(IDC_ANKI, &MemoryDlg::OnAnki)
+	ON_CONTROL_RANGE(BN_CLICKED, IDC_ENG_SMALL, IDC_NUMBER, &MemoryDlg::OnTypeCheck)
 	ON_WM_HSCROLL()
-	ON_BN_CLICKED(ID_HELP, &CMemoryDlg::OnHelp)
+	ON_BN_CLICKED(ID_HELP, &MemoryDlg::OnHelp)
 END_MESSAGE_MAP()
 
-BOOL CMemoryDlg::OnInitDialog()
+BOOL MemoryDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -57,31 +57,31 @@ BOOL CMemoryDlg::OnInitDialog()
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != nullptr)
+	CMenu* sys_menu = GetSystemMenu(FALSE);
+	if (sys_menu != nullptr)
 	{
-		CString strAboutMenu;
-		strAboutMenu.LoadString(IDS_ABOUTBOX);
-		if (!strAboutMenu.IsEmpty())
+		CString about_menu;
+		about_menu.LoadString(IDS_ABOUTBOX);
+		if (!about_menu.IsEmpty())
 		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			sys_menu->AppendMenu(MF_SEPARATOR);
+			sys_menu->AppendMenu(MF_STRING, IDM_ABOUTBOX, about_menu);
 		}
 	}
 
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(icon_, TRUE);
+	SetIcon(icon_, FALSE);
 
-	m_timerCycle = CYC_INIT_VAL;
-	m_selectedMode = PlayMode::Anki;
-	m_typeFlags = 0;
+	timer_cycle_ = kCycInitVal;
+	selected_mode_ = PlayMode::kAnki;
+	type_flags_ = 0;
 
 	GetDlgItem(IDCANCEL)->ShowWindow(FALSE);
 	GetDlgItem(IDC_ANS)->EnableWindow(FALSE);
-	SetDlgItemInt(IDC_PR_NUM, NUM_INIT_VAL, FALSE);
-	SetDlgItemInt(IDC_PR_KETA, KETA_INIT_VAL, FALSE);
+	SetDlgItemInt(IDC_PR_NUM, kNumInitVal, FALSE);
+	SetDlgItemInt(IDC_PR_KETA, kKetaInitVal, FALSE);
 
-	if (MODE_INIT_VAL == PlayMode::Anki)
+	if (kModeInitVal == PlayMode::kAnki)
 	{
 		CheckDlgButton(IDC_ANKI, TRUE);
 		OnAnki();
@@ -92,32 +92,32 @@ BOOL CMemoryDlg::OnInitDialog()
 		OnKeisan();
 	}
 
-	m_state = PlayState::Init;
-	m_cycleBar.SetScrollRange(MIN_CYC, MAX_CYC, TRUE);
-	m_cycleBar.SetScrollPos(CYC_INIT_VAL);
+	state_ = PlayState::kInit;
+	cycle_bar_.SetScrollRange(kMinCyc, kMaxCyc, TRUE);
+	cycle_bar_.SetScrollPos(kCycInitVal);
 	CString str;
-	str.Format(_T("(%d ms)"), m_timerCycle);
+	str.Format(_T("(%d ms)"), timer_cycle_);
 	GetDlgItem(IDC_SPEED_TXT)->SetWindowText(str);
 	InitProc();
 
 	return TRUE;
 }
 
-void CMemoryDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void MemoryDlg::OnSysCommand(UINT id, LPARAM l_param)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	if ((id & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
+		AboutDlg dlg_about;
+		dlg_about.DoModal();
 	}
 	else
 	{
-		CDialog::OnSysCommand(nID, lParam);
+		CDialog::OnSysCommand(id, l_param);
 	}
 }
 
 // 最小化時のアイコン描画（ダイアログがメインウィンドウのため自前で描く）
-void CMemoryDlg::OnPaint()
+void MemoryDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -125,14 +125,14 @@ void CMemoryDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		int icon_width = GetSystemMetrics(SM_CXICON);
+		int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (rect.Width() - icon_width + 1) / 2;
+		int y = (rect.Height() - icon_height + 1) / 2;
 
-		dc.DrawIcon(x, y, m_hIcon);
+		dc.DrawIcon(x, y, icon_);
 	}
 	else
 	{
@@ -140,25 +140,25 @@ void CMemoryDlg::OnPaint()
 	}
 }
 
-HCURSOR CMemoryDlg::OnQueryDragIcon()
+HCURSOR MemoryDlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+	return static_cast<HCURSOR>(icon_);
 }
 
-void CMemoryDlg::OnTimer(UINT_PTR nIDEvent)
+void MemoryDlg::OnTimer(UINT_PTR id_event)
 {
-	if (nIDEvent == GENERATE_ID)
+	if (id_event == kGenerateId)
 	{
 		ViewText();
 	}
-	CDialog::OnTimer(nIDEvent);
+	CDialog::OnTimer(id_event);
 }
 
-void CMemoryDlg::ViewText()
+void MemoryDlg::ViewText()
 {
 	CString str;
 
-	if (m_count < m_problemCount)
+	if (count_ < problem_count_)
 	{
 		str = KeyGen();
 	}
@@ -169,16 +169,16 @@ void CMemoryDlg::ViewText()
 	GetDlgItem(IDC_SHOW)->SetWindowText(str);
 }
 
-void CMemoryDlg::OnStart()
+void MemoryDlg::OnStart()
 {
-	if (m_typeFlags == 0)
+	if (type_flags_ == 0)
 	{
 		AfxMessageBox(_T("どれかひとつはチェック入れて下さい。"));
 		return;
 	}
 
 	const int rt = StartCheck();
-	if (rt == CHECK_OK)
+	if (rt == kCheckOk)
 	{
 		InitProc();
 		StartProc();
@@ -186,11 +186,11 @@ void CMemoryDlg::OnStart()
 	}
 
 	CString str = _T("入力値エラーです。\n\n");
-	if (rt & CHECK_NUM_ERR)
+	if (rt & kCheckNumErr)
 	{
 		str += _T("正常な出題数を入力して下さい。\n");
 	}
-	if (rt & CHECK_KETA_ERR)
+	if (rt & kCheckKetaErr)
 	{
 		str += _T("正常な桁数を入力して下さい。\n");
 	}
@@ -198,95 +198,95 @@ void CMemoryDlg::OnStart()
 }
 
 // 出題数・桁数の入力値をチェックし、正常なら取り込む
-int CMemoryDlg::StartCheck()
+int MemoryDlg::StartCheck()
 {
-	int rt = CHECK_OK;
+	int rt = kCheckOk;
 
 	int wk = GetDlgItemInt(IDC_PR_NUM, nullptr, FALSE);
-	if (wk < MIN_VAL || wk > PR_NUM_MAX)
+	if (wk < kMinVal || wk > kPrNumMax)
 	{
-		rt |= CHECK_NUM_ERR;
+		rt |= kCheckNumErr;
 	}
 	else
 	{
-		m_problemCount = wk;
-		SetDlgItemInt(IDC_PR_NUM, m_problemCount, FALSE);
+		problem_count_ = wk;
+		SetDlgItemInt(IDC_PR_NUM, problem_count_, FALSE);
 	}
 
-	const int maxVal = (m_selectedMode == PlayMode::Keisan) ? KETA_KEISAN_MAX : KETA_ANIKI_MAX;
+	const int max_val = (selected_mode_ == PlayMode::kKeisan) ? kKetaKeisanMax : kKetaAnkiMax;
 
 	wk = GetDlgItemInt(IDC_PR_KETA, nullptr, FALSE);
-	if (wk < MIN_VAL || wk > maxVal)
+	if (wk < kMinVal || wk > max_val)
 	{
-		rt |= CHECK_KETA_ERR;
+		rt |= kCheckKetaErr;
 	}
 	else
 	{
-		m_digits = wk;
-		SetDlgItemInt(IDC_PR_KETA, m_digits, FALSE);
+		digits_ = wk;
+		SetDlgItemInt(IDC_PR_KETA, digits_, FALSE);
 	}
 	return rt;
 }
 
-void CMemoryDlg::OnAns()
+void MemoryDlg::OnAns()
 {
-	CAnserDlg dlg(*this, this);
+	AnserDlg dlg(*this, this);
 	dlg.DoModal();
 }
 
-void CMemoryDlg::OnAnki()
+void MemoryDlg::OnAnki()
 {
-	SelectMode(PlayMode::Anki);
+	SelectMode(PlayMode::kAnki);
 }
 
-void CMemoryDlg::OnKeisan()
+void MemoryDlg::OnKeisan()
 {
-	SelectMode(PlayMode::Keisan);
+	SelectMode(PlayMode::kKeisan);
 }
 
 // 計算モードは数字だけで出題するため、文字の種類を選べなくする
-void CMemoryDlg::SelectMode(PlayMode mode)
+void MemoryDlg::SelectMode(PlayMode mode)
 {
-	m_selectedMode = mode;
-	const BOOL bAnki = (mode == PlayMode::Anki) ? TRUE : FALSE;
+	selected_mode_ = mode;
+	const BOOL anki = (mode == PlayMode::kAnki) ? TRUE : FALSE;
 
-	if (!bAnki)
+	if (!anki)
 	{
-		SetType(TYPE_NUMBER, TRUE);
-		SetType(TYPE_ENG_SMALL, FALSE);
-		SetType(TYPE_ENG_LARGE, FALSE);
+		SetType(kTypeNumber, TRUE);
+		SetType(kTypeEngSmall, FALSE);
+		SetType(kTypeEngLarge, FALSE);
 	}
 
-	GetDlgItem(IDC_ENG_SMALL)->EnableWindow(bAnki);
-	GetDlgItem(IDC_ENG_LARGE)->EnableWindow(bAnki);
-	GetDlgItem(IDC_NUMBER)->EnableWindow(bAnki);
-	CheckDlgButton(IDC_ENG_SMALL, (m_typeFlags & TYPE_ENG_SMALL) ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(IDC_ENG_LARGE, (m_typeFlags & TYPE_ENG_LARGE) ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(IDC_NUMBER, (m_typeFlags & TYPE_NUMBER) ? BST_CHECKED : BST_UNCHECKED);
-	GetDlgItem(IDC_KETA_STR)->SetWindowText(bAnki ? _T("(1～15)") : _T("(1～3)"));
+	GetDlgItem(IDC_ENG_SMALL)->EnableWindow(anki);
+	GetDlgItem(IDC_ENG_LARGE)->EnableWindow(anki);
+	GetDlgItem(IDC_NUMBER)->EnableWindow(anki);
+	CheckDlgButton(IDC_ENG_SMALL, (type_flags_ & kTypeEngSmall) ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_ENG_LARGE, (type_flags_ & kTypeEngLarge) ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_NUMBER, (type_flags_ & kTypeNumber) ? BST_CHECKED : BST_UNCHECKED);
+	GetDlgItem(IDC_KETA_STR)->SetWindowText(anki ? _T("(1～15)") : _T("(1～3)"));
 
-	const int maxDigits = bAnki ? KETA_ANIKI_MAX : KETA_KEISAN_MAX;
-	m_digits = GetDlgItemInt(IDC_PR_KETA, nullptr, FALSE);
-	if (m_digits < MIN_VAL || m_digits > maxDigits)
+	const int max_digits = anki ? kKetaAnkiMax : kKetaKeisanMax;
+	digits_ = GetDlgItemInt(IDC_PR_KETA, nullptr, FALSE);
+	if (digits_ < kMinVal || digits_ > max_digits)
 	{
-		m_digits = KETA_INIT_VAL;
-		SetDlgItemInt(IDC_PR_KETA, m_digits, FALSE);
+		digits_ = kKetaInitVal;
+		SetDlgItemInt(IDC_PR_KETA, digits_, FALSE);
 	}
 }
 
-void CMemoryDlg::StartProc()
+void MemoryDlg::StartProc()
 {
-	if (m_state == PlayState::Playing)
+	if (state_ == PlayState::kPlaying)
 	{
 		EndProc();
 		return;
 	}
 
-	m_state = PlayState::Playing;
-	m_playMode = m_selectedMode;
-	if (m_playMode == PlayMode::Keisan)
+	state_ = PlayState::kPlaying;
+	play_mode_ = selected_mode_;
+	if (play_mode_ == PlayMode::kKeisan)
 	{
-		SetType(TYPE_NUMBER, TRUE);
+		SetType(kTypeNumber, TRUE);
 	}
 	ItemSts(FALSE);
 	GetDlgItem(IDC_START)->SetWindowText(_T("ストップ"));
@@ -296,30 +296,30 @@ void CMemoryDlg::StartProc()
 
 	// 1問目はすぐに出す
 	ViewText();
-	SetTimer(GENERATE_ID, m_timerCycle, nullptr);
+	SetTimer(kGenerateId, timer_cycle_, nullptr);
 }
 
-void CMemoryDlg::EndProc()
+void MemoryDlg::EndProc()
 {
-	m_count = 0;
-	m_state = PlayState::End;
+	count_ = 0;
+	state_ = PlayState::kEnd;
 	ItemSts(TRUE);
 	GetDlgItem(IDC_START)->SetWindowText(_T("開始"));
 	GetDlgItem(IDC_SHOW)->SetWindowText(_T(""));
-	KillTimer(GENERATE_ID);
+	KillTimer(kGenerateId);
 }
 
-void CMemoryDlg::InitProc()
+void MemoryDlg::InitProc()
 {
-	for (CString& record : m_record)
+	for (CString& record : record_)
 	{
 		record.Empty();
 	}
-	m_count = 0;
+	count_ = 0;
 }
 
 // 出題中は設定を変えられないようにする
-void CMemoryDlg::ItemSts(BOOL flg)
+void MemoryDlg::ItemSts(BOOL flg)
 {
 	GetDlgItem(IDC_PR_NUM)->EnableWindow(flg);
 	GetDlgItem(IDC_PR_KETA)->EnableWindow(flg);
@@ -329,7 +329,7 @@ void CMemoryDlg::ItemSts(BOOL flg)
 	GetDlgItem(IDC_VIEW_SPEED)->EnableWindow(flg);
 
 	// 計算モードでは文字の種類は常に選べない
-	if (m_playMode != PlayMode::Keisan)
+	if (play_mode_ != PlayMode::kKeisan)
 	{
 		GetDlgItem(IDC_NUMBER)->EnableWindow(flg);
 		GetDlgItem(IDC_ENG_SMALL)->EnableWindow(flg);
@@ -338,177 +338,177 @@ void CMemoryDlg::ItemSts(BOOL flg)
 }
 
 // 1問分の文字列を作って記録する
-CString CMemoryDlg::KeyGen()
+CString MemoryDlg::KeyGen()
 {
 	// フォントは最初の1回だけ作り、アプリ終了まで使い回す
-	if (m_showFont.GetSafeHandle() == nullptr)
+	if (show_font_.GetSafeHandle() == nullptr)
 	{
-		LOGFONT viewFont = {};
-		viewFont.lfCharSet = DEFAULT_CHARSET;
-		viewFont.lfWeight = SHOW_WEIGHT;
-		viewFont.lfHeight = SHOW_HEIGHT;
-		m_showFont.CreateFontIndirect(&viewFont);
+		LOGFONT view_font = {};
+		view_font.lfCharSet = DEFAULT_CHARSET;
+		view_font.lfWeight = kShowWeight;
+		view_font.lfHeight = kShowHeight;
+		show_font_.CreateFontIndirect(&view_font);
 	}
-	SendDlgItemMessage(IDC_SHOW, WM_SETFONT, reinterpret_cast<WPARAM>(m_showFont.GetSafeHandle()), MAKELPARAM(TRUE, 0));
+	SendDlgItemMessage(IDC_SHOW, WM_SETFONT, reinterpret_cast<WPARAM>(show_font_.GetSafeHandle()), MAKELPARAM(TRUE, 0));
 
 	// time() は1秒単位でしか変わらず、1秒以内に呼ぶと前回と同じ乱数列になるため、
 	// 出題番号を掛けて毎回違う種にする
-	srand(static_cast<unsigned>(time(nullptr)) * (m_count + 1) * 2);
+	srand(static_cast<unsigned>(time(nullptr)) * (count_ + 1) * 2);
 
 	CString str;
-	for (int i = 0; i < m_digits; i++)
+	for (int i = 0; i < digits_; i++)
 	{
 		const int val = rand();
 		str += GetKeyGenChar(GetKeyGenType(val), val);
 	}
-	m_record[m_count] = str;
-	m_count++;
+	record_[count_] = str;
+	count_++;
 
 	return str;
 }
 
 // 乱数を3で割った余りで、選択中の種類から優先順位を付けて文字の種類を決める
-int CMemoryDlg::GetKeyGenType(int val) const
+int MemoryDlg::GetKeyGenType(int val) const
 {
 	switch (val % 3)
 	{
 	case 1:
-		if (m_typeFlags & TYPE_ENG_SMALL)	return TYPE_ENG_SMALL;
-		if (m_typeFlags & TYPE_ENG_LARGE)	return TYPE_ENG_LARGE;
-		return TYPE_NUMBER;
+		if (type_flags_ & kTypeEngSmall)	return kTypeEngSmall;
+		if (type_flags_ & kTypeEngLarge)	return kTypeEngLarge;
+		return kTypeNumber;
 
 	case 2:
-		if (m_typeFlags & TYPE_ENG_LARGE)	return TYPE_ENG_LARGE;
-		if (m_typeFlags & TYPE_NUMBER)		return TYPE_NUMBER;
-		return TYPE_ENG_SMALL;
+		if (type_flags_ & kTypeEngLarge)	return kTypeEngLarge;
+		if (type_flags_ & kTypeNumber)		return kTypeNumber;
+		return kTypeEngSmall;
 
 	default:
-		if (m_typeFlags & TYPE_NUMBER)		return TYPE_NUMBER;
-		if (m_typeFlags & TYPE_ENG_LARGE)	return TYPE_ENG_LARGE;
-		return TYPE_ENG_SMALL;
+		if (type_flags_ & kTypeNumber)		return kTypeNumber;
+		if (type_flags_ & kTypeEngLarge)	return kTypeEngLarge;
+		return kTypeEngSmall;
 	}
 }
 
 // 種類に応じた1文字を作る。直前と同じ文字にはしない
-TCHAR CMemoryDlg::GetKeyGenChar(int strType, int val)
+TCHAR MemoryDlg::GetKeyGenChar(int char_type, int val)
 {
 	int number = 0;
 
-	switch (strType)
+	switch (char_type)
 	{
-	case TYPE_NUMBER:
+	case kTypeNumber:
 		number = val % 10;
-		if (number == m_prevChar)
+		if (number == prev_char_)
 		{
 			number = MatchProc(val, number);
 		}
-		m_prevChar = number;
+		prev_char_ = number;
 		return static_cast<TCHAR>(_T('0') + number);
 
-	case TYPE_ENG_SMALL:
+	case kTypeEngSmall:
 		number = _T('a') + (val % 26);
-		if (number == m_prevChar)
+		if (number == prev_char_)
 		{
 			number = MatchProc(val, number) + _T('a');
 		}
 		break;
 
-	case TYPE_ENG_LARGE:
+	case kTypeEngLarge:
 		number = _T('A') + (val % 26);
-		if (number == m_prevChar)
+		if (number == prev_char_)
 		{
 			number = MatchProc(val, number) + _T('A');
 		}
 		break;
 	}
 
-	m_prevChar = number;
+	prev_char_ = number;
 	return static_cast<TCHAR>(number);
 }
 
 // orgVal の各桁を下から見て、current と違う最初の数字を返す（無ければ current のまま）
-int CMemoryDlg::MatchProc(int orgVal, int current)
+int MemoryDlg::MatchProc(int org_val, int current)
 {
-	while (orgVal != 0)
+	while (org_val != 0)
 	{
-		if (current != orgVal % 10)
+		if (current != org_val % 10)
 		{
-			return orgVal % 10;
+			return org_val % 10;
 		}
-		orgVal /= 10;
+		org_val /= 10;
 	}
 	return current;
 }
 
-void CMemoryDlg::OnTypeCheck(UINT nID)
+void MemoryDlg::OnTypeCheck(UINT id)
 {
-	int setType = 0;
-	switch (nID)
+	int set_type = 0;
+	switch (id)
 	{
-	case IDC_ENG_SMALL:	setType = TYPE_ENG_SMALL;	break;
-	case IDC_ENG_LARGE:	setType = TYPE_ENG_LARGE;	break;
-	case IDC_NUMBER:	setType = TYPE_NUMBER;		break;
+	case IDC_ENG_SMALL:	set_type = kTypeEngSmall;	break;
+	case IDC_ENG_LARGE:	set_type = kTypeEngLarge;	break;
+	case IDC_NUMBER:	set_type = kTypeNumber;		break;
 	default:			return;
 	}
 
-	SetType(setType, IsDlgButtonChecked(nID));
+	SetType(set_type, IsDlgButtonChecked(id));
 }
 
 // スクロールバーで表示速度を 10ms 単位で変える
-void CMemoryDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+void MemoryDlg::OnHScroll(UINT sb_code, UINT pos, CScrollBar* scroll_bar)
 {
-	m_timerCycle = m_cycleBar.GetScrollPos();
+	timer_cycle_ = cycle_bar_.GetScrollPos();
 
-	int minPos, maxPos;
-	m_cycleBar.GetScrollRange(&minPos, &maxPos);
-	switch (nSBCode)
+	int min_pos, max_pos;
+	cycle_bar_.GetScrollRange(&min_pos, &max_pos);
+	switch (sb_code)
 	{
 	case SB_LINELEFT:
-		m_timerCycle -= 10;
+		timer_cycle_ -= 10;
 		break;
 	case SB_LINERIGHT:
-		m_timerCycle += 10;
+		timer_cycle_ += 10;
 		break;
 	case SB_PAGELEFT:
-		m_timerCycle -= 100;
+		timer_cycle_ -= 100;
 		break;
 	case SB_PAGERIGHT:
-		m_timerCycle += 100;
+		timer_cycle_ += 100;
 		break;
 	case SB_LEFT:
-		m_timerCycle = minPos;
+		timer_cycle_ = min_pos;
 		break;
 	case SB_RIGHT:
-		m_timerCycle = maxPos;
+		timer_cycle_ = max_pos;
 		break;
 	case SB_THUMBPOSITION:
 	case SB_THUMBTRACK:
-		m_timerCycle = nPos;
+		timer_cycle_ = pos;
 		break;
 	default:
 		break;
 	}
 
-	if (m_timerCycle < MIN_CYC)
+	if (timer_cycle_ < kMinCyc)
 	{
-		m_timerCycle = MIN_CYC;
+		timer_cycle_ = kMinCyc;
 	}
-	else if (m_timerCycle > MAX_CYC)
+	else if (timer_cycle_ > kMaxCyc)
 	{
-		m_timerCycle = MAX_CYC;
+		timer_cycle_ = kMaxCyc;
 	}
 
-	m_timerCycle = m_timerCycle / 10 * 10;
-	m_cycleBar.SetScrollPos(m_timerCycle);
+	timer_cycle_ = timer_cycle_ / 10 * 10;
+	cycle_bar_.SetScrollPos(timer_cycle_);
 
 	CString str;
-	str.Format(_T("(%d ms)"), m_timerCycle);
+	str.Format(_T("(%d ms)"), timer_cycle_);
 	GetDlgItem(IDC_SPEED_TXT)->SetWindowText(str);
 
-	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+	CDialog::OnHScroll(sb_code, pos, scroll_bar);
 }
 
-void CMemoryDlg::OnHelp()
+void MemoryDlg::OnHelp()
 {
 	MessageBox(
 		_T("　　右脳左脳活性化ソフト　ヘルプ\n")
@@ -535,14 +535,14 @@ void CMemoryDlg::OnHelp()
 		_T("ヘルプ"), MB_OK);
 }
 
-void CMemoryDlg::SetType(int setType, BOOL flg)
+void MemoryDlg::SetType(int set_type, BOOL flg)
 {
 	if (flg == TRUE)
 	{
-		m_typeFlags |= setType;
+		type_flags_ |= set_type;
 	}
 	else
 	{
-		m_typeFlags &= ~setType;
+		type_flags_ &= ~set_type;
 	}
 }
