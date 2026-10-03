@@ -7,7 +7,11 @@
 #include <cstdio>
 
 // フックの登録状態と、前回イベントの時刻
-// （.shared セクションに置いているが、.def をリンクしていないため現状はプロセス間で共有されない）
+// SetWindowsHookEx(WH_KEYBOARD / WH_MOUSE, ..., 0) のグローバルフックは、フックされた各プロセスに
+// この DLL が読み込まれて動く。前回イベントの時刻などをプロセス間で共有するため .shared を共有セクションにする。
+// （EventHookd.def の SECTIONS はリンクに使っていないので効かない。共有はこの指定で有効にしている。
+//   共有セクションの変数には初期化子が必須）
+#pragma comment(linker, "/SECTION:.shared,RWS")
 #pragma data_seg(".shared")
 HHOOK		g_hKeyHook = NULL;
 HHOOK		g_hMouseHook = NULL;
