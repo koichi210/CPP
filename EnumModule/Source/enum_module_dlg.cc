@@ -1,8 +1,8 @@
 ﻿// EnumModuleDlg.cpp : メインダイアログ
 
 #include "stdafx.h"
-#include "EnumModule.h"
-#include "EnumModuleDlg.h"
+#include "enum_module.h"
+#include "enum_module_dlg.h"
 #include "afxdialogex.h"
 
 #include <psapi.h>

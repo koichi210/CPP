@@ -1,8 +1,8 @@
 ﻿// EnumModule.cpp : アプリケーションクラス
 
 #include "stdafx.h"
-#include "EnumModule.h"
-#include "EnumModuleDlg.h"
+#include "enum_module.h"
+#include "enum_module_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
