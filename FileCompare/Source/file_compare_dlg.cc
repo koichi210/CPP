@@ -151,7 +151,8 @@ void FileCompareDlg::StartCompare()
 	CollectFiles(GetFolders());
 
 	// 総当たりの進捗。表示上の位置は「行 * ファイル数 + 列」で数える
-	progress_.SetRange32(0, static_cast<int>(GetProgressEnd() / GetProgressDivisor(GetProgressEnd())));
+	const long long end = GetProgressEnd();
+	progress_.SetRange32(0, static_cast<int>(end / GetProgressDivisor(end)));
 	UpdateProgress(0, 0);
 	workers_.Start(CompareThread, this);
 }
@@ -187,7 +188,7 @@ std::vector<CString> FileCompareDlg::GetFolders() const
 	return folders;
 }
 
-// 各フォルダ直下のファイルを集める（サブフォルダはたどらない）
+// 各フォルダ直下のファイルを集める（サブフォルダはたどらない）。上限を超えた分は捨てる
 void FileCompareDlg::CollectFiles(const std::vector<CString>& folders)
 {
 	CFileFind finder;
@@ -208,7 +209,7 @@ void FileCompareDlg::CollectFiles(const std::vector<CString>& folders)
 			}
 			if (file_count_ >= kMaxFileCount)
 			{
-				break;
+				return;		// 残りのフォルダも探さない
 			}
 			files_[file_count_].path = finder.GetFilePath();
 			files_[file_count_].group = kNoGroup;
@@ -240,11 +241,11 @@ void FileCompareDlg::CompareFiles()
 
 		for (int j = i + 1; j < file_count_ && running_; j++)
 		{
-			UpdateProgress(static_cast<long long>(i) * file_count_ + j, end);
 			if (files_[j].group != kNoGroup)
 			{
-				continue;
+				continue;	// 比較しないものは表示も更新しない（UI スレッドへの送信を減らす）
 			}
+			UpdateProgress(static_cast<long long>(i) * file_count_ + j, end);
 			if (comparer.CompareBinary(files_[i].path, files_[j].path))
 			{
 				files_[i].group = next_group_;
@@ -278,20 +279,25 @@ void FileCompareDlg::UpdateProgress(long long pos, long long end)
 
 void FileCompareDlg::ShowResult()
 {
+	// 先に組ごとのパス一覧を1回の走査で作る（組ごとに全ファイルを見直すと 組数 × ファイル数 かかる）
+	std::vector<CString> group_paths(next_group_);
+	for (int i = 0; i < file_count_; i++)
+	{
+		const int group = files_[i].group;
+		if (group != kNoGroup && group < next_group_)
+		{
+			group_paths[group] += files_[i].path;
+			group_paths[group] += kNewLine;
+		}
+	}
+
 	CString result;
 	for (int group = 1; group < next_group_; group++)
 	{
 		CString header;
 		header.Format(_T("[Group%d]%s"), group, kNewLine);
 		result += header;
-		for (int i = 0; i < file_count_; i++)
-		{
-			if (files_[i].group == group)
-			{
-				result += files_[i].path;
-				result += kNewLine;
-			}
-		}
+		result += group_paths[group];
 		result += kNewLine;
 	}
 	SetDlgItemText(IDET_RESULT, result);
