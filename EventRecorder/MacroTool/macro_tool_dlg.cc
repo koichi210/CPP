@@ -278,14 +278,8 @@ END_MESSAGE_MAP()
 std::vector<MacroEvent> MacroToolDlg::GetEvents() const
 {
 	std::vector<MacroEvent> events(kMaxEventCount);
-	int count = 0;
-	for (const MacroEvent& ev : events_)
-	{
-		if (ev.kind != EventKind::kNone)
-		{
-			events[count++] = ev;
-		}
-	}
+	std::copy_if(events_.begin(), events_.end(), events.begin(),
+		[](const MacroEvent& ev) { return ev.kind != EventKind::kNone; });
 	return events;
 }
 
@@ -463,22 +457,17 @@ void MacroToolDlg::OnListInsert()
 		return;
 	}
 
-	for (int i = last_index; i > index_; i--)
-	{
-		events_[i] = events_[i - 1];
-	}
+	// 選択行から後ろを1行ずつ下げる（最終行は押し出されて消える）
+	std::copy_backward(events_.begin() + index_, events_.end() - 1, events_.end());
 	CurrentEvent() = MacroEvent{};
 	UpdateListControl(TRUE);
 }
 
 void MacroToolDlg::OnListDelete()
 {
-	const int last_index = kMaxEventCount - 1;
-	for (int i = index_; i < last_index; i++)
-	{
-		events_[i] = events_[i + 1];
-	}
-	events_[last_index] = MacroEvent{};
+	// 選択行より後ろを1行ずつ上げ、空いた最終行は未設定にする
+	std::copy(events_.begin() + index_ + 1, events_.end(), events_.begin() + index_);
+	events_.back() = MacroEvent{};
 	UpdateListControl(TRUE);
 }
 
@@ -530,15 +519,11 @@ void MacroToolDlg::SelectEventKind(EventKind kind)
 // 上限を超えた値は上限に書き換える
 int MacroToolDlg::GetClampedDlgItemInt(UINT id, int max_value, BOOL is_signed)
 {
-	BOOL valid;
-	int value = static_cast<int>(GetDlgItemInt(id, &valid, is_signed));
+	const int value = static_cast<int>(GetDlgItemInt(id, nullptr, is_signed));
 	if (value > max_value)
 	{
-		value = max_value;
-
-		CString text;
-		text.Format(_T("%d"), value);
-		SetDlgItemText(id, text);
+		SetDlgItemInt(id, max_value, is_signed);
+		return max_value;
 	}
 	return value;
 }
@@ -635,14 +620,12 @@ void MacroToolDlg::OnKeyAlt()		{ SetModifier(IDCH_KEY_ALT, kModifierAlt); }
 
 void MacroToolDlg::OnEnChangeRepeatNum()
 {
-	BOOL valid;
-	repeat_count_ = GetDlgItemInt(IDET_REPEAT_NUM, &valid, FALSE);
+	repeat_count_ = GetDlgItemInt(IDET_REPEAT_NUM, nullptr, FALSE);
 }
 
 void MacroToolDlg::OnEnChangeRepeatTime()
 {
-	BOOL valid;
-	repeat_delay_msec_ = GetDlgItemInt(IDET_REPEAT_TIME, &valid, FALSE);
+	repeat_delay_msec_ = GetDlgItemInt(IDET_REPEAT_TIME, nullptr, FALSE);
 	SetTitleBar();
 }
 
@@ -766,8 +749,8 @@ void MacroToolDlg::OnRecord()
 {
 	TCHAR temp_dir[MAX_PATH];
 	GetTempPath(MAX_PATH, temp_dir);
-	CString log_path;
-	log_path.Format(_T("%s\\%s"), temp_dir, kHookLogFileName);
+	CString log_path(temp_dir);
+	AppendPath(log_path, kHookLogFileName);
 
 	if (!recording_)
 	{
@@ -858,9 +841,7 @@ void MacroToolDlg::SetDlgItemNumberIfChanged(UINT id, int value)
 	GetDlgItemText(id, current);
 	if (_ttoi(current) != value)
 	{
-		CString text;
-		text.Format(_T("%d"), value);
-		SetDlgItemText(id, text);
+		SetDlgItemInt(id, value, TRUE);
 	}
 }
 
@@ -928,6 +909,8 @@ void MacroToolDlg::UpdateListControl(BOOL update_all)
 	const int columns[] = { kColumnExecute, kColumnSleep, kColumnEvent, kColumnDetail, kColumnComment };
 	if (update_all)
 	{
+		// 全行を書き換える間は再描画を止める
+		list_.SetRedraw(FALSE);
 		for (int row = 0; row < kMaxEventCount; row++)
 		{
 			for (int column : columns)
@@ -935,6 +918,8 @@ void MacroToolDlg::UpdateListControl(BOOL update_all)
 				UpdateListCell(row, column);
 			}
 		}
+		list_.SetRedraw(TRUE);
+		list_.Invalidate();
 	}
 	else
 	{

@@ -53,7 +53,7 @@ inline constexpr LPCTSTR kKeyKindNames[kKeyKindCount] =
 
 struct MacroKey
 {
-	DWORD	modifiers;			// MODIFIER_* の組み合わせ
+	DWORD	modifiers;			// kModifier* の組み合わせ
 	int		key_kind;			// KeyKind
 	char	text[MAX_PATH];		// kKeyKindUser のとき入力する文字列
 };
