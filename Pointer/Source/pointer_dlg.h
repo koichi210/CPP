@@ -22,7 +22,6 @@ public:
 	TestData* GetParam();
 
 protected:
-	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();

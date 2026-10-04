@@ -16,11 +16,6 @@ PointerDlg::PointerDlg(CWnd* parent /*=nullptr*/)
 	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void PointerDlg::DoDataExchange(CDataExchange* dx)
-{
-	CDialogEx::DoDataExchange(dx);
-}
-
 BEGIN_MESSAGE_MAP(PointerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -74,23 +69,21 @@ HCURSOR PointerDlg::OnQueryDragIcon()
 // ポインタ変数自体は別々の場所にあることを表示して確かめる
 void PointerDlg::OnBnClickedButton1()
 {
-	TestData*	test = nullptr;
-	TestData*	test2;
-
+	TestData* test = nullptr;
 	GetParam(&test);
-	test2 = GetParam();
+	TestData* test2 = GetParam();
 
 	CString addr_str;
 	addr_str.Format(
-		"Addr  m_test本体\t\t = %08x\n"
-		"Addr  pTestが指す先\t = %08x\n"
-		"Addr  pTest2が指す先\t = %08x\n"
-		"Addr  pTest本体\t\t = %08x\n"
-		"Addr  pTest2本体\t\t = %08x\n\n"
+		"Addr  test_本体\t\t = %08x\n"
+		"Addr  testが指す先\t = %08x\n"
+		"Addr  test2が指す先\t = %08x\n"
+		"Addr  test本体\t\t = %08x\n"
+		"Addr  test2本体\t\t = %08x\n\n"
 
-		"Data  m_test.param2\t = %08x\n"
-		"Data  pTest->param2\t = %08x\n"
-		"Data  pTest2->param2\t = %08x\n" ,
+		"Data  test_.param2\t = %08x\n"
+		"Data  test->param2\t = %08x\n"
+		"Data  test2->param2\t = %08x\n" ,
 		&test_,
 		test,
 		test2,
