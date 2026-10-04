@@ -13,9 +13,9 @@
 
 namespace
 {
-	// 関数テンプレートの確認用
+	// 関数テンプレートの確認用（string などのコピーを避けるため const 参照で受ける）
 	template <typename T>
-	T Add(T x, T y)
+	T Add(const T& x, const T& y)
 	{
 		return x + y;
 	}
@@ -25,11 +25,6 @@ TemplateDlg::TemplateDlg(CWnd* parent /*=nullptr*/)
 	: CDialogEx(IDD, parent)
 {
 	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-}
-
-void TemplateDlg::DoDataExchange(CDataExchange* dx)
-{
-	CDialogEx::DoDataExchange(dx);
 }
 
 BEGIN_MESSAGE_MAP(TemplateDlg, CDialogEx)
