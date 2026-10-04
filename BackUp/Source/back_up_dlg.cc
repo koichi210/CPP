@@ -470,6 +470,15 @@ void BackUpDlg::Refresh()
 void BackUpDlg::OnBnClickedAllClear()
 {
 	std::fill(std::begin(entries_), std::end(entries_), BackupSetting());
+
+	// Refresh は選択中の行しか一覧に反映しないので、全行を書き直す
+	// （書き換え中の LVN_ITEMCHANGED で選択中の設定が変わらないよう、戻してから表示する）
+	const int selected = cur_index_;
+	for (int i = 0; i < kMaxEntry; i++)
+	{
+		SetListRow(i, false);
+	}
+	cur_index_ = selected;
 	Refresh();
 }
 
