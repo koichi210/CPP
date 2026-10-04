@@ -7,7 +7,7 @@ namespace
 {
 	constexpr int kMaxLoadString = 100;
 
-	HINSTANCE	app_instance;							// 現在のインスタンス
+	HINSTANCE	app_instance;					// 現在のインスタンス
 	TCHAR		title[kMaxLoadString];			// タイトル バーのテキスト
 	TCHAR		window_class[kMaxLoadString];	// メイン ウィンドウ クラス名
 
@@ -50,7 +50,7 @@ ATOM RegisterMainWindowClass(HINSTANCE instance)
 {
 	WNDCLASSEX wcex;
 
-	wcex.cbSize			= sizeof(WNDCLASSEX);
+	wcex.cbSize			= sizeof(wcex);
 	wcex.style			= CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc	= WndProc;
 	wcex.cbClsExtra		= 0;
@@ -135,4 +135,4 @@ INT_PTR CALLBACK AboutDlgProc(HWND dlg, UINT message, WPARAM w_param, LPARAM /*l
 	return FALSE;
 }
 
-}
+}  // namespace
