@@ -26,7 +26,7 @@ TIDY = os.path.join(VS_ROOT, r'VC\Tools\Llvm\x64\bin\clang-tidy.exe')
 MSVC = os.path.join(VS_ROOT, 'VC', 'Tools', 'MSVC', MSVC_VERSION).replace('\\', '/')
 SDK = os.path.join(SDK_ROOT, SDK_VERSION).replace('\\', '/')
 
-SKIP_DIRS = ('_TechnicalNote', 'packages', '.git', '.claude', '.vs')
+SKIP_DIRS = ('packages', '.git', '.claude', '.vs')
 
 
 def project_dirs():

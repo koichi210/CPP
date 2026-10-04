@@ -3,7 +3,7 @@
 ガード名はリポジトリ直下からのパスを大文字にして、英数字以外を `_` にしたもの
 (例: othello/Source/board.h → OTHELLO_SOURCE_BOARD_H_)。
 VS が生成するヘッダー(stdafx.h / pch.h / resource.h / targetver.h / framework.h)と、
-外部ライブラリ(External / packages)、_TechnicalNote は対象外。
+外部ライブラリ(External / packages)は対象外。
 
     py -3 tools\\use_include_guards.py          # 書き換える
     py -3 tools\\use_include_guards.py --dry    # 対象を表示するだけ
@@ -14,7 +14,7 @@ import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKIP_PATH = re.compile(r'^_TechnicalNote/|/packages/|/External/|/GL/')
+SKIP_PATH = re.compile(r'/packages/|/External/|/GL/')
 SKIP_NAME = re.compile(r'(?i)^(stdafx|pch|resource|targetver|framework)\.h$')
 # 行末の \r は置換で消さない(先読みにする)
 PRAGMA = re.compile(r'^[ \t]*#[ \t]*pragma[ \t]+once[ \t]*(?=\r?$)', re.M)
