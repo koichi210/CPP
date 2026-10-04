@@ -16,7 +16,8 @@ const GLfloat kLightCol[] = { 1, 0, 0, 1 };
 
 void DispPyramid(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBegin(GL_POLYGON);
+	// 2 枚の三角形の面を描く（GL_POLYGON だと 6 頂点が 1 枚のねじれた多角形になる）
+	glBegin(GL_TRIANGLES);
 	glNormal3f(3, 0, -2);
 	glVertex3f(0, -0.9f, -2);
 	glVertex3f(3, -0.9f, -7);
@@ -36,7 +37,7 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitWindowPosition(100, 50);
 	glutInitWindowSize(500, 300);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);	// GL_DEPTH_TEST を使うので深度バッファも要求する
 
 	glutCreateWindow("図形描画");
 	glutDisplayFunc(DispPyramid);
