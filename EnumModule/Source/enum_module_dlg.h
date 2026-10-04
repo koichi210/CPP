@@ -1,4 +1,4 @@
-﻿// EnumModuleDlg.h : メインダイアログ（プロセスが読み込んでいるモジュールを列挙）
+﻿// enum_module_dlg.h : メインダイアログ（プロセスが読み込んでいるモジュールを列挙）
 
 #ifndef ENUMMODULE_SOURCE_ENUM_MODULE_DLG_H_
 #define ENUMMODULE_SOURCE_ENUM_MODULE_DLG_H_

@@ -1,4 +1,4 @@
-﻿// EnumModule.h : アプリケーションクラス
+﻿// enum_module.h : アプリケーションクラス
 
 #ifndef ENUMMODULE_SOURCE_ENUM_MODULE_H_
 #define ENUMMODULE_SOURCE_ENUM_MODULE_H_

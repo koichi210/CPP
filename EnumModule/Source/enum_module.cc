@@ -1,4 +1,4 @@
-﻿// EnumModule.cpp : アプリケーションクラス
+﻿// enum_module.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "enum_module.h"

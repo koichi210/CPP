@@ -1,4 +1,4 @@
-﻿// EnumModuleDlg.cpp : メインダイアログ
+﻿// enum_module_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
 #include "enum_module.h"
@@ -6,6 +6,7 @@
 #include "afxdialogex.h"
 
 #include <psapi.h>
+#include <vector>
 #pragma comment(lib, "psapi.lib")
 
 #ifdef _DEBUG
@@ -14,14 +15,22 @@
 
 namespace
 {
-	// GetMappedFileName が返すデバイスパス（\Device\HarddiskVolumeN\...）を
-	// ドライブ文字のパス（C:\...）に戻す
-	bool DevicePathToDosPath(LPCTSTR device_path, CString& dos_path)
+	// ドライブ文字（"C:"）と、それに対応するデバイス名（"\Device\HarddiskVolume3"）の組
+	struct DriveDevice
 	{
+		CString drive;
+		CString device_name;
+	};
+
+	// 論理ドライブとデバイス名の対応表を作る。モジュールごとに引き直さないよう、一度だけ作って使い回す
+	std::vector<DriveDevice> GetDriveDevices()
+	{
+		std::vector<DriveDevice> drive_devices;
+
 		TCHAR drives[MAX_PATH + 1] = {};
 		if (GetLogicalDriveStrings(MAX_PATH, drives) == 0)
 		{
-			return false;
+			return drive_devices;
 		}
 
 		// "A:\<NUL>C:\<NUL>...<NUL><NUL>" の形式で並んでいる
@@ -29,18 +38,27 @@ namespace
 		{
 			const TCHAR drive[3] = { p[0], _T(':'), _T('\0') };
 			TCHAR device_name[MAX_PATH] = {};
-			if (QueryDosDevice(drive, device_name, MAX_PATH) == 0)
+			if (QueryDosDevice(drive, device_name, MAX_PATH) != 0)
 			{
-				continue;
+				drive_devices.push_back({ drive, device_name });
 			}
+		}
+		return drive_devices;
+	}
 
-			const size_t name_len = _tcslen(device_name);
+	// GetMappedFileName が返すデバイスパス（\Device\HarddiskVolumeN\...）を
+	// ドライブ文字のパス（C:\...）に戻す
+	bool DevicePathToDosPath(LPCTSTR device_path, const std::vector<DriveDevice>& drive_devices, CString& dos_path)
+	{
+		for (const DriveDevice& drive_device : drive_devices)
+		{
+			const int name_len = drive_device.device_name.GetLength();
 			// \Device\HarddiskVolume1 が \Device\HarddiskVolume10 に前方一致しないよう、
 			// デバイス名の直後が '\' または文字列の終端のときだけ一致とする
-			if (_tcsnicmp(device_path, device_name, name_len) == 0 &&
+			if (_tcsnicmp(device_path, drive_device.device_name, name_len) == 0 &&
 				(device_path[name_len] == _T('\\') || device_path[name_len] == _T('\0')))
 			{
-				dos_path = CString(drive) + (device_path + name_len);
+				dos_path = drive_device.drive + (device_path + name_len);
 				return true;
 			}
 		}
@@ -48,7 +66,7 @@ namespace
 	}
 
 	// ファイルをメモリマップし、マップされた実体のファイル名を得る
-	bool GetPhysicalFileName(LPCTSTR file_name, CString& real_file_name)
+	bool GetPhysicalFileName(LPCTSTR file_name, const std::vector<DriveDevice>& drive_devices, CString& real_file_name)
 	{
 		HANDLE file = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
 			nullptr, OPEN_EXISTING, 0, nullptr);
@@ -85,7 +103,7 @@ namespace
 		TCHAR mapped_name[MAX_PATH + 1] = {};
 		if (GetMappedFileName(GetCurrentProcess(), mem, mapped_name, MAX_PATH))
 		{
-			succeeded = DevicePathToDosPath(mapped_name, real_file_name);
+			succeeded = DevicePathToDosPath(mapped_name, drive_devices, real_file_name);
 		}
 
 		UnmapViewOfFile(mem);
@@ -117,6 +135,7 @@ namespace
 			}
 
 			const DWORD count = bytes_needed / sizeof(HMODULE);
+			const std::vector<DriveDevice> drive_devices = GetDriveDevices();
 			for (DWORD i = 0; i < count; i++)
 			{
 				TCHAR mod_name[MAX_PATH];
@@ -130,7 +149,7 @@ namespace
 				result += line;
 
 				CString real_name;
-				if (GetPhysicalFileName(mod_name, real_name))
+				if (GetPhysicalFileName(mod_name, drive_devices, real_name))
 				{
 					line.Format(_T("   => %s\r\n"), static_cast<LPCTSTR>(real_name));
 					result += line;
