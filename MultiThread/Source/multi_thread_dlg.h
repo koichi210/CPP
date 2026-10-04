@@ -3,6 +3,8 @@
 #ifndef MULTITHREAD_SOURCE_MULTI_THREAD_DLG_H_
 #define MULTITHREAD_SOURCE_MULTI_THREAD_DLG_H_
 
+#include <atomic>
+
 #include "worker_threads.h"
 
 class MultiThreadDlg : public CDialogEx

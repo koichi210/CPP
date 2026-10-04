@@ -17,9 +17,9 @@ namespace
 }
 
 MultiThreadDlg::MultiThreadDlg(CWnd* parent /*=nullptr*/)
-	: CDialogEx(MultiThreadDlg::IDD, parent)
+	: CDialogEx(IDD, parent)
+	, icon_(AfxGetApp()->LoadIcon(IDR_MAINFRAME))
 {
-	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 BEGIN_MESSAGE_MAP(MultiThreadDlg, CDialogEx)
@@ -132,5 +132,5 @@ UINT MultiThreadDlg::CountThreadProc(LPVOID param)
 			Sleep(kStopCheckMs);
 		}
 	}
-	return TRUE;
+	return 0;
 }
