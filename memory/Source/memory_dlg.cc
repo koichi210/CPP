@@ -409,7 +409,7 @@ TCHAR MemoryDlg::GetKeyGenChar(int char_type, int val)
 		number = _T('a') + (val % 26);
 		if (number == prev_char_)
 		{
-			number = MatchProc(val, number) + _T('a');
+			number = MatchProc(val, number - _T('a')) + _T('a');
 		}
 		break;
 
@@ -417,7 +417,7 @@ TCHAR MemoryDlg::GetKeyGenChar(int char_type, int val)
 		number = _T('A') + (val % 26);
 		if (number == prev_char_)
 		{
-			number = MatchProc(val, number) + _T('A');
+			number = MatchProc(val, number - _T('A')) + _T('A');
 		}
 		break;
 	}

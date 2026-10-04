@@ -153,7 +153,7 @@ HBRUSH AnserDlg::OnCtlColor(CDC* dc, CWnd* wnd, UINT ctl_color)
 
 	if (wnd->GetDlgCtrlID() == IDC_CHEAT)
 	{
-		dc->SetTextColor(RGB(0xFF0, 0, 0));	// 文字色は赤
+		dc->SetTextColor(RGB(0xFF, 0, 0));	// 文字色は赤
 	}
 
 	return hbr;
