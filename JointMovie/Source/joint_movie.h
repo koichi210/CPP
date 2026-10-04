@@ -1,4 +1,4 @@
-﻿// JointMovie.h : アプリケーションクラス
+﻿// joint_movie.h : アプリケーションクラス
 
 #ifndef JOINTMOVIE_SOURCE_JOINT_MOVIE_H_
 #define JOINTMOVIE_SOURCE_JOINT_MOVIE_H_

@@ -1,4 +1,4 @@
-﻿// JointMovieDlg.cpp : メインダイアログ
+﻿// joint_movie_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
 #include "joint_movie.h"
@@ -127,6 +127,11 @@ void JointMovieDlg::OnExecute()
 {
 	CString output_file;
 	GetDlgItemText(IDC_OUTPUTFILE, output_file);
+	if (output_file.IsEmpty())
+	{
+		MessageBox(_T("結合先ファイル名が不正"));
+		return;
+	}
 
 	CString input_files;
 	for (int i = 0; i < kInputFileCount; i++)
@@ -145,18 +150,13 @@ void JointMovieDlg::OnExecute()
 		input_files += _T("\"") + file + _T("\"");
 	}
 
-	if (output_file.IsEmpty())
-	{
-		MessageBox(_T("結合先ファイル名が不正"));
-	}
-	else if (input_files.IsEmpty())
+	if (input_files.IsEmpty())
 	{
 		MessageBox(_T("元ファイル名が不正"));
+		return;
 	}
-	else
-	{
-		CString command;
-		command.Format(_T("copy /B /-Y %s \"%s\""), static_cast<LPCTSTR>(input_files), static_cast<LPCTSTR>(output_file));
-		_tsystem(command);
-	}
+
+	CString command;
+	command.Format(_T("copy /B /-Y %s \"%s\""), static_cast<LPCTSTR>(input_files), static_cast<LPCTSTR>(output_file));
+	_tsystem(command);
 }

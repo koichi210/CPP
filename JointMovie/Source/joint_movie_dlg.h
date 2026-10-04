@@ -1,4 +1,4 @@
-﻿// JointMovieDlg.h : メインダイアログ（複数の動画ファイルを copy /B で連結）
+﻿// joint_movie_dlg.h : メインダイアログ（複数の動画ファイルを copy /B で連結）
 
 #ifndef JOINTMOVIE_SOURCE_JOINT_MOVIE_DLG_H_
 #define JOINTMOVIE_SOURCE_JOINT_MOVIE_DLG_H_

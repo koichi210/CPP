@@ -1,4 +1,4 @@
-﻿// JointMovie.cpp : アプリケーションクラス
+﻿// joint_movie.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "joint_movie.h"
