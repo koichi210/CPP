@@ -1,4 +1,4 @@
-﻿// StrMath.cpp : アプリケーションクラス
+﻿// str_math.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "str_math.h"

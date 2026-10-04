@@ -1,4 +1,4 @@
-﻿// StrMathDlg.h : メインダイアログ（ひらがなで足し算／引き算）
+﻿// str_math_dlg.h : メインダイアログ（ひらがなで足し算／引き算）
 
 #ifndef STRMATH_SOURCE_STR_MATH_DLG_H_
 #define STRMATH_SOURCE_STR_MATH_DLG_H_

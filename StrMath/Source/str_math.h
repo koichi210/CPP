@@ -1,4 +1,4 @@
-﻿// StrMath.h : アプリケーションクラス
+﻿// str_math.h : アプリケーションクラス
 
 #ifndef STRMATH_SOURCE_STR_MATH_H_
 #define STRMATH_SOURCE_STR_MATH_H_

@@ -1,4 +1,4 @@
-﻿// StrMathDlg.cpp : メインダイアログ（ひらがなで足し算／引き算）
+﻿// str_math_dlg.cc : メインダイアログ（ひらがなで足し算／引き算）
 
 #include "stdafx.h"
 #include "str_math.h"
@@ -71,10 +71,6 @@ BOOL StrMathDlg::OnInitDialog()
 
 	CheckDlgButton(IDC_2KETA, BST_CHECKED);
 	CheckDlgButton(IDC_SUM, BST_CHECKED);
-	digits_ = 2;
-	operation_ = Operation::kSum;
-	num1_ = 0;
-	num2_ = 0;
 	srand(static_cast<unsigned>(time(nullptr)));
 
 	LOGFONT view_font = {};
@@ -138,22 +134,9 @@ void StrMathDlg::OnStart()
 
 int StrMathDlg::BuildNumber() const
 {
-	// 下位桁だけを使うので、桁数に満たない小さい乱数は引き直す
-	int num;
-	do
-	{
-		num = rand();
-	} while (num < 1000);
-
-	if (digits_ == 2)
-	{
-		num %= 100;
-	}
-	else if (digits_ == 3)
-	{
-		num %= 1000;
-	}
-	return num;
+	// 2桁なら 0〜99、3桁なら 0〜999
+	const int modulus = (digits_ == 3) ? 1000 : 100;
+	return rand() % modulus;
 }
 
 void StrMathDlg::OnSum()
