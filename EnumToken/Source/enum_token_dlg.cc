@@ -16,6 +16,20 @@ namespace
 	public:
 		AboutDlg() : CDialog(IDD_ABOUTBOX) {}
 	};
+
+	// トークンが属するグループ（TOKEN_GROUPS）を buffer に読み出す
+	bool QueryTokenGroups(HANDLE token, std::vector<BYTE>* buffer)
+	{
+		// 1回目はサイズ 0 で呼んで必要なバッファサイズを得る
+		DWORD size = 0;
+		if (GetTokenInformation(token, TokenGroups, nullptr, 0, &size)
+			|| GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+		{
+			return false;
+		}
+		buffer->resize(size);
+		return GetTokenInformation(token, TokenGroups, buffer->data(), size, &size) != FALSE;
+	}
 }
 
 EnumTokenDlg::EnumTokenDlg(CWnd* parent /*=nullptr*/)
@@ -108,49 +122,37 @@ void EnumTokenDlg::OnGetproc()
 	{
 		return;
 	}
-
-	// 1回目はサイズ 0 で呼んで必要なバッファサイズを得る
-	DWORD size = 0;
-	if (!GetTokenInformation(token, TokenGroups, nullptr, 0, &size)
-		&& GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+	std::vector<BYTE> buffer;
+	const bool queried = QueryTokenGroups(token, &buffer);
+	CloseHandle(token);
+	if (!queried)
 	{
-		std::vector<BYTE> buffer(size);
-		auto* groups = reinterpret_cast<TOKEN_GROUPS*>(buffer.data());
-		if (GetTokenInformation(token, TokenGroups, groups, size, &size))
-		{
-			CString names;
-			CString domains;
-			for (DWORD i = 0; i < groups->GroupCount; i++)
-			{
-				TCHAR name[256];
-				DWORD name_len = _countof(name);
-				TCHAR domain[256];
-				DWORD domain_len = _countof(domain);
-				SID_NAME_USE use;
-
-				if (!LookupAccountSid(nullptr, groups->Groups[i].Sid, name, &name_len, domain, &domain_len, &use))
-				{
-					// 名前を引けない SID（ログオン SID など）は空欄扱い
-					name[0] = _T('\0');
-					domain[0] = _T('\0');
-				}
-
-				names += name;
-				names += _T("\n");
-				if (domain[0] == _T('\0'))
-				{
-					domains += _T("(not available name)");
-				}
-				else
-				{
-					domains += domain;
-				}
-				domains += _T("\n");
-			}
-			SetDlgItemText(IDC_PROCTOKEN_NAME, names);
-			SetDlgItemText(IDC_PROCTOKEN_DOMAIN, domains);
-		}
+		return;
 	}
 
-	CloseHandle(token);
+	const auto* groups = reinterpret_cast<const TOKEN_GROUPS*>(buffer.data());
+	CString names;
+	CString domains;
+	for (DWORD i = 0; i < groups->GroupCount; i++)
+	{
+		TCHAR name[256];
+		DWORD name_len = _countof(name);
+		TCHAR domain[256];
+		DWORD domain_len = _countof(domain);
+		SID_NAME_USE use;
+
+		if (!LookupAccountSid(nullptr, groups->Groups[i].Sid, name, &name_len, domain, &domain_len, &use))
+		{
+			// 名前を引けない SID（ログオン SID など）は空欄扱い
+			name[0] = _T('\0');
+			domain[0] = _T('\0');
+		}
+
+		names += name;
+		names += _T("\n");
+		domains += (domain[0] == _T('\0')) ? _T("(not available name)") : domain;
+		domains += _T("\n");
+	}
+	SetDlgItemText(IDC_PROCTOKEN_NAME, names);
+	SetDlgItemText(IDC_PROCTOKEN_DOMAIN, domains);
 }
