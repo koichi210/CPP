@@ -161,11 +161,16 @@ PopupEdit::PopupEdit(CWnd* owner, CPoint cell)
 BOOL PopupEdit::Create(DWORD input_kind, UINT max_length, LPCTSTR text, const RECT& rect, CWnd* parent_wnd)
 {
 	input_kind_ = input_kind;
-	max_length_ = max_length;
 
 	if (!CreateEx(WS_EX_TOPMOST, _T("Edit"), text, WS_POPUP | WS_VISIBLE | ES_AUTOHSCROLL, rect, parent_wnd, 0))
 	{
 		return FALSE;
+	}
+
+	// 文字数はエディット自身に制限させる（選択範囲を上書きする入力や IME の入力も正しく数える）
+	if (max_length != 0)
+	{
+		SetLimitText(max_length);
 	}
 	SetFocus();
 	return TRUE;
@@ -202,7 +207,6 @@ void PopupEdit::OnDestroy()
 void PopupEdit::OnChar(UINT char_code, UINT rep_count, UINT flags)
 {
 	bool allowed = false;
-	bool limit_length = true;
 
 	switch (char_code)
 	{
@@ -217,10 +221,6 @@ void PopupEdit::OnChar(UINT char_code, UINT rep_count, UINT flags)
 		return;
 
 	case VK_BACK:
-		allowed = true;
-		limit_length = false;	// 削除は文字数制限の対象外
-		break;
-
 	case VK_SPACE:
 		allowed = true;
 		break;
@@ -232,16 +232,10 @@ void PopupEdit::OnChar(UINT char_code, UINT rep_count, UINT flags)
 		break;
 	}
 
-	if (!allowed)
+	if (allowed)
 	{
-		return;
+		CEdit::OnChar(char_code, rep_count, flags);
 	}
-	if (limit_length && max_length_ != 0 && max_length_ <= static_cast<UINT>(GetWindowTextLength()))
-	{
-		return;
-	}
-
-	CEdit::OnChar(char_code, rep_count, flags);
 }
 
 // クリップボード経由で入力させないよう、コンテキストメニューを出さない

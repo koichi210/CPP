@@ -84,7 +84,7 @@ public:
 
 	explicit PopupEdit(CWnd* owner = nullptr, CPoint cell = CPoint(0, 0));
 
-	BOOL Create(DWORD input_kind, UINT max_length, LPCTSTR text, const RECT& rect, CWnd* parent_wnd);
+	BOOL Create(DWORD input_kind, UINT max_length, LPCTSTR text, const RECT& rect, CWnd* parent_wnd);	// max_length が 0 なら制限なし
 
 	CPoint GetCell() const				{ return cell_; }
 	const CString& GetValue() const		{ return value_; }
@@ -103,7 +103,6 @@ private:
 	Result		result_ = kResultOk;
 	CString		value_;				// 閉じたときの入力値
 	DWORD		input_kind_ = kInputAny;
-	UINT		max_length_ = 0;	// 0 なら制限なし
 };
 
 /////////////////////////////////////////////////////////////////////////////
