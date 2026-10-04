@@ -28,7 +28,8 @@ namespace
 	struct PlaySettings
 	{
 		HWND						wnd;
-		const std::atomic<bool>*	running;
+		std::shared_ptr<const std::atomic<bool>>	running;
+		UINT						run_id;		// 終了通知で返す
 		UINT						repeat_count;
 		UINT						repeat_delay_msec;
 		std::vector<MacroEvent>		events;
@@ -102,7 +103,7 @@ namespace
 
 		for (UINT i = 0; i < settings->repeat_count && running; i++)
 		{
-			for (int j = 0; j < kMaxEventCount && running; j++)
+			for (size_t j = 0; j < settings->events.size() && running; j++)
 			{
 				const MacroEvent& ev = settings->events[j];
 				if (ev.kind == EventKind::kNone)
@@ -136,7 +137,7 @@ namespace
 			}
 			SleepWithFlicker(static_cast<int>(settings->repeat_delay_msec), running);
 		}
-		::PostMessage(settings->wnd, kWmPlayFinished, 0, 0);
+		::PostMessage(settings->wnd, kWmPlayFinished, settings->run_id, 0);
 
 		return TRUE;
 	}
@@ -201,17 +202,24 @@ void MainDlg::OnExec()
 
 	auto settings = std::make_unique<PlaySettings>();
 	settings->wnd = m_hWnd;
-	settings->running = &running_;
+	running_ = std::make_shared<std::atomic<bool>>(true);
+	settings->running = running_;
+	settings->run_id = ++run_id_;
 	settings->repeat_count = repeat_count_;
 	settings->repeat_delay_msec = repeat_delay_msec_;
 	settings->events = events_;
 
-	running_ = true;
 	AfxBeginThread(PlayThreadProc, settings.release());
 }
 
-LRESULT MainDlg::OnPlayFinished(WPARAM /*w_param*/, LPARAM /*l_param*/)
+LRESULT MainDlg::OnPlayFinished(WPARAM w_param, LPARAM /*l_param*/)
 {
+	// 止めた後の再実行中に、前の実行の終了通知が遅れて届いたときは無視する
+	if (w_param != run_id_)
+	{
+		return TRUE;
+	}
+
 	OnStop();
 	ShowWindow(SW_RESTORE);
 	return TRUE;
@@ -219,10 +227,10 @@ LRESULT MainDlg::OnPlayFinished(WPARAM /*w_param*/, LPARAM /*l_param*/)
 
 void MainDlg::OnStop()
 {
-	if (running_)
+	if (running_ && *running_)
 	{
 		SetWindowText(version_);
-		running_ = false;
+		*running_ = false;
 	}
 
 	GetDlgItem(IDBT_EXEC)->EnableWindow(TRUE);
@@ -231,6 +239,9 @@ void MainDlg::OnStop()
 
 void MainDlg::OnBnClickedClose()
 {
-	running_ = false;
+	if (running_)
+	{
+		*running_ = false;
+	}
 	OnOK();
 }

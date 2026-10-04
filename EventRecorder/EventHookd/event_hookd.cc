@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "event_hookd.h"
 
-#include <cctype>
 #include <cstdio>
 
 // フックの登録状態と、前回イベントの時刻
@@ -43,11 +42,6 @@ namespace
 	constexpr int kMouseOpRUp = 5;
 	constexpr int kMouseOpNone = -1;		// 記録しない
 
-	constexpr int kHoursPerDay = 24;
-	constexpr int kMinutesPerHour = 60;
-	constexpr int kSecondsPerMinute = 60;
-	constexpr int kMsecPerSecond = 1000;
-
 	bool IsPressed(int virtual_key)
 	{
 		return (GetAsyncKeyState(virtual_key) & 0x8000) != 0;
@@ -56,28 +50,38 @@ namespace
 	bool IsShiftPressed()	{ return IsPressed(VK_LSHIFT) || IsPressed(VK_RSHIFT); }
 	bool IsControlPressed()	{ return IsPressed(VK_LCONTROL) || IsPressed(VK_RCONTROL); }
 
+	// SYSTEMTIME を 100ns 単位の通し番号にする（変換できなければ 0）
+	ULONGLONG ToFileTimeValue(const SYSTEMTIME& time)
+	{
+		FILETIME file_time;
+		if (!SystemTimeToFileTime(&time, &file_time))
+		{
+			return 0;
+		}
+		ULARGE_INTEGER value;
+		value.LowPart = file_time.dwLowDateTime;
+		value.HighPart = file_time.dwHighDateTime;
+		return value.QuadPart;
+	}
+
 	// 前回のイベントからの経過時間(ms)
+	// （日・時・分…の差を積み上げる計算では、月をまたぐと日の差が負になって値が壊れていた）
 	DWORD ElapsedTime()
 	{
-		DWORD msec = 0;
 		SYSTEMTIME now;
-
 		GetSystemTime(&now);
-		if (now.wYear != 0)	// まれに取得できないことがあった
-		{
-			msec += now.wDay - g_lastEventTime.wDay;
-			msec *= kHoursPerDay;
-			msec += now.wHour - g_lastEventTime.wHour;
-			msec *= kMinutesPerHour;
-			msec += now.wMinute - g_lastEventTime.wMinute;
-			msec *= kSecondsPerMinute;
-			msec += now.wSecond - g_lastEventTime.wSecond;
-			msec *= kMsecPerSecond;
-			msec += now.wMilliseconds - g_lastEventTime.wMilliseconds;
 
-			g_lastEventTime = now;
+		const ULONGLONG now_value = ToFileTimeValue(now);
+		if (now_value == 0)	// まれに取得できないことがあった
+		{
+			return 0;
 		}
-		return msec;
+		const ULONGLONG last_value = ToFileTimeValue(g_lastEventTime);
+		g_lastEventTime = now;
+
+		constexpr ULONGLONG kFileTimePerMsec = 10000;
+		return (last_value != 0 && now_value > last_value)
+			? static_cast<DWORD>((now_value - last_value) / kFileTimePerMsec) : 0;
 	}
 
 	void WriteLog(const char* text)
@@ -101,7 +105,11 @@ namespace
 		int virtual_key = static_cast<int>(w_param);
 
 		// ファンクションキー等には未対応
-		if (!isalpha(virtual_key) && !isdigit(virtual_key))
+		// （仮想キーコードの英字は 'A'〜'Z' だけ。isalpha だと 'a'〜'z' と同じ値の
+		//   テンキー・F1〜F11 まで英字として通ってしまう）
+		const bool is_letter = ('A' <= virtual_key && virtual_key <= 'Z');
+		const bool is_digit = ('0' <= virtual_key && virtual_key <= '9');
+		if (!is_letter && !is_digit)
 		{
 			return false;
 		}
@@ -120,7 +128,7 @@ namespace
 		{
 			modifiers |= kModifierShift;
 		}
-		else if ('A' <= virtual_key && virtual_key <= 'Z')
+		else if (is_letter)
 		{
 			// Shift が押されていなければ小文字にする
 			virtual_key += 'a' - 'A';

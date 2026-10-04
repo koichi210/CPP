@@ -665,7 +665,8 @@ void MacroToolDlg::LoadFile(const CString& file_name)
 		}
 
 		// 同じ座標で「押す」の直後に「離す」が来たら、前の行を「クリック」にまとめる
-		if (count > 0)
+		// （キーの行もマウスの欄に値を持っているので、両方マウスの行のときだけ）
+		if (count > 0 && ev.kind == EventKind::kMouse && events_[count - 1].kind == EventKind::kMouse)
 		{
 			MacroMouse& prev = events_[count - 1].mouse;
 			if (prev.pt == ev.mouse.pt)

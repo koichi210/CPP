@@ -26,7 +26,10 @@ private:
 	std::vector<MacroEvent>	events_;				// 実行するイベント（未設定の行は後ろに詰めてある）
 	UINT					repeat_count_;			// 全体の繰り返し回数
 	UINT					repeat_delay_msec_;		// 1周ごとの待ち時間(ms)
-	std::atomic<bool>		running_{ false };		// 実行中。false にすると実行スレッドが止まる
+	// 実行中の停止フラグ。false にすると実行スレッドが止まる。
+	// 実行ごとに作り直すので、止めた直後に再実行しても前のスレッドは止まったままになる
+	std::shared_ptr<std::atomic<bool>>	running_;
+	UINT					run_id_ = 0;			// 実行ごとに増やす（終了通知が今の実行のものか見分ける）
 	CString					version_;				// タイトルに出すバージョン
 };
 
