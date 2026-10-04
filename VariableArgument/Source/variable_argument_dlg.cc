@@ -82,8 +82,11 @@ void VariableArgumentDlg::OnBnClickedButtonExecC()
 
 	char input[256] = "";
 	char output[256] = "";
+	// 危険な関数だという警告（C4996）は、その危うさを見せるためにわざと使っているので止める
+#pragma warning(suppress: 4996)
 	strcpy(input, input_);
 	const int replace = atoi(replace_);
+#pragma warning(suppress: 4996)
 	sprintf(output, input, replace);
 
 	output_ = output;
