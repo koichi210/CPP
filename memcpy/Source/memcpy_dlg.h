@@ -11,7 +11,6 @@ public:
 	enum { IDD = IDD_MEMCPY_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
 
 	afx_msg void OnPaint();

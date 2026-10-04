@@ -15,11 +15,6 @@ MemcpyDlg::MemcpyDlg(CWnd* parent /*=nullptr*/)
 	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void MemcpyDlg::DoDataExchange(CDataExchange* dx)
-{
-	CDialogEx::DoDataExchange(dx);
-}
-
 BEGIN_MESSAGE_MAP(MemcpyDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -72,10 +67,12 @@ void MemcpyDlg::OnBnClickedButton1()
 	char buff[256];
 	char str[] = "abcde";
 
-	CString result = "";
+	memcpy(buff, str, sizeof(buff));
+
+	// コピー結果を100回並べて表示する（毎回コピーし直す必要は無いのでループの外で1回だけ）
+	CString result;
 	for (int i = 0; i < 100; i++)
 	{
-		memcpy(buff, str, sizeof(buff));
 		result += buff;
 		result += " ";
 	}
