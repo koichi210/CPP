@@ -3,10 +3,6 @@
 #ifndef JSONIF_JSONIF_JSON_IF_DLG_H_
 #define JSONIF_JSONIF_JSON_IF_DLG_H_
 
-#include "External/picojson.h"
-#include "External/rapidjson.h"
-#include "External/json.hpp"
-
 class JsonIFDlg : public CDialogEx
 {
 public:
@@ -23,7 +19,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedPicojson();
 	afx_msg void OnBnClickedRapidjson();
-	afx_msg void OnBnClickedNlomannjson();
+	afx_msg void OnBnClickedNlohmannjson();
 	DECLARE_MESSAGE_MAP()
 
 private:

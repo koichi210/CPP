@@ -5,6 +5,9 @@
 #include "json_if.h"
 #include "json_if_dlg.h"
 #include "afxdialogex.h"
+#include "External/picojson.h"
+#include "External/rapidjson.h"
+#include "External/json.hpp"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,7 +24,7 @@ BEGIN_MESSAGE_MAP(JsonIFDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IBT_PICOJSON, &JsonIFDlg::OnBnClickedPicojson)
 	ON_BN_CLICKED(IBT_RAPIDJSON, &JsonIFDlg::OnBnClickedRapidjson)
-	ON_BN_CLICKED(IBT_NLOMANNJSON, &JsonIFDlg::OnBnClickedNlomannjson)
+	ON_BN_CLICKED(IBT_NLOHMANNJSON, &JsonIFDlg::OnBnClickedNlohmannjson)
 END_MESSAGE_MAP()
 
 BOOL JsonIFDlg::OnInitDialog()
@@ -73,7 +76,7 @@ void JsonIFDlg::OnBnClickedRapidjson()
 	// 未実装
 }
 
-void JsonIFDlg::OnBnClickedNlomannjson()
+void JsonIFDlg::OnBnClickedNlohmannjson()
 {
 	// お試し用なので、JSON 操作の例外で落ちないよう内容を表示して止める
 	try

@@ -6,7 +6,7 @@
 #define IDR_MAINFRAME                   128
 #define IBT_PICOJSON                    1000
 #define IBT_RAPIDJSON                   1002
-#define IBT_NLOMANNJSON                 1003
+#define IBT_NLOHMANNJSON                1003
 
 // Next default values for new objects
 // 
