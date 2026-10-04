@@ -73,23 +73,24 @@ void PointerDlg::OnBnClickedButton1()
 	GetParam(&test);
 	TestData* test2 = GetParam();
 
+	// アドレスは %p で表示する（64bit ではポインタが8バイトなので、%08x だと後ろの値までずれる）
 	CString addr_str;
 	addr_str.Format(
-		"Addr  test_本体\t\t = %08x\n"
-		"Addr  testが指す先\t = %08x\n"
-		"Addr  test2が指す先\t = %08x\n"
-		"Addr  test本体\t\t = %08x\n"
-		"Addr  test2本体\t\t = %08x\n\n"
+		"Addr  test_本体\t\t = %p\n"
+		"Addr  testが指す先\t = %p\n"
+		"Addr  test2が指す先\t = %p\n"
+		"Addr  test本体\t\t = %p\n"
+		"Addr  test2本体\t\t = %p\n\n"
 
 		"Data  test_.param2\t = %08x\n"
 		"Data  test->param2\t = %08x\n"
 		"Data  test2->param2\t = %08x\n" ,
-		&test_,
-		test,
-		test2,
+		static_cast<void*>(&test_),
+		static_cast<void*>(test),
+		static_cast<void*>(test2),
 
-		&test,
-		&test2,
+		static_cast<void*>(&test),
+		static_cast<void*>(&test2),
 
 		test_.param2,
 		test->param2,
