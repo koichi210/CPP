@@ -16,11 +16,6 @@ StandardTemplateLibrarySampleDlg::StandardTemplateLibrarySampleDlg(CWnd* parent 
 	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void StandardTemplateLibrarySampleDlg::DoDataExchange(CDataExchange* dx)
-{
-	CDialogEx::DoDataExchange(dx);
-}
-
 BEGIN_MESSAGE_MAP(StandardTemplateLibrarySampleDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -72,14 +67,14 @@ void StandardTemplateLibrarySampleDlg::OnBnClickedButton1()
 	const char* src_name = " Sample Test !! ";
 	const char* trim_char_list = " ";
 
-	std::string file_name = src_name;
-	std::string::size_type left = file_name.find_first_not_of(trim_char_list);
-	std::string::size_type right = file_name.find_last_not_of(trim_char_list);
-	std::string result = file_name.substr(left, right - left + 1);
+	const std::string src = src_name;
+	const std::string::size_type left = src.find_first_not_of(trim_char_list);
+	const std::string::size_type right = src.find_last_not_of(trim_char_list);
+	const std::string result = src.substr(left, right - left + 1);
 
 	CString result_msg;
 	result_msg.Format("Src[%d]  = %s\nDest[%d]=%s",
-		static_cast<int>(file_name.size()), src_name,
+		static_cast<int>(src.size()), src_name,
 		static_cast<int>(result.size()), result.c_str());
 	MessageBox(result_msg, "両端のスペース削除", MB_OK);
 }
