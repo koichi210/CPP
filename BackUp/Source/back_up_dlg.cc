@@ -5,6 +5,9 @@
 #include "back_up_dlg.h"
 #include "common_util.h"
 
+#include <algorithm>
+#include <iterator>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -31,8 +34,8 @@ namespace
 	constexpr LPCTSTR kStrEnable	= _T("○");
 	constexpr LPCTSTR kStrDisable	= _T("×");
 
-	constexpr LPCTSTR kSetFileName	= _T("\\BackUp.dat");
-	constexpr LPCTSTR kBatFileName	= _T("\\BackUp.bat");
+	constexpr LPCTSTR kSetFileName	= _T("BackUp.dat");
+	constexpr LPCTSTR kBatFileName	= _T("BackUp.bat");
 
 	constexpr LPCTSTR kBrowseTitle	= _T("目的のフォルダを選択して下ちぃ。。");
 
@@ -44,7 +47,9 @@ namespace
 		{
 			return CString();
 		}
-		return CString(path) + file_name;
+		CString file_path(path);
+		AppendPath(file_path, file_name);
+		return file_path;
 	}
 }
 
@@ -97,10 +102,8 @@ BOOL BackUpDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// IDM_ABOUTBOX はシステムコマンドの範囲内でなければならない
-	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-	ASSERT(IDM_ABOUTBOX < 0xF000);
-
+	// システムメニューに「バージョン情報」を追加する
+	static_assert((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX && IDM_ABOUTBOX < 0xF000, "IDM_ABOUTBOX はシステムコマンドの範囲内にする");
 	CMenu* sys_menu = GetSystemMenu(FALSE);
 	if (sys_menu != nullptr)
 	{
@@ -145,14 +148,11 @@ void BackUpDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int icon_width = GetSystemMetrics(SM_CXICON);
-		int icon_height = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - icon_width + 1) / 2;
-		int y = (rect.Height() - icon_height + 1) / 2;
-
-		dc.DrawIcon(x, y, icon_);
+		dc.DrawIcon((rect.Width() - icon_width + 1) / 2, (rect.Height() - icon_height + 1) / 2, icon_);
 	}
 	else
 	{
@@ -197,49 +197,55 @@ void BackUpDlg::InitListCtrl()
 	cur_index_ = 0;
 	ReadSetting();
 
-	LVITEM lv_item;
-	lv_item.mask      = LVIF_TEXT | LVIF_STATE;
-	lv_item.stateMask = LVIS_FOCUSED | LVIS_SELECTED;
-	lv_item.state     = 0;
-
 	for (int i = 0; i < kMaxEntry; i++)
 	{
-		// 行の追加・設定中に LVN_ITEMCHANGED → Refresh が走り得るため、値を複製して使う
-		const BackupSetting entry = entries_[i];
-
-		CString number;
-		number.Format(_T("%d"), i + 1);
-
-		const struct
-		{
-			int		sub_item;
-			LPCTSTR	text;
-		} columns[] =
-		{
-			{ kSubitemEnableBk,	entry.bk_enable ? kStrEnable : kStrDisable },
-			{ kSubitemNumber,		number.GetString() },
-			{ kSubitemSrcPath,		entry.src_path.GetString() },
-			{ kSubitemDstPath,		entry.dst_path.GetString() },
-			{ kSubitemSubdirectory,	(entry.opt & BackupSetting::kOptSubdir) ? kStrOn : kStrOff },
-			{ kSubitemDiffFile,	(entry.opt & BackupSetting::kOptDiff) ? kStrOn : kStrOff },
-			{ kSubitemOverwrite,	(entry.opt & BackupSetting::kOptOverwrite) ? kStrOn : kStrOff },
-		};
-
-		lv_item.iItem = i;
-		for (const auto& column : columns)
-		{
-			lv_item.iSubItem = column.sub_item;
-			lv_item.pszText  = const_cast<LPTSTR>(column.text);
-			// 先頭カラムで行を作り、残りはその行に設定する
-			if (column.sub_item == kSubitemEnableBk)
-				list_ctrl_.InsertItem(&lv_item);
-			else
-				list_ctrl_.SetItem(&lv_item);
-		}
+		SetListRow(i, true);
 	}
 
 	list_ctrl_.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 	list_ctrl_.SetItemState(cur_index_, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+}
+
+// 1行分の表示を entries_[row] に合わせる（insert なら行を作る）
+void BackUpDlg::SetListRow(int row, bool insert)
+{
+	// 行の追加・設定中に LVN_ITEMCHANGED → Refresh が走り得るため、値を複製して使う
+	const BackupSetting entry = entries_[row];
+
+	CString number;
+	number.Format(_T("%d"), row + 1);
+
+	const struct
+	{
+		int		sub_item;
+		LPCTSTR	text;
+	} columns[] =
+	{
+		{ kSubitemEnableBk,		entry.bk_enable ? kStrEnable : kStrDisable },
+		{ kSubitemNumber,		number.GetString() },
+		{ kSubitemSrcPath,		entry.src_path.GetString() },
+		{ kSubitemDstPath,		entry.dst_path.GetString() },
+		{ kSubitemSubdirectory,	(entry.opt & BackupSetting::kOptSubdir) ? kStrOn : kStrOff },
+		{ kSubitemDiffFile,		(entry.opt & BackupSetting::kOptDiff) ? kStrOn : kStrOff },
+		{ kSubitemOverwrite,	(entry.opt & BackupSetting::kOptOverwrite) ? kStrOn : kStrOff },
+	};
+
+	// 行を作るときだけ選択状態も（非選択に）設定する
+	LVITEM lv_item = {};
+	lv_item.mask      = insert ? (LVIF_TEXT | LVIF_STATE) : LVIF_TEXT;
+	lv_item.stateMask = LVIS_FOCUSED | LVIS_SELECTED;
+	lv_item.state     = 0;
+	lv_item.iItem     = row;
+	for (const auto& column : columns)
+	{
+		lv_item.iSubItem = column.sub_item;
+		lv_item.pszText  = const_cast<LPTSTR>(column.text);
+		// 先頭カラムで行を作り、残りはその行に設定する
+		if (insert && column.sub_item == kSubitemEnableBk)
+			list_ctrl_.InsertItem(&lv_item);
+		else
+			list_ctrl_.SetItem(&lv_item);
+	}
 }
 
 void BackUpDlg::InsertListColumn(LVCOLUMN lv_col, int sub_item, LPCTSTR name)
@@ -386,20 +392,15 @@ void BackUpDlg::OnBnClickedSubdir()
 // 差分コピー時は上書き確認を使わない
 void BackUpDlg::OnDiff()
 {
-	if (IsDlgButtonChecked(IDC_DIFF) == BST_CHECKED)
+	const bool is_on = (IsDlgButtonChecked(IDC_DIFF) == BST_CHECKED);
+	SetOption(BackupSetting::kOptDiff, is_on);
+	if (is_on)
 	{
-		CheckDlgButton(IDC_OVERWRITE, BST_UNCHECKED);
-		GetDlgItem(IDC_OVERWRITE)->EnableWindow(FALSE);
-		SetOption(BackupSetting::kOptDiff, true);
 		SetOption(BackupSetting::kOptOverwrite, false);
 		UpdateOverWrite(entries_[cur_index_].opt);
 	}
-	else
-	{
-		GetDlgItem(IDC_OVERWRITE)->EnableWindow(TRUE);
-		SetOption(BackupSetting::kOptDiff, false);
-	}
 
+	// 上書き確認のチェックボックスの有効・無効もここで切り替わる
 	UpdateDiffFile(entries_[cur_index_].opt);
 }
 
@@ -468,10 +469,7 @@ void BackUpDlg::Refresh()
 
 void BackUpDlg::OnBnClickedAllClear()
 {
-	for (BackupSetting& entry : entries_)
-	{
-		entry = BackupSetting();
-	}
+	std::fill(std::begin(entries_), std::end(entries_), BackupSetting());
 	Refresh();
 }
 

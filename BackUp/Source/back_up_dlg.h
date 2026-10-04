@@ -39,7 +39,7 @@ private:
 	CListCtrl	list_ctrl_;
 	int			cur_index_ = 0;		// 選択中の設定
 	EndAction	end_action_ = EndAction::kNone;
-	BackupSetting		entries_[kMaxEntry];
+	BackupSetting	entries_[kMaxEntry];
 	HICON		icon_;
 
 protected:
@@ -68,6 +68,7 @@ protected:
 private:
 	bool RunBackup(bool write_batch_only);
 	void InitListCtrl();
+	void SetListRow(int row, bool insert);
 	void InsertListColumn(LVCOLUMN lv_col, int sub_item, LPCTSTR name);
 	BOOL ReadSetting();
 	BOOL WriteSetting();
