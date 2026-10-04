@@ -17,7 +17,7 @@ protected:
 	afx_msg void OnDestroy();
 	DECLARE_MESSAGE_MAP()
 
-	void PreView();
+	void Preview();
 
 	// 記録領域のキャプチャ（試作中。まだどこからも呼ばれていない）
 	BOOL WriteBitmap(LPCTSTR file_name, int width, int height, LPVOID bits);

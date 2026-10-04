@@ -35,7 +35,7 @@ void SampleCaptAreaDlg::OnShowWindow(BOOL show, UINT status)
 	// 非表示になるときは読み込み直さない
 	if (show)
 	{
-		PreView();
+		Preview();
 	}
 }
 
@@ -93,7 +93,7 @@ void SampleCaptAreaDlg::ScreenCapture()
 	::DeleteDC(dc_screen);
 }
 
-void SampleCaptAreaDlg::PreView()
+void SampleCaptAreaDlg::Preview()
 {
 	const CString sample_path = _T("c:\\Sample.bmp");
 

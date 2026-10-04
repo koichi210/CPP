@@ -5,12 +5,15 @@
 
 namespace
 {
-	// マウスポインタを録画画像に描き込む（Scale はリサイズの倍率）
+	// マウスポインタを録画画像に描き込む（scale_x / scale_y はリサイズの倍率）
 	void DrawCursor(HDC hdc, float scale_x, float scale_y)
 	{
-		CURSORINFO cursor_info;
+		CURSORINFO cursor_info = {};
 		cursor_info.cbSize = sizeof(CURSORINFO);
-		GetCursorInfo(&cursor_info);
+		if (!GetCursorInfo(&cursor_info))
+		{
+			return;
+		}
 
 		ICONINFO icon_info;
 		if (!GetIconInfo(cursor_info.hCursor, &icon_info))
@@ -140,16 +143,8 @@ void ManageAvi::InitBitmapInfo()
 	header.biBitCount = static_cast<WORD>(bitmap_bpp_);
 	header.biCompression = BI_RGB;	// BI_JPEG は指定できなかった
 
-	if (bitmap_bpp_ != 0)
-	{
-		// 1行は 4 バイト境界にそろえる
-		header.biSizeImage = header.biHeight * ((header.biWidth * bitmap_bpp_ + 31) / 32) * 4;
-	}
-	else
-	{
-		// BI_RGB なら 0 でよい
-		header.biSizeImage = 0;
-	}
+	// 1行は 4 バイト境界にそろえる（bpp が 0 なら 0 になる。BI_RGB なら 0 でよい）
+	header.biSizeImage = header.biHeight * ((header.biWidth * bitmap_bpp_ + 31) / 32) * 4;
 }
 
 AviError ManageAvi::CreateAviFile()
@@ -220,15 +215,15 @@ void ManageAvi::Record()
 	LPVOID pv_bits;
 
 	// 既知の問題: リサイズ有効時、画面外のマウスポインタまで拾ってしまう。
-	//             m_bitmapInfo の width と height を見直す必要あり。
+	//             bitmap_info_ の width と height を見直す必要あり。
 	HBITMAP mem_bitmap = ::CreateDIBSection(nullptr, &bitmap_info_, DIB_RGB_COLORS, &pv_bits, nullptr, 0);
 	HBITMAP old_bitmap = static_cast<HBITMAP>(::SelectObject(mem_dc, mem_bitmap));
 
 	HDC dc_screen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), nullptr);
 
 	const BITMAPINFOHEADER& header = bitmap_info_.bmiHeader;
-	float scale_x = 1.0;
-	float scale_y = 1.0;
+	float scale_x = 1.0f;
+	float scale_y = 1.0f;
 	if (resize_)
 	{
 		scale_x = static_cast<float>(resize_size_.x) / header.biWidth;
@@ -237,13 +232,8 @@ void ManageAvi::Record()
 
 	PAVISTREAM stream = compress_ ? compress_avi_stream_ : avi_stream_;
 
-	for (DWORD frame_no = 0; frame_no < avi_stream_info_.dwLength; frame_no++)
+	for (DWORD frame_no = 0; frame_no < avi_stream_info_.dwLength && executing_; frame_no++)
 	{
-		if (!executing_)
-		{
-			break;
-		}
-
 		if (resize_)
 		{
 			::StretchBlt(mem_dc, 0, 0, resize_size_.x, resize_size_.y,
@@ -316,7 +306,7 @@ UINT ManageAvi::RecordThreadProc(LPVOID param)
 		}
 		else
 		{
-			MessageBox(nullptr, _T("ファイルを保存しました。"), _T("Infomation"), MB_OK);
+			MessageBox(nullptr, _T("ファイルを保存しました。"), _T("Information"), MB_OK);
 		}
 	}
 	else
