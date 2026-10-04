@@ -702,9 +702,10 @@ void FnameExchangeDlg::RenameFile(const CString& old_path, const CString& new_pa
 	title.LoadString(IDSTR_WRN);
 	if (MessageBox(message, title, MB_YESNO) == IDYES)
 	{
-		// 以降の変更は新しい1回分として記録する
+		// 以降の変更は新しい1回分として記録する（今回の名前変更もそこに入れて戻せるようにする）
 		undo_steps_.clear();
 		undo_steps_.emplace_back();
+		undo_steps_.back().push_back({ old_path, new_path });
 	}
 }
 

@@ -314,7 +314,7 @@ BEGIN
     IDSTR_ALL_UNCHECK       "select cancel"
     IDSTR_SYSTEM_SET        "common setting"
     IDSTR_IGNORE_ALERT      "disable normal warning"
-    IDSTR_COMP_BIG_SMALL    "don't compare big string and small string"
+    IDSTR_COMP_BIG_SMALL    "distinguish uppercase and lowercase"
     IDSTR_HOWTO_CHANGE      "how change"
     IDSTR_ENUM              "Add serial number"
     IDSTR_FIRST_NUM         "first number"
