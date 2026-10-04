@@ -32,6 +32,7 @@ private:
 	void Refresh();
 	void AddListItem(LPCTSTR text, int data);
 	CString GetZodiac(int year) const;
+	int GetSelectedYear() const;
 
 	HICON icon_;
 	CComboBox year_combo_;

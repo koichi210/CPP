@@ -79,10 +79,7 @@ BOOL ZodiacDlg::OnInitDialog()
 		}
 	}
 	year_combo_.SetCurSel(idx);
-
-	CString year_text;
-	year_combo_.GetWindowText(year_text);
-	year_ = atoi(year_text);
+	year_ = GetSelectedYear();
 
 	CheckDlgButton(IDC_AGE, BST_CHECKED);
 	OnAge();
@@ -119,12 +116,17 @@ HCURSOR ZodiacDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(icon_);
 }
 
+// CBN_SELCHANGE の時点ではコンボボックスの表示文字列がまだ前の選択のままのことがあるので、
+// 選択中の項目データ（年）を読む
 void ZodiacDlg::OnSelchangeYear()
 {
-	CString year_text;
-	year_combo_.GetWindowText(year_text);
-	year_ = atoi(year_text);
+	year_ = GetSelectedYear();
 	Refresh();
+}
+
+int ZodiacDlg::GetSelectedYear() const
+{
+	return static_cast<int>(year_combo_.GetItemData(year_combo_.GetCurSel()));
 }
 
 void ZodiacDlg::OnBirth()
@@ -206,10 +208,6 @@ void ZodiacDlg::OnView()
 	}
 	int value = static_cast<int>(list_combo_.GetItemData(sel));
 
-	CString year_text;
-	year_combo_.GetWindowText(year_text);
-	int year = atoi(year_text);
-
 	CString view;
 	if (mode_ == Mode::kZodiac)
 	{
@@ -231,12 +229,12 @@ void ZodiacDlg::OnView()
 		if (mode_ == Mode::kAge)
 		{
 			age = value;
-			birth = year - age;
+			birth = year_ - age;
 		}
 		else
 		{
 			birth = value;
-			age = year - birth;
+			age = year_ - birth;
 		}
 		CString zodiac = GetZodiac(birth);
 
