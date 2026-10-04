@@ -6,7 +6,7 @@
 // クラス・変数・関数を名前空間に入れ、greeting:: で修飾して使う
 namespace greeting
 {
-	class Portugues {};
+	class Portuguese {};
 
 	const char* spanish = "Hola\n";
 
@@ -18,8 +18,8 @@ namespace greeting
 
 int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 {
-	greeting::Portugues portugues;
-	(void)portugues;
+	greeting::Portuguese portuguese;
+	(void)portuguese;
 
 	std::cout << greeting::spanish;
 	greeting::English();
