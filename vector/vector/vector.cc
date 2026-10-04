@@ -23,12 +23,12 @@ int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 	v2.push_back("ABC");
 	v2.push_back("def");
 
-	for (unsigned int i = 0; i < v1.size(); i++)
+	for (size_t i = 0; i < v1.size(); i++)
 	{
 		std::cout << "v1[" << i << "]=" << v1[i] << std::endl;
 	}
 
-	for (unsigned int i = 0; i < v2.size(); i++)
+	for (size_t i = 0; i < v2.size(); i++)
 	{
 		std::cout << "v2[" << i << "]=" << v2[i] << std::endl;
 	}
