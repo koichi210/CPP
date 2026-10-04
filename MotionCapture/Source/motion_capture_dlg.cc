@@ -10,6 +10,12 @@
 #define new DEBUG_NEW
 #endif
 
+namespace
+{
+	// 記録領域・リサイズ後の幅と高さの上限
+	constexpr int kMaxFrameLength = 16384;
+}
+
 MotionCaptureDlg::MotionCaptureDlg(CWnd* parent)
 	: CDialogEx(IDD, parent)
 {
@@ -23,7 +29,9 @@ void MotionCaptureDlg::DoDataExchange(CDataExchange* dx)
 	DDX_Text(dx, IDET_CAPT_RECT_X, capt_rect_x_);
 	DDX_Text(dx, IDET_CAPT_RECT_Y, capt_rect_y_);
 	DDX_Text(dx, IDET_CAPT_RECT_WIDTH, capt_rect_width_);
+	DDV_MinMaxInt(dx, capt_rect_width_, 1, kMaxFrameLength);
 	DDX_Text(dx, IDET_CAPT_RECT_HEIGHT, capt_rect_height_);
+	DDV_MinMaxInt(dx, capt_rect_height_, 1, kMaxFrameLength);
 	DDX_Text(dx, IDET_CAPT_BPP, bitmap_bpp_);
 	DDV_MinMaxInt(dx, bitmap_bpp_, 0, 32);
 	DDX_Text(dx, IDET_CAPT_FPS, frame_rate_);
@@ -31,7 +39,9 @@ void MotionCaptureDlg::DoDataExchange(CDataExchange* dx)
 	DDX_Text(dx, IDET_TIMEOUT_SEC, timeout_sec_);
 	DDX_Text(dx, IDET_SKIP_FRAME, skip_frame_);
 	DDX_Text(dx, IDET_RESIZE_RECT_WIDTH, resize_rect_width_);
+	DDV_MinMaxInt(dx, resize_rect_width_, 1, kMaxFrameLength);
 	DDX_Text(dx, IDET_RESIZE_RECT_HEIGHT, resize_rect_height_);
+	DDV_MinMaxInt(dx, resize_rect_height_, 1, kMaxFrameLength);
 	DDX_Check(dx, IDCH_RESIZE, resize_);
 	DDX_Check(dx, IDCH_MOUSE_POINT_REC, mouse_point_rec_);
 }
@@ -100,7 +110,10 @@ void MotionCaptureDlg::OnBnClickedRecord()
 		return;
 	}
 
-	UpdateData();
+	if (!UpdateData())
+	{
+		return;
+	}
 
 	// 別プロセスが保存先を使っていないか、実際に開いて確かめる
 	{
@@ -132,9 +145,12 @@ void MotionCaptureDlg::OnBnClickedRecordStop()
 
 void MotionCaptureDlg::OnBnClickedSampleCaptArea()
 {
-	UpdateData();
-	RECT rt = { capt_rect_x_, capt_rect_y_, capt_rect_width_, capt_rect_height_ };
+	if (!UpdateData())
+	{
+		return;
+	}
 
-	SampleCaptAreaDlg dlg(rt, bitmap_bpp_);
+	const CRect area(CPoint(capt_rect_x_, capt_rect_y_), CSize(capt_rect_width_, capt_rect_height_));
+	SampleCaptAreaDlg dlg(area);
 	dlg.DoModal();
 }

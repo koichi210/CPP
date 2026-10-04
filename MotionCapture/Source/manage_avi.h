@@ -24,7 +24,7 @@ public:
 
 	// 録画前に呼び出し側が設定する
 	void SetSaveFileName(const CString& filename);
-	void SetCaptureRect(int top, int left, int right, int bottom);
+	void SetCaptureRect(int x, int y, int width, int height);
 	void SetFrameRate(UINT frame_rate);
 	void SetRecordSec(UINT record_sec);
 	void SetSkipFrame(UINT skip_frame);
@@ -57,7 +57,8 @@ private:
 	BOOL	resize_ = FALSE;
 	BOOL	record_mouse_point_ = FALSE;
 	POINT	resize_size_ = {};
-	RECT	rect_ = {};			// right / bottom を録画サイズとして使う
+	CRect	capture_rect_;		// 画面上の記録領域
+	CSize	frame_size_;		// AVI の1フレームの大きさ（リサイズするときはリサイズ後の大きさ）
 	UINT	frame_rate_ = 0;
 	DWORD	scale_ = 1;			// 基本は等倍
 	DWORD	quality_ = static_cast<DWORD>(-1);	// 0～10,000 (-1 はドライバーの既定値)

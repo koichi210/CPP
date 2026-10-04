@@ -5,38 +5,42 @@
 #include "sample_capt_area_dlg.h"
 #include "afxdialogex.h"
 
-#include <shlwapi.h>
-#pragma comment(lib, "shlwapi.lib")
+#include <algorithm>
 
 namespace
 {
-	constexpr int kPictureBoxWidth		= 700;
+	// 撮った画像を表示する最大の大きさ（ピクセル）
+	constexpr int kPictureBoxWidth	= 700;
 	constexpr int kPictureBoxHeight	= 400;
 }
 
 IMPLEMENT_DYNAMIC(SampleCaptAreaDlg, CDialogEx)
 
-SampleCaptAreaDlg::SampleCaptAreaDlg(const RECT& rt, UINT bitmap_bpp, CWnd* parent)
+SampleCaptAreaDlg::SampleCaptAreaDlg(const CRect& capture_area, CWnd* parent)
 	: CDialogEx(IDD, parent)
-	, preview_(rt)
-	, bitmap_bpp_(bitmap_bpp)
+	, capture_area_(capture_area)
 {
 }
 
 BEGIN_MESSAGE_MAP(SampleCaptAreaDlg, CDialogEx)
-	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
-void SampleCaptAreaDlg::OnShowWindow(BOOL show, UINT status)
+// 表示される前に撮るので、このダイアログ自身は写り込まない
+BOOL SampleCaptAreaDlg::OnInitDialog()
 {
-	CDialogEx::OnShowWindow(show, status);
+	CDialogEx::OnInitDialog();
 
-	// 非表示になるときは読み込み直さない
-	if (show)
-	{
-		Preview();
-	}
+	CString caption;
+	caption.Format(_T("キャプチャ領域 (%d, %d) %d x %d"),
+		capture_area_.left, capture_area_.top, capture_area_.Width(), capture_area_.Height());
+	SetWindowText(caption);
+
+	// 表示中のビットマップは OnDestroy で解放する
+	CStatic* picture_box = static_cast<CStatic*>(GetDlgItem(IDPC_SAMPLE));
+	picture_box->SetBitmap(CaptureArea());
+
+	return TRUE;
 }
 
 // ピクチャーコントロールは渡したビットマップを解放しないので、ここで解放する
@@ -52,107 +56,31 @@ void SampleCaptAreaDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 }
 
-void SampleCaptAreaDlg::InitBitmapInfo()
+// 画面の記録領域を、縦横比を保ったまま表示枠に収まる大きさで撮る
+HBITMAP SampleCaptAreaDlg::CaptureArea() const
 {
-	ZeroMemory(&bitmap_info_, sizeof(BITMAPINFO));
-	BITMAPINFOHEADER& header = bitmap_info_.bmiHeader;
-	header.biSize = sizeof(BITMAPINFOHEADER);
-	header.biWidth = preview_.right - preview_.left;
-	header.biHeight = preview_.bottom - preview_.top;
-	header.biPlanes = 1;
-	header.biBitCount = static_cast<WORD>(bitmap_bpp_);
-	header.biCompression = BI_RGB;	// BI_JPEG は指定できなかった
+	const int src_width = capture_area_.Width();
+	const int src_height = capture_area_.Height();
+	const double scale = (std::min)({ 1.0,
+		static_cast<double>(kPictureBoxWidth) / src_width,
+		static_cast<double>(kPictureBoxHeight) / src_height });
+	const int width = (std::max)(1, static_cast<int>(src_width * scale));
+	const int height = (std::max)(1, static_cast<int>(src_height * scale));
 
-	if (bitmap_bpp_ != 0)
-	{
-		header.biSizeImage = header.biHeight * ((3 * header.biWidth + 3) / 4) * 4;
-	}
-	else
-	{
-		// BI_RGB なら 0 でよい
-		header.biSizeImage = 0;
-	}
-}
+	HDC dc_screen = ::GetDC(nullptr);
+	HDC mem_dc = ::CreateCompatibleDC(dc_screen);
+	HBITMAP bitmap = ::CreateCompatibleBitmap(dc_screen, width, height);
+	HBITMAP old_bitmap = static_cast<HBITMAP>(::SelectObject(mem_dc, bitmap));
 
-void SampleCaptAreaDlg::ScreenCapture()
-{
-	HDC mem_dc = ::CreateCompatibleDC(nullptr);
-	LPVOID pv_bits;
-
-	InitBitmapInfo();
-	HBITMAP mem_bitmap = ::CreateDIBSection(nullptr, &bitmap_info_, DIB_RGB_COLORS, &pv_bits, nullptr, 0);
-	HBITMAP old_bitmap = static_cast<HBITMAP>(::SelectObject(mem_dc, mem_bitmap));
-
-	HDC dc_screen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), nullptr);
-
-	::BitBlt(mem_dc, 0, 0, bitmap_info_.bmiHeader.biWidth, bitmap_info_.bmiHeader.biHeight, dc_screen, 0, 0, SRCCOPY);
+	// 確認用なので、録画より時間をかけてきれいに縮める
+	::SetStretchBltMode(mem_dc, HALFTONE);
+	::SetBrushOrgEx(mem_dc, 0, 0, nullptr);
+	::StretchBlt(mem_dc, 0, 0, width, height,
+		dc_screen, capture_area_.left, capture_area_.top, src_width, src_height, SRCCOPY);
 
 	::SelectObject(mem_dc, old_bitmap);
-	::DeleteObject(mem_bitmap);
 	::DeleteDC(mem_dc);
-	::DeleteDC(dc_screen);
-}
+	::ReleaseDC(nullptr, dc_screen);
 
-void SampleCaptAreaDlg::Preview()
-{
-	const CString sample_path = _T("c:\\Sample.bmp");
-
-	if (!PathFileExists(sample_path))
-	{
-		MessageBox(_T("ファイルオープンに失敗しました。\n") + sample_path);
-		return;
-	}
-
-	HBITMAP bitmap = static_cast<HBITMAP>(::LoadImage(
-		AfxGetInstanceHandle(),
-		sample_path,
-		IMAGE_BITMAP,
-		kPictureBoxWidth,
-		kPictureBoxHeight,
-		LR_LOADFROMFILE));
-
-	// 表示中のビットマップは OnDestroy で解放する。差し替えた古いほうはここで解放する
-	CStatic* picture_box = static_cast<CStatic*>(GetDlgItem(IDPC_SAMPLE));
-	HBITMAP old_bitmap = picture_box->SetBitmap(bitmap);
-	if (old_bitmap != nullptr)
-	{
-		::DeleteObject(old_bitmap);
-	}
-}
-
-// 24bpp の BMP ファイルとして書き出す
-BOOL SampleCaptAreaDlg::WriteBitmap(LPCTSTR file_name, int width, int height, LPVOID bits)
-{
-	HANDLE file = CreateFile(file_name, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (file == INVALID_HANDLE_VALUE)
-	{
-		return FALSE;
-	}
-
-	DWORD result;
-	const DWORD size_image = height * ((3 * width + 3) / 4) * 4;
-
-	BITMAPFILEHEADER bmf_header = {};
-	bmf_header.bfType    = 0x4D42;	// "BM"
-	bmf_header.bfSize    = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + size_image;
-	bmf_header.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-
-	WriteFile(file, &bmf_header, sizeof(BITMAPFILEHEADER), &result, nullptr);
-
-	BITMAPINFOHEADER bmi_header = {};
-	bmi_header.biSize        = sizeof(BITMAPINFOHEADER);
-	bmi_header.biWidth       = width;
-	bmi_header.biHeight      = height;
-	bmi_header.biPlanes      = 1;
-	bmi_header.biBitCount    = 24;
-	bmi_header.biSizeImage   = size_image;
-	bmi_header.biCompression = BI_RGB;
-
-	WriteFile(file, &bmi_header, sizeof(BITMAPINFOHEADER), &result, nullptr);
-
-	WriteFile(file, bits, size_image, &result, nullptr);
-
-	CloseHandle(file);
-
-	return TRUE;
+	return bitmap;
 }

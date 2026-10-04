@@ -3,31 +3,25 @@
 #ifndef MOTIONCAPTURE_SOURCE_SAMPLE_CAPT_AREA_DLG_H_
 #define MOTIONCAPTURE_SOURCE_SAMPLE_CAPT_AREA_DLG_H_
 
+// 開いた時点の画面から記録領域を撮って、縮小して表示する
 class SampleCaptAreaDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(SampleCaptAreaDlg)
 
 public:
-	SampleCaptAreaDlg(const RECT& rt, UINT bitmap_bpp, CWnd* parent = nullptr);
+	SampleCaptAreaDlg(const CRect& capture_area, CWnd* parent = nullptr);
 
 	enum { IDD = IDD_SAMPLE_CAPT_AREA_DIALOG };
 
 protected:
-	afx_msg void OnShowWindow(BOOL show, UINT status);
+	virtual BOOL OnInitDialog() override;
 	afx_msg void OnDestroy();
 	DECLARE_MESSAGE_MAP()
 
-	void Preview();
-
-	// 記録領域のキャプチャ（試作中。まだどこからも呼ばれていない）
-	BOOL WriteBitmap(LPCTSTR file_name, int width, int height, LPVOID bits);
-	void InitBitmapInfo();
-	void ScreenCapture();
-
 private:
-	RECT		preview_;
-	UINT		bitmap_bpp_;
-	BITMAPINFO	bitmap_info_ = {};
+	HBITMAP CaptureArea() const;
+
+	CRect	capture_area_;		// 画面上の記録領域
 };
 
 #endif  // MOTIONCAPTURE_SOURCE_SAMPLE_CAPT_AREA_DLG_H_

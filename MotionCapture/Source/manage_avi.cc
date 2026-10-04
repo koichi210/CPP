@@ -5,12 +5,13 @@
 
 namespace
 {
-	// マウスポインタを録画画像に描き込む（scale_x / scale_y はリサイズの倍率）
-	void DrawCursor(HDC hdc, float scale_x, float scale_y)
+	// マウスポインタを録画画像に描き込む
+	// origin は記録領域の左上（画面座標）、scale_x / scale_y はリサイズの倍率
+	void DrawCursor(HDC hdc, POINT origin, float scale_x, float scale_y)
 	{
 		CURSORINFO cursor_info = {};
 		cursor_info.cbSize = sizeof(CURSORINFO);
-		if (!GetCursorInfo(&cursor_info))
+		if (!GetCursorInfo(&cursor_info) || !(cursor_info.flags & CURSOR_SHOWING))
 		{
 			return;
 		}
@@ -21,8 +22,8 @@ namespace
 			return;
 		}
 
-		int x = static_cast<int>(cursor_info.ptScreenPos.x * scale_x) - icon_info.xHotspot;
-		int y = static_cast<int>(cursor_info.ptScreenPos.y * scale_y) - icon_info.yHotspot;
+		const int x = static_cast<int>((cursor_info.ptScreenPos.x - origin.x) * scale_x) - static_cast<int>(icon_info.xHotspot);
+		const int y = static_cast<int>((cursor_info.ptScreenPos.y - origin.y) * scale_y) - static_cast<int>(icon_info.yHotspot);
 		DrawIcon(hdc, x, y, cursor_info.hCursor);
 
 		// GetIconInfo が作ったビットマップは呼び出し側で解放する
@@ -45,12 +46,9 @@ void ManageAvi::SetSaveFileName(const CString& filename)
 	save_filename_ = filename;
 }
 
-void ManageAvi::SetCaptureRect(int top, int left, int right, int bottom)
+void ManageAvi::SetCaptureRect(int x, int y, int width, int height)
 {
-	rect_.top = top;
-	rect_.left = left;
-	rect_.right = right;
-	rect_.bottom = bottom;
+	capture_rect_.SetRect(x, y, x + width, y + height);
 }
 
 void ManageAvi::SetFrameRate(UINT frame_rate)
@@ -129,7 +127,10 @@ void ManageAvi::InitAviStreamInfo()
 	avi_stream_info_.dwRate = frame_rate_;
 	avi_stream_info_.dwLength = timeout_sec_ * frame_rate_;		// 録画時間(秒) = Length / FrameRate
 	avi_stream_info_.dwQuality = quality_;
-	avi_stream_info_.rcFrame = rect_;
+
+	// 録画する画像の大きさ。リサイズするときは縮小・拡大した後の大きさになる
+	frame_size_ = resize_ ? CSize(resize_size_.x, resize_size_.y) : capture_rect_.Size();
+	::SetRect(&avi_stream_info_.rcFrame, 0, 0, frame_size_.cx, frame_size_.cy);
 }
 
 void ManageAvi::InitBitmapInfo()
@@ -137,8 +138,8 @@ void ManageAvi::InitBitmapInfo()
 	ZeroMemory(&bitmap_info_, sizeof(BITMAPINFO));
 	BITMAPINFOHEADER& header = bitmap_info_.bmiHeader;
 	header.biSize = sizeof(BITMAPINFOHEADER);
-	header.biWidth = avi_stream_info_.rcFrame.right;
-	header.biHeight = avi_stream_info_.rcFrame.bottom;
+	header.biWidth = frame_size_.cx;
+	header.biHeight = frame_size_.cy;
 	header.biPlanes = 1;
 	header.biBitCount = static_cast<WORD>(bitmap_bpp_);
 	header.biCompression = BI_RGB;	// BI_JPEG は指定できなかった
@@ -214,39 +215,37 @@ void ManageAvi::Record()
 	HDC mem_dc = ::CreateCompatibleDC(nullptr);
 	LPVOID pv_bits;
 
-	// 既知の問題: リサイズ有効時、画面外のマウスポインタまで拾ってしまう。
-	//             bitmap_info_ の width と height を見直す必要あり。
+	// 1フレーム分の画像（大きさは frame_size_）
 	HBITMAP mem_bitmap = ::CreateDIBSection(nullptr, &bitmap_info_, DIB_RGB_COLORS, &pv_bits, nullptr, 0);
 	HBITMAP old_bitmap = static_cast<HBITMAP>(::SelectObject(mem_dc, mem_bitmap));
 
 	HDC dc_screen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), nullptr);
 
 	const BITMAPINFOHEADER& header = bitmap_info_.bmiHeader;
-	float scale_x = 1.0f;
-	float scale_y = 1.0f;
-	if (resize_)
-	{
-		scale_x = static_cast<float>(resize_size_.x) / header.biWidth;
-		scale_y = static_cast<float>(resize_size_.y) / header.biHeight;
-	}
+	const CRect& src = capture_rect_;
+	const float scale_x = static_cast<float>(frame_size_.cx) / src.Width();
+	const float scale_y = static_cast<float>(frame_size_.cy) / src.Height();
+	// 縮小で色が崩れないよう、間引きで縮める（HALFTONE はきれいだが毎フレームには重い）
+	::SetStretchBltMode(mem_dc, COLORONCOLOR);
 
 	PAVISTREAM stream = compress_ ? compress_avi_stream_ : avi_stream_;
 
 	for (DWORD frame_no = 0; frame_no < avi_stream_info_.dwLength && executing_; frame_no++)
 	{
+		// 画面の記録領域を取り込む
 		if (resize_)
 		{
-			::StretchBlt(mem_dc, 0, 0, resize_size_.x, resize_size_.y,
-				dc_screen, 0, 0, header.biWidth, header.biHeight, SRCCOPY);
+			::StretchBlt(mem_dc, 0, 0, frame_size_.cx, frame_size_.cy,
+				dc_screen, src.left, src.top, src.Width(), src.Height(), SRCCOPY);
 		}
 		else
 		{
-			::BitBlt(mem_dc, 0, 0, header.biWidth, header.biHeight, dc_screen, 0, 0, SRCCOPY);
+			::BitBlt(mem_dc, 0, 0, frame_size_.cx, frame_size_.cy, dc_screen, src.left, src.top, SRCCOPY);
 		}
 
 		if (record_mouse_point_)
 		{
-			DrawCursor(mem_dc, scale_x, scale_y);
+			DrawCursor(mem_dc, src.TopLeft(), scale_x, scale_y);
 		}
 
 		::AVIStreamWrite(stream, frame_no, 1, pv_bits, header.biSizeImage, AVIIF_KEYFRAME, nullptr, nullptr);
