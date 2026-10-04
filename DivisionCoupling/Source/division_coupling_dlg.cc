@@ -15,17 +15,18 @@
 namespace
 {
 	constexpr int kKilobyte = 1024;
+	constexpr UINT kMergeBufferSize = 1024 * kKilobyte;	// 結合で1回に読み書きする大きさ
 
-	// calloc で確保した作業バッファを自動で解放する
+	// malloc で確保した作業バッファを自動で解放する（確保できなければ空）
 	struct FreeDeleter
 	{
 		void operator()(char* p) const	{ free(p); }
 	};
-	using CallocBuffer = std::unique_ptr<char, FreeDeleter>;
+	using WorkBuffer = std::unique_ptr<char, FreeDeleter>;
 
-	CallocBuffer AllocBuffer(size_t size)
+	WorkBuffer AllocBuffer(size_t size)
 	{
-		return CallocBuffer(static_cast<char*>(calloc(size, sizeof(char))));
+		return WorkBuffer(static_cast<char*>(malloc(size)));
 	}
 
 	// 分割ファイル名（例: fname.jpg → fname.jpg.div001）
@@ -276,7 +277,7 @@ void DivisionCouplingDlg::Split()
 	}
 
 	// 読み込みバッファは分割サイズで1回だけ確保する
-	CallocBuffer buffer = AllocBuffer(div_size_);
+	WorkBuffer buffer = AllocBuffer(div_size_);
 	if (!buffer)
 	{
 		error_ = Error::kAlloc;
@@ -284,11 +285,7 @@ void DivisionCouplingDlg::Split()
 	}
 
 	ULONGLONG rest_size = src_file.GetLength();
-	int part_count = static_cast<int>(rest_size / div_size_);
-	if (rest_size % div_size_)
-	{
-		part_count++;
-	}
+	const int part_count = static_cast<int>((rest_size + div_size_ - 1) / div_size_);	// 切り上げ
 	progress_.SetRange32(0, part_count);
 
 	// 途中で終わったときに消せるよう、作った分割ファイルを覚えておく
@@ -334,6 +331,14 @@ void DivisionCouplingDlg::Split()
 
 void DivisionCouplingDlg::Merge()
 {
+	// 分割ファイルの大きさによらず、決まった大きさのバッファで少しずつ写す
+	WorkBuffer buffer = AllocBuffer(kMergeBufferSize);
+	if (!buffer)
+	{
+		error_ = Error::kAlloc;
+		return;
+	}
+
 	// 結合先 dest_path_ は OnBnClickedMerge で決めて、上書きの確認も済んでいる
 	CFile dest_file;
 	if (!dest_file.Open(dest_path_, CFile::modeCreate | CFile::modeWrite))
@@ -357,16 +362,11 @@ void DivisionCouplingDlg::Merge()
 			break;
 		}
 
-		const UINT size = static_cast<UINT>(part_file.GetLength());
-		CallocBuffer buffer = AllocBuffer(size);
-		if (!buffer)
+		UINT read_size;
+		while ((read_size = part_file.Read(buffer.get(), kMergeBufferSize)) > 0)
 		{
-			error_ = Error::kAlloc;
-			break;
+			dest_file.Write(buffer.get(), read_size);
 		}
-
-		part_file.Read(buffer.get(), size);
-		dest_file.Write(buffer.get(), size);
 		part_file.Close();
 	}
 
