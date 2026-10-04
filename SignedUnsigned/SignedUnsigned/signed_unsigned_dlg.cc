@@ -15,11 +15,6 @@ SignedUnsignedDlg::SignedUnsignedDlg(CWnd* parent /*=nullptr*/)
 	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void SignedUnsignedDlg::DoDataExchange(CDataExchange* dx)
-{
-	CDialogEx::DoDataExchange(dx);
-}
-
 BEGIN_MESSAGE_MAP(SignedUnsignedDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -69,15 +64,16 @@ HCURSOR SignedUnsignedDlg::OnQueryDragIcon()
 // 期待した負の値にならないことを確かめる。結果はわざと %d（符号付き）で表示している
 void SignedUnsignedDlg::OnBnClickedButton1()
 {
-	UINT32	bit_depth_value		= 8;
-	UINT32	y_offset				= 1;
-	UINT32	base_width			= 1;
-	UINT32	x_offset				= 1;
-	UINT32	compass_hcopy_num	= 18;
-	UINT32	pix2_byte_den			= 1;
+	const UINT32 bit_depth_value = 8;
+	const UINT32 y_offset = 1;
+	const UINT32 base_width = 1;
+	const UINT32 x_offset = 1;
+	const UINT32 compass_hcopy_num = 18;
+	const UINT32 pix2_byte_den = 1;
 
-	UINT32	comp_in1_offset = (( y_offset * base_width + x_offset ) - compass_hcopy_num ) * bit_depth_value / pix2_byte_den;
+	// (1 * 1 + 1) - 18 は -16 ではなく 2^32 - 16 になる
+	const UINT32 comp_in1_offset = ((y_offset * base_width + x_offset) - compass_hcopy_num) * bit_depth_value / pix2_byte_den;
 	CString str;
-	str.Format("Result = %d", comp_in1_offset );
+	str.Format("Result = %d", comp_in1_offset);
 	MessageBox(str);
 }
