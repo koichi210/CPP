@@ -1,7 +1,7 @@
-﻿// anser_dlg.h : 解答ダイアログ
+﻿// answer_dlg.h : 解答ダイアログ
 
-#ifndef MEMORY_SOURCE_ANSER_DLG_H_
-#define MEMORY_SOURCE_ANSER_DLG_H_
+#ifndef MEMORY_SOURCE_ANSWER_DLG_H_
+#define MEMORY_SOURCE_ANSWER_DLG_H_
 
 #include "memory_def.h"
 
@@ -28,4 +28,4 @@ private:
 	BOOL				cheat_ = FALSE;	// 答えを表示中か
 };
 
-#endif  // MEMORY_SOURCE_ANSER_DLG_H_
+#endif  // MEMORY_SOURCE_ANSWER_DLG_H_

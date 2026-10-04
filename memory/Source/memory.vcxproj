@@ -139,7 +139,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="anser_dlg.cc">
+    <ClCompile Include="answer_dlg.cc">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -165,7 +165,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="anser_dlg.h" />
+    <ClInclude Include="answer_dlg.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="memory_def.h" />
     <ClInclude Include="memory_dlg.h" />

@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="anser_dlg.cc">
+    <ClCompile Include="answer_dlg.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="memory.cc">
@@ -34,7 +34,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="anser_dlg.h">
+    <ClInclude Include="answer_dlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="memory.h">
