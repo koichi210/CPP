@@ -25,12 +25,31 @@ SampleCaptAreaDlg::SampleCaptAreaDlg(const RECT& rt, UINT bitmap_bpp, CWnd* pare
 
 BEGIN_MESSAGE_MAP(SampleCaptAreaDlg, CDialogEx)
 	ON_WM_SHOWWINDOW()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 void SampleCaptAreaDlg::OnShowWindow(BOOL show, UINT status)
 {
 	CDialogEx::OnShowWindow(show, status);
-	PreView();
+
+	// 非表示になるときは読み込み直さない
+	if (show)
+	{
+		PreView();
+	}
+}
+
+// ピクチャーコントロールは渡したビットマップを解放しないので、ここで解放する
+void SampleCaptAreaDlg::OnDestroy()
+{
+	CStatic* picture_box = static_cast<CStatic*>(GetDlgItem(IDPC_SAMPLE));
+	HBITMAP bitmap = picture_box->SetBitmap(nullptr);
+	if (bitmap != nullptr)
+	{
+		::DeleteObject(bitmap);
+	}
+
+	CDialogEx::OnDestroy();
 }
 
 void SampleCaptAreaDlg::InitBitmapInfo()
@@ -92,9 +111,13 @@ void SampleCaptAreaDlg::PreView()
 		kPictureBoxHeight,
 		LR_LOADFROMFILE));
 
-	// ビットマップはピクチャーコントロールに渡したまま残す
+	// 表示中のビットマップは OnDestroy で解放する。差し替えた古いほうはここで解放する
 	CStatic* picture_box = static_cast<CStatic*>(GetDlgItem(IDPC_SAMPLE));
-	picture_box->SetBitmap(bitmap);
+	HBITMAP old_bitmap = picture_box->SetBitmap(bitmap);
+	if (old_bitmap != nullptr)
+	{
+		::DeleteObject(old_bitmap);
+	}
 }
 
 // 24bpp の BMP ファイルとして書き出す

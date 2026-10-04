@@ -14,6 +14,7 @@ public:
 
 protected:
 	afx_msg void OnShowWindow(BOOL show, UINT status);
+	afx_msg void OnDestroy();
 	DECLARE_MESSAGE_MAP()
 
 	void PreView();
