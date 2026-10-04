@@ -3,17 +3,7 @@
 #ifndef BINARYEDIT_MFC_SOURCE_PROPERTIES_WND_H_
 #define BINARYEDIT_MFC_SOURCE_PROPERTIES_WND_H_
 
-class PropertiesToolBar : public CMFCToolBar
-{
-public:
-	// コマンドの更新を親フレームではなくペインに回す
-	virtual void OnUpdateCmdUI(CFrameWnd* /*pTarget*/, BOOL bDisableIfNoHndler) override
-	{
-		CMFCToolBar::OnUpdateCmdUI(static_cast<CFrameWnd*>(GetOwner()), bDisableIfNoHndler);
-	}
-
-	virtual BOOL AllowShowOnList() const { return FALSE; }
-};
+#include "pane_tool_bar.h"
 
 class PropertiesWnd : public CDockablePane
 {
@@ -29,7 +19,7 @@ public:
 protected:
 	CFont prop_list_font_;
 	CComboBox object_combo_;
-	PropertiesToolBar tool_bar_;
+	PaneToolBar tool_bar_;
 	CMFCPropertyGridCtrl prop_list_;
 
 	afx_msg int OnCreate(LPCREATESTRUCT create_struct);

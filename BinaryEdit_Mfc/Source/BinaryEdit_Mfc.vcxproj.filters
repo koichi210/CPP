@@ -130,6 +130,9 @@
     <ClInclude Include="view_tree.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="pane_tool_bar.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="output_wnd.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

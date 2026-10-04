@@ -5,6 +5,10 @@
 
 class ViewTree : public CTreeCtrl
 {
+public:
+	// コンテキスト メニュー用に、スクリーン座標の位置にある項目を選択してフォーカスを移す
+	void SelectItemForContextMenu(CPoint screen_point);
+
 protected:
 	virtual BOOL OnNotify(WPARAM w_param, LPARAM l_param, LRESULT* result) override;
 };

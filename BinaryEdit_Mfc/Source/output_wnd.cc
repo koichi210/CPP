@@ -103,14 +103,14 @@ void OutputList::OnContextMenu(CWnd* /*wnd*/, CPoint point)
 	CMenu menu;
 	menu.LoadMenu(IDR_OUTPUT_POPUP);
 
-	CMenu* sum_menu = menu.GetSubMenu(0);
+	CMenu* sub_menu = menu.GetSubMenu(0);
 
 	if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CMDIFrameWndEx)))
 	{
 		// CMFCPopupMenu は閉じたときに自分自身を delete する
 		CMFCPopupMenu* popup_menu = new CMFCPopupMenu;
 
-		if (!popup_menu->Create(this, point.x, point.y, sum_menu->GetSafeHmenu(), FALSE, TRUE))
+		if (!popup_menu->Create(this, point.x, point.y, sub_menu->GetSafeHmenu(), FALSE, TRUE))
 			return;
 
 		static_cast<CMDIFrameWndEx*>(AfxGetMainWnd())->OnShowPopupMenu(popup_menu);

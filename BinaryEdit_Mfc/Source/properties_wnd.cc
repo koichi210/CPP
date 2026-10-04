@@ -34,8 +34,8 @@ void PropertiesWnd::AdjustLayout()
 
 	object_combo_.GetWindowRect(&rect_combo);
 
-	int combo_height = rect_combo.Size().cy;
-	int toolbar_height = tool_bar_.CalcFixedLayout(FALSE, TRUE).cy;
+	const int combo_height = rect_combo.Size().cy;
+	const int toolbar_height = tool_bar_.CalcFixedLayout(FALSE, TRUE).cy;
 
 	object_combo_.SetWindowPos(nullptr, rect_client.left, rect_client.top, rect_client.Width(), 200, SWP_NOACTIVATE | SWP_NOZORDER);
 	tool_bar_.SetWindowPos(nullptr, rect_client.left, rect_client.top + combo_height, rect_client.Width(), toolbar_height, SWP_NOACTIVATE | SWP_NOZORDER);
@@ -124,7 +124,7 @@ void PropertiesWnd::InitPropList()
 
 	CMFCPropertyGridProperty* group1 = new CMFCPropertyGridProperty(_T("表示"));
 
-	group1->AddSubItem(new CMFCPropertyGridProperty(_T("3D 表示"), (_variant_t) false, _T("ウィンドウのフォントが太字以外になり、また、コントロールが 3D ボーダーで描画されます")));
+	group1->AddSubItem(new CMFCPropertyGridProperty(_T("3D 表示"), _variant_t(false), _T("ウィンドウのフォントが太字以外になり、また、コントロールが 3D ボーダーで描画されます")));
 
 	CMFCPropertyGridProperty* prop = new CMFCPropertyGridProperty(_T("罫線"), _T("ダイアログ枠"), _T("次のうちのどれかです : なし、細枠、サイズ変更可能枠、ダイアログ枠"));
 	prop->AddOption(_T("なし"));
@@ -134,17 +134,17 @@ void PropertiesWnd::InitPropList()
 	prop->AllowEdit(FALSE);
 
 	group1->AddSubItem(prop);
-	group1->AddSubItem(new CMFCPropertyGridProperty(_T("キャプション"), (_variant_t) _T("バージョン情報"), _T("ウィンドウのタイトル バーに表示されるテキストを指定します")));
+	group1->AddSubItem(new CMFCPropertyGridProperty(_T("キャプション"), _variant_t(_T("バージョン情報")), _T("ウィンドウのタイトル バーに表示されるテキストを指定します")));
 
 	prop_list_.AddProperty(group1);
 
 	CMFCPropertyGridProperty* size_group = new CMFCPropertyGridProperty(_T("ウィンドウ サイズ"), 0, TRUE);
 
-	prop = new CMFCPropertyGridProperty(_T("高さ"), (_variant_t) 250l, _T("ウィンドウの高さを指定します"));
+	prop = new CMFCPropertyGridProperty(_T("高さ"), _variant_t(250L), _T("ウィンドウの高さを指定します"));
 	prop->EnableSpinControl(TRUE, 50, 300);
 	size_group->AddSubItem(prop);
 
-	prop = new CMFCPropertyGridProperty( _T("幅"), (_variant_t) 150l, _T("ウィンドウの幅を指定します"));
+	prop = new CMFCPropertyGridProperty(_T("幅"), _variant_t(150L), _T("ウィンドウの幅を指定します"));
 	prop->EnableSpinControl(TRUE, 50, 200);
 	size_group->AddSubItem(prop);
 
@@ -153,13 +153,13 @@ void PropertiesWnd::InitPropList()
 	CMFCPropertyGridProperty* group2 = new CMFCPropertyGridProperty(_T("フォント"));
 
 	LOGFONT lf;
-	CFont* font = CFont::FromHandle((HFONT) GetStockObject(DEFAULT_GUI_FONT));
+	CFont* font = CFont::FromHandle(static_cast<HFONT>(GetStockObject(DEFAULT_GUI_FONT)));
 	font->GetLogFont(&lf);
 
-	lstrcpy(lf.lfFaceName, _T("ＭＳ Ｐゴシック"));
+	_tcscpy_s(lf.lfFaceName, _T("ＭＳ Ｐゴシック"));
 
 	group2->AddSubItem(new CMFCPropertyGridFontProperty(_T("フォント"), lf, CF_EFFECTS | CF_SCREENFONTS, _T("ウィンドウの既定フォントを指定します")));
-	group2->AddSubItem(new CMFCPropertyGridProperty(_T("システム フォントを使用する"), (_variant_t) true, _T("ウィンドウで MS Shell Dlg フォントを使用するように指定します")));
+	group2->AddSubItem(new CMFCPropertyGridProperty(_T("システム フォントを使用する"), _variant_t(true), _T("ウィンドウで MS Shell Dlg フォントを使用するように指定します")));
 
 	prop_list_.AddProperty(group2);
 
@@ -188,9 +188,9 @@ void PropertiesWnd::InitPropList()
 	CMFCPropertyGridProperty* group411 = new CMFCPropertyGridProperty(_T("2 番目のサブレベル"));
 	group41->AddSubItem(group411);
 
-	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 1"), (_variant_t) _T("値 1"), _T("これは説明です")));
-	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 2"), (_variant_t) _T("値 2"), _T("これは説明です")));
-	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 3"), (_variant_t) _T("値 3"), _T("これは説明です")));
+	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 1"), _variant_t(_T("値 1")), _T("これは説明です")));
+	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 2"), _variant_t(_T("値 2")), _T("これは説明です")));
+	group411->AddSubItem(new CMFCPropertyGridProperty(_T("項目 3"), _variant_t(_T("値 3")), _T("これは説明です")));
 
 	group4->Expand(FALSE);
 	prop_list_.AddProperty(group4);

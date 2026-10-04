@@ -146,6 +146,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="view_tree.h" />
+    <ClInclude Include="pane_tool_bar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="binary_edit_mfc.cc" />

@@ -107,30 +107,16 @@ void FileView::FillFileView()
 
 void FileView::OnContextMenu(CWnd* wnd, CPoint point)
 {
-	CTreeCtrl* wnd_tree = &file_tree_;
-	ASSERT_VALID(wnd_tree);
+	ASSERT_VALID(&file_tree_);
 
-	if (wnd != wnd_tree)
+	if (wnd != &file_tree_)
 	{
 		CDockablePane::OnContextMenu(wnd, point);
 		return;
 	}
 
-	// キーボード（Shift+F10 等）から開いたときは (-1, -1) が来る
-	if (point != CPoint(-1, -1))
-	{
-		CPoint pt_tree = point;
-		wnd_tree->ScreenToClient(&pt_tree);
+	file_tree_.SelectItemForContextMenu(point);
 
-		UINT flags = 0;
-		HTREEITEM tree_item = wnd_tree->HitTest(pt_tree, &flags);
-		if (tree_item != nullptr)
-		{
-			wnd_tree->SelectItem(tree_item);
-		}
-	}
-
-	wnd_tree->SetFocus();
 	the_app.GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EXPLORER, point.x, point.y, this, TRUE);
 }
 
@@ -144,7 +130,7 @@ void FileView::AdjustLayout()
 	CRect rect_client;
 	GetClientRect(rect_client);
 
-	int toolbar_height = tool_bar_.CalcFixedLayout(FALSE, TRUE).cy;
+	const int toolbar_height = tool_bar_.CalcFixedLayout(FALSE, TRUE).cy;
 
 	tool_bar_.SetWindowPos(nullptr, rect_client.left, rect_client.top, rect_client.Width(), toolbar_height, SWP_NOACTIVATE | SWP_NOZORDER);
 	file_tree_.SetWindowPos(nullptr, rect_client.left + 1, rect_client.top + toolbar_height + 1, rect_client.Width() - 2, rect_client.Height() - toolbar_height - 2, SWP_NOACTIVATE | SWP_NOZORDER);
@@ -186,7 +172,7 @@ void FileView::OnChangeVisualStyle()
 
 	file_view_images_.DeleteImageList();
 
-	UINT bmp_id = the_app.hi_color_icons_ ? IDB_FILE_VIEW_24 : IDB_FILE_VIEW;
+	const UINT bmp_id = the_app.hi_color_icons_ ? IDB_FILE_VIEW_24 : IDB_FILE_VIEW;
 
 	CBitmap bmp;
 	if (!bmp.LoadBitmap(bmp_id))
@@ -199,7 +185,7 @@ void FileView::OnChangeVisualStyle()
 	BITMAP bmp_obj;
 	bmp.GetBitmap(&bmp_obj);
 
-	UINT flags = ILC_MASK | (the_app.hi_color_icons_ ? ILC_COLOR24 : ILC_COLOR4);
+	const UINT flags = ILC_MASK | (the_app.hi_color_icons_ ? ILC_COLOR24 : ILC_COLOR4);
 
 	file_view_images_.Create(16, bmp_obj.bmHeight, flags, 0, 0);
 	file_view_images_.Add(&bmp, RGB(255, 0, 255));

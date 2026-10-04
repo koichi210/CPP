@@ -3,18 +3,8 @@
 #ifndef BINARYEDIT_MFC_SOURCE_CLASS_VIEW_H_
 #define BINARYEDIT_MFC_SOURCE_CLASS_VIEW_H_
 
+#include "pane_tool_bar.h"
 #include "view_tree.h"
-
-class ClassToolBar : public CMFCToolBar
-{
-	// コマンドの更新を親フレームではなくペインに回す
-	virtual void OnUpdateCmdUI(CFrameWnd* /*pTarget*/, BOOL bDisableIfNoHndler) override
-	{
-		CMFCToolBar::OnUpdateCmdUI(static_cast<CFrameWnd*>(GetOwner()), bDisableIfNoHndler);
-	}
-
-	virtual BOOL AllowShowOnList() const { return FALSE; }
-};
 
 class ClassView : public CDockablePane
 {
@@ -25,7 +15,7 @@ public:
 	void OnChangeVisualStyle();
 
 protected:
-	ClassToolBar	tool_bar_;
+	PaneToolBar		tool_bar_;
 	ViewTree		class_tree_;
 	CImageList		class_view_images_;
 	UINT			curr_sort_;
