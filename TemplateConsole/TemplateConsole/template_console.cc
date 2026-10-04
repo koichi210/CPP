@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string>
 
-// 関数テンプレート
+// 関数テンプレート（string などのコピーを避けるため const 参照で受ける）
 template <typename T>
-T FuncAdd(T x, T y)
+T FuncAdd(const T& x, const T& y)
 {
 	return x + y;
 }
