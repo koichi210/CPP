@@ -1,4 +1,4 @@
-﻿// SplitPathOwnDlg.h : メインダイアログ
+﻿// split_path_own_dlg.h : メインダイアログ
 
 #ifndef SPLITPATHOWN_SOURCE_SPLIT_PATH_OWN_DLG_H_
 #define SPLITPATHOWN_SOURCE_SPLIT_PATH_OWN_DLG_H_
@@ -21,9 +21,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	// _splitpath を使わずにパスを分解する自前実装（学習用）。区切りは '/' のみ対応
-	void SplitPath(const char* file_full_path, char* drive, char* dir, char* file);
-
 	HICON icon_;
 };
 

@@ -1,4 +1,4 @@
-﻿// SplitPathOwn.cpp : アプリケーションクラス
+﻿// split_path_own.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "split_path_own.h"

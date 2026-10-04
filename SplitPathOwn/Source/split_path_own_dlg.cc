@@ -1,4 +1,4 @@
-﻿// SplitPathOwnDlg.cpp : メインダイアログ
+﻿// split_path_own_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
 #include "split_path_own.h"
@@ -8,6 +8,39 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
+namespace
+{
+	// [begin, end) の文字列を dst へ写し、終端の '\0' を付ける
+	void CopyRange(char* dst, const char* begin, const char* end)
+	{
+		const size_t len = end - begin;
+		memcpy(dst, begin, len);
+		dst[len] = '\0';
+	}
+
+	// _splitpath を使わずにパスを分解する自前実装（学習用）。区切りは '/' のみ対応
+	//   "C:/Windows/System32/explorer.exe" -> drive="C:/", dir="Windows/System32/", file="explorer.exe"
+	// 出力先には、それぞれ file_full_path と同じ長さ（終端を含む）以上のバッファを渡す
+	void SplitPath(const char* file_full_path, char* drive, char* dir, char* file)
+	{
+		const char* end = file_full_path + strlen(file_full_path);
+		const char* first_slash = strchr(file_full_path, '/');
+		if (first_slash == nullptr)
+		{
+			// 区切りが無ければ全体をファイル名とみなす
+			drive[0] = '\0';
+			dir[0] = '\0';
+			CopyRange(file, file_full_path, end);
+			return;
+		}
+		const char* last_slash = strrchr(file_full_path, '/');
+
+		CopyRange(drive, file_full_path, first_slash + 1);	// 先頭から最初の「/」まで
+		CopyRange(dir, first_slash + 1, last_slash + 1);	// ドライブの後ろから最後の「/」まで
+		CopyRange(file, last_slash + 1, end);				// 最後の「/」の後ろ
+	}
+}
 
 // システムメニューの「バージョン情報」から開くダイアログ
 class AboutDlg : public CDialogEx
@@ -127,51 +160,13 @@ HCURSOR SplitPathOwnDlg::OnQueryDragIcon()
 
 void SplitPathOwnDlg::OnBnClickedButton1()
 {
-	char file_full_path[256] = "C:/Windows/System32/explorer.exe";
-	// strncpy は終端の '\0' を付けないので、出力先は0で埋めておく
-	char drive[256] = "";
-	char dir[256] = "";
-	char fname[256] = "";
+	const char file_full_path[] = "C:/Windows/System32/explorer.exe";
+	char drive[_countof(file_full_path)];
+	char dir[_countof(file_full_path)];
+	char fname[_countof(file_full_path)];
 	SplitPath(file_full_path, drive, dir, fname);
 
 	CString result;
-	result.Format("org=%s\n\n drv=%s\n dir=%s\n fname=%s",
-			file_full_path,
-			drive,
-			dir,
-			fname
-			);
+	result.Format("org=%s\n\n drv=%s\n dir=%s\n fname=%s", file_full_path, drive, dir, fname);
 	MessageBox(result);
-}
-
-void SplitPathOwnDlg::SplitPath(const char* file_full_path, char* drive, char* dir, char* file)
-{
-	const char* pt;
-
-	/* ドライブ名取得 */
-	{
-		pt = file_full_path;	/* ポインタを先頭に移動*/
-		while(*pt != '/')
-		{
-			pt++;
-		}
-		strncpy(drive, file_full_path, strlen(file_full_path) - strlen(pt) + 1);	// 「+1」は終端の「/」を追加
-	}
-
-	/* ファイル名取得 */
-	{
-		pt = file_full_path + strlen(file_full_path);	/* ポインタを終端に移動 */
-		while(*pt != '/')
-		{
-			pt--;
-		}
-		pt++;	// 先頭の「/」を削除
-		strncpy(file, pt, strlen(pt));
-	}
-
-	/* ディレクトリ名取得 */
-	{
-		pt = &file_full_path[strlen(drive)];	/* ポインタをドライブレターの後ろに移動 */
-		strncpy(dir, pt, strlen(pt) - strlen(file));
-	}
 }

@@ -1,4 +1,4 @@
-﻿// SplitPathOwn.h : アプリケーションクラス
+﻿// split_path_own.h : アプリケーションクラス
 
 #ifndef SPLITPATHOWN_SOURCE_SPLIT_PATH_OWN_H_
 #define SPLITPATHOWN_SOURCE_SPLIT_PATH_OWN_H_
