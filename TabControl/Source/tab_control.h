@@ -1,4 +1,4 @@
-﻿// TabControl.h : アプリケーションクラス
+﻿// tab_control.h : アプリケーションクラス
 
 #ifndef TABCONTROL_SOURCE_TAB_CONTROL_H_
 #define TABCONTROL_SOURCE_TAB_CONTROL_H_

@@ -1,4 +1,4 @@
-﻿// TabControlDlg.cpp : メインダイアログ
+﻿// tab_control_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
 #include "tab_control.h"
@@ -155,7 +155,7 @@ HCURSOR TabControlDlg::OnQueryDragIcon()
 void TabControlDlg::OnTcnSelchangeTab1(NMHDR* /*nmhdr*/, LRESULT* result)
 {
 	int sel = tab1_.GetCurSel();
-	if (0 <= sel && sel <= 2)
+	if (sel >= 0)
 	{
 		CString text;
 		text.Format("Page%d selected", sel + 1);

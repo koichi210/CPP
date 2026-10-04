@@ -1,4 +1,4 @@
-﻿// Child2.h : タブ（PageB）に表示する子ダイアログ
+﻿// child2.h : タブ（PageB）に表示する子ダイアログ
 
 #ifndef TABCONTROL_SOURCE_CHILD2_H_
 #define TABCONTROL_SOURCE_CHILD2_H_

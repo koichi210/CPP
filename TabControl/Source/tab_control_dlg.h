@@ -1,4 +1,4 @@
-﻿// TabControlDlg.h : メインダイアログ
+﻿// tab_control_dlg.h : メインダイアログ
 
 #ifndef TABCONTROL_SOURCE_TAB_CONTROL_DLG_H_
 #define TABCONTROL_SOURCE_TAB_CONTROL_DLG_H_

@@ -1,4 +1,4 @@
-﻿// Child2.cpp : タブ（PageB）に表示する子ダイアログ
+﻿// child2.cc : タブ（PageB）に表示する子ダイアログ
 
 #include "stdafx.h"
 #include "tab_control.h"

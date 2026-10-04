@@ -1,4 +1,4 @@
-﻿// TabControl.cpp : アプリケーションクラス
+﻿// tab_control.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "tab_control.h"
