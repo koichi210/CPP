@@ -76,6 +76,7 @@ private:
 	void RenameFile(const CString& old_path, const CString& new_path);
 	void Undo();
 	void ShowError(UINT message_id);
+	void ShowError(const CString& message);
 
 	HICON		icon_;
 	CListBox	list_;

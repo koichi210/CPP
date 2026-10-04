@@ -169,10 +169,8 @@ BOOL FnameExchangeDlg::OnInitDialog()
 	CheckDlgButton(IDCH_KEEP_NAME, BST_CHECKED);
 	CheckDlgButton(IDCH_ADD_BEF, BST_CHECKED);
 	CheckDlgButton(IDCH_IGNORE_ALERT, kDefaultIgnoreAlert ? BST_CHECKED : BST_UNCHECKED);
-	type_ = ConvertType::kEnum;
 
 	InitDigitsCombo();
-	undo_steps_.clear();
 	UpdateControls();
 
 	return TRUE;
@@ -547,6 +545,7 @@ std::vector<CString> FnameExchangeDlg::GetSelectedNames()
 
 	std::vector<int> indexes(count);
 	list_.GetSelItems(count, indexes.data());
+	names.reserve(indexes.size());
 	for (int index : indexes)
 	{
 		CString name;
@@ -608,16 +607,9 @@ CString FnameExchangeDlg::MakeEnumName(const CString& file, int file_count)
 	{
 		digits = digits_;
 	}
-	const int current_digits = (next_number_ == 0) ? 1 : static_cast<int>(CountDigits(next_number_));
 
 	CString name;
-	for (int i = current_digits; i < digits; i++)
-	{
-		name += _T('0');
-	}
-	CString number;
-	number.Format(_T("%d"), next_number_);
-	name += number;
+	name.Format(_T("%0*u"), digits, next_number_);
 	next_number_++;
 
 	if (keep_name_)
@@ -674,7 +666,6 @@ CString FnameExchangeDlg::BuildPath(const CString& name, const CString& ext) con
 
 void FnameExchangeDlg::RenameFile(const CString& old_path, const CString& new_path)
 {
-	CString title;
 	CString message;
 
 	// 「変わったか」は大文字小文字を区別して判定する（abc.TXT -> abc.txt も名前変更）
@@ -683,8 +674,7 @@ void FnameExchangeDlg::RenameFile(const CString& old_path, const CString& new_pa
 		if (!ignore_alert_)
 		{
 			message.Format(IDSTR_ERR_FAIL_OVERLAP, old_path.GetString(), new_path.GetString());
-			title.LoadString(IDSTR_ERROR);
-			MessageBox(message, title, MB_OK);
+			ShowError(message);
 		}
 		return;
 	}
@@ -695,8 +685,7 @@ void FnameExchangeDlg::RenameFile(const CString& old_path, const CString& new_pa
 		if (!ignore_alert_)
 		{
 			message.Format(IDSTR_ERR_FAIL_CHANGE_NAME, static_cast<int>(error), old_path.GetString(), new_path.GetString());
-			title.LoadString(IDSTR_ERROR);
-			MessageBox(message, title, MB_OK);
+			ShowError(message);
 		}
 		return;
 	}
@@ -709,6 +698,7 @@ void FnameExchangeDlg::RenameFile(const CString& old_path, const CString& new_pa
 	}
 
 	message.LoadString(IDSTR_WRN_CACHE_FULL);
+	CString title;
 	title.LoadString(IDSTR_WRN);
 	if (MessageBox(message, title, MB_YESNO) == IDYES)
 	{
@@ -735,10 +725,8 @@ void FnameExchangeDlg::Undo()
 		if (!::MoveFile(it->new_path, it->old_path) && !ignore_alert_)
 		{
 			CString message;
-			CString title;
 			message.Format(IDSTR_ERR_FAIL_UNDO, it->old_path.GetString(), it->new_path.GetString());
-			title.LoadString(IDSTR_ERROR);
-			MessageBox(message, title, MB_OK);
+			ShowError(message);
 		}
 	}
 }
@@ -746,8 +734,13 @@ void FnameExchangeDlg::Undo()
 void FnameExchangeDlg::ShowError(UINT message_id)
 {
 	CString message;
-	CString title;
 	message.LoadString(message_id);
+	ShowError(message);
+}
+
+void FnameExchangeDlg::ShowError(const CString& message)
+{
+	CString title;
 	title.LoadString(IDSTR_ERROR);
 	MessageBox(message, title, MB_OK);
 }

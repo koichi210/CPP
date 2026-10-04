@@ -348,11 +348,11 @@ BEGIN
     IDSTR_ERR_INPUT_REP_STR "input replace string."
     IDSTR_ERR_NOT_UNDO      "don't undo operation."
     IDSTR_ERR_FAIL_UNDO     "the undo is fail.\n Bef?F%s\n Aft?F%s"
-    IDSTR_WRN               "worning"
+    IDSTR_WRN               "warning"
     IDSTR_WRN_CACHE_FULL    "the cache is full.\n delete old cache now?"
     IDSTR_ERR_FAIL_CHANGE_NAME 
                             "don't change file name.(err code=%d)\n org file[%s] \n new file[%s]"
-    IDSTR_ERR_FAIL_OVERLAP  "don't change file name the overlaped.\n org file[%s] \n new file[%s]"
+    IDSTR_ERR_FAIL_OVERLAP  "don't change file name the overlapped.\n org file[%s] \n new file[%s]"
     IDSTR_FILE_EXCHANGE     "file name exchange"
 END
 
