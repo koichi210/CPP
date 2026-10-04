@@ -119,6 +119,12 @@ void DivisionCouplingDlg::OnBnClickedMerge()
 	dest_path_ = (dot >= 0) ? src_path_.Left(dot) : src_path_;
 
 	// 確認はワーカーを動かす前に UI スレッドで行う
+	// 1つ目の分割ファイルが無ければ、空のファイルを作って（既存なら空で上書きして）しまうので始めない
+	if (!PathFileExists(MakePartPath(dest_path_, 1)))
+	{
+		MessageBox(_T("元ファイルオープンエラー\n\n") + MakePartPath(dest_path_, 1), _T("error"), MB_OK);
+		return;
+	}
 	if (PathFileExists(dest_path_))
 	{
 		if (MessageBox(_T("すでにファイルが存在します。上書きしますか？\n") + dest_path_, _T("Warning"), MB_YESNO) == IDNO)
