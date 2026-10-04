@@ -1,4 +1,4 @@
-﻿// memsetDlg.h : メインダイアログ
+﻿// memset_dlg.h : メインダイアログ
 
 #ifndef MEMSET_SOURCE_MEMSET_DLG_H_
 #define MEMSET_SOURCE_MEMSET_DLG_H_

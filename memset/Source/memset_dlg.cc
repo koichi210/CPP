@@ -1,4 +1,4 @@
-﻿// memsetDlg.cpp : メインダイアログ
+﻿// memset_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
 #include "memset.h"
@@ -9,32 +9,15 @@
 #define new DEBUG_NEW
 #endif
 
-// システムメニューの「バージョン情報」から開くダイアログ
-class AboutDlg : public CDialogEx
+namespace
 {
-public:
-	AboutDlg();
-
-	enum { IDD = IDD_ABOUTBOX };
-
-protected:
-	virtual void DoDataExchange(CDataExchange* dx) override;
-
-	DECLARE_MESSAGE_MAP()
-};
-
-AboutDlg::AboutDlg() : CDialogEx(IDD)
-{
+	// バージョン情報ダイアログ（システムメニューから開く）
+	class AboutDlg : public CDialogEx
+	{
+	public:
+		AboutDlg() : CDialogEx(IDD_ABOUTBOX) {}
+	};
 }
-
-void AboutDlg::DoDataExchange(CDataExchange* dx)
-{
-	CDialogEx::DoDataExchange(dx);
-}
-
-BEGIN_MESSAGE_MAP(AboutDlg, CDialogEx)
-END_MESSAGE_MAP()
-
 
 MemsetDlg::MemsetDlg(CWnd* parent /*=nullptr*/)
 	: CDialogEx(IDD, parent)
@@ -132,5 +115,5 @@ void MemsetDlg::OnBnClickedExe()
 	UpdateData();
 
 	char addr[100] = {0};
-	memset(addr, fill_value_, 100);
+	memset(addr, fill_value_, sizeof(addr));
 }

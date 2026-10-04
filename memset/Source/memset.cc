@@ -1,4 +1,4 @@
-﻿// memset.cpp : アプリケーションクラス
+﻿// memset.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "memset.h"
