@@ -10,8 +10,10 @@ C++ の学習・検証コード置き場。MFC のダイアログアプリが中
 - リソース（`.rc`）と `resource.h` は VS が決める文字コード（UTF-16 など）のまま触らない
 
 ```
-MSBuild.exe <プロジェクト>\<プロジェクト>.sln /t:Rebuild /p:Configuration=Release /p:Platform=Win32
+MSBuild.exe <プロジェクト>\<プロジェクト>.sln /t:Rebuild /p:Configuration=Release /p:Platform=x64
 ```
+
+- プラットフォームは x64 だけ（x86 / Win32 の構成は 2026-10 に削除した）。exe は各プロジェクトの `Release\` に出る
 
 ## 共通部品 `_Common`
 
