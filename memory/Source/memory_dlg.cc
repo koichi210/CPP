@@ -1,6 +1,9 @@
 ﻿// memory_dlg.cc : メインダイアログ（出題）
 
 #include "stdafx.h"
+
+#include <algorithm>
+
 #include "memory.h"
 #include "memory_dlg.h"
 #include "answer_dlg.h"
@@ -72,9 +75,13 @@ BOOL MemoryDlg::OnInitDialog()
 	SetIcon(icon_, TRUE);
 	SetIcon(icon_, FALSE);
 
-	timer_cycle_ = kCycInitVal;
-	selected_mode_ = PlayMode::kAnki;
-	type_flags_ = 0;
+	// 出題文字のフォントはここで1回だけ作り、ダイアログを閉じるまで使い回す
+	LOGFONT view_font = {};
+	view_font.lfCharSet = DEFAULT_CHARSET;
+	view_font.lfWeight = kShowWeight;
+	view_font.lfHeight = kShowHeight;
+	show_font_.CreateFontIndirect(&view_font);
+	GetDlgItem(IDC_SHOW)->SetFont(&show_font_);
 
 	GetDlgItem(IDCANCEL)->ShowWindow(FALSE);
 	GetDlgItem(IDC_ANS)->EnableWindow(FALSE);
@@ -94,10 +101,8 @@ BOOL MemoryDlg::OnInitDialog()
 
 	state_ = PlayState::kInit;
 	cycle_bar_.SetScrollRange(kMinCyc, kMaxCyc, TRUE);
-	cycle_bar_.SetScrollPos(kCycInitVal);
-	CString str;
-	str.Format(_T("(%d ms)"), timer_cycle_);
-	GetDlgItem(IDC_SPEED_TXT)->SetWindowText(str);
+	cycle_bar_.SetScrollPos(timer_cycle_);
+	ShowCycle();
 	InitProc();
 
 	return TRUE;
@@ -230,7 +235,7 @@ int MemoryDlg::StartCheck()
 
 void MemoryDlg::OnAns()
 {
-	AnserDlg dlg(*this, this);
+	AnswerDlg dlg(*this, this);
 	dlg.DoModal();
 }
 
@@ -340,17 +345,6 @@ void MemoryDlg::ItemSts(BOOL flg)
 // 1問分の文字列を作って記録する
 CString MemoryDlg::KeyGen()
 {
-	// フォントは最初の1回だけ作り、アプリ終了まで使い回す
-	if (show_font_.GetSafeHandle() == nullptr)
-	{
-		LOGFONT view_font = {};
-		view_font.lfCharSet = DEFAULT_CHARSET;
-		view_font.lfWeight = kShowWeight;
-		view_font.lfHeight = kShowHeight;
-		show_font_.CreateFontIndirect(&view_font);
-	}
-	SendDlgItemMessage(IDC_SHOW, WM_SETFONT, reinterpret_cast<WPARAM>(show_font_.GetSafeHandle()), MAKELPARAM(TRUE, 0));
-
 	// time() は1秒単位でしか変わらず、1秒以内に呼ぶと前回と同じ乱数列になるため、
 	// 出題番号を掛けて毎回違う種にする
 	srand(static_cast<unsigned>(time(nullptr)) * (count_ + 1) * 2);
@@ -392,41 +386,30 @@ int MemoryDlg::GetKeyGenType(int val) const
 // 種類に応じた1文字を作る。直前と同じ文字にはしない
 TCHAR MemoryDlg::GetKeyGenChar(int char_type, int val)
 {
-	int number = 0;
-
-	switch (char_type)
+	// 種類ごとの先頭の文字と、文字数
+	int first = _T('0');
+	int range = 10;
+	if (char_type == kTypeEngSmall)
 	{
-	case kTypeNumber:
-		number = val % 10;
-		if (number == prev_char_)
-		{
-			number = MatchProc(val, number);
-		}
-		prev_char_ = number;
-		return static_cast<TCHAR>(_T('0') + number);
-
-	case kTypeEngSmall:
-		number = _T('a') + (val % 26);
-		if (number == prev_char_)
-		{
-			number = MatchProc(val, number - _T('a')) + _T('a');
-		}
-		break;
-
-	case kTypeEngLarge:
-		number = _T('A') + (val % 26);
-		if (number == prev_char_)
-		{
-			number = MatchProc(val, number - _T('A')) + _T('A');
-		}
-		break;
+		first = _T('a');
+		range = 26;
+	}
+	else if (char_type == kTypeEngLarge)
+	{
+		first = _T('A');
+		range = 26;
 	}
 
-	prev_char_ = number;
-	return static_cast<TCHAR>(number);
+	int offset = val % range;
+	if (first + offset == prev_char_)
+	{
+		offset = MatchProc(val, offset);
+	}
+	prev_char_ = first + offset;
+	return static_cast<TCHAR>(prev_char_);
 }
 
-// orgVal の各桁を下から見て、current と違う最初の数字を返す（無ければ current のまま）
+// org_val の各桁を下から見て、current と違う最初の数字を返す（無ければ current のまま）
 int MemoryDlg::MatchProc(int org_val, int current)
 {
 	while (org_val != 0)
@@ -489,23 +472,19 @@ void MemoryDlg::OnHScroll(UINT sb_code, UINT pos, CScrollBar* scroll_bar)
 		break;
 	}
 
-	if (timer_cycle_ < kMinCyc)
-	{
-		timer_cycle_ = kMinCyc;
-	}
-	else if (timer_cycle_ > kMaxCyc)
-	{
-		timer_cycle_ = kMaxCyc;
-	}
-
-	timer_cycle_ = timer_cycle_ / 10 * 10;
+	timer_cycle_ = std::clamp(timer_cycle_, kMinCyc, kMaxCyc) / 10 * 10;
 	cycle_bar_.SetScrollPos(timer_cycle_);
+	ShowCycle();
 
+	CDialog::OnHScroll(sb_code, pos, scroll_bar);
+}
+
+// 表示速度をスクロールバーの横に出す
+void MemoryDlg::ShowCycle()
+{
 	CString str;
 	str.Format(_T("(%d ms)"), timer_cycle_);
 	GetDlgItem(IDC_SPEED_TXT)->SetWindowText(str);
-
-	CDialog::OnHScroll(sb_code, pos, scroll_bar);
 }
 
 void MemoryDlg::OnHelp()
@@ -537,7 +516,7 @@ void MemoryDlg::OnHelp()
 
 void MemoryDlg::SetType(int set_type, BOOL flg)
 {
-	if (flg == TRUE)
+	if (flg)
 	{
 		type_flags_ |= set_type;
 	}

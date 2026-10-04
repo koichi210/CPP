@@ -36,6 +36,7 @@ protected:
 
 private:
 	void ViewText();
+	void ShowCycle();
 	void InitProc();
 	void StartProc();
 	void EndProc();
@@ -58,7 +59,7 @@ private:
 	PlayState	state_ = PlayState::kInit;
 	int			problem_count_ = 0;		// 表示回数（出題数）
 	int			digits_ = 0;			// 桁数
-	int			type_flags_ = 0;		// 数字・アルファベットの組み合わせ（TYPE_*）
+	int			type_flags_ = 0;		// 数字・アルファベットの組み合わせ（kType*）
 	PlayMode	play_mode_ = PlayMode::kAnki;	// 出題中（直前）のモード
 	PlayMode	selected_mode_ = PlayMode::kAnki;	// 画面で選んでいるモード
 	int			prev_char_ = -1;		// 直前に出題した文字（同じ文字が続かないようにする）
