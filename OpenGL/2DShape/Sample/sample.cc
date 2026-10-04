@@ -17,12 +17,12 @@ void DispMonochrome(void) {
 
 	glBegin(GL_TRIANGLES);
 	glVertex2f(0, 0);
-	glVertex2f(-1, 0.9);
-	glVertex2f(1, 0.9);
+	glVertex2f(-1, 0.9f);
+	glVertex2f(1, 0.9f);
 
 	glVertex2f(0, 0);
-	glVertex2f(-1, -0.9);
-	glVertex2f(1, -0.9);
+	glVertex2f(-1, -0.9f);
+	glVertex2f(1, -0.9f);
 
 	glEnd();
 	glFlush();
@@ -35,14 +35,14 @@ void DispColor(void) {
 	glColor3ub(0xFF, 0, 0);
 	glVertex2f(0, 0);
 	glColor3f(0, 0, 1);
-	glVertex2f(-1, 0.9);
-	glVertex2f(1, 0.9);
+	glVertex2f(-1, 0.9f);
+	glVertex2f(1, 0.9f);
 
 	glColor3i(2147483647, 0, 0);
 	glVertex2f(0, 0);
 	glColor3b(0, 127, 0);
-	glVertex2f(-1, -0.9);
-	glVertex2f(1, -0.9);
+	glVertex2f(-1, -0.9f);
+	glVertex2f(1, -0.9f);
 
 	glEnd();
 	glFlush();

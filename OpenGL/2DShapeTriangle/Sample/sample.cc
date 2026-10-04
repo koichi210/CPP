@@ -17,12 +17,12 @@ void DispMonochrome(void) {
 
 	glBegin(GL_TRIANGLES);
 	glVertex2f(0, 0);
-	glVertex2f(-1, 0.9);
-	glVertex2f(1, 0.9);
+	glVertex2f(-1, 0.9f);
+	glVertex2f(1, 0.9f);
 
 	glVertex2f(0, 0);
-	glVertex2f(-1, -0.9);
-	glVertex2f(1, -0.9);
+	glVertex2f(-1, -0.9f);
+	glVertex2f(1, -0.9f);
 
 	glEnd();
 	glFlush();
@@ -35,14 +35,14 @@ void DispColor(void) {
 	glColor3ub(0xFF, 0, 0);
 	glVertex2f(0, 0);
 	glColor3f(0, 0, 1);
-	glVertex2f(-1, 0.9);
-	glVertex2f(1, 0.9);
+	glVertex2f(-1, 0.9f);
+	glVertex2f(1, 0.9f);
 
 	glColor3i(2147483647, 0, 0);
 	glVertex2f(0, 0);
 	glColor3b(0, 127, 0);
-	glVertex2f(-1, -0.9);
-	glVertex2f(1, -0.9);
+	glVertex2f(-1, -0.9f);
+	glVertex2f(1, -0.9f);
 
 	glEnd();
 	glFlush();
@@ -53,17 +53,17 @@ void DispTriangle(void) {
 
 	glBegin(GL_POLYGON);
 	glColor3f(1, 0, 0);
-	glVertex2f(-0.9, -0.9);
+	glVertex2f(-0.9f, -0.9f);
 	glColor3f(0, 1, 0);
-	glVertex2f(0, 0.9);
+	glVertex2f(0, 0.9f);
 	glColor3f(0, 0, 1);
-	glVertex2f(0.9, -0.9);
+	glVertex2f(0.9f, -0.9f);
 	glEnd();
 
 	glFlush();
 }
 
-void Timer(int value) {
+void Timer(int /*value*/) {
 	glRotatef(2, 0.5, 1, 0.25);
 	glutPostRedisplay();
 	glutTimerFunc(50, Timer, 0);

@@ -11,21 +11,21 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 
-const GLfloat kLightPos[] = { 3 , 0 , -2 , 0 };
-const GLfloat kLightCol[] = { 1 , 0 , 0 , 1 };
+const GLfloat kLightPos[] = { 3, 0, -2, 0 };
+const GLfloat kLightCol[] = { 1, 0, 0, 1 };
 
 void DispPyramid(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBegin(GL_POLYGON);
 	glNormal3f(3, 0, -2);
-	glVertex3f(0, -0.9, -2);
-	glVertex3f(3, -0.9, -7);
-	glVertex3f(0, 0.9, -2);
+	glVertex3f(0, -0.9f, -2);
+	glVertex3f(3, -0.9f, -7);
+	glVertex3f(0, 0.9f, -2);
 
 	glNormal3f(-3, 0, -2);
-	glVertex3f(0, -0.9, -2);
-	glVertex3f(-3, -0.9, -7);
-	glVertex3f(0, 0.9, -2);
+	glVertex3f(0, -0.9f, -2);
+	glVertex3f(-3, -0.9f, -7);
+	glVertex3f(0, 0.9f, -2);
 	glEnd();
 
 	glFlush();
