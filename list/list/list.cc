@@ -25,18 +25,17 @@ int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 	// [56],[12],[34]
 	li.push_front(56);	// 前に挿入
 
-	std::list<int>::iterator itr;
-	itr = li.begin();	// イテレータを先頭に設定
+	std::list<int>::iterator itr = li.begin();	// イテレータを先頭に設定
 
 	// [56],[78],[12],[34]
-	itr++;				// 一つ後ろに移動
+	++itr;				// 一つ後ろに移動
 	li.insert(itr, 78);	// itr の手前に挿入（itr は [12] を指したまま）
 
 	// [56],[78],[34]
 	li.remove(*itr);	// 値が 12 の要素をすべて削除
 
 	// リストの中身を表示
-	for (itr = li.begin(); itr != li.end(); itr++)
+	for (itr = li.begin(); itr != li.end(); ++itr)
 	{
 		std::cout << "[" << *itr << "] ";
 	}
