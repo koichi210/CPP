@@ -6,7 +6,7 @@
 constexpr int kCellMax	= 10;	// 1辺の最大マス数
 constexpr int kCellMin	= 3;	// 1辺の最小マス数
 
-// マス（エディット）のコントロールID。IDC_EDIT1 から CELL_MAX 個ずつ行が並ぶ
+// マス（エディット）のコントロールID。IDC_EDIT1 から kCellMax 個ずつ行が並ぶ
 inline int CellCtrlId(int row, int col)
 {
 	return IDC_EDIT1 + row * kCellMax + col;
@@ -18,7 +18,7 @@ void ShowCellGrid(CWnd& dlg, int size);
 class TurnMemoryDlg : public CDialog
 {
 public:
-	TurnMemoryDlg(CWnd* parent = nullptr);
+	explicit TurnMemoryDlg(CWnd* parent = nullptr);
 
 	enum { IDD = IDD_TURNMEMORY_DIALOG };
 
@@ -53,6 +53,7 @@ private:
 	void InitProc();
 	void BuildNumber();
 	void Refresh();
+	void ResetCells(bool enable);
 	void ShowProc();
 	void WaitProc();
 
@@ -61,8 +62,9 @@ private:
 	int			input_[kCellMax * kCellMax] = {};	// 各マスに入力された順番
 	int			size_ = 0;			// 1辺のマス数
 	GameState	state_ = GameState::kInit;
-	int			cnt_ = 1;			// 次に表示する順番
+	int			next_number_ = 1;	// 次に表示する順番
 	int			wait_ = 0;			// 記憶時間の残り秒数
+	std::mt19937	random_;
 };
 
 #endif  // TURNMEMORY_SOURCE_TURN_MEMORY_DLG_H_

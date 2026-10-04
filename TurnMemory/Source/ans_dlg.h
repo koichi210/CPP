@@ -8,7 +8,7 @@ class TurnMemoryDlg;
 class AnsDlg : public CDialog
 {
 public:
-	AnsDlg(const TurnMemoryDlg& game, CWnd* parent = nullptr);
+	explicit AnsDlg(const TurnMemoryDlg& game, CWnd* parent = nullptr);
 
 	enum { IDD = IDD_ANS };
 

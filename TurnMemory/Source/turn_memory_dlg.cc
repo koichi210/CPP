@@ -11,17 +11,17 @@
 
 namespace
 {
-	constexpr int kDefPrb = 4;			// 1辺のマス数の初期値
+	constexpr int kDefaultSize = 4;		// 1辺のマス数の初期値
 
 	constexpr UINT_PTR kEventShow = 1;	// 順番を表示するタイマ
 	constexpr UINT_PTR kEventWait = 2;	// 記憶時間のタイマ
 
-	constexpr UINT kShowInval = 1000;
-	constexpr UINT kWaitInval = 1000;
+	constexpr UINT kShowInterval = 1000;	// 順番を1つ表示する間隔(ms)
+	constexpr UINT kWaitInterval = 1000;	// 記憶時間のカウントダウン間隔(ms)
 	constexpr int kWaitMax = 5;
 
 	constexpr LPCTSTR kKeepMindStr		= _T("順番を記憶して下さい。");
-	constexpr LPCTSTR kCntRememberStr	= _T("秒間覚えて下さい。");
+	constexpr LPCTSTR kRememberSecStr	= _T("秒間覚えて下さい。");
 	constexpr LPCTSTR kStartStr			= _T("スタートを押して下さい。");
 	constexpr LPCTSTR kEndStr			= _T("解答を入力して下さい。");
 	constexpr LPCTSTR kStartButton		= _T("スタート");
@@ -49,6 +49,7 @@ void ShowCellGrid(CWnd& dlg, int size)
 
 TurnMemoryDlg::TurnMemoryDlg(CWnd* parent)
 	: CDialog(IDD, parent)
+	, random_(std::random_device()())
 {
 	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -69,7 +70,6 @@ BOOL TurnMemoryDlg::OnInitDialog()
 	SetIcon(icon_, FALSE);
 
 	GetDlgItem(IDC_TITLE)->SetWindowText(kStartStr);
-	srand(static_cast<unsigned>(time(nullptr)));
 
 	// マス数の選択肢
 	SendDlgItemMessage(IDC_PROBLEM, CB_RESETCONTENT, 0, 0L);
@@ -80,9 +80,9 @@ BOOL TurnMemoryDlg::OnInitDialog()
 		SendDlgItemMessage(IDC_PROBLEM, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(str.GetString()));
 	}
 
-	size_ = kDefPrb;
+	size_ = kDefaultSize;
 	state_ = GameState::kInit;
-	cnt_ = 1;
+	next_number_ = 1;
 	SendDlgItemMessage(IDC_PROBLEM, CB_SETCURSEL, size_ - kCellMin, 0L);
 	Refresh();
 
@@ -98,12 +98,12 @@ void TurnMemoryDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int icon_width = GetSystemMetrics(SM_CXICON);
-		int icon_height = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - icon_width + 1) / 2;
-		int y = (rect.Height() - icon_height + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
 		dc.DrawIcon(x, y, icon_);
 	}
@@ -137,7 +137,7 @@ void TurnMemoryDlg::OnStart()
 
 	Refresh();
 	BuildNumber();
-	SetTimer(kEventShow, kShowInval, nullptr);
+	SetTimer(kEventShow, kShowInterval, nullptr);
 }
 
 void TurnMemoryDlg::OnAns()
@@ -172,16 +172,16 @@ void TurnMemoryDlg::OnTimer(UINT_PTR id_event)
 // 全部の順番を表示し終えたら、記憶時間のカウントダウンに移る
 void TurnMemoryDlg::EndProc()
 {
-	cnt_ = 1;
+	next_number_ = 1;
 	wait_ = kWaitMax;
 	KillTimer(kEventShow);
-	SetTimer(kEventWait, kWaitInval, nullptr);
+	SetTimer(kEventWait, kWaitInterval, nullptr);
 }
 
 void TurnMemoryDlg::ExitProc()
 {
 	state_ = GameState::kEnd;
-	cnt_ = 1;
+	next_number_ = 1;
 	memset(answer_, 0, sizeof(answer_));
 	GetDlgItem(IDC_TITLE)->SetWindowText(kStartStr);
 	GetDlgItem(IDC_START)->SetWindowText(kStartButton);
@@ -189,61 +189,25 @@ void TurnMemoryDlg::ExitProc()
 	KillTimer(kEventWait);
 }
 
-// 解答の入力を受け付ける状態にする
+// 解答の入力を受け付ける状態にする（入力 input_ は出題開始時にクリア済み）
 void TurnMemoryDlg::InitProc()
 {
 	GetDlgItem(IDC_START)->SetWindowText(kStartButton);
 	GetDlgItem(IDC_TITLE)->SetWindowText(kEndStr);
 	GetDlgItem(IDC_PROBLEM)->EnableWindow(TRUE);
-	if (state_ == GameState::kEnd && input_[0] == 0)
-	{
-		GetDlgItem(IDC_ANS)->EnableWindow(TRUE);
-	}
-	else
-	{
-		GetDlgItem(IDC_ANS)->EnableWindow(FALSE);
-	}
+	GetDlgItem(IDC_ANS)->EnableWindow(state_ == GameState::kEnd);
 
-	for (int i = 0; i < size_; i++)
-	{
-		for (int j = 0; j < size_; j++)
-		{
-			CWnd* cell = GetDlgItem(CellCtrlId(i, j));
-			cell->EnableWindow(TRUE);
-			cell->SetWindowText(_T(""));
-		}
-	}
+	ResetCells(true);
 }
 
 // 各マスに 1～マス数 の順番をランダムに割り当てる
 void TurnMemoryDlg::BuildNumber()
 {
-	const int cell_count = CellCount();
-	int randtbl[kCellMax * kCellMax];
-
 	memset(answer_, 0, sizeof(answer_));
-	for (int i = 0; i < cell_count; i++)
-	{
-		randtbl[i] = rand();
-	}
 
-	// 乱数の大きいマスから大きい番号を振る。振ったマスは -1 にして次からは選ばない
-	int number = cell_count;
-	for (int i = 0; i < cell_count; i++)
-	{
-		int max = -1;
-		int idx = 0;
-		for (int j = 0; j < cell_count; j++)
-		{
-			if (randtbl[j] > max)
-			{
-				max = randtbl[j];
-				idx = j;
-			}
-		}
-		answer_[idx] = number--;
-		randtbl[idx] = -1;
-	}
+	int* const end = answer_ + CellCount();
+	std::iota(answer_, end, 1);
+	std::shuffle(answer_, end, random_);
 }
 
 // 選択中のマス数に合わせてマスを表示し直す
@@ -252,13 +216,18 @@ void TurnMemoryDlg::Refresh()
 	size_ = static_cast<int>(SendDlgItemMessage(IDC_PROBLEM, CB_GETCURSEL, 0, 0)) + kCellMin;
 
 	ShowCellGrid(*this, size_);
+	ResetCells(false);
+}
 
+// 表示中のマスを空にし、入力の可否を切り替える
+void TurnMemoryDlg::ResetCells(bool enable)
+{
 	for (int i = 0; i < size_; i++)
 	{
 		for (int j = 0; j < size_; j++)
 		{
 			CWnd* cell = GetDlgItem(CellCtrlId(i, j));
-			cell->EnableWindow(FALSE);
+			cell->EnableWindow(enable);
 			cell->SetWindowText(_T(""));
 		}
 	}
@@ -269,17 +238,17 @@ void TurnMemoryDlg::ShowProc()
 {
 	for (int i = 0; i < CellCount(); i++)
 	{
-		if (answer_[i] == cnt_)
+		if (answer_[i] == next_number_)
 		{
-			CString str;
-			str.Format(_T("%d"), cnt_);
-			GetDlgItem(CellCtrlId(i / size_, i % size_))->SetWindowText(str);
+			CString text;
+			text.Format(_T("%d"), next_number_);
+			GetDlgItem(CellCtrlId(i / size_, i % size_))->SetWindowText(text);
 			break;
 		}
 	}
 
-	cnt_++;
-	if (cnt_ > CellCount())
+	next_number_++;
+	if (next_number_ > CellCount())
 	{
 		EndProc();
 	}
@@ -287,9 +256,9 @@ void TurnMemoryDlg::ShowProc()
 
 void TurnMemoryDlg::WaitProc()
 {
-	CString str;
-	str.Format(_T("%d%s"), wait_, kCntRememberStr);
-	GetDlgItem(IDC_TITLE)->SetWindowText(str);
+	CString text;
+	text.Format(_T("%d%s"), wait_, kRememberSecStr);
+	GetDlgItem(IDC_TITLE)->SetWindowText(text);
 
 	wait_--;
 	if (wait_ < 0)

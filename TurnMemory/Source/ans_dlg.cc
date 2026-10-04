@@ -38,14 +38,11 @@ void AnsDlg::CheckProc()
 	for (int i = 0; i < size * size; i++)
 	{
 		judge_[i] = (game_.GetAnswer(i) == game_.GetInput(i));
-		if (!judge_[i])
-		{
-			all_ok = false;
-		}
+		all_ok = all_ok && judge_[i];
 
-		CString str;
-		str.Format(_T("%d"), game_.GetAnswer(i));
-		GetDlgItem(CellCtrlId(i / size, i % size))->SetWindowText(str);
+		CString text;
+		text.Format(_T("%d"), game_.GetAnswer(i));
+		GetDlgItem(CellCtrlId(i / size, i % size))->SetWindowText(text);
 	}
 
 	GetDlgItem(IDC_TITLE)->SetWindowText(all_ok ? _T("全問正解！！") : _T("残念。。"));
