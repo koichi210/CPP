@@ -62,7 +62,7 @@ HBRUSH AnsDlg::OnCtlColor(CDC* dc, CWnd* wnd, UINT ctl_color)
 		const int index = offset / kCellMax * game_.GetSize() + offset % kCellMax;
 		if (!judge_[index])
 		{
-			dc->SetTextColor(RGB(0xFF0, 0, 0));	// 文字色は赤
+			dc->SetTextColor(RGB(0xFF, 0, 0));	// 文字色は赤
 		}
 	}
 
