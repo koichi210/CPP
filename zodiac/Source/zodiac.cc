@@ -1,4 +1,4 @@
-﻿// zodiac.cpp : アプリケーションクラス
+﻿// zodiac.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "zodiac.h"

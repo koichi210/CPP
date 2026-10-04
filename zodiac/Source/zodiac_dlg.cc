@@ -1,4 +1,4 @@
-﻿// zodiacDlg.cpp : メインダイアログ（生まれた年・年齢・干支の早見）
+﻿// zodiac_dlg.cc : メインダイアログ（生まれた年・年齢・干支の早見）
 
 #include "stdafx.h"
 #include "zodiac.h"
@@ -23,7 +23,7 @@ namespace
 	constexpr const char* kAgeFormat = "満%d才";
 	constexpr const char* kBirthFormat = "%d年";
 
-	// MIN_YEAR（1900年）が子年なので、(年 - kMinYear) % 12 で引ける並び
+	// kMinYear（1900年）が子年なので、(年 - kMinYear) % 12 で引ける並び
 	constexpr const char* kZodiacNames[kZodiacCount] = {
 		"子(ねずみ)", "丑(うし)", "寅(とら)", "卯(うさぎ)", "辰(たつ)", "巳(み)",
 		"午(うま)", "未(ひつじ)", "申(さる)", "酉(とり)", "戌(いぬ)", "亥(いのしし)" };
@@ -46,7 +46,7 @@ BEGIN_MESSAGE_MAP(ZodiacDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_AGE, &ZodiacDlg::OnAge)
-	ON_BN_CLICKED(IDC_CHINEZODIAC, &ZodiacDlg::OnChineZodiac)
+	ON_BN_CLICKED(IDC_CHINEZODIAC, &ZodiacDlg::OnChineseZodiac)
 	ON_BN_CLICKED(IDC_VIEW, &ZodiacDlg::OnView)
 	ON_BN_CLICKED(IDC_BIRTH, &ZodiacDlg::OnBirth)
 	ON_CBN_SELCHANGE(IDC_YEAR, &ZodiacDlg::OnSelchangeYear)
@@ -61,24 +61,24 @@ BOOL ZodiacDlg::OnInitDialog()
 	SetIcon(icon_, FALSE);
 
 	// 年の選択肢を作り、今年を選んでおく
-	time_t now = time(nullptr);
-	const tm* local = localtime(&now);
+	const time_t now = time(nullptr);
+	const int this_year = localtime(&now)->tm_year + 1900;
 
 	year_combo_.ResetContent();
-	int idx = 0;
+	int this_year_index = 0;
 	for (int year = kMinYear; year <= kMaxYear; year++)
 	{
 		CString text;
 		text.Format("%d", year);
-		int ind = year_combo_.InsertString(-1, text);
-		year_combo_.SetItemData(ind, year);
+		const int index = year_combo_.InsertString(-1, text);
+		year_combo_.SetItemData(index, year);
 
-		if (local->tm_year + 1900 == year)
+		if (year == this_year)
 		{
-			idx = ind;
+			this_year_index = index;
 		}
 	}
-	year_combo_.SetCurSel(idx);
+	year_combo_.SetCurSel(this_year_index);
 	year_ = GetSelectedYear();
 
 	CheckDlgButton(IDC_AGE, BST_CHECKED);
@@ -96,12 +96,12 @@ void ZodiacDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int icon_width = GetSystemMetrics(SM_CXICON);
-		int icon_height = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - icon_width + 1) / 2;
-		int y = (rect.Height() - icon_height + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
 		dc.DrawIcon(x, y, icon_);
 	}
@@ -139,7 +139,7 @@ void ZodiacDlg::OnAge()
 	ChangeMode(Mode::kAge);
 }
 
-void ZodiacDlg::OnChineZodiac()
+void ZodiacDlg::OnChineseZodiac()
 {
 	ChangeMode(Mode::kZodiac);
 }
@@ -195,18 +195,18 @@ void ZodiacDlg::Refresh()
 // 項目データには年・年齢・干支の番号を持たせ、表示時に文字列を解析しなくて済むようにする
 void ZodiacDlg::AddListItem(LPCTSTR text, int data)
 {
-	int ind = list_combo_.InsertString(-1, text);
-	list_combo_.SetItemData(ind, data);
+	const int index = list_combo_.InsertString(-1, text);
+	list_combo_.SetItemData(index, data);
 }
 
 void ZodiacDlg::OnView()
 {
-	int sel = list_combo_.GetCurSel();
+	const int sel = list_combo_.GetCurSel();
 	if (sel == CB_ERR)
 	{
 		return;
 	}
-	int value = static_cast<int>(list_combo_.GetItemData(sel));
+	const int value = static_cast<int>(list_combo_.GetItemData(sel));
 
 	CString view;
 	if (mode_ == Mode::kZodiac)
@@ -224,19 +224,9 @@ void ZodiacDlg::OnView()
 	}
 	else
 	{
-		int birth;
-		int age;
-		if (mode_ == Mode::kAge)
-		{
-			age = value;
-			birth = year_ - age;
-		}
-		else
-		{
-			birth = value;
-			age = year_ - birth;
-		}
-		CString zodiac = GetZodiac(birth);
+		const int birth = (mode_ == Mode::kAge) ? year_ - value : value;
+		const int age = year_ - birth;
+		const CString zodiac = GetZodiac(birth);
 
 		view.Format("%d年生まれ\r\n"
 					"今年は%d才\r\n"

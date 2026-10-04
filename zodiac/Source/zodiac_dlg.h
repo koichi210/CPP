@@ -1,4 +1,4 @@
-﻿// zodiacDlg.h : メインダイアログ（生まれた年・年齢・干支の早見）
+﻿// zodiac_dlg.h : メインダイアログ（生まれた年・年齢・干支の早見）
 
 #ifndef ZODIAC_SOURCE_ZODIAC_DLG_H_
 #define ZODIAC_SOURCE_ZODIAC_DLG_H_
@@ -17,7 +17,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnAge();
-	afx_msg void OnChineZodiac();
+	afx_msg void OnChineseZodiac();
 	afx_msg void OnView();
 	afx_msg void OnBirth();
 	afx_msg void OnSelchangeYear();
