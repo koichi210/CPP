@@ -7,22 +7,18 @@
 #include "input_simulator.h"
 #include "common_util.h"
 
-#include <cstdio>
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 namespace
 {
-	constexpr bool kUseKeyHook = false;	// キーボードの記録は未完成
-
 #ifdef _DEBUG
 	constexpr TCHAR kHookDllName[] = _T("../Release/EventHookd.dll");
 #else
 	constexpr TCHAR kHookDllName[] = _T("EventHookd.dll");
 #endif
-	constexpr TCHAR kHookLogFileName[] = _T("MacroLog.txt");
+	constexpr TCHAR kHookLogFileName[] = _T("MacroLog.txt");	// 記録中の操作を書く一時ファイル（%TEMP% に作る）
 
 	// 設定ファイル（INI 形式）
 	constexpr TCHAR kSectionTable[] = _T("TABLE");
@@ -202,14 +198,11 @@ MacroToolDlg::MacroToolDlg(CWnd* parent, const CString& file_name, const std::ve
 	hook_dll_ = LoadLibrary(kHookDllName);
 	if (hook_dll_)
 	{
-		if constexpr (kUseKeyHook)
-		{
-			start_key_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StartKeyHook"));
-			stop_key_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StopKeyHook"));
-		}
+		start_key_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StartKeyHook"));
+		stop_key_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StopKeyHook"));
 		start_mouse_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StartMouseHook"));
 		stop_mouse_hook_ = reinterpret_cast<HookFunc>(GetProcAddress(hook_dll_, "StopMouseHook"));
-		debug_mode_ = reinterpret_cast<DebugModeFunc>(GetProcAddress(hook_dll_, "DebugMode"));
+		set_log_file_ = reinterpret_cast<SetLogFileFunc>(GetProcAddress(hook_dll_, "SetLogFile"));
 	}
 
 	// 呼び出し元の設定を引き継ぐ
@@ -246,7 +239,6 @@ BEGIN_MESSAGE_MAP(MacroToolDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
-	ON_WM_LBUTTONDBLCLK()
 	ON_WM_MOUSEMOVE()
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTCTRL, &MacroToolDlg::OnLvnItemchangedList)
 	ON_BN_CLICKED(IDBT_LIST_INSERT, &MacroToolDlg::OnListInsert)
@@ -415,23 +407,6 @@ void MacroToolDlg::OnMouseMove(UINT flags, CPoint point)
 	SetDlgItemText(IDLB_STATES, text);
 
 	CDialog::OnMouseMove(flags, point);
-}
-
-// 隠し機能：ダブルクリックでフック DLL のログ出力を切り替える
-void MacroToolDlg::OnLButtonDblClk(UINT flags, CPoint point)
-{
-	debug_ = !debug_;
-
-	CString text;
-	text.Format(_T("DebugMode=%d"), debug_);
-	MessageBox(text);
-
-	if (debug_mode_)
-	{
-		debug_mode_(debug_);
-	}
-
-	CDialog::OnLButtonDblClk(flags, point);
 }
 
 void MacroToolDlg::OnLvnItemchangedList(NMHDR* nmhdr, LRESULT* result)
@@ -642,12 +617,10 @@ void MacroToolDlg::OnRead()
 
 void MacroToolDlg::LoadFile(const CString& file_name)
 {
-	std::fill(events_.begin(), events_.end(), MacroEvent{});
-
 	repeat_count_ = _ttoi(GetIniFileParam(file_name, kSectionCommon, kKeyRepeatNum));
 	repeat_delay_msec_ = _ttoi(GetIniFileParam(file_name, kSectionCommon, kKeyRepeatDelayMsec));
 
-	int count = 0;
+	std::vector<CString> lines;
 	for (int i = 0; i < kMaxEventCount; i++)
 	{
 		CString key_name;
@@ -657,7 +630,41 @@ void MacroToolDlg::LoadFile(const CString& file_name)
 		{
 			break;
 		}
+		lines.push_back(line);
+	}
+	LoadEvents(lines);
 
+	SetDlgItemInt(IDET_REPEAT_NUM, repeat_count_);
+	SetDlgItemInt(IDET_REPEAT_TIME, repeat_delay_msec_);
+}
+
+// 記録した操作（フック DLL が1操作1行で書いたもの）を読み込む。繰り返しの設定はそのまま
+void MacroToolDlg::LoadRecordLog(const CString& log_path)
+{
+	std::vector<CString> lines;
+	CStdioFile file;
+	if (file.Open(log_path, CFile::modeRead | CFile::shareDenyNone | CFile::typeText))
+	{
+		CString line;
+		while (static_cast<int>(lines.size()) < kMaxEventCount && file.ReadString(line))
+		{
+			if (!line.IsEmpty())
+			{
+				lines.push_back(line);
+			}
+		}
+	}
+	LoadEvents(lines);
+}
+
+// 1行1操作の文字列から一覧を作り直す
+void MacroToolDlg::LoadEvents(const std::vector<CString>& lines)
+{
+	std::fill(events_.begin(), events_.end(), MacroEvent{});
+
+	int count = 0;
+	for (const CString& line : lines)
+	{
 		const MacroEvent ev = ParseEventString(line);
 		if (!IsValidEvent(ev))
 		{
@@ -689,9 +696,6 @@ void MacroToolDlg::LoadFile(const CString& file_name)
 
 	UpdateListControl(TRUE);
 	UpdateControl();
-
-	SetDlgItemInt(IDET_REPEAT_NUM, repeat_count_);
-	SetDlgItemInt(IDET_REPEAT_TIME, repeat_delay_msec_);
 }
 
 void MacroToolDlg::OnWrite()
@@ -755,66 +759,63 @@ void MacroToolDlg::OnRecord()
 
 	if (!recording_)
 	{
+		::DeleteFile(log_path);	// 前回の記録を消しておく
+		if (!StartRecord(log_path))
+		{
+			MessageBox(_T("記録を開始できませんでした。EventHookd.dll を確認してください。"));
+			return;
+		}
+
 		CString title;
 		title.Format(_T("%s(Record中)"), kSettingTitle);
 		SetWindowText(title);
 		SetDlgItemText(IDBT_RECORD, _T("記録終了"));
-
-		::remove(log_path);	// 前回のログを消しておく
-		StartRecord();
 	}
 	else
 	{
+		if (!StopRecord())
+		{
+			MessageBox(_T("記録を正しく終了できませんでした。"));
+		}
+
 		SetTitleBar();
 		SetDlgItemText(IDBT_RECORD, _T("記録"));
-		StopRecord();
-
-		LoadFile(log_path);
+		LoadRecordLog(log_path);
 	}
 }
 
-void MacroToolDlg::StartRecord()
+// キーボードとマウスの操作を log_path に書かせる（どちらかが失敗したら両方止める）
+bool MacroToolDlg::StartRecord(const CString& log_path)
 {
-	bool started;
-	if constexpr (kUseKeyHook)
+	if (!set_log_file_ || !start_key_hook_ || !start_mouse_hook_ || !stop_key_hook_ || !stop_mouse_hook_)
 	{
-		started = start_key_hook_ && start_key_hook_() && start_mouse_hook_ && start_mouse_hook_();
-	}
-	else
-	{
-		started = start_mouse_hook_ && start_mouse_hook_();
+		return false;
 	}
 
-	if (started)
+	set_log_file_(log_path);
+	if (!start_key_hook_() || !start_mouse_hook_())
 	{
-		recording_ = TRUE;
+		stop_key_hook_();
+		stop_mouse_hook_();
+		return false;
 	}
-	else
-	{
-		MessageBox(_T("StartMouseHook() fail"));
-	}
+
+	recording_ = TRUE;
+	return true;
 }
 
-void MacroToolDlg::StopRecord()
+bool MacroToolDlg::StopRecord()
 {
-	bool stopped;
-	if constexpr (kUseKeyHook)
+	recording_ = FALSE;
+	if (!stop_key_hook_ || !stop_mouse_hook_)
 	{
-		stopped = stop_key_hook_ && stop_key_hook_() && stop_mouse_hook_ && stop_mouse_hook_();
-	}
-	else
-	{
-		stopped = stop_mouse_hook_ && stop_mouse_hook_();
+		return false;
 	}
 
-	if (stopped)
-	{
-		recording_ = FALSE;
-	}
-	else
-	{
-		MessageBox(_T("StopMouseHook() fail"));
-	}
+	// 片方が失敗しても、もう片方は止める
+	const BOOL key_stopped = stop_key_hook_();
+	const BOOL mouse_stopped = stop_mouse_hook_();
+	return key_stopped && mouse_stopped;
 }
 
 // 「ヘルプ」ボタンは動作確認用：NumLock / CapsLock / ScrollLock を順に点滅させる

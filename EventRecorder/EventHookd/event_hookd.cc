@@ -1,39 +1,34 @@
-﻿// event_hookd.cc : マウス・キーボードのグローバルフック DLL
+﻿// event_hookd.cc : マウス・キーボードの操作を記録する低レベルフック DLL
 
 #include "stdafx.h"
 #include "event_hookd.h"
 
 #include <cstdio>
 
-// フックの登録状態と、前回イベントの時刻
-// SetWindowsHookEx(WH_KEYBOARD / WH_MOUSE, ..., 0) のグローバルフックは、フックされた各プロセスに
-// この DLL が読み込まれて動く。前回イベントの時刻などをプロセス間で共有するため .shared を共有セクションにする。
-// （EventHookd.def の SECTIONS はリンクに使っていないので効かない。共有はこの指定で有効にしている。
-//   共有セクションの変数には初期化子が必須）
-#pragma comment(linker, "/SECTION:.shared,RWS")
-#pragma data_seg(".shared")
-HHOOK		g_hKeyHook = NULL;
-HHOOK		g_hMouseHook = NULL;
-SYSTEMTIME	g_lastEventTime = {0,0,0,0,0,0,0,0};
-#pragma data_seg()
-
 namespace
 {
 	HINSTANCE	instance = nullptr;
-	BOOL		debug_enabled = FALSE;
-
-	constexpr char kLogFileName[] = "MacroLog.txt";
+	HHOOK		key_hook = nullptr;
+	HHOOK		mouse_hook = nullptr;
+	char		log_path[MAX_PATH] = {};
+	DWORD		last_event_tick = 0;	// 前回の操作の時刻（GetTickCount の値）
 
 	// MacroTool の設定ファイル1行と同じ並び
 	// 実行回数, 遅延(ms), イベント種別, X, Y, マウス操作, 修飾キー, キー種別, キー文字列, コメント
-	constexpr char kLogFormat[] = "%3d,%8d,%2d,%4d,%4d,%2d,%2d,%2d,%s,%s\n";
+	constexpr char kLogFormat[] = "%d,%lu,%d,%ld,%ld,%d,%lu,%d,%s,%s\n";
 
 	constexpr int kDefaultExecuteCount = 1;
 	constexpr int kEventMouse = 1;
 	constexpr int kEventKey = 2;
 
+	// MacroTool の修飾キー（ビットの組み合わせ）
 	constexpr DWORD kModifierShift = 0x0001;
 	constexpr DWORD kModifierCtrl = 0x0002;
+	constexpr DWORD kModifierAlt = 0x0004;
+
+	// MacroTool のキー種別（0 はキー文字列を入力、1〜12 は F1〜F12）
+	constexpr int kKeyKindUser = 0;
+	constexpr int kKeyKindF1 = 1;
 
 	// MacroTool のマウス操作の番号
 	constexpr int kMouseOpLDown = 1;
@@ -47,66 +42,43 @@ namespace
 		return (GetAsyncKeyState(virtual_key) & 0x8000) != 0;
 	}
 
-	bool IsShiftPressed()	{ return IsPressed(VK_LSHIFT) || IsPressed(VK_RSHIFT); }
-	bool IsControlPressed()	{ return IsPressed(VK_LCONTROL) || IsPressed(VK_RCONTROL); }
-
-	// SYSTEMTIME を 100ns 単位の通し番号にする（変換できなければ 0）
-	ULONGLONG ToFileTimeValue(const SYSTEMTIME& time)
+	// 前回の操作からの経過時間(ms)。event_tick は低レベルフックが渡す操作の時刻
+	DWORD ElapsedTime(DWORD event_tick)
 	{
-		FILETIME file_time;
-		if (!SystemTimeToFileTime(&time, &file_time))
-		{
-			return 0;
-		}
-		ULARGE_INTEGER value;
-		value.LowPart = file_time.dwLowDateTime;
-		value.HighPart = file_time.dwHighDateTime;
-		return value.QuadPart;
+		const DWORD elapsed = event_tick - last_event_tick;	// 49日で一周しても差は正しく求まる
+		last_event_tick = event_tick;
+		return elapsed;
 	}
 
-	// 前回のイベントからの経過時間(ms)
-	// （日・時・分…の差を積み上げる計算では、月をまたぐと日の差が負になって値が壊れていた）
-	DWORD ElapsedTime()
+	// MacroTool 自身の画面への操作（「記録終了」ボタンを押すなど）は記録しない
+	bool IsOwnWindow(HWND wnd)
 	{
-		SYSTEMTIME now;
-		GetSystemTime(&now);
-
-		const ULONGLONG now_value = ToFileTimeValue(now);
-		if (now_value == 0)	// まれに取得できないことがあった
-		{
-			return 0;
-		}
-		const ULONGLONG last_value = ToFileTimeValue(g_lastEventTime);
-		g_lastEventTime = now;
-
-		constexpr ULONGLONG kFileTimePerMsec = 10000;
-		return (last_value != 0 && now_value > last_value)
-			? static_cast<DWORD>((now_value - last_value) / kFileTimePerMsec) : 0;
+		DWORD process_id = 0;
+		return wnd != nullptr
+			&& GetWindowThreadProcessId(wnd, &process_id) != 0
+			&& process_id == GetCurrentProcessId();
 	}
 
 	void WriteLog(const char* text)
 	{
-		if (!debug_enabled)
-		{
-			return;
-		}
-
-		FILE* fp = fopen(kLogFileName, "a");
-		if (fp)
+		FILE* fp = nullptr;
+		if (log_path[0] != '\0' && fopen_s(&fp, log_path, "a") == 0)
 		{
 			fputs(text, fp);
 			fclose(fp);
 		}
 	}
 
-	// 押された英数字キーと修飾キーを取り出す（英数字以外・キーを離したときは false）
-	bool GetKeyParameter(WPARAM w_param, DWORD& modifiers, char& key)
+	// 押されたキーを MacroTool のキー種別とキー文字列にする（英数字と F1〜F12 以外は false）
+	bool GetKeyParameter(DWORD virtual_key, int& key_kind, char& key)
 	{
-		int virtual_key = static_cast<int>(w_param);
+		if (VK_F1 <= virtual_key && virtual_key <= VK_F12)
+		{
+			key_kind = kKeyKindF1 + static_cast<int>(virtual_key - VK_F1);
+			return true;
+		}
 
-		// ファンクションキー等には未対応
-		// （仮想キーコードの英字は 'A'〜'Z' だけ。isalpha だと 'a'〜'z' と同じ値の
-		//   テンキー・F1〜F11 まで英字として通ってしまう）
+		// 仮想キーコードの英字は 'A'〜'Z' だけ。'a'〜'z' と同じ値はテンキーや F1〜F11 なので使わない
 		const bool is_letter = ('A' <= virtual_key && virtual_key <= 'Z');
 		const bool is_digit = ('0' <= virtual_key && virtual_key <= '9');
 		if (!is_letter && !is_digit)
@@ -114,27 +86,19 @@ namespace
 			return false;
 		}
 
-		// w_param だけではキーを押したときと離したとき両方が来るので、押されているかを確かめる
-		if (!IsPressed(virtual_key))
-		{
-			return false;
-		}
-
-		if (IsControlPressed())
-		{
-			modifiers |= kModifierCtrl;
-		}
-		if (IsShiftPressed())
-		{
-			modifiers |= kModifierShift;
-		}
-		else if (is_letter)
-		{
-			// Shift が押されていなければ小文字にする
-			virtual_key += 'a' - 'A';
-		}
-		key = static_cast<char>(virtual_key);
+		// 再生では、英字は小文字で書いておき Shift を修飾キーとして押す
+		key_kind = kKeyKindUser;
+		key = static_cast<char>(is_letter ? virtual_key + ('a' - 'A') : virtual_key);
 		return true;
+	}
+
+	DWORD GetModifiers(bool alt_down)
+	{
+		DWORD modifiers = 0;
+		if (IsPressed(VK_SHIFT))	modifiers |= kModifierShift;
+		if (IsPressed(VK_CONTROL))	modifiers |= kModifierCtrl;
+		if (alt_down)				modifiers |= kModifierAlt;
+		return modifiers;
 	}
 
 	// マウスのメッセージを MacroTool のマウス操作に変換する（移動などは記録しない）
@@ -152,46 +116,72 @@ namespace
 
 	LRESULT CALLBACK KeyHookProc(int code, WPARAM w_param, LPARAM l_param)
 	{
-		if (code == HC_ACTION)
+		// 押したときだけ記録する（Alt と一緒に押すと WM_SYSKEYDOWN になる）
+		if (code == HC_ACTION && (w_param == WM_KEYDOWN || w_param == WM_SYSKEYDOWN)
+			&& !IsOwnWindow(GetForegroundWindow()))
 		{
-			DWORD modifiers = 0;
+			const KBDLLHOOKSTRUCT* info = reinterpret_cast<const KBDLLHOOKSTRUCT*>(l_param);
+			int key_kind = kKeyKindUser;
 			char key[2] = {};
-			if (GetKeyParameter(w_param, modifiers, key[0]))
+			if (GetKeyParameter(info->vkCode, key_kind, key[0]))
 			{
 				char text[MAX_PATH];
 				sprintf_s(text, kLogFormat,
-					kDefaultExecuteCount, ElapsedTime(), kEventKey,
-					0, 0, 0,
-					modifiers, 0, key, "");
+					kDefaultExecuteCount, ElapsedTime(info->time), kEventKey,
+					0L, 0L, 0,
+					GetModifiers((info->flags & LLKHF_ALTDOWN) != 0), key_kind, key, "");
 				WriteLog(text);
 			}
 		}
-		return CallNextHookEx(g_hKeyHook, code, w_param, l_param);
+		return CallNextHookEx(key_hook, code, w_param, l_param);
 	}
 
 	LRESULT CALLBACK MouseHookProc(int code, WPARAM w_param, LPARAM l_param)
 	{
 		if (code == HC_ACTION)
 		{
+			const MSLLHOOKSTRUCT* info = reinterpret_cast<const MSLLHOOKSTRUCT*>(l_param);
 			const int operation = ToMouseOperation(w_param);
-			if (operation != kMouseOpNone)
-			{
-				POINT pt;
-				GetCursorPos(&pt);
 
+			// 座標は再生と同じ物差しにするため、この DLL を使うプロセスから見た位置を使う
+			POINT pt;
+			if (operation != kMouseOpNone && GetCursorPos(&pt) && !IsOwnWindow(WindowFromPoint(pt)))
+			{
 				char text[MAX_PATH];
 				sprintf_s(text, kLogFormat,
-					kDefaultExecuteCount, ElapsedTime(), kEventMouse,
+					kDefaultExecuteCount, ElapsedTime(info->time), kEventMouse,
 					pt.x, pt.y, operation,
-					0, 0, "", "");
+					0UL, kKeyKindUser, "", "");
 				WriteLog(text);
 			}
 		}
-		return CallNextHookEx(g_hMouseHook, code, w_param, l_param);
+		return CallNextHookEx(mouse_hook, code, w_param, l_param);
+	}
+
+	// フックを登録する。すでに登録してあれば何もしない
+	BOOL StartHook(HHOOK& hook, int hook_id, HOOKPROC proc)
+	{
+		if (hook == nullptr)
+		{
+			hook = SetWindowsHookEx(hook_id, proc, instance, 0);
+			last_event_tick = GetTickCount();
+		}
+		return hook != nullptr ? TRUE : FALSE;
+	}
+
+	BOOL StopHook(HHOOK& hook)
+	{
+		if (hook == nullptr)
+		{
+			return TRUE;
+		}
+		const BOOL result = UnhookWindowsHookEx(hook);
+		hook = nullptr;
+		return result;
 	}
 }
 
-BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID /*lpReserved*/)
+BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID /*reserved*/)
 {
 	if (reason == DLL_PROCESS_ATTACH)
 	{
@@ -200,39 +190,12 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID /*lpReserved*/)
 	return TRUE;
 }
 
-HOOKD_API BOOL StartKeyHook()
+HOOKD_API void SetLogFile(const char* path)
 {
-	g_hKeyHook = SetWindowsHookEx(WH_KEYBOARD, KeyHookProc, instance, 0);
-	if (!g_hKeyHook)
-	{
-		return FALSE;
-	}
-	GetSystemTime(&g_lastEventTime);
-	return TRUE;
+	strcpy_s(log_path, path != nullptr ? path : "");
 }
 
-HOOKD_API BOOL StartMouseHook()
-{
-	g_hMouseHook = SetWindowsHookEx(WH_MOUSE, MouseHookProc, instance, 0);
-	if (!g_hMouseHook)
-	{
-		return FALSE;
-	}
-	GetSystemTime(&g_lastEventTime);
-	return TRUE;
-}
-
-HOOKD_API BOOL StopKeyHook()
-{
-	return UnhookWindowsHookEx(g_hKeyHook) ? TRUE : FALSE;
-}
-
-HOOKD_API BOOL StopMouseHook()
-{
-	return UnhookWindowsHookEx(g_hMouseHook) ? TRUE : FALSE;
-}
-
-HOOKD_API void DebugMode(BOOL is_debug)
-{
-	debug_enabled = is_debug;
-}
+HOOKD_API BOOL StartKeyHook()	{ return StartHook(key_hook, WH_KEYBOARD_LL, KeyHookProc); }
+HOOKD_API BOOL StartMouseHook()	{ return StartHook(mouse_hook, WH_MOUSE_LL, MouseHookProc); }
+HOOKD_API BOOL StopKeyHook()	{ return StopHook(key_hook); }
+HOOKD_API BOOL StopMouseHook()	{ return StopHook(mouse_hook); }

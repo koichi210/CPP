@@ -29,7 +29,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnLButtonDown(UINT flags, CPoint point);
 	afx_msg void OnLButtonUp(UINT flags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT flags, CPoint point);
 	afx_msg void OnMouseMove(UINT flags, CPoint point);
 	afx_msg void OnLvnItemchangedList(NMHDR* nmhdr, LRESULT* result);
 
@@ -68,7 +67,7 @@ protected:
 private:
 	// EventHookd.dll の公開関数（extern "C" の __cdecl）
 	using HookFunc = BOOL (__cdecl*)();
-	using DebugModeFunc = void (__cdecl*)(BOOL is_debug);
+	using SetLogFileFunc = void (__cdecl*)(const char* path);
 
 	MacroEvent& CurrentEvent()	{ return events_[index_]; }
 
@@ -80,11 +79,13 @@ private:
 
 	// ファイル
 	void LoadFile(const CString& file_name);
+	void LoadRecordLog(const CString& log_path);
+	void LoadEvents(const std::vector<CString>& lines);
 	BOOL SelectFile(BOOL is_open);
 
 	// 記録
-	void StartRecord();
-	void StopRecord();
+	bool StartRecord(const CString& log_path);
+	bool StopRecord();
 
 	// 設定欄の表示更新（値が変わったコントロールだけ書き換える）
 	void UpdateControl();
@@ -116,13 +117,12 @@ private:
 	UINT&					repeat_delay_msec_;
 
 	BOOL					recording_ = FALSE;
-	BOOL					debug_ = FALSE;	// フック DLL にログを書かせる
 	HINSTANCE				hook_dll_;
 	HookFunc				start_key_hook_ = nullptr;
 	HookFunc				stop_key_hook_ = nullptr;
 	HookFunc				start_mouse_hook_ = nullptr;
 	HookFunc				stop_mouse_hook_ = nullptr;
-	DebugModeFunc			debug_mode_ = nullptr;
+	SetLogFileFunc			set_log_file_ = nullptr;
 };
 
 #endif  // EVENTRECORDER_MACROTOOL_MACRO_TOOL_DLG_H_
