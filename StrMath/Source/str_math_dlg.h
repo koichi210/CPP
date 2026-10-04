@@ -34,6 +34,7 @@ private:
 	CFont font_;
 	int num1_ = 0;
 	int num2_ = 0;
+	bool started_ = false;	// スタートで出題済みか
 	int digits_ = 2;
 	Operation operation_ = Operation::kSum;
 };

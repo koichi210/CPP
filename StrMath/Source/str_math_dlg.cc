@@ -31,6 +31,12 @@ namespace
 	// 0〜999 をひらがなの読みにする
 	CString NumberToHiragana(int num)
 	{
+		// 各位の読みは 0 を空にしているので、0 そのものは別に読む
+		if (num == 0)
+		{
+			return "ぜろ";
+		}
+
 		CString str;
 		str += kHundredsReading[num / 100];
 		str += kTensReading[num % 100 / 10];
@@ -121,6 +127,7 @@ void StrMathDlg::OnStart()
 
 	num1_ = BuildNumber();
 	num2_ = BuildNumber();
+	started_ = true;
 
 	// 引き算の答えが負にならないよう、大きい方を先にする
 	if (operation_ == Operation::kSub && num1_ < num2_)
@@ -161,7 +168,7 @@ void StrMathDlg::On3keta()
 
 void StrMathDlg::OnAns()
 {
-	if (num1_ && num2_)
+	if (started_)
 	{
 		int ans = (operation_ == Operation::kSum) ? num1_ + num2_ : num1_ - num2_;
 		int input = GetDlgItemInt(IDC_IANS, nullptr, FALSE);
