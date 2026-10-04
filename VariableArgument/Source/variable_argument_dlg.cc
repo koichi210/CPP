@@ -78,14 +78,12 @@ HCURSOR VariableArgumentDlg::OnQueryDragIcon()
 // （%d 以外の書式や長い文字列を入れると壊れるのが C 版の弱点）
 void VariableArgumentDlg::OnBnClickedButtonExecC()
 {
-	char input[256] = "";
-	char output[256] = "";
-	int replace = 0;
-
 	UpdateData(TRUE);
 
+	char input[256] = "";
+	char output[256] = "";
 	strcpy(input, input_);
-	replace = atoi(replace_);
+	const int replace = atoi(replace_);
 	sprintf(output, input, replace);
 
 	output_ = output;
