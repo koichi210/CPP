@@ -1,4 +1,4 @@
-﻿// SendSpoolFile.cpp : アプリケーションクラス
+﻿// send_spool_file.cc : アプリケーションクラス
 
 #include "stdafx.h"
 #include "send_spool_file.h"

@@ -1,4 +1,4 @@
-﻿// SendSpoolFile.h : アプリケーションクラス
+﻿// send_spool_file.h : アプリケーションクラス
 
 #ifndef SENDSPOOLFILE_SOURCE_SEND_SPOOL_FILE_H_
 #define SENDSPOOLFILE_SOURCE_SEND_SPOOL_FILE_H_

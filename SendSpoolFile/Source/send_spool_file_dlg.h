@@ -1,4 +1,4 @@
-﻿// SendSpoolFileDlg.h : メインダイアログ
+﻿// send_spool_file_dlg.h : メインダイアログ
 
 #ifndef SENDSPOOLFILE_SOURCE_SEND_SPOOL_FILE_DLG_H_
 #define SENDSPOOLFILE_SOURCE_SEND_SPOOL_FILE_DLG_H_

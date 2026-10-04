@@ -1,4 +1,4 @@
-﻿// SendSpoolFileDlg.cpp : メインダイアログ
+﻿// send_spool_file_dlg.cc : メインダイアログ
 
 #include "stdafx.h"
 #include "send_spool_file.h"
@@ -14,6 +14,46 @@ namespace
 {
 	constexpr DWORD kReadBufferSize = 4096;
 
+	// スプールファイルの中身を、開始済みの印刷ジョブへ書き込む
+	BOOL WriteFileToPrinter(HANDLE printer, const CString& spool_name)
+	{
+		HANDLE file = CreateFile(
+			spool_name,
+			GENERIC_READ,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			nullptr,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			nullptr);
+		if (file == INVALID_HANDLE_VALUE)
+		{
+			return FALSE;
+		}
+
+		BOOL result = TRUE;
+		const DWORD file_size = GetFileSize(file, nullptr);
+		DWORD total = 0;
+		CHAR buff[kReadBufferSize];
+
+		while (total != file_size)
+		{
+			DWORD read_size = 0;
+			if (!ReadFile(file, buff, sizeof(buff), &read_size, nullptr) || read_size == 0)
+			{
+				result = FALSE;
+				break;
+			}
+			DWORD write_size = 0;
+			if (!WritePrinter(printer, buff, read_size, &write_size))
+			{
+				::MessageBox(nullptr, "WritePrinter error\n", "Warning!!", MB_OK);
+			}
+			total += read_size;
+		}
+		CloseHandle(file);
+		return result;
+	}
+
 	// EMF スプールファイルの中身をそのままプリンタへ流し込む
 	BOOL SpoolJob(HANDLE printer, const CString& spool_name)
 	{
@@ -26,53 +66,13 @@ namespace
 		doc_info.pOutputFile = nullptr;
 		doc_info.pDatatype = data_type;
 
-		BOOL result = TRUE;
-		DWORD job_id = StartDocPrinter(printer, 1, reinterpret_cast<LPBYTE>(&doc_info));
-		if (!job_id)
+		if (!StartDocPrinter(printer, 1, reinterpret_cast<LPBYTE>(&doc_info)))
 		{
-			result = FALSE;
+			return FALSE;
 		}
-		else
-		{
-			HANDLE file = CreateFile(
-				spool_name,
-				GENERIC_READ,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
-				nullptr,
-				OPEN_EXISTING,
-				FILE_ATTRIBUTE_NORMAL,
-				nullptr);
-			if (file == INVALID_HANDLE_VALUE)
-			{
-				result = FALSE;
-			}
-			else
-			{
-				DWORD file_size = GetFileSize(file, nullptr);
-				DWORD total = 0;
-				CHAR buff[kReadBufferSize];
 
-				while (total != file_size)
-				{
-					DWORD read_size = 0;
-					if (!ReadFile(file, buff, sizeof(buff), &read_size, nullptr) || read_size == 0)
-					{
-						result = FALSE;
-						break;
-					}
-					DWORD write_size = 0;
-					if (!WritePrinter(printer, buff, read_size, &write_size))
-					{
-						::MessageBox(nullptr, "WritePrinter error\n", "Warning!!", MB_OK);
-					}
-					total += read_size;
-				}
-				CloseHandle(file);
-			}
-			EndDocPrinter(printer);
-		}
-		doc_name.ReleaseBuffer();
-
+		const BOOL result = WriteFileToPrinter(printer, spool_name);
+		EndDocPrinter(printer);
 		return result;
 	}
 }
