@@ -16,8 +16,8 @@ namespace
 
 ProgressBarSingleThreadDlg::ProgressBarSingleThreadDlg(CWnd* parent /*=nullptr*/)
 	: CDialogEx(IDD, parent)
+	, icon_(AfxGetApp()->LoadIcon(IDR_MAINFRAME))
 {
-	icon_ = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 void ProgressBarSingleThreadDlg::DoDataExchange(CDataExchange* dx)
@@ -52,12 +52,12 @@ void ProgressBarSingleThreadDlg::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int icon_width = GetSystemMetrics(SM_CXICON);
-		int icon_height = GetSystemMetrics(SM_CYICON);
+		const int icon_width = GetSystemMetrics(SM_CXICON);
+		const int icon_height = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - icon_width + 1) / 2;
-		int y = (rect.Height() - icon_height + 1) / 2;
+		const int x = (rect.Width() - icon_width + 1) / 2;
+		const int y = (rect.Height() - icon_height + 1) / 2;
 
 		dc.DrawIcon(x, y, icon_);
 	}
