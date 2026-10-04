@@ -94,17 +94,24 @@ bool RestrictedEdit::IsAllowedChar(UINT char_code) const
 	}
 
 	const bool is_digit = IsDigitChar(char_code);
+	bool allowed = true;
 	switch (char_kind_)
 	{
-	case kCharDigit:		if (!is_digit) return false;										break;
-	case kCharDigitSign:	if (!is_digit && char_code != _T('-')) return false;					break;
-	case kCharDecimal:		if (!is_digit && char_code != _T('.')) return false;					break;
-	case kCharDecimalSign:	if (!is_digit && char_code != _T('.') && char_code != _T('-')) return false;	break;
-	case kCharAscii:		if (char_code >= 0x80) return false;								break;
-	default:																				break;
+	case kCharDigit:		allowed = is_digit;													break;
+	case kCharDigitSign:	allowed = is_digit || char_code == _T('-');							break;
+	case kCharDecimal:		allowed = is_digit || char_code == _T('.');							break;
+	case kCharDecimalSign:	allowed = is_digit || char_code == _T('.') || char_code == _T('-');	break;
+	case kCharAscii:		allowed = char_code < 0x80;											break;
+	default:																					break;
+	}
+	if (!allowed)
+	{
+		return false;
 	}
 
-	for (int i = 0; i < forbidden_chars_.GetLength(); i++)
+	// 2バイト文字の1バイトずつ届くので、バイト単位で比べる
+	const int forbidden_count = forbidden_chars_.GetLength();
+	for (int i = 0; i < forbidden_count; i++)
 	{
 		if (char_code == static_cast<unsigned char>(forbidden_chars_[i]))
 		{
@@ -309,12 +316,15 @@ void PopupList::OnKeyDown(UINT char_code, UINT rep_count, UINT flags)
 		break;
 
 	case VK_RETURN:
-		if (GetCurSel() != LB_ERR)
+	{
+		const int index = GetCurSel();
+		if (index != LB_ERR)
 		{
-			selected_index_ = GetCurSel();
+			selected_index_ = index;
 		}
 		DestroyWindow();
 		break;
+	}
 
 	default:
 		CListBox::OnKeyDown(char_code, rep_count, flags);
@@ -326,9 +336,10 @@ void PopupList::OnLButtonUp(UINT flags, CPoint point)
 {
 	CListBox::OnLButtonUp(flags, point);
 
-	if (GetCurSel() != LB_ERR)
+	const int index = GetCurSel();
+	if (index != LB_ERR)
 	{
-		selected_index_ = GetCurSel();
+		selected_index_ = index;
 		DestroyWindow();
 	}
 }
@@ -355,23 +366,6 @@ BEGIN_MESSAGE_MAP(EditableListCtrl, CListCtrl)
 	ON_MESSAGE(kWmPopupEditClosed, &EditableListCtrl::OnPopupEditClosed)
 	ON_MESSAGE(kWmPopupListClosed, &EditableListCtrl::OnPopupListClosed)
 END_MESSAGE_MAP()
-
-EditableListCtrl::EditableListCtrl()
-	: cursor_(0, 0)
-	, edit_kind_(PopupEdit::kInputAny)
-	, max_length_(0)
-	, pressed_item_(0)
-	, pressed_sub_item_(0)
-	, selected_item_(0)
-	, selected_sub_item_(0)
-	, side_header_(FALSE)
-	, line_color_(RGB(0, 0, 0))
-{
-}
-
-EditableListCtrl::~EditableListCtrl()
-{
-}
 
 void EditableListCtrl::SetListItems(const CString* items, int count)
 {
@@ -440,11 +434,23 @@ void EditableListCtrl::OpenPopupAtCursor()
 	CreatePopup(cursor_.x, rect);
 }
 
+// 行見出しの列は編集できないので、隣の列にする
+void EditableListCtrl::MoveCursorTo(const LVHITTESTINFO& hit_test)
+{
+	cursor_ = CPoint(max(hit_test.iSubItem, FirstEditableColumn()), hit_test.iItem);
+}
+
 void EditableListCtrl::EditCell(const LVHITTESTINFO& hit_test)
 {
-	const int column = max(hit_test.iSubItem, FirstEditableColumn());
-	cursor_ = CPoint(column, hit_test.iItem);
+	MoveCursorTo(hit_test);
 	OpenPopupAtCursor();
+}
+
+bool EditableListCtrl::HitTestCell(CPoint point, LVHITTESTINFO& hit_test)
+{
+	hit_test = {};
+	hit_test.pt = point;
+	return SubItemHitTest(&hit_test) != -1;
 }
 
 void EditableListCtrl::OnDestroy()
@@ -457,9 +463,7 @@ void EditableListCtrl::OnDestroy()
 // 矢印キーでセルを移動、スペースまたは UseInEditKey のキーで編集
 void EditableListCtrl::OnKeyDown(UINT char_code, UINT rep_count, UINT flags)
 {
-	bool call_default = true;
-
-	// 何も選択していないときはキー操作しない
+	// 何も選択していないときはセルを動かさない
 	if (GetNextItem(-1, LVNI_ALL | LVNI_SELECTED) != -1)
 	{
 		const int column_count = GetHeaderCtrl()->GetItemCount();
@@ -488,25 +492,19 @@ void EditableListCtrl::OnKeyDown(UINT char_code, UINT rep_count, UINT flags)
 			break;
 
 		default:
-			if (UseInEditKey(char_code))
+			if (!UseInEditKey(char_code))
 			{
-				OpenPopupAtCursor();
+				return;		// それ以外のキーは無視する
 			}
-			else
-			{
-				call_default = false;
-			}
+			OpenPopupAtCursor();
 			break;
 		}
 	}
 
-	if (call_default)
-	{
-		CRect rect;
-		GetSubItemRect(cursor_.y, 0, LVIR_BOUNDS, rect);
-		InvalidateRect(&rect);
-		CListCtrl::OnKeyDown(char_code, rep_count, flags);
-	}
+	CRect rect;
+	GetSubItemRect(cursor_.y, 0, LVIR_BOUNDS, rect);
+	InvalidateRect(&rect);
+	CListCtrl::OnKeyDown(char_code, rep_count, flags);
 }
 
 // 文字入力でのインクリメンタルサーチを無効にする
@@ -516,10 +514,8 @@ void EditableListCtrl::OnChar(UINT /*char_code*/, UINT /*rep_count*/, UINT /*fla
 
 void EditableListCtrl::OnLButtonDown(UINT flags, CPoint point)
 {
-	LVHITTESTINFO hit_test = {};
-	hit_test.pt = point;
-
-	if (SubItemHitTest(&hit_test) == -1)
+	LVHITTESTINFO hit_test;
+	if (!HitTestCell(point, hit_test))
 	{
 		CListCtrl::OnLButtonDown(flags, point);
 		return;
@@ -527,7 +523,7 @@ void EditableListCtrl::OnLButtonDown(UINT flags, CPoint point)
 
 	pressed_item_ = hit_test.iItem;
 	pressed_sub_item_ = hit_test.iSubItem;
-	cursor_ = CPoint(max(hit_test.iSubItem, FirstEditableColumn()), hit_test.iItem);
+	MoveCursorTo(hit_test);
 
 	SetFocus();
 	SetItemState(hit_test.iItem, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
@@ -540,10 +536,8 @@ void EditableListCtrl::OnLButtonDown(UINT flags, CPoint point)
 // 1回目のクリックで選択、選択中のセルをもう一度クリックで編集
 void EditableListCtrl::OnLButtonUp(UINT flags, CPoint point)
 {
-	LVHITTESTINFO hit_test = {};
-	hit_test.pt = point;
-
-	if (SubItemHitTest(&hit_test) != -1)
+	LVHITTESTINFO hit_test;
+	if (HitTestCell(point, hit_test))
 	{
 		const bool is_pressed_cell = (hit_test.iItem == pressed_item_ && hit_test.iSubItem == pressed_sub_item_);
 		const bool is_selected_cell = (hit_test.iItem == selected_item_ && hit_test.iSubItem == selected_sub_item_);
@@ -564,10 +558,8 @@ void EditableListCtrl::OnLButtonUp(UINT flags, CPoint point)
 
 void EditableListCtrl::OnLButtonDblClk(UINT flags, CPoint point)
 {
-	LVHITTESTINFO hit_test = {};
-	hit_test.pt = point;
-
-	if (SubItemHitTest(&hit_test) != -1)
+	LVHITTESTINFO hit_test;
+	if (HitTestCell(point, hit_test))
 	{
 		EditCell(hit_test);
 	}
@@ -619,6 +611,7 @@ void EditableListCtrl::DrawItem(LPDRAWITEMSTRUCT draw_item_struct)
 	const int item = static_cast<int>(draw_item_struct->itemID);
 	const bool is_selected_row = (GetItemState(item, LVIS_SELECTED) == LVIS_SELECTED);
 	const int column_count = GetHeaderCtrl()->GetItemCount();
+	CBrush border(line_color_);
 
 	for (int col = 0; col < column_count; col++)
 	{
@@ -667,7 +660,6 @@ void EditableListCtrl::DrawItem(LPDRAWITEMSTRUCT draw_item_struct)
 		// 罫線
 		if (!is_side_header)
 		{
-			CBrush border(line_color_);
 			CRect frame = rect;
 			frame.top -= 1;
 			frame.left -= 1;
@@ -795,18 +787,20 @@ void SimpleListCtrl::AddColumn(int column, int width, LPCTSTR name)
 
 void SimpleListCtrl::FillColumn(int column, LPCTSTR text)
 {
-	for (int row = 0; row < row_count_; row++)
+	if (column != 0)
 	{
-		if (column == 0)
-		{
-			CString number;
-			number.Format(_T("%d"), row + 1);
-			InsertItem(row, number);
-		}
-		else
+		for (int row = 0; row < row_count_; row++)
 		{
 			SetItemText(row, column, text);
 		}
+		return;
+	}
+
+	CString number;
+	for (int row = 0; row < row_count_; row++)
+	{
+		number.Format(_T("%d"), row + 1);
+		InsertItem(row, number);
 	}
 }
 

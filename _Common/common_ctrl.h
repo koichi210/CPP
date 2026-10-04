@@ -35,7 +35,7 @@ public:
 	{
 		kCharAny,			// 制限なし
 		kCharDigit,			// 0〜9
-		kCharDigitSign,	// 0〜9 と '-'
+		kCharDigitSign,		// 0〜9 と '-'
 		kCharDecimal,		// 0〜9 と '.'
 		kCharDecimalSign,	// 0〜9 と '.' と '-'
 		kCharAscii,			// 0x00〜0x7F
@@ -101,7 +101,7 @@ private:
 	CWnd*		owner_;
 	CPoint		cell_;				// 編集中のセル（x = 列, y = 行）
 	Result		result_ = kResultOk;
-	CString		value_;			// 閉じたときの入力値
+	CString		value_;				// 閉じたときの入力値
 	DWORD		input_kind_ = kInputAny;
 	UINT		max_length_ = 0;	// 0 なら制限なし
 };
@@ -143,9 +143,6 @@ class EditableListCtrl : public CListCtrl
 	DECLARE_DYNAMIC(EditableListCtrl)
 
 public:
-	EditableListCtrl();
-	virtual ~EditableListCtrl();
-
 	void SetListItems(const CString* items, int count);		// ポップアップリストの選択肢
 	void SetEditKind(DWORD input_kind)	{ edit_kind_ = input_kind; }	// PopupEdit::InputKind
 	void SetMaxLength(UINT max_length)	{ max_length_ = max_length; }
@@ -172,24 +169,26 @@ protected:
 	afx_msg LRESULT OnPopupListClosed(WPARAM wparam, LPARAM lparam);
 	DECLARE_MESSAGE_MAP()
 
-	CPoint	cursor_;		// カーソルのあるセル（x = 列, y = 行）
+	CPoint	cursor_ = CPoint(0, 0);	// カーソルのあるセル（x = 列, y = 行）
 
 private:
 	int FirstEditableColumn() const		{ return side_header_ ? 1 : 0; }
+	bool HitTestCell(CPoint point, LVHITTESTINFO& hit_test);	// セル上なら true
+	void MoveCursorTo(const LVHITTESTINFO& hit_test);
 	void OpenPopupAtCursor();
 	void EditCell(const LVHITTESTINFO& hit_test);
 
 	std::unique_ptr<PopupList>	popup_list_;
 	std::unique_ptr<PopupEdit>	popup_edit_;
 	std::vector<CString>		list_items_;
-	DWORD		edit_kind_;
-	UINT		max_length_;
-	int			pressed_item_;		// 直前に押したセル
-	int			pressed_sub_item_;
-	int			selected_item_;		// 選択済みのセル（同じセルを再クリックで編集）
-	int			selected_sub_item_;
-	BOOL		side_header_;
-	COLORREF	line_color_;
+	DWORD		edit_kind_ = PopupEdit::kInputAny;
+	UINT		max_length_ = 0;
+	int			pressed_item_ = 0;		// 直前に押したセル
+	int			pressed_sub_item_ = 0;
+	int			selected_item_ = 0;		// 選択済みのセル（同じセルを再クリックで編集）
+	int			selected_sub_item_ = 0;
+	BOOL		side_header_ = FALSE;
+	COLORREF	line_color_ = RGB(0, 0, 0);
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -199,11 +198,11 @@ constexpr int kMaxIconNum = 10;
 
 struct IconComboBoxItem
 {
-	UINT	text_id;					// 表示する文字列リソースID
+	UINT	text_id;				// 表示する文字列リソースID
 	DWORD	value;					// アイテムの値（ItemData）
-	DWORD	constraint;			// このビットが SetItemList の constraint と重なると表示しない
+	DWORD	constraint;				// このビットが SetItemList の constraint と重なると表示しない
 	UINT	icon_ids[kMaxIconNum];	// アイコンリソースID（SetItemList の icon_index で選ぶ）
-	int		combo_index;				// コンボボックス上のインデックス（非表示なら -1）
+	int		combo_index;			// コンボボックス上のインデックス（非表示なら -1）
 };
 
 class IconComboBox : public CComboBox

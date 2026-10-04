@@ -155,6 +155,7 @@ CString ReplaceString(const CString& source, LPCTSTR search, LPCTSTR replace, BO
 	}
 
 	CString result;
+	result.Preallocate(source.GetLength());
 	LPCTSTR p = source;
 	while (*p != _T('\0'))
 	{
@@ -183,6 +184,7 @@ CString ReplaceString(const CString& source, LPCTSTR search, LPCTSTR replace, BO
 CString HankakuToZenkaku(const CString& source)
 {
 	CString result;
+	result.Preallocate(source.GetLength() * 2);
 
 	for (LPCTSTR p = source; *p != _T('\0'); )
 	{
@@ -212,6 +214,7 @@ CString HankakuToZenkaku(const CString& source)
 CString ZenkakuToHankaku(const CString& source)
 {
 	CString result;
+	result.Preallocate(source.GetLength());
 
 	for (LPCTSTR p = source; *p != _T('\0'); )
 	{
@@ -257,11 +260,11 @@ BOOL SetDlgItemTextAll(HWND dlg, const DlgItemText* table, int count)
 		return FALSE;
 	}
 
+	CString text;
 	for (int i = 0; i < count; i++)
 	{
 		if (table[i].string_id != 0)
 		{
-			CString text;
 			text.LoadString(table[i].string_id);
 			::SetDlgItemText(dlg, table[i].ctrl_id, text);
 		}

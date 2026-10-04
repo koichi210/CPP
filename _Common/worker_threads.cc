@@ -36,10 +36,11 @@ void WorkerThreads::WaitAll()
 {
 	bool quit_received = false;
 	int quit_code = 0;
+	std::vector<HANDLE> handles;
 
 	while (IsRunning())
 	{
-		std::vector<HANDLE> handles;
+		handles.clear();
 		for (const auto& thread : threads_)
 		{
 			if (handles.size() < MAXIMUM_WAIT_OBJECTS - 1)
