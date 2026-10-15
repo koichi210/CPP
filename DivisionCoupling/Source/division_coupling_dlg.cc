@@ -387,8 +387,29 @@ void DivisionCouplingDlg::Merge()
 
 void DivisionCouplingDlg::BrowseFile(UINT edit_id)
 {
-	CFileDialog dlg(TRUE, _T("*.*"), nullptr, OFN_CREATEPROMPT, _T("*.*|*.*|全て(*.*)|*.*||"));
-	if (dlg.DoModal() == IDOK)
+	// 既定の拡張子は渡さない（入れた名前をそのまま使う）。"*.*" を渡すと IFileDialog::SetDefaultExtension("*.*") になり、
+	// 拡張子なしでまだ無い名前（"sample" など）が「ファイル名は有効ではありません。」で止められて選べなかった
+	CFileDialog dlg(TRUE, nullptr, nullptr, OFN_CREATEPROMPT, _T("*.*|*.*|全て(*.*)|*.*||"));
+
+	// DoModal() は表示中ずっとウィンドウ作成のフック(AfxHookWindowCreate)を張っていて、
+	// そのせいで無い名前を入れたときの「このファイルは存在しません。作成しますか?」が2回出る。
+	// フックを張らずに、MFC が設定を写した IFileOpenDialog をそのまま表示する
+	// （選んだパスは MFC の OnFileOk が m_ofn に書き戻すので、GetPathName() で取れる）
+	IFileOpenDialog* open_dialog = dlg.GetIFileOpenDialog();
+	if (open_dialog == nullptr)
+	{
+		// Vistaスタイルが使えないときは従来どおり DoModal() に任せる
+		if (dlg.DoModal() == IDOK)
+		{
+			SetDlgItemText(edit_id, dlg.GetPathName());
+		}
+		return;
+	}
+
+	dlg.ApplyOFNToShellDialog();
+	HRESULT hr = open_dialog->Show(m_hWnd);
+	open_dialog->Release();
+	if (hr == S_OK)
 	{
 		SetDlgItemText(edit_id, dlg.GetPathName());
 	}
