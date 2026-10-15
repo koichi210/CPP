@@ -6,7 +6,13 @@
 #include <vfw.h>
 #include <atomic>
 
+#include "worker_threads.h"
+
 #pragma comment (lib, "vfw32.lib")
+
+// 録画スレッドが AVI ファイルを閉じ終えたときに、通知先ウィンドウへ送る
+// WPARAM: AviError、LPARAM: 停止されずに最後のフレームまで録画したら TRUE
+constexpr UINT kWmAppRecordFinished = WM_APP + 1;
 
 enum class AviError
 {
@@ -32,14 +38,21 @@ public:
 	void SetCompress(BOOL compress);
 	void SetResize(BOOL resize, UINT resize_width, UINT resize_height);
 	void SetRecordMousePoint(BOOL record_mouse_point);
+	void SetNotifyWindow(HWND notify_wnd);
 
 	// 録画は別スレッドで行う
 	void StartRecord();
-	void StopRecord();
-	BOOL IsExecution() const;
+	void StopRecord();		// 停止を伝えるだけで、待たない
+	void WaitForStop();		// 録画スレッドが AVI ファイルを閉じ終わるまで待つ（先に StopRecord を呼ぶこと）
+	BOOL IsRecording() const;	// 録画中（圧縮の選択中も含む）
+	BOOL IsExecution();		// 録画中、または停止後にファイルを閉じている途中
+
+	// 録画の結果（kWmAppRecordFinished の WPARAM / LPARAM）を、画面に出すメッセージにする
+	CString MakeResultMessage(AviError err, BOOL completed, CString* caption) const;
 
 private:
 	static UINT RecordThreadProc(LPVOID param);
+	void CancelCompressorChoose();
 
 	void InitAviStreamInfo();
 	void InitBitmapInfo();
@@ -50,6 +63,10 @@ private:
 
 	// 録画スレッドと UI スレッドの両方から読み書きする
 	std::atomic<bool> executing_{ false };
+	// 圧縮の選択ダイアログを出している録画スレッドの ID（出していないときは 0）
+	std::atomic<DWORD> choosing_thread_id_{ 0 };
+	WorkerThreads workers_;
+	HWND notify_wnd_ = nullptr;
 
 	// 設定
 	CString	save_filename_;

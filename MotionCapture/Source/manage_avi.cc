@@ -95,6 +95,12 @@ void ManageAvi::SetRecordMousePoint(BOOL record_mouse_point)
 	record_mouse_point_ = record_mouse_point;
 }
 
+// 録画の結果（kWmAppRecordFinished）の通知先
+void ManageAvi::SetNotifyWindow(HWND notify_wnd)
+{
+	notify_wnd_ = notify_wnd;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // 録画の開始・停止
 
@@ -102,17 +108,93 @@ void ManageAvi::StartRecord()
 {
 	executing_ = true;
 
-	AfxBeginThread(RecordThreadProc, this);
+	if (!workers_.Start(RecordThreadProc, this))
+	{
+		executing_ = false;
+	}
 }
 
 void ManageAvi::StopRecord()
 {
 	executing_ = false;
+
+	// 圧縮の選択ダイアログを開いたままだと録画スレッドが終われないので、キャンセルで閉じる
+	CancelCompressorChoose();
 }
 
-BOOL ManageAvi::IsExecution() const
+// 録画スレッドはファイルを閉じるまで終わらないので、スレッドの終了を待てばファイルは閉じ終わっている。
+// 待っている間もメッセージを処理する（録画スレッドからの結果の通知は、待ち終わる前に届く）
+void ManageAvi::WaitForStop()
+{
+	workers_.WaitAll();
+}
+
+BOOL ManageAvi::IsRecording() const
 {
 	return executing_ ? TRUE : FALSE;
+}
+
+// 「記録停止」で executing_ は false になるが、録画スレッドはまだファイルを閉じている途中のことがある。
+// そこで次の録画を始めたり終了したりしないよう、スレッドが終わるまでは実行中とみなす
+BOOL ManageAvi::IsExecution()
+{
+	return (executing_ || workers_.IsRunning()) ? TRUE : FALSE;
+}
+
+CString ManageAvi::MakeResultMessage(AviError err, BOOL completed, CString* caption) const
+{
+	switch (err)
+	{
+	case AviError::kSuccess:
+		if (completed)
+		{
+			// 停止されずに最後のフレームまで録画した
+			*caption = _T("Warning");
+			return _T("タイムアウトが発生しました。\n記録を停止しファイルを保存しました。");
+		}
+		*caption = _T("Information");
+		return _T("ファイルを保存しました。");
+	case AviError::kFileOpen:
+		*caption = _T("Error");
+		return _T("AVIファイルが開けませんでした。") + save_filename_;
+	case AviError::kCreateStream:
+		*caption = _T("Error");
+		return _T("Streamが生成できませんでした。");
+	case AviError::kCancelCompress:
+		*caption = _T("Error");
+		return _T("圧縮設定がキャンセルされました。");
+	case AviError::kCreateCompressStream:
+		*caption = _T("Error");
+		return _T("圧縮Streamが生成できませんでした。");
+	default:
+		*caption = _T("Error");
+		return CString();
+	}
+}
+
+// 圧縮の選択ダイアログ（親なしで録画スレッドが出す）が開いていれば、キャンセルで閉じる
+void ManageAvi::CancelCompressorChoose()
+{
+	const DWORD thread_id = choosing_thread_id_;
+	if (thread_id == 0)
+	{
+		return;
+	}
+
+	::EnumThreadWindows(thread_id, [](HWND hwnd, LPARAM /*l_param*/) -> BOOL
+	{
+		// スレッド ID は使い回されるので、念のため自分のプロセスのダイアログだけにする
+		DWORD process_id = 0;
+		::GetWindowThreadProcessId(hwnd, &process_id);
+		TCHAR class_name[16];
+		if (process_id == ::GetCurrentProcessId()
+			&& ::GetClassName(hwnd, class_name, _countof(class_name)) > 0
+			&& _tcscmp(class_name, _T("#32770")) == 0)
+		{
+			::PostMessage(hwnd, WM_COMMAND, IDCANCEL, 0);
+		}
+		return TRUE;
+	}, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -177,7 +259,14 @@ AviError ManageAvi::SetStreamFormat()
 	cv.dwFlags = ICMF_COMPVARS_VALID;
 	cv.fccHandler = comptypeDIB;
 	cv.lQ = ICQUALITY_DEFAULT;
-	if (!ICCompressorChoose(nullptr, ICMF_CHOOSE_DATARATE | ICMF_CHOOSE_KEYFRAME, &bitmap_info_, nullptr, &cv, nullptr))
+
+	// 選んでいる間に停止されたら StopRecord がダイアログを閉じられるよう、このスレッドを覚えておく。
+	// 覚える前に停止されていたら、ダイアログを出さずにキャンセル扱いにする
+	choosing_thread_id_ = ::GetCurrentThreadId();
+	const BOOL chosen = executing_
+		&& ICCompressorChoose(nullptr, ICMF_CHOOSE_DATARATE | ICMF_CHOOSE_KEYFRAME, &bitmap_info_, nullptr, &cv, nullptr);
+	choosing_thread_id_ = 0;
+	if (!chosen)
 	{
 		return AviError::kCancelCompress;
 	}
@@ -294,48 +383,26 @@ UINT ManageAvi::RecordThreadProc(LPVOID param)
 		err = avi->SetStreamFormat();
 	}
 
+	BOOL completed = FALSE;
 	if (err == AviError::kSuccess)
 	{
 		avi->Record();
-
-		if (avi->executing_)
-		{
-			// 停止されずに最後のフレームまで録画した
-			MessageBox(nullptr, _T("タイムアウトが発生しました。\n記録を停止しファイルを保存しました。"), _T("Warning"), MB_OK);
-		}
-		else
-		{
-			MessageBox(nullptr, _T("ファイルを保存しました。"), _T("Information"), MB_OK);
-		}
-	}
-	else
-	{
-		CString msg;
-		switch (err)
-		{
-		case AviError::kFileOpen:
-			msg = _T("AVIファイルが開けませんでした。") + avi->save_filename_;
-			break;
-		case AviError::kCreateStream:
-			msg = _T("Streamが生成できませんでした。");
-			break;
-		case AviError::kCancelCompress:
-			msg = _T("圧縮設定がキャンセルされました。");
-			break;
-		case AviError::kCreateCompressStream:
-			msg = _T("圧縮Streamが生成できませんでした。");
-			break;
-		default:
-			break;
-		}
-
-		MessageBox(nullptr, msg, _T("Error"), MB_OK);
+		completed = avi->executing_ ? TRUE : FALSE;
 	}
 
+	// AVI ファイルはヘッダーと索引を閉じるときに書くので、結果を知らせる前に閉じる
+	// （以前はメッセージボックスを閉じるまで開いたままで、その間にアプリを閉じるとファイルが壊れた）
 	avi->ReleaseAvi();
 	::AVIFileExit();
 
 	avi->executing_ = false;
+
+	// メッセージは UI スレッドに出させ、このスレッドはすぐ終わる
+	// （ここでメッセージボックスを出すと、閉じるまでスレッドが終われず、アプリの終了で待ちきれないため）
+	if (avi->notify_wnd_ != nullptr)
+	{
+		::PostMessage(avi->notify_wnd_, kWmAppRecordFinished, static_cast<WPARAM>(err), completed);
+	}
 
 	return TRUE;
 }

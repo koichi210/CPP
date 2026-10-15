@@ -14,6 +14,10 @@ namespace
 {
 	// 記録領域・リサイズ後の幅と高さの上限
 	constexpr int kMaxFrameLength = 16384;
+
+	// 終了時に録画スレッドを待っている間、圧縮の選択ダイアログが遅れて開いても閉じられるよう、停止を伝え直す
+	constexpr UINT_PTR kStopRecordTimerId = 1;
+	constexpr UINT kStopRecordIntervalMs = 100;
 }
 
 MotionCaptureDlg::MotionCaptureDlg(CWnd* parent)
@@ -53,6 +57,9 @@ BEGIN_MESSAGE_MAP(MotionCaptureDlg, CDialogEx)
 	ON_BN_CLICKED(IDBT_RECORD_STOP, &MotionCaptureDlg::OnBnClickedRecordStop)
 	ON_BN_CLICKED(IDBT_CAPT_AREA_SAMPLE, &MotionCaptureDlg::OnBnClickedSampleCaptArea)
 	ON_BN_CLICKED(IDOK, &MotionCaptureDlg::OnBnClickedOk)
+	ON_WM_ENDSESSION()
+	ON_WM_TIMER()
+	ON_MESSAGE(kWmAppRecordFinished, &MotionCaptureDlg::OnRecordFinished)
 END_MESSAGE_MAP()
 
 BOOL MotionCaptureDlg::OnInitDialog()
@@ -62,7 +69,81 @@ BOOL MotionCaptureDlg::OnInitDialog()
 	SetIcon(icon_, TRUE);
 	SetIcon(icon_, FALSE);
 
+	avi_.SetNotifyWindow(GetSafeHwnd());
+
 	return TRUE;
+}
+
+// Esc・閉じるボタン。録画中のまま閉じると AVI ファイルが壊れるので、止めてファイルを閉じ終わってから閉じる
+void MotionCaptureDlg::OnCancel()
+{
+	if (StopRecordForClose())
+	{
+		CDialogEx::OnCancel();
+	}
+}
+
+bool MotionCaptureDlg::StopRecordForClose()
+{
+	// 停止後にファイルを閉じている途中なら、確認はせずに待つだけにする
+	if (avi_.IsRecording())
+	{
+		if (MessageBox(_T("実行中です。中断して閉じますか？"), _T("Warning"), MB_YESNO) != IDYES)
+		{
+			return false;
+		}
+	}
+
+	StopRecordAndWait();
+	return true;
+}
+
+// シャットダウン・ログオフでは、この後すぐプロセスごと終了させられるので、確認せずに止めてファイルを閉じさせる
+void MotionCaptureDlg::OnEndSession(BOOL ending)
+{
+	if (ending)
+	{
+		StopRecordAndWait();
+	}
+	CDialogEx::OnEndSession(ending);
+}
+
+void MotionCaptureDlg::StopRecordAndWait()
+{
+	closing_ = true;
+	avi_.StopRecord();
+
+	// 圧縮の選択ダイアログが開く直前に止めた場合は StopRecord で閉じきれないので、待っている間も伝え直す
+	SetTimer(kStopRecordTimerId, kStopRecordIntervalMs, nullptr);
+	EnableWindow(FALSE);	// 待っている間に操作させない
+	avi_.WaitForStop();
+	EnableWindow(TRUE);
+	KillTimer(kStopRecordTimerId);
+}
+
+void MotionCaptureDlg::OnTimer(UINT_PTR id_event)
+{
+	if (id_event == kStopRecordTimerId)
+	{
+		avi_.StopRecord();
+		return;
+	}
+	CDialogEx::OnTimer(id_event);
+}
+
+// 録画スレッドはファイルを閉じてから知らせてくるので、ここでは結果を表示するだけでよい
+LRESULT MotionCaptureDlg::OnRecordFinished(WPARAM w_param, LPARAM l_param)
+{
+	// 閉じる途中は終了を妨げないよう、何も表示しない（「保存しました」も、閉じると答えた後には出さない）
+	if (closing_)
+	{
+		return 0;
+	}
+
+	CString caption;
+	const CString msg = avi_.MakeResultMessage(static_cast<AviError>(w_param), static_cast<BOOL>(l_param), &caption);
+	MessageBox(msg, caption, MB_OK);
+	return 0;
 }
 
 // 最小化時のアイコン描画（ダイアログがメインウィンドウのため自前で描く）

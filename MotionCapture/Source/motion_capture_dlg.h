@@ -15,6 +15,7 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* dx) override;
 	virtual BOOL OnInitDialog() override;
+	virtual void OnCancel() override;
 
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -22,11 +23,18 @@ protected:
 	afx_msg void OnBnClickedRecordStop();
 	afx_msg void OnBnClickedSampleCaptArea();
 	afx_msg void OnBnClickedOk();
+	afx_msg void OnEndSession(BOOL ending);
+	afx_msg void OnTimer(UINT_PTR id_event);
+	afx_msg LRESULT OnRecordFinished(WPARAM w_param, LPARAM l_param);	// 録画スレッドの終了通知
 	DECLARE_MESSAGE_MAP()
 
 private:
+	bool StopRecordForClose();	// 録画中なら確認のうえ中断し、ファイルを閉じ終わるまで待つ（閉じてよければ true）
+	void StopRecordAndWait();	// 確認せずに中断し、ファイルを閉じ終わるまで待つ
+
 	HICON		icon_;
 	ManageAvi	avi_;
+	bool		closing_ = false;	// 終了処理中（録画の結果を表示しない）
 
 	// 画面の設定値
 	CString	save_filename_{ _T("c:\\ScreenCapture.avi") };
