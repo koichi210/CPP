@@ -29,6 +29,7 @@ public:
 
 protected:
 	virtual BOOL OnInitDialog() override;
+	virtual BOOL PreTranslateMessage(MSG* msg) override;
 
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();

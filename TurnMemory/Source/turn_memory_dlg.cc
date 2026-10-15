@@ -89,6 +89,32 @@ BOOL TurnMemoryDlg::OnInitDialog()
 	return TRUE;
 }
 
+// Enter は既定で IDOK（終了）を押してしまい、マスに入力中にアプリが閉じていた。
+// マスの中では次のマスへ進め（Tab と同じ）、Enter を使うコントロール（フォーカスのあるボタン、
+// 開いているドロップダウンなど）以外では何もしない
+BOOL TurnMemoryDlg::PreTranslateMessage(MSG* msg)
+{
+	if (msg->message == WM_KEYDOWN && msg->wParam == VK_RETURN)
+	{
+		CWnd* focus = GetFocus();
+		const int id = (focus != nullptr) ? focus->GetDlgCtrlID() : 0;
+		if (id >= CellCtrlId(0, 0) && id <= CellCtrlId(kCellMax - 1, kCellMax - 1))
+		{
+			NextDlgCtrl();
+			return TRUE;
+		}
+
+		const LRESULT code = (focus != nullptr)
+			? focus->SendMessage(WM_GETDLGCODE, msg->wParam, reinterpret_cast<LPARAM>(msg))
+			: 0;
+		if (!(code & (DLGC_WANTALLKEYS | DLGC_WANTMESSAGE | DLGC_DEFPUSHBUTTON | DLGC_UNDEFPUSHBUTTON)))
+		{
+			return TRUE;
+		}
+	}
+	return CDialog::PreTranslateMessage(msg);
+}
+
 // 最小化時のアイコン描画（ダイアログがメインウィンドウのため自前で描く）
 void TurnMemoryDlg::OnPaint()
 {
