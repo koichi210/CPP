@@ -56,9 +56,10 @@ private:
 
 	void InitAviStreamInfo();
 	void InitBitmapInfo();
+	bool ChooseCompressor(COMPVARS* cv);
 	AviError CreateAviFile();
-	AviError SetStreamFormat();
-	void Record();
+	AviError SetStreamFormat(const COMPVARS& cv);
+	DWORD Record();		// 書いたフレーム数を返す
 	void ReleaseAvi();
 
 	// 録画スレッドと UI スレッドの両方から読み書きする

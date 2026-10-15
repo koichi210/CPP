@@ -31,10 +31,17 @@ protected:
 private:
 	bool StopRecordForClose();	// 録画中なら確認のうえ中断し、ファイルを閉じ終わるまで待つ（閉じてよければ true）
 	void StopRecordAndWait();	// 確認せずに中断し、ファイルを閉じ終わるまで待つ
+	bool ConfirmWhileRecording(LPCTSTR text);	// 録画中の確認（はいなら true）。その間に届いた結果は預かる
+	void ShowPendingResult();	// 預かった録画の結果があれば出す
+	void ShowRecordResult(AviError err, BOOL completed);
 
 	HICON		icon_;
 	ManageAvi	avi_;
 	bool		closing_ = false;	// 終了処理中（録画の結果を表示しない）
+	bool		confirming_ = false;	// 録画中の確認を出している（その間に届いた録画の結果は預かる）
+	bool		has_pending_result_ = false;	// 確認の間に届いて預かっている録画の結果がある
+	AviError	pending_err_ = AviError::kSuccess;
+	BOOL		pending_completed_ = FALSE;
 
 	// 画面の設定値
 	CString	save_filename_{ _T("c:\\ScreenCapture.avi") };

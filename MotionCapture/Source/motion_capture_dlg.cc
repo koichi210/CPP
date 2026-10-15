@@ -18,6 +18,25 @@ namespace
 	// 終了時に録画スレッドを待っている間、圧縮の選択ダイアログが遅れて開いても閉じられるよう、停止を伝え直す
 	constexpr UINT_PTR kStopRecordTimerId = 1;
 	constexpr UINT kStopRecordIntervalMs = 100;
+
+	// 別プロセスが保存先を使っていないか、共有なしで実際に開いて確かめる。
+	// 既存のファイルは切り詰めない（以前は CFile::modeCreate で空にしていたので、圧縮の選択をキャンセルすると
+	// 元の中身が消えていた）。無ければ作って確かめ、閉じると同時に消す（0バイトのファイルを残さない）
+	bool CanOpenSaveFile(const CString& filename)
+	{
+		HANDLE file = ::CreateFile(filename, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+		if (file == INVALID_HANDLE_VALUE && ::GetLastError() == ERROR_FILE_NOT_FOUND)
+		{
+			file = ::CreateFile(filename, GENERIC_WRITE | DELETE, 0, nullptr, CREATE_NEW,
+				FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+		}
+		if (file == INVALID_HANDLE_VALUE)
+		{
+			return false;
+		}
+		::CloseHandle(file);
+		return true;
+	}
 }
 
 MotionCaptureDlg::MotionCaptureDlg(CWnd* parent)
@@ -88,14 +107,51 @@ bool MotionCaptureDlg::StopRecordForClose()
 	// 停止後にファイルを閉じている途中なら、確認はせずに待つだけにする
 	if (avi_.IsRecording())
 	{
-		if (MessageBox(_T("実行中です。中断して閉じますか？"), _T("Warning"), MB_YESNO) != IDYES)
+		if (!ConfirmWhileRecording(_T("実行中です。中断して閉じますか？")))
 		{
+			// 閉じないので、確認している間に届いた結果（タイムアウトなど）はここで出す
+			ShowPendingResult();
 			return false;
 		}
+		// 閉じるので、確認している間に届いた結果は出さない（録画がもう終わっていれば、下の待ちはすぐ終わる）
+		has_pending_result_ = false;
 	}
 
 	StopRecordAndWait();
 	return true;
+}
+
+// 録画中の確認（はい/いいえ）。答えるまでの間に録画が終わっても、結果のメッセージを確認の上に重ねて出さないよう
+// OnRecordFinished に預からせる。預かった結果は、呼び出し側が答えに応じて ShowPendingResult で出すか捨てる
+bool MotionCaptureDlg::ConfirmWhileRecording(LPCTSTR text)
+{
+	confirming_ = true;
+	const bool yes = (MessageBox(text, _T("Warning"), MB_YESNO) == IDYES);
+	confirming_ = false;
+	return yes;
+}
+
+void MotionCaptureDlg::ShowPendingResult()
+{
+	if (!has_pending_result_)
+	{
+		return;
+	}
+	has_pending_result_ = false;
+	ShowRecordResult(pending_err_, pending_completed_);
+}
+
+void MotionCaptureDlg::ShowRecordResult(AviError err, BOOL completed)
+{
+	// 閉じる途中は終了を妨げないよう、何も表示しない（「保存しました」も、閉じると答えた後には出さない）
+	if (closing_)
+	{
+		return;
+	}
+
+	CString caption;
+	const CString msg = avi_.MakeResultMessage(err, completed, &caption);
+	MessageBox(msg, caption, MB_OK);
 }
 
 // シャットダウン・ログオフでは、この後すぐプロセスごと終了させられるので、確認せずに止めてファイルを閉じさせる
@@ -134,15 +190,19 @@ void MotionCaptureDlg::OnTimer(UINT_PTR id_event)
 // 録画スレッドはファイルを閉じてから知らせてくるので、ここでは結果を表示するだけでよい
 LRESULT MotionCaptureDlg::OnRecordFinished(WPARAM w_param, LPARAM l_param)
 {
-	// 閉じる途中は終了を妨げないよう、何も表示しない（「保存しました」も、閉じると答えた後には出さない）
-	if (closing_)
+	const AviError err = static_cast<AviError>(w_param);
+	const BOOL completed = static_cast<BOOL>(l_param);
+
+	// 確認を出している最中なら、答えが出るまで預かる
+	if (confirming_ && !closing_)
 	{
+		has_pending_result_ = true;
+		pending_err_ = err;
+		pending_completed_ = completed;
 		return 0;
 	}
 
-	CString caption;
-	const CString msg = avi_.MakeResultMessage(static_cast<AviError>(w_param), static_cast<BOOL>(l_param), &caption);
-	MessageBox(msg, caption, MB_OK);
+	ShowRecordResult(err, completed);
 	return 0;
 }
 
@@ -184,10 +244,12 @@ void MotionCaptureDlg::OnBnClickedRecord()
 {
 	if (avi_.IsExecution())
 	{
-		if (MessageBox(_T("実行中です。中断しますか？"), _T("Warning"), MB_YESNO) == IDYES)
+		if (ConfirmWhileRecording(_T("実行中です。中断しますか？")))
 		{
 			OnBnClickedRecordStop();
 		}
+		// 確認している間に録画が終わっていたら、その結果を確認の後に出す
+		ShowPendingResult();
 		return;
 	}
 
@@ -196,15 +258,10 @@ void MotionCaptureDlg::OnBnClickedRecord()
 		return;
 	}
 
-	// 別プロセスが保存先を使っていないか、実際に開いて確かめる
+	if (!CanOpenSaveFile(save_filename_))
 	{
-		CFile file;
-		if (!file.Open(save_filename_, CFile::modeCreate | CFile::modeWrite))
-		{
-			MessageBox(_T("別プロセスが使用中です。"), _T("Warning"), MB_OK);
-			return;
-		}
-		file.Close();
+		MessageBox(_T("別プロセスが使用中です。"), _T("Warning"), MB_OK);
+		return;
 	}
 
 	avi_.SetSaveFileName(save_filename_);

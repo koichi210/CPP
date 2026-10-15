@@ -230,6 +230,29 @@ void ManageAvi::InitBitmapInfo()
 	header.biSizeImage = header.biHeight * ((header.biWidth * bitmap_bpp_ + 31) / 32) * 4;
 }
 
+// 圧縮方式を選ばせる（圧縮しないときは何もしない）。選ばれたら true で、cv は呼び出し側が ICCompressorFree する
+bool ManageAvi::ChooseCompressor(COMPVARS* cv)
+{
+	if (!compress_)
+	{
+		return true;
+	}
+
+	*cv = {};
+	cv->cbSize = sizeof(COMPVARS);
+	cv->dwFlags = ICMF_COMPVARS_VALID;
+	cv->fccHandler = comptypeDIB;
+	cv->lQ = ICQUALITY_DEFAULT;
+
+	// 選んでいる間に停止されたら StopRecord がダイアログを閉じられるよう、このスレッドを覚えておく。
+	// 覚える前に停止されていたら、ダイアログを出さずにキャンセル扱いにする
+	choosing_thread_id_ = ::GetCurrentThreadId();
+	const BOOL chosen = executing_
+		&& ICCompressorChoose(nullptr, ICMF_CHOOSE_DATARATE | ICMF_CHOOSE_KEYFRAME, &bitmap_info_, nullptr, cv, nullptr);
+	choosing_thread_id_ = 0;
+	return chosen ? true : false;
+}
+
 AviError ManageAvi::CreateAviFile()
 {
 	if (AVIERR_OK != ::AVIFileOpen(&avi_file_, save_filename_, OF_CREATE | OF_WRITE, nullptr))
@@ -245,30 +268,14 @@ AviError ManageAvi::CreateAviFile()
 	return AviError::kSuccess;
 }
 
-AviError ManageAvi::SetStreamFormat()
+// cv は ChooseCompressor で選んだ圧縮方式（圧縮しないときは使わない）
+AviError ManageAvi::SetStreamFormat(const COMPVARS& cv)
 {
 	compress_avi_stream_ = nullptr;
 	if (!compress_)
 	{
 		::AVIStreamSetFormat(avi_stream_, 0, &bitmap_info_, sizeof(BITMAPINFO));
 		return AviError::kSuccess;
-	}
-
-	COMPVARS cv = {};
-	cv.cbSize = sizeof(COMPVARS);
-	cv.dwFlags = ICMF_COMPVARS_VALID;
-	cv.fccHandler = comptypeDIB;
-	cv.lQ = ICQUALITY_DEFAULT;
-
-	// 選んでいる間に停止されたら StopRecord がダイアログを閉じられるよう、このスレッドを覚えておく。
-	// 覚える前に停止されていたら、ダイアログを出さずにキャンセル扱いにする
-	choosing_thread_id_ = ::GetCurrentThreadId();
-	const BOOL chosen = executing_
-		&& ICCompressorChoose(nullptr, ICMF_CHOOSE_DATARATE | ICMF_CHOOSE_KEYFRAME, &bitmap_info_, nullptr, &cv, nullptr);
-	choosing_thread_id_ = 0;
-	if (!chosen)
-	{
-		return AviError::kCancelCompress;
 	}
 
 	avi_stream_info_.fccHandler = cv.fccHandler;
@@ -287,9 +294,8 @@ AviError ManageAvi::SetStreamFormat()
 	opt.cbParms = cv.cbState;
 	opt.dwInterleaveEvery = 0;
 
-	// opt は cv.lpState を指しているので、ストリームを作ってから解放する
+	// opt は cv.lpState を指しているので、cv はストリームを作った後に呼び出し側で解放する
 	HRESULT hr = ::AVIMakeCompressedStream(&compress_avi_stream_, avi_stream_, &opt, nullptr);
-	::ICCompressorFree(&cv);
 	if (AVIERR_OK != hr)
 	{
 		return AviError::kCreateCompressStream;
@@ -299,7 +305,7 @@ AviError ManageAvi::SetStreamFormat()
 	return AviError::kSuccess;
 }
 
-void ManageAvi::Record()
+DWORD ManageAvi::Record()
 {
 	HDC mem_dc = ::CreateCompatibleDC(nullptr);
 	LPVOID pv_bits;
@@ -319,7 +325,9 @@ void ManageAvi::Record()
 
 	PAVISTREAM stream = compress_ ? compress_avi_stream_ : avi_stream_;
 
-	for (DWORD frame_no = 0; frame_no < avi_stream_info_.dwLength && executing_; frame_no++)
+	// ファイルを作った以上は、すぐ止められても最初の1フレームは書く（フレームのない AVI を残さない）
+	DWORD frame_no = 0;
+	for (; frame_no == 0 || (frame_no < avi_stream_info_.dwLength && executing_); frame_no++)
 	{
 		// 画面の記録領域を取り込む
 		if (resize_)
@@ -345,6 +353,8 @@ void ManageAvi::Record()
 	::DeleteObject(mem_bitmap);
 	::DeleteDC(mem_dc);
 	::DeleteDC(dc_screen);
+
+	return frame_no;
 }
 
 void ManageAvi::ReleaseAvi()
@@ -375,18 +385,34 @@ UINT ManageAvi::RecordThreadProc(LPVOID param)
 	::AVIFileInit();
 
 	avi->InitAviStreamInfo();
+	avi->InitBitmapInfo();
 
-	AviError err = avi->CreateAviFile();
+	// 圧縮方式は、保存先のファイルを作る前に選ばせる。キャンセル（記録停止・閉じるによるものも含む）なら
+	// 保存先には触らない（無ければ作らず、既存のファイルも切り詰めない）
+	COMPVARS cv = {};
+	AviError err = avi->ChooseCompressor(&cv) ? AviError::kSuccess : AviError::kCancelCompress;
+
+	bool created_file = false;
 	if (err == AviError::kSuccess)
 	{
-		avi->InitBitmapInfo();
-		err = avi->SetStreamFormat();
+		// 録画が成立しなかったときに消してよいのは、この録画で新しく作ったファイルだけ
+		created_file = ::GetFileAttributes(avi->save_filename_) == INVALID_FILE_ATTRIBUTES;
+		err = avi->CreateAviFile();
+		if (err == AviError::kSuccess)
+		{
+			err = avi->SetStreamFormat(cv);
+		}
+		if (avi->compress_)
+		{
+			::ICCompressorFree(&cv);
+		}
 	}
 
+	DWORD written_frames = 0;
 	BOOL completed = FALSE;
 	if (err == AviError::kSuccess)
 	{
-		avi->Record();
+		written_frames = avi->Record();
 		completed = avi->executing_ ? TRUE : FALSE;
 	}
 
@@ -394,6 +420,12 @@ UINT ManageAvi::RecordThreadProc(LPVOID param)
 	// （以前はメッセージボックスを閉じるまで開いたままで、その間にアプリを閉じるとファイルが壊れた）
 	avi->ReleaseAvi();
 	::AVIFileExit();
+
+	// ストリームが作れなかったなどで1フレームも書けなかったら、この録画で作った（中身のない）ファイルは消す
+	if (created_file && written_frames == 0)
+	{
+		::DeleteFile(avi->save_filename_);
+	}
 
 	avi->executing_ = false;
 
