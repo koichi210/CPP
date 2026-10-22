@@ -14,6 +14,8 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* dx) override;
+	virtual void OnOK() override;
+	virtual void OnCancel() override;
 
 	DECLARE_MESSAGE_MAP()
 };

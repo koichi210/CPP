@@ -17,5 +17,15 @@ void Child1::DoDataExchange(CDataExchange* dx)
 	CDialogEx::DoDataExchange(dx);
 }
 
+// タブの中に置いたモードレスの子ダイアログなので、Enter / Esc で閉じない
+// （既定の OnOK / OnCancel は EndDialog でページを隠してしまい、タブの中が空になる）
+void Child1::OnOK()
+{
+}
+
+void Child1::OnCancel()
+{
+}
+
 BEGIN_MESSAGE_MAP(Child1, CDialogEx)
 END_MESSAGE_MAP()
