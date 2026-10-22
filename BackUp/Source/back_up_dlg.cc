@@ -509,7 +509,7 @@ BOOL BackUpDlg::WriteSetting()
 		return FALSE;
 	}
 
-	BOOL succeeded = FALSE;
+	// 保存する設定が無くても（全消去の後など）、空の設定ファイルとして保存できている
 	for (const BackupSetting& entry : entries_)
 	{
 		if (entry.src_path.IsEmpty() || entry.dst_path.IsEmpty())
@@ -520,11 +520,10 @@ BOOL BackUpDlg::WriteSetting()
 		CString line;
 		line.Format(_T("%d,%d,%s,%s\n"), entry.bk_enable, entry.opt, entry.src_path.GetString(), entry.dst_path.GetString());
 		file.WriteString(line);
-		succeeded = TRUE;
 	}
 	file.Close();
 
-	return succeeded;
+	return TRUE;
 }
 
 BOOL BackUpDlg::ReadSetting()
