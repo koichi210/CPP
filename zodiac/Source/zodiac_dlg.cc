@@ -168,7 +168,8 @@ void ZodiacDlg::Refresh()
 			text.Format(kBirthFormat, year);
 			AddListItem(text, year);
 		}
-		current = kDefaultBirth - kMinYear;
+		// 基準の年が既定の生まれ年より前なら、リストの最後（基準の年）を選ぶ
+		current = ((kDefaultBirth <= year_) ? kDefaultBirth : year_) - kMinYear;
 		break;
 
 	case Mode::kAge:
@@ -214,7 +215,8 @@ void ZodiacDlg::OnView()
 		view.Format("%s年のヒト\r\n\r\n"
 					"生まれた年    年齢\r\n", kZodiacNames[value]);
 
-		for (int birth = kMinYear + value; birth < year_; birth += kZodiacCount)
+		// 今年生まれ（満0才）も含める（生まれた年・年齢のリストと同じく今年まで）
+		for (int birth = kMinYear + value; birth <= year_; birth += kZodiacCount)
 		{
 			view.AppendFormat(kBirthFormat, birth);
 			view += "        ";
@@ -237,12 +239,14 @@ void ZodiacDlg::OnView()
 
 CString ZodiacDlg::GetZodiac(int year) const
 {
-	if (year < kMinYear || year > year_)
+	if (year > year_)
 	{
 		AfxMessageBox("プログラムエラー", MB_OK);
 		return CString();
 	}
-	return CString(kZodiacNames[(year - kMinYear) % kZodiacCount]);
+	// 年齢から逆算すると kMinYear より前の年にもなる（満130才まで選べる）ので、負の剰余を 0～11 に直す
+	const int index = ((year - kMinYear) % kZodiacCount + kZodiacCount) % kZodiacCount;
+	return CString(kZodiacNames[index]);
 }
 
 void ZodiacDlg::OnAllView()
