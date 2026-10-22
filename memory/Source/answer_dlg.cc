@@ -27,7 +27,7 @@ BOOL AnswerDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// 計算は合計値の1欄だけ、暗記は出題数ぶんの欄だけ入力できるようにする
-	const int input_count = (game_.GetPlayMode() == PlayMode::kKeisan) ? 1 : game_.GetProblemCount();
+	const int input_count = (game_.GetPlayMode() == PlayMode::kKeisan) ? 1 : game_.GetAskedCount();
 	for (int i = 0; i < kPrNumMax; i++)
 	{
 		const BOOL enable = (i < input_count) ? TRUE : FALSE;
@@ -41,7 +41,7 @@ BOOL AnswerDlg::OnInitDialog()
 long AnswerDlg::SumRecords() const
 {
 	long sum = 0;
-	for (int i = 0; i < game_.GetProblemCount(); i++)
+	for (int i = 0; i < game_.GetAskedCount(); i++)
 	{
 		sum += _ttol(game_.GetRecord(i));
 	}
@@ -56,7 +56,7 @@ void AnswerDlg::OnAnsok()
 // 答えの表示・非表示を切り替える（一度でも見たら「答え閲覧済み」）
 void AnswerDlg::OnAnsShow()
 {
-	const int count = game_.GetProblemCount();
+	const int count = game_.GetAskedCount();
 
 	cheat_ = !cheat_;
 
@@ -114,7 +114,7 @@ void AnswerDlg::OnAnswerCheck()
 	}
 
 	// 暗記は1問ずつ判定する
-	for (int i = 0; i < game_.GetProblemCount(); i++)
+	for (int i = 0; i < game_.GetAskedCount(); i++)
 	{
 		CString input;
 		GetDlgItemText(IDC_ANS_TEXT1 + i, input);

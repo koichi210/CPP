@@ -313,6 +313,7 @@ void MemoryDlg::StartProc()
 
 void MemoryDlg::EndProc()
 {
+	asked_count_ = count_;
 	count_ = 0;
 	state_ = PlayState::kEnd;
 	ItemSts(TRUE);
@@ -328,6 +329,7 @@ void MemoryDlg::InitProc()
 		record.Empty();
 	}
 	count_ = 0;
+	asked_count_ = 0;
 }
 
 // 出題中は設定を変えられないようにする

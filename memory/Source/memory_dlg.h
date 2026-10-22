@@ -13,7 +13,7 @@ public:
 	enum { IDD = IDD_MEMORY_DIALOG };
 
 	// 解答ダイアログが参照する直前の出題内容
-	int GetProblemCount() const { return problem_count_; }
+	int GetAskedCount() const { return asked_count_; }	// 途中でストップしたら、それまでに出した数
 	PlayMode GetPlayMode() const { return play_mode_; }
 	const CString& GetRecord(int index) const { return record_[index]; }
 
@@ -56,6 +56,7 @@ private:
 	CString		record_[kPrNumMax];	// 表示した値を覚えておく
 	int			timer_cycle_ = kCycInitVal;	// タイマ起動周期
 	int			count_ = 0;			// 現在の個数
+	int			asked_count_ = 0;	// 直前の出題で実際に出した個数
 	PlayState	state_ = PlayState::kInit;
 	int			problem_count_ = 0;		// 表示回数（出題数）
 	int			digits_ = 0;			// 桁数
