@@ -711,6 +711,9 @@ void MacroToolDlg::OnWrite()
 	SetIniFileParam(file_name_, kSectionCommon, kKeyRepeatNum, static_cast<int>(repeat_count_));
 	SetIniFileParam(file_name_, kSectionCommon, kKeyRepeatDelayMsec, static_cast<int>(repeat_delay_msec_));
 
+	// 前より行が減ったとき古い行が残って読み込まれないよう、表のセクションを消してから書く
+	::WritePrivateProfileString(kSectionTable, nullptr, nullptr, file_name_);
+
 	// 未設定の行は飛ばし、番号を詰めて書く
 	int index = 0;
 	for (const MacroEvent& ev : events_)
