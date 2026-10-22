@@ -237,7 +237,7 @@ public:
 	void SetRowCount(int count)		{ row_count_ = count; }
 	void FillColumn(int column, LPCTSTR text);		// 列0なら行番号付きで行を作り、それ以外は全行に text を入れる
 	void SelectRow(int row);
-	void EnableFullRowSelect();
+	void EnableFullRowSelect();		// 行全体を選択表示にして先頭行を選択する（FillColumn(0, ...) で行を作った後に呼ぶ）
 
 private:
 	int row_count_ = 1;

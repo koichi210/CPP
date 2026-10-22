@@ -307,7 +307,6 @@ BOOL MacroToolDlg::OnInitDialog()
 void MacroToolDlg::InitControls()
 {
 	list_.SetRowCount(kMaxEventCount);
-	list_.EnableFullRowSelect();
 	list_.AddColumn(kColumnNo, 25, _T("No"));
 	list_.AddColumn(kColumnExecute, 45, _T("実行"));
 	list_.AddColumn(kColumnSleep, 45, _T("遅延時間"));
@@ -315,6 +314,7 @@ void MacroToolDlg::InitControls()
 	list_.AddColumn(kColumnDetail, 165, _T("詳細設定"));
 	list_.AddColumn(kColumnComment, 46, _T("コメント"));
 	list_.FillColumn(kColumnNo, _T(""));
+	list_.EnableFullRowSelect();	// 先頭行を選択するので、行を作った後に呼ぶ
 
 	key_edit_.DisableCopyAndPaste(TRUE);
 
