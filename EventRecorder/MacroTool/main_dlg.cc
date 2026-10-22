@@ -92,9 +92,9 @@ namespace
 			}
 		}
 
-		if (key.modifiers & kModifierShift)	InputSimulator::KeyAction(VK_SHIFT, FALSE);
-		if (key.modifiers & kModifierCtrl)	InputSimulator::KeyAction(VK_CONTROL, FALSE);
-		if (key.modifiers & kModifierAlt)	InputSimulator::KeyAction(VK_MENU, FALSE);
+		if (key.modifiers & kModifierShift)	InputSimulator::KeyRelease(VK_SHIFT);
+		if (key.modifiers & kModifierCtrl)	InputSimulator::KeyRelease(VK_CONTROL);
+		if (key.modifiers & kModifierAlt)	InputSimulator::KeyRelease(VK_MENU);
 	}
 
 	UINT PlayThreadProc(LPVOID param)

@@ -843,7 +843,7 @@ void MacroToolDlg::OnHelp()
 		{
 			InputSimulator::FunctionKeyAction(key, TRUE);
 			Sleep(100);
-			InputSimulator::FunctionKeyAction(key, FALSE);
+			InputSimulator::KeyRelease(key);
 			Sleep(100);
 		}
 	}

@@ -23,9 +23,11 @@ public:
 	static void KeyAction(WORD virtual_key, BOOL hold = FALSE);			// 'a'〜'z' は 'A'〜'Z' のキーとして送る
 	static void FunctionKeyAction(BYTE virtual_key, BOOL hold = FALSE);	// kVkNone なら何もしない
 	static void SendInputKey(WORD virtual_key, BOOL hold = FALSE);
+	static void KeyRelease(WORD virtual_key);								// hold = TRUE で押したキーを離す
 
 private:
 	static void SendMouse(DWORD flags, LONG dx = 0, LONG dy = 0);
+	static void SendKey(WORD virtual_key, DWORD flags);
 };
 
 #endif  // COMMON_INPUT_SIMULATOR_H_
