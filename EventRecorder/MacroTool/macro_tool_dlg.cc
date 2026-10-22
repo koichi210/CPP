@@ -219,9 +219,11 @@ MacroToolDlg::MacroToolDlg(CWnd* parent, const CString& file_name, const std::ve
 
 MacroToolDlg::~MacroToolDlg()
 {
-	if (recording_)
+	// フックが残ったまま DLL を解放すると次の操作で落ちるので、止められたときだけ解放する
+	const bool hook_stopped = !recording_ || StopRecord();
+	if (hook_dll_ && hook_stopped)
 	{
-		StopRecord();
+		FreeLibrary(hook_dll_);
 	}
 }
 
