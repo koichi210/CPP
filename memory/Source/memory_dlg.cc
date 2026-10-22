@@ -176,6 +176,13 @@ void MemoryDlg::ViewText()
 
 void MemoryDlg::OnStart()
 {
+	// 出題中は「ストップ」。出題した内容は解答で使うので消さずに止める
+	if (state_ == PlayState::kPlaying)
+	{
+		EndProc();
+		return;
+	}
+
 	if (type_flags_ == 0)
 	{
 		AfxMessageBox(_T("どれかひとつはチェック入れて下さい。"));
