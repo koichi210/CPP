@@ -326,9 +326,14 @@ bool BackUpDlg::RunBackup(bool write_batch_only)
 		{
 			batch += command;
 		}
-		else if (system(command) != 0)
+		else
 		{
-			success = false;
+			// xcopy の終了コード 1 は「コピーするファイルが無かった」なので成功に含める
+			const int exit_code = system(command);
+			if (exit_code != 0 && exit_code != 1)
+			{
+				success = false;
+			}
 		}
 	}
 
