@@ -4,8 +4,10 @@
 #include "division_coupling.h"
 #include "division_coupling_dlg.h"
 
+#include <algorithm>
 #include <climits>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #ifdef _DEBUG
@@ -35,6 +37,48 @@ namespace
 		CString part_path;
 		part_path.Format(_T("%s.div%03d"), static_cast<LPCTSTR>(path), index);
 		return part_path;
+	}
+
+	// path を分割したファイル(path.div001, .div002 …)のうち、今あるものを番号順に返す。
+	// 番号が途切れていても全部拾う(後ろの番号だけ残っていても、次に分割したときにその後ろへつながってしまうため)
+	std::vector<CString> FindPartFiles(const CString& path)
+	{
+		const CString prefix = CString(PathFindFileName(path)) + _T(".div");
+		std::vector<std::pair<LONGLONG, CString>> found;
+
+		CFileFind finder;
+		BOOL working = finder.FindFile(path + _T(".div*"));
+		while (working)
+		{
+			working = finder.FindNextFile();
+			if (finder.IsDirectory())
+			{
+				continue;
+			}
+
+			// 「同じ名前 + .div + 3桁以上の数字」だけを分割ファイルとみなす
+			const CString name = finder.GetFileName();
+			if (name.GetLength() <= prefix.GetLength() || name.Left(prefix.GetLength()).CompareNoCase(prefix) != 0)
+			{
+				continue;
+			}
+			const CString number = name.Mid(prefix.GetLength());
+			if (number.GetLength() < 3 || number.SpanIncluding(_T("0123456789")) != number)
+			{
+				continue;
+			}
+			found.emplace_back(_ttoi64(number), finder.GetFilePath());
+		}
+
+		std::sort(found.begin(), found.end(),
+			[](const std::pair<LONGLONG, CString>& a, const std::pair<LONGLONG, CString>& b) { return a.first < b.first; });
+
+		std::vector<CString> parts;
+		for (const auto& part : found)
+		{
+			parts.push_back(part.second);
+		}
+		return parts;
 	}
 }
 
@@ -105,6 +149,38 @@ void DivisionCouplingDlg::OnBnClickedSplit()
 	// KB → バイト。int に収まらない値は分割サイズエラーにする
 	const int div_size_kb = static_cast<int>(GetDlgItemInt(IDET_SIZE));
 	div_size_ = (0 < div_size_kb && div_size_kb <= INT_MAX / kKilobyte) ? div_size_kb * kKilobyte : 0;
+
+	// 前回の分割ファイルが残っていると、今回の個数が前回より少ないときに後ろの番号が残り、
+	// 結合で古いデータまでつながってしまう。1つ目を作る前に、同じ名前の分割ファイルを消すか確認する
+	// (元ファイルが無い・分割サイズが不正なときは、これまでどおり分割処理のエラー表示に任せる)
+	if (div_size_ > 0 && PathFileExists(src_path_) && !PathIsDirectory(src_path_))
+	{
+		const std::vector<CString> old_parts = FindPartFiles(src_path_);
+		if (!old_parts.empty())
+		{
+			CString found = old_parts.front();
+			if (old_parts.size() > 1)
+			{
+				CString last;
+				last.Format(_T("\n～ %s (%d個)"), PathFindFileName(old_parts.back()), static_cast<int>(old_parts.size()));
+				found += last;
+			}
+			if (MessageBox(_T("前回の分割ファイルが残っています。削除してから分割しますか？\n\n") + found, _T("Warning"), MB_YESNO) == IDNO)
+			{
+				MessageBox(_T("処理を中断しました。"));
+				return;
+			}
+
+			for (const CString& part : old_parts)
+			{
+				if (!DeleteFile(part))
+				{
+					MessageBox(_T("前回の分割ファイルを削除できませんでした。\n\n") + part, _T("error"), MB_OK);
+					return;
+				}
+			}
+		}
+	}
 
 	StartProcess(&DivisionCouplingDlg::SplitThreadProc);
 }
