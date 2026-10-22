@@ -56,7 +56,12 @@ void MotionCaptureDlg::DoDataExchange(CDataExchange* dx)
 	DDX_Text(dx, IDET_CAPT_RECT_HEIGHT, capt_rect_height_);
 	DDV_MinMaxInt(dx, capt_rect_height_, 1, kMaxFrameLength);
 	DDX_Text(dx, IDET_CAPT_BPP, bitmap_bpp_);
-	DDV_MinMaxInt(dx, bitmap_bpp_, 0, 32);
+	// 1/4/8 はカラーテーブル（パレット）が要るので扱わない。BI_RGB で画面をそのまま写せる 16/24/32 だけにする
+	if (dx->m_bSaveAndValidate && bitmap_bpp_ != 16 && bitmap_bpp_ != 24 && bitmap_bpp_ != 32)
+	{
+		AfxMessageBox(_T("bpp は 16・24・32 のどれかを入力してください。"), MB_ICONEXCLAMATION);
+		dx->Fail();
+	}
 	DDX_Text(dx, IDET_CAPT_FPS, frame_rate_);
 	DDV_MinMaxInt(dx, frame_rate_, 1, 120);
 	DDX_Text(dx, IDET_TIMEOUT_SEC, timeout_sec_);

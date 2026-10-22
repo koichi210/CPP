@@ -81,7 +81,7 @@ private:
 	UINT	frame_rate_ = 0;
 	DWORD	scale_ = 1;			// 基本は等倍
 	DWORD	quality_ = static_cast<DWORD>(-1);	// 0～10,000 (-1 はドライバーの既定値)
-	UINT	bitmap_bpp_ = 0;		// 0,1,4,8,16,24,32 (0 is implied by the JPEG or PNG format)
+	UINT	bitmap_bpp_ = 0;		// 16,24,32 (1/4/8 need a color table, so they are not supported)
 	UINT	timeout_sec_ = 0;
 	UINT	skip_frame_ms_ = 0;		// フレーム間の待ち時間（ミリ秒）
 

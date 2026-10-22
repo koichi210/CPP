@@ -54,7 +54,7 @@ private:
 	int		capt_rect_y_ = 0;
 	int		capt_rect_width_ = 1920;
 	int		capt_rect_height_ = 1080;
-	UINT	bitmap_bpp_ = 24;		// 0,1,4,8,16,24,32 (0 is implied by the JPEG or PNG format)
+	UINT	bitmap_bpp_ = 24;		// 16,24,32 (1/4/8 need a color table, so they are not supported)
 
 	int		resize_rect_width_ = 1024;
 	int		resize_rect_height_ = 768;
