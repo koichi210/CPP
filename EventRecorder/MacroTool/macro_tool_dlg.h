@@ -99,7 +99,7 @@ private:
 	void UpdateListControl(BOOL update_all = FALSE);
 	void UpdateListCell(int row, int column);
 
-	int GetTotalTime() const;
+	LONGLONG GetTotalTime() const;
 	void SetTitleBar();
 	BOOL ConfirmSettings();
 

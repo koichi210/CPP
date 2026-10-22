@@ -981,15 +981,15 @@ void MacroToolDlg::UpdateListCell(int row, int column)
 /////////////////////////////////////////////////////////////////////////////
 // タイトル・確認
 
-// 1周にかかる時間(ms)
-int MacroToolDlg::GetTotalTime() const
+// 1周にかかる時間(ms)。遅延 99999999ms × 実行 32767 回もありうるので 64bit で数える
+LONGLONG MacroToolDlg::GetTotalTime() const
 {
-	int msec = static_cast<int>(repeat_delay_msec_);
+	LONGLONG msec = repeat_delay_msec_;
 	for (const MacroEvent& ev : events_)
 	{
 		if (ev.kind != EventKind::kNone)
 		{
-			msec += static_cast<int>(ev.sleep_msec * ev.exec_count);
+			msec += static_cast<LONGLONG>(ev.sleep_msec) * ev.exec_count;
 		}
 	}
 	return msec;
@@ -997,11 +997,11 @@ int MacroToolDlg::GetTotalTime() const
 
 void MacroToolDlg::SetTitleBar()
 {
-	int rest = GetTotalTime();
-	const int msec = rest % 1000;	rest /= 1000;
-	const int sec = rest % 60;		rest /= 60;
-	const int min = rest % 60;		rest /= 60;
-	const int hour = rest % 24;
+	LONGLONG rest = GetTotalTime();
+	const int msec = static_cast<int>(rest % 1000);	rest /= 1000;
+	const int sec = static_cast<int>(rest % 60);		rest /= 60;
+	const int min = static_cast<int>(rest % 60);		rest /= 60;
+	const int hour = static_cast<int>(rest);			// 日の欄は無いので 24 時間以上も時間で出す
 
 	CString total;
 	total.Format(kTotalTimeFormat, hour, min, sec, msec);
