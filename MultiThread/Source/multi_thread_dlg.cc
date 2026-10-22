@@ -72,6 +72,11 @@ HCURSOR MultiThreadDlg::OnQueryDragIcon()
 // 「Start」：カウントアップするワーカースレッドを起動する（押すたびに1本ずつ増える）
 void MultiThreadDlg::OnBnClickedStart()
 {
+	// Stop 直後だと、止まる途中のスレッドが stop_ を見る前に false へ戻してしまうので、先に終わらせる
+	if (stop_)
+	{
+		StopWorkers();
+	}
 	stop_ = false;
 	workers_.Start(CountThreadProc, this);
 }
