@@ -150,6 +150,14 @@ void DivisionCouplingDlg::OnBnClickedSplit()
 	const int div_size_kb = static_cast<int>(GetDlgItemInt(IDET_SIZE));
 	div_size_ = (0 < div_size_kb && div_size_kb <= INT_MAX / kKilobyte) ? div_size_kb * kKilobyte : 0;
 
+	// 0バイトのファイルは分割ファイルが1つもできず、結合もできないので分割しない
+	CFileStatus status;
+	if (!PathIsDirectory(src_path_) && CFile::GetStatus(src_path_, status) && status.m_size == 0)
+	{
+		MessageBox(_T("0バイトのファイルは分割しません。\n\n") + src_path_, _T("error"), MB_OK);
+		return;
+	}
+
 	// 前回の分割ファイルが残っていると、今回の個数が前回より少ないときに後ろの番号が残り、
 	// 結合で古いデータまでつながってしまう。1つ目を作る前に、同じ名前の分割ファイルを消すか確認する
 	// (元ファイルが無い・分割サイズが不正なときは、これまでどおり分割処理のエラー表示に任せる)
