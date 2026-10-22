@@ -36,13 +36,13 @@ namespace
 	};
 
 	// 1秒ずつ待ちながら停止要求を確かめる
-	void SleepWithFlicker(int sleep_msec, const std::atomic<bool>& running)
+	void SleepWithFlicker(DWORD sleep_msec, const std::atomic<bool>& running)
 	{
 		// 1秒未満の端数を先に待つ
 		Sleep(sleep_msec % 1000);
 
 		int count = 0;
-		for (int i = 0; i < sleep_msec / 1000 && running; i++)
+		for (DWORD i = 0; i < sleep_msec / 1000 && running; i++)
 		{
 			InputSimulator::FunctionKeyAction(static_cast<BYTE>(kFlickerKey));
 			count++;
@@ -115,11 +115,11 @@ namespace
 				{
 					// タイトルに「何周目:何行目:何回目」を出す
 					CString title;
-					title.Format(_T("[(%d:%d:%d)]"), i + 1, j + 1, k + 1);
+					title.Format(_T("[(%u:%zu:%d)]"), i + 1, j + 1, k + 1);
 					::SetWindowText(settings->wnd, title);
 
 					// 待ってから、動かす前に停止要求を確かめる
-					SleepWithFlicker(static_cast<int>(ev.sleep_msec), running);
+					SleepWithFlicker(ev.sleep_msec, running);
 					if (!running)
 					{
 						break;
@@ -135,7 +135,7 @@ namespace
 					}
 				}
 			}
-			SleepWithFlicker(static_cast<int>(settings->repeat_delay_msec), running);
+			SleepWithFlicker(settings->repeat_delay_msec, running);
 		}
 		::PostMessage(settings->wnd, kWmPlayFinished, settings->run_id, 0);
 

@@ -497,13 +497,15 @@ void MacroToolDlg::SelectEventKind(EventKind kind)
 // 上限を超えた値は上限に書き換える
 int MacroToolDlg::GetClampedDlgItemInt(UINT id, int max_value, BOOL is_signed)
 {
-	const int value = static_cast<int>(GetDlgItemInt(id, nullptr, is_signed));
-	if (value > max_value)
+	// 符号なしで読んだ 0x80000000 以上の値は int にすると負になるので、UINT のまま比べる
+	const UINT value = GetDlgItemInt(id, nullptr, is_signed);
+	const bool over = is_signed ? static_cast<int>(value) > max_value : value > static_cast<UINT>(max_value);
+	if (over)
 	{
 		SetDlgItemInt(id, max_value, is_signed);
 		return max_value;
 	}
-	return value;
+	return static_cast<int>(value);
 }
 
 void MacroToolDlg::OnEnChangeExecute()
