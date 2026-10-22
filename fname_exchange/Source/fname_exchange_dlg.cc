@@ -259,6 +259,17 @@ void FnameExchangeDlg::OnGetFile()
 	if (target_ == Target::kFile)
 	{
 		list_.Dir(DDL_READWRITE, pattern);
+
+		// 横スクロール幅は、フォルダのときと同じく一番長い名前に合わせる
+		const int count = list_.GetCount();
+		for (int i = 0; i < count; i++)
+		{
+			const int length = list_.GetTextLen(i);
+			if (max_length < length)
+			{
+				max_length = length;
+			}
+		}
 	}
 	else
 	{
