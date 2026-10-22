@@ -166,6 +166,9 @@ CString ManageAvi::MakeResultMessage(AviError err, BOOL completed, CString* capt
 	case AviError::kCreateCompressStream:
 		*caption = _T("Error");
 		return _T("圧縮Streamが生成できませんでした。");
+	case AviError::kCreateBitmap:
+		*caption = _T("Error");
+		return _T("録画用の画像が作成できませんでした。bpp の設定を確認してください。");
 	default:
 		*caption = _T("Error");
 		return CString();
@@ -307,11 +310,20 @@ AviError ManageAvi::SetStreamFormat(const COMPVARS& cv)
 
 DWORD ManageAvi::Record()
 {
-	HDC mem_dc = ::CreateCompatibleDC(nullptr);
-	LPVOID pv_bits;
-
-	// 1フレーム分の画像（大きさは frame_size_）
+	// 1フレーム分の画像（大きさは frame_size_）。
+	// bpp が BI_RGB で使えない値（0 や 2 など）だと作れず pv_bits が nullptr になるので、書かずに終わる
+	LPVOID pv_bits = nullptr;
 	HBITMAP mem_bitmap = ::CreateDIBSection(nullptr, &bitmap_info_, DIB_RGB_COLORS, &pv_bits, nullptr, 0);
+	if (mem_bitmap == nullptr || pv_bits == nullptr)
+	{
+		if (mem_bitmap != nullptr)
+		{
+			::DeleteObject(mem_bitmap);
+		}
+		return 0;
+	}
+
+	HDC mem_dc = ::CreateCompatibleDC(nullptr);
 	HBITMAP old_bitmap = static_cast<HBITMAP>(::SelectObject(mem_dc, mem_bitmap));
 
 	HDC dc_screen = ::CreateDC(_T("DISPLAY"), _T("DISPLAY"), _T("DISPLAY"), nullptr);
@@ -413,6 +425,10 @@ UINT ManageAvi::RecordThreadProc(LPVOID param)
 	if (err == AviError::kSuccess)
 	{
 		written_frames = avi->Record();
+		if (written_frames == 0)
+		{
+			err = AviError::kCreateBitmap;
+		}
 		completed = avi->executing_ ? TRUE : FALSE;
 	}
 

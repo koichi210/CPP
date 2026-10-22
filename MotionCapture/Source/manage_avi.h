@@ -21,6 +21,7 @@ enum class AviError
 	kCreateStream,
 	kCancelCompress,
 	kCreateCompressStream,
+	kCreateBitmap,
 };
 
 class ManageAvi
@@ -59,7 +60,7 @@ private:
 	bool ChooseCompressor(COMPVARS* cv);
 	AviError CreateAviFile();
 	AviError SetStreamFormat(const COMPVARS& cv);
-	DWORD Record();		// 書いたフレーム数を返す
+	DWORD Record();		// 書いたフレーム数を返す（1フレーム分の画像が作れなければ 0）
 	void ReleaseAvi();
 
 	// 録画スレッドと UI スレッドの両方から読み書きする
