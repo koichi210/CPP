@@ -57,14 +57,13 @@ void BitmapStatic::OnPaint()
 	dc_image.SetBkColor(dc_image.GetPixel(bm.bmWidth - 1, 0));
 	dc_mask.BitBlt(0, 0, bm.bmWidth, bm.bmHeight, &dc_image, 0, 0, SRCCOPY);
 
-	// 背景をボタン色で塗る
-	FillWithColor(&dc, client, ::GetSysColor(COLOR_BTNFACE));
-
 	// 背景 XOR 画像 → AND マスク → XOR 画像 で透過部分だけ背景を残す
 	CBitmap bmp_off_screen;
 	bmp_off_screen.CreateBitmap(bm.bmWidth, bm.bmHeight, static_cast<UINT>(dc.GetDeviceCaps(PLANES)), static_cast<UINT>(dc.GetDeviceCaps(BITSPIXEL)), nullptr);
 	CBitmap* old_off_screen = dc_off_screen.SelectObject(&bmp_off_screen);
-	dc_off_screen.BitBlt(0, 0, bm.bmWidth, bm.bmHeight, &dc, 0, 0, SRCCOPY);
+
+	// 背景はボタン色。画面から写すとビットマップがコントロールより大きいとき範囲外を読むので、直接塗る
+	FillWithColor(&dc_off_screen, CRect(0, 0, bm.bmWidth, bm.bmHeight), ::GetSysColor(COLOR_BTNFACE));
 	dc_off_screen.SetBkColor(RGB(255, 255, 255));
 	dc_off_screen.BitBlt(0, 0, bm.bmWidth, bm.bmHeight, &dc_image, 0, 0, SRCINVERT);
 	dc_off_screen.BitBlt(0, 0, bm.bmWidth, bm.bmHeight, &dc_mask, 0, 0, SRCAND);
