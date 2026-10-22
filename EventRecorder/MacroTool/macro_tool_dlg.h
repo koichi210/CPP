@@ -112,6 +112,7 @@ private:
 	std::vector<MacroEvent>	events_;			// 一覧の全行
 	MacroEvent				clipboard_;		// コピーした行
 	int						index_ = 0;		// 選択中の行
+	bool					updating_controls_ = false;	// UpdateControl で設定欄を書き換え中
 	CString					file_name_;
 	UINT&					repeat_count_;
 	UINT&					repeat_delay_msec_;

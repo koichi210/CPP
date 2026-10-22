@@ -436,6 +436,7 @@ void MacroToolDlg::OnListInsert()
 	std::copy_backward(events_.begin() + index_, events_.end() - 1, events_.end());
 	CurrentEvent() = MacroEvent{};
 	UpdateListControl(TRUE);
+	UpdateControl();
 }
 
 void MacroToolDlg::OnListDelete()
@@ -444,6 +445,7 @@ void MacroToolDlg::OnListDelete()
 	std::copy(events_.begin() + index_ + 1, events_.end(), events_.begin() + index_);
 	events_.back() = MacroEvent{};
 	UpdateListControl(TRUE);
+	UpdateControl();
 }
 
 void MacroToolDlg::OnListCopy()
@@ -469,9 +471,10 @@ void MacroToolDlg::OnAllClear()
 // 選択行の設定
 
 // 未設定の行を編集し始めたら、その種別のイベントにする
+// （UpdateControl が表示を書き換えたときの EN_CHANGE では種別を決めない）
 void MacroToolDlg::EnsureEventKind(EventKind kind)
 {
-	if (CurrentEvent().kind == EventKind::kNone)
+	if (!updating_controls_ && CurrentEvent().kind == EventKind::kNone)
 	{
 		CurrentEvent().kind = kind;
 		UpdateControl();
@@ -869,10 +872,12 @@ void MacroToolDlg::CheckDlgButtonIfChanged(UINT id, bool check)
 // 値を書き換えると EN_CHANGE で選択行が更新されるので、変わったものだけ書き換える
 void MacroToolDlg::UpdateControl()
 {
+	updating_controls_ = true;
 	SetDlgItemNumberIfChanged(IDET_EXECUTE, CurrentEvent().exec_count);
 	UpdateControlEvent();
 	UpdateControlDetail();
 	SetDlgItemNumberIfChanged(IDET_SLEEP, static_cast<int>(CurrentEvent().sleep_msec));
+	updating_controls_ = false;
 
 	SetTitleBar();
 }
