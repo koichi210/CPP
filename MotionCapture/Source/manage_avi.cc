@@ -169,6 +169,9 @@ CString ManageAvi::MakeResultMessage(AviError err, BOOL completed, CString* capt
 	case AviError::kCreateBitmap:
 		*caption = _T("Error");
 		return _T("録画用の画像が作成できませんでした。bpp の設定を確認してください。");
+	case AviError::kWriteFrame:
+		*caption = _T("Error");
+		return _T("AVIファイルに書き込めませんでした。ディスクの空き容量を確認してください。\n") + save_filename_;
 	default:
 		*caption = _T("Error");
 		return CString();
@@ -308,8 +311,10 @@ AviError ManageAvi::SetStreamFormat(const COMPVARS& cv)
 	return AviError::kSuccess;
 }
 
-DWORD ManageAvi::Record()
+AviError ManageAvi::Record(DWORD* written_frames)
 {
+	*written_frames = 0;
+
 	// 1フレーム分の画像（大きさは frame_size_）。
 	// bpp が BI_RGB で使えない値（0 や 2 など）だと作れず pv_bits が nullptr になるので、書かずに終わる
 	LPVOID pv_bits = nullptr;
@@ -320,7 +325,7 @@ DWORD ManageAvi::Record()
 		{
 			::DeleteObject(mem_bitmap);
 		}
-		return 0;
+		return AviError::kCreateBitmap;
 	}
 
 	HDC mem_dc = ::CreateCompatibleDC(nullptr);
@@ -338,6 +343,7 @@ DWORD ManageAvi::Record()
 	PAVISTREAM stream = compress_ ? compress_avi_stream_ : avi_stream_;
 
 	// ファイルを作った以上は、すぐ止められても最初の1フレームは書く（フレームのない AVI を残さない）
+	AviError err = AviError::kSuccess;
 	DWORD frame_no = 0;
 	for (; frame_no == 0 || (frame_no < avi_stream_info_.dwLength && executing_); frame_no++)
 	{
@@ -357,7 +363,12 @@ DWORD ManageAvi::Record()
 			DrawCursor(mem_dc, src.TopLeft(), scale_x, scale_y);
 		}
 
-		::AVIStreamWrite(stream, frame_no, 1, pv_bits, header.biSizeImage, AVIIF_KEYFRAME, nullptr, nullptr);
+		// ディスクがいっぱいなどで書けなければ、そこで止めてエラーにする（「保存しました」とは出さない）
+		if (AVIERR_OK != ::AVIStreamWrite(stream, frame_no, 1, pv_bits, header.biSizeImage, AVIIF_KEYFRAME, nullptr, nullptr))
+		{
+			err = AviError::kWriteFrame;
+			break;
+		}
 		::Sleep(skip_frame_ms_);
 	}
 
@@ -366,7 +377,8 @@ DWORD ManageAvi::Record()
 	::DeleteDC(mem_dc);
 	::DeleteDC(dc_screen);
 
-	return frame_no;
+	*written_frames = frame_no;
+	return err;
 }
 
 void ManageAvi::ReleaseAvi()
@@ -424,11 +436,7 @@ UINT ManageAvi::RecordThreadProc(LPVOID param)
 	BOOL completed = FALSE;
 	if (err == AviError::kSuccess)
 	{
-		written_frames = avi->Record();
-		if (written_frames == 0)
-		{
-			err = AviError::kCreateBitmap;
-		}
+		err = avi->Record(&written_frames);
 		completed = avi->executing_ ? TRUE : FALSE;
 	}
 
