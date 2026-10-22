@@ -5,8 +5,9 @@
 
 CString GetIniFileParam(LPCTSTR file_name, LPCTSTR section_name, LPCTSTR key_name, LPCTSTR default_value)
 {
-	TCHAR value[MAX_PATH];
-	GetPrivateProfileString(section_name, key_name, default_value, value, MAX_PATH, file_name);
+	// マクロ1行（キー文字列とコメントがそれぞれ最大 MAX_PATH - 1 文字）が切れずに収まる長さ
+	TCHAR value[MAX_PATH * 4];
+	GetPrivateProfileString(section_name, key_name, default_value, value, _countof(value), file_name);
 	return CString(value);
 }
 

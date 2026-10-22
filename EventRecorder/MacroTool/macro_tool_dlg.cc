@@ -132,8 +132,9 @@ namespace
 		ev.mouse.operation	= _ttoi(fields[5]);
 		ev.key.modifiers	= _ttoi(fields[6]);
 		ev.key.key_kind		= _ttoi(fields[7]);
-		strcpy_s(ev.key.text, fields[8]);
-		strcpy_s(ev.comment, fields[9]);
+		// 手で書き換えたファイルなどで長すぎても落ちないよう、収まらない分は切り捨てる
+		strncpy_s(ev.key.text, fields[8], _TRUNCATE);
+		strncpy_s(ev.comment, fields[9], _TRUNCATE);
 		return ev;
 	}
 
@@ -314,6 +315,10 @@ void MacroToolDlg::InitControls()
 	list_.FillColumn(kColumnNo, _T(""));
 
 	key_edit_.DisableCopyAndPaste(TRUE);
+
+	// 入力欄は MacroEvent の文字配列に strcpy_s で写すので、配列に収まる長さまでにする（超えると strcpy_s で落ちる）
+	key_edit_.LimitText(sizeof(MacroKey::text) - 1);
+	static_cast<CEdit*>(GetDlgItem(IDET_COMMENT))->LimitText(sizeof(MacroEvent::comment) - 1);
 
 	CheckRadioButton(IDRB_MOUSE, IDRB_KEY, IDRB_MOUSE);
 
