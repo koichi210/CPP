@@ -122,7 +122,8 @@ HCURSOR StrMathDlg::OnQueryDragIcon()
 
 void StrMathDlg::OnStart()
 {
-	SetDlgItemText(IDC_MARK, (operation_ == Operation::kSum) ? "+" : "-");
+	asked_operation_ = operation_;
+	SetDlgItemText(IDC_MARK, (asked_operation_ == Operation::kSum) ? "+" : "-");
 	SetDlgItemText(IDC_IANS, "");
 
 	num1_ = BuildNumber();
@@ -130,7 +131,7 @@ void StrMathDlg::OnStart()
 	started_ = true;
 
 	// 引き算の答えが負にならないよう、大きい方を先にする
-	if (operation_ == Operation::kSub && num1_ < num2_)
+	if (asked_operation_ == Operation::kSub && num1_ < num2_)
 	{
 		std::swap(num1_, num2_);
 	}
@@ -170,10 +171,12 @@ void StrMathDlg::OnAns()
 {
 	if (started_)
 	{
-		int ans = (operation_ == Operation::kSum) ? num1_ + num2_ : num1_ - num2_;
-		int input = GetDlgItemInt(IDC_IANS, nullptr, FALSE);
+		int ans = (asked_operation_ == Operation::kSum) ? num1_ + num2_ : num1_ - num2_;
+		// 空欄や数字以外は 0 として読まれるので、答えが 0 の問題で正解扱いにならないよう変換の成否も見る
+		BOOL translated = FALSE;
+		int input = GetDlgItemInt(IDC_IANS, &translated, FALSE);
 
-		MessageBox((ans == input) ? "正解！！" : "残念。。", "解答", MB_OK);
+		MessageBox((translated && ans == input) ? "正解！！" : "残念。。", "解答", MB_OK);
 	}
 	else
 	{

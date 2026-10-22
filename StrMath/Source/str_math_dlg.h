@@ -37,6 +37,7 @@ private:
 	bool started_ = false;	// スタートで出題済みか
 	int digits_ = 2;
 	Operation operation_ = Operation::kSum;
+	Operation asked_operation_ = Operation::kSum;	// 出題したときの演算種別（出題後に切り替えても答え合わせはこちらで行う）
 };
 
 #endif  // STRMATH_SOURCE_STR_MATH_DLG_H_
