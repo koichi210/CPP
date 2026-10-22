@@ -629,8 +629,10 @@ void MacroToolDlg::OnRead()
 
 void MacroToolDlg::LoadFile(const CString& file_name)
 {
-	repeat_count_ = _ttoi(GetIniFileParam(file_name, kSectionCommon, kKeyRepeatNum));
-	repeat_delay_msec_ = _ttoi(GetIniFileParam(file_name, kSectionCommon, kKeyRepeatDelayMsec));
+	// COMMON セクションが無いファイル（手で作ったものなど）では、繰り返しの設定は今の値のままにする
+	// (0 にすると、実行回数 0 で1回も動かなくなる)
+	repeat_count_ = GetPrivateProfileInt(kSectionCommon, kKeyRepeatNum, repeat_count_, file_name);
+	repeat_delay_msec_ = GetPrivateProfileInt(kSectionCommon, kKeyRepeatDelayMsec, repeat_delay_msec_, file_name);
 
 	std::vector<CString> lines;
 	for (int i = 0; i < kMaxEventCount; i++)
