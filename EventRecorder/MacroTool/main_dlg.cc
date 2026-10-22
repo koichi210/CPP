@@ -19,6 +19,7 @@ namespace
 	constexpr UINT kDefaultRepeatDelayMsec = 100;
 	constexpr DWORD kStartWaitMsec = 1000;				// 「実行」を押してから動き出すまで
 	constexpr TCHAR kDefaultSettingFile[] = _T("save.txt");
+	constexpr TCHAR kDefaultSettingExt[] = _T(".txt");
 	constexpr TCHAR kStartTitle[] = _T("[開始]");
 
 	// 待ち時間の間、1秒ごとに押すキー（画面のロック防止用。VK_CAPITAL 等を指定する）
@@ -174,8 +175,22 @@ void MainDlg::OnSetting()
 	// 設定ファイルはカレントディレクトリに置く
 	CString name;
 	GetDlgItemText(IDET_SAMPLE, name);
+	if (name.IsEmpty())
+	{
+		name = kDefaultSettingFile;
+	}
+	else
+	{
+		// 設定後は拡張子を除いた名前を表示しているので、拡張子が無ければ付け直す
+		CString ext;
+		SplitPath(name, nullptr, nullptr, nullptr, &ext);
+		if (ext.IsEmpty())
+		{
+			AppendExt(name, kDefaultSettingExt);
+		}
+	}
 	CString path(_T(".\\"));
-	path += name.IsEmpty() ? CString(kDefaultSettingFile) : name;
+	path += name;
 
 	MacroToolDlg dlg(this, path, events_, repeat_count_, repeat_delay_msec_);
 	if (dlg.DoModal() == IDOK)
