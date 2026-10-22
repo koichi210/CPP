@@ -46,7 +46,10 @@ namespace
 			DWORD write_size = 0;
 			if (!WritePrinter(printer, buff, read_size, &write_size))
 			{
+				// 続けても書けないうえ、ブロックごとにメッセージが出てしまうので打ち切る
 				::MessageBox(nullptr, "WritePrinter error\n", "Warning!!", MB_OK);
+				result = FALSE;
+				break;
 			}
 			total += read_size;
 		}
@@ -197,8 +200,12 @@ void SendSpoolFileDlg::OnExecute()
 	printer_name.ReleaseBuffer();
 	if (opened)
 	{
-		SpoolJob(printer, spool_file_name);
+		const BOOL spooled = SpoolJob(printer, spool_file_name);
 		ClosePrinter(printer);
+		if (!spooled)
+		{
+			MessageBox("SpoolJob() - error");
+		}
 	}
 	else
 	{
