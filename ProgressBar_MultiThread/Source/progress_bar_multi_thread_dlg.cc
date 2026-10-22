@@ -78,6 +78,8 @@ HCURSOR ProgressBarDlg::OnQueryDragIcon()
 
 void ProgressBarDlg::OnBnClickedStart()
 {
+	// 前のスレッドが動いている（または止まる途中の）まま始めると、同じバーを2本で取り合うので、先に終わらせる
+	StopWorkers();
 	stop_requested_ = false;
 	status_ = "Start が押されたよ";
 	UpdateData(FALSE);
