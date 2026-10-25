@@ -61,9 +61,10 @@ void ManageAvi::SetRecordSec(UINT record_sec)
 	timeout_sec_ = record_sec;
 }
 
+// コマ送り = 1秒に画面を取り込む回数（0 なら毎フレーム取り込む）
 void ManageAvi::SetSkipFrame(UINT skip_frame)
 {
-	skip_frame_ms_ = 1;
+	skip_frame_ms_ = 0;
 	if (skip_frame > 0)
 	{
 		skip_frame_ms_ = 1000 / skip_frame;
@@ -342,34 +343,57 @@ AviError ManageAvi::Record(DWORD* written_frames)
 
 	PAVISTREAM stream = compress_ ? compress_avi_stream_ : avi_stream_;
 
+	// フレーム番号 n は録画開始から n / FPS 秒の画面にする（再生すると実際の時間と同じ速さになる）
+	const ULONGLONG start_ms = ::GetTickCount64();
+	const auto elapsed_ms = [start_ms]() { return ::GetTickCount64() - start_ms; };
+	const auto frame_time_ms = [this](DWORD n) { return frame_rate_ > 0 ? static_cast<ULONGLONG>(n) * 1000 / frame_rate_ : 0; };
+	ULONGLONG next_capture_ms = 0;	// 次に画面を取り込むフレームの時刻（録画開始からのミリ秒）
+
 	// ファイルを作った以上は、すぐ止められても最初の1フレームは書く（フレームのない AVI を残さない）
 	AviError err = AviError::kSuccess;
 	DWORD frame_no = 0;
-	for (; frame_no == 0 || (frame_no < avi_stream_info_.dwLength && executing_); frame_no++)
+	while (err == AviError::kSuccess && (frame_no == 0 || (frame_no < avi_stream_info_.dwLength && executing_)))
 	{
-		// 画面の記録領域を取り込む
-		if (resize_)
+		// このフレームの時刻まで待つ
+		const ULONGLONG frame_ms = frame_time_ms(frame_no);
+		const ULONGLONG now_ms = elapsed_ms();
+		if (now_ms < frame_ms)
 		{
-			::StretchBlt(mem_dc, 0, 0, frame_size_.cx, frame_size_.cy,
-				dc_screen, src.left, src.top, src.Width(), src.Height(), SRCCOPY);
-		}
-		else
-		{
-			::BitBlt(mem_dc, 0, 0, frame_size_.cx, frame_size_.cy, dc_screen, src.left, src.top, SRCCOPY);
+			::Sleep(static_cast<DWORD>(frame_ms - now_ms));
 		}
 
-		if (record_mouse_point_)
+		// 画面の記録領域を取り込む。コマ送りの指定があれば、その間隔が経つまでは前の画像をもう一度書く
+		if (frame_no == 0 || frame_ms >= next_capture_ms)
 		{
-			DrawCursor(mem_dc, src.TopLeft(), scale_x, scale_y);
+			if (resize_)
+			{
+				::StretchBlt(mem_dc, 0, 0, frame_size_.cx, frame_size_.cy,
+					dc_screen, src.left, src.top, src.Width(), src.Height(), SRCCOPY);
+			}
+			else
+			{
+				::BitBlt(mem_dc, 0, 0, frame_size_.cx, frame_size_.cy, dc_screen, src.left, src.top, SRCCOPY);
+			}
+
+			if (record_mouse_point_)
+			{
+				DrawCursor(mem_dc, src.TopLeft(), scale_x, scale_y);
+			}
+			next_capture_ms = frame_ms + skip_frame_ms_;
 		}
 
-		// ディスクがいっぱいなどで書けなければ、そこで止めてエラーにする（「保存しました」とは出さない）
-		if (AVIERR_OK != ::AVIStreamWrite(stream, frame_no, 1, pv_bits, header.biSizeImage, AVIIF_KEYFRAME, nullptr, nullptr))
+		// 取り込みや書き込みが間に合わず、次のフレームの表示時間も過ぎていたら、その分も同じ画像で埋める
+		// （詰めて書くと、再生したときに実際より速くなる）
+		do
 		{
-			err = AviError::kWriteFrame;
-			break;
-		}
-		::Sleep(skip_frame_ms_);
+			// ディスクがいっぱいなどで書けなければ、そこで止めてエラーにする（「保存しました」とは出さない）
+			if (AVIERR_OK != ::AVIStreamWrite(stream, frame_no, 1, pv_bits, header.biSizeImage, AVIIF_KEYFRAME, nullptr, nullptr))
+			{
+				err = AviError::kWriteFrame;
+				break;
+			}
+			frame_no++;
+		} while (frame_no < avi_stream_info_.dwLength && frame_time_ms(frame_no + 1) <= elapsed_ms() && executing_);
 	}
 
 	::SelectObject(mem_dc, old_bitmap);
