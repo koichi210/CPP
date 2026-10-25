@@ -26,6 +26,13 @@ namespace
 	constexpr LPCTSTR kEndStr			= _T("解答を入力して下さい。");
 	constexpr LPCTSTR kStartButton		= _T("スタート");
 	constexpr LPCTSTR kStopButton		= _T("ストップ");
+
+	CString RememberText(int sec)
+	{
+		CString text;
+		text.Format(_T("%d%s"), sec, kRememberSecStr);
+		return text;
+	}
 }
 
 void ShowCellGrid(CWnd& dlg, int size)
@@ -195,12 +202,13 @@ void TurnMemoryDlg::OnTimer(UINT_PTR id_event)
 	CDialog::OnTimer(id_event);
 }
 
-// 全部の順番を表示し終えたら、記憶時間のカウントダウンに移る
+// 全部の順番を表示し終えたら、記憶時間のカウントダウンに移る（最初の kWaitMax 秒はすぐ表示する）
 void TurnMemoryDlg::EndProc()
 {
 	next_number_ = 1;
 	wait_ = kWaitMax;
 	KillTimer(kEventShow);
+	GetDlgItem(IDC_TITLE)->SetWindowText(RememberText(wait_));
 	SetTimer(kEventWait, kWaitInterval, nullptr);
 }
 
@@ -280,14 +288,16 @@ void TurnMemoryDlg::ShowProc()
 	}
 }
 
+// 1秒ごとに残り秒数を減らして表示し（EndProc の表示と合わせて kWaitMax ～ 1 の kWaitMax 回）、
+// 0 になったら解答の入力に移る
 void TurnMemoryDlg::WaitProc()
 {
-	CString text;
-	text.Format(_T("%d%s"), wait_, kRememberSecStr);
-	GetDlgItem(IDC_TITLE)->SetWindowText(text);
-
 	wait_--;
-	if (wait_ < 0)
+	if (wait_ > 0)
+	{
+		GetDlgItem(IDC_TITLE)->SetWindowText(RememberText(wait_));
+	}
+	else
 	{
 		state_ = GameState::kEnd;
 		InitProc();
