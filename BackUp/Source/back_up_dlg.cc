@@ -51,6 +51,43 @@ namespace
 		AppendPath(file_path, file_name);
 		return file_path;
 	}
+
+	// 設定ファイルは ',' 区切りなので、',' を含むパスは '"' で囲んで書く
+	// （パスに '"' は使えないので、囲みの終わりと紛れない。',' を含まないパスは従来どおりそのまま書く）
+	CString QuoteSettingField(const CString& path)
+	{
+		return (path.Find(_T(',')) >= 0) ? _T("\"") + path + _T("\"") : path;
+	}
+
+	// 設定ファイルの1行から pos の位置の項目を読み、pos を次の項目へ進める
+	// '"' で囲んだ項目は中の ',' も含める。囲んでいない項目は次の ',' まで（to_end なら行の終わりまで）
+	CString ReadSettingField(const CString& line, int& pos, bool to_end = false)
+	{
+		const int length = line.GetLength();
+		if (pos >= length)
+		{
+			return CString();
+		}
+
+		int end = -1;
+		CString field;
+		if (line[pos] == _T('"') && (end = line.Find(_T('"'), pos + 1)) >= 0)
+		{
+			field = line.Mid(pos + 1, end - pos - 1);
+			end++;		// 閉じの '"' の次（',' のはず）
+		}
+		else
+		{
+			end = to_end ? -1 : line.Find(_T(','), pos);
+			if (end < 0)
+			{
+				end = length;
+			}
+			field = line.Mid(pos, end - pos);
+		}
+		pos = end + 1;	// ',' の次
+		return field;
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -499,7 +536,7 @@ void BackUpDlg::OnBnClickedSaveSetting()
 	}
 }
 
-// 書式: 有効,オプション,元フォルダ,先フォルダ（1行1件）
+// 書式: 有効,オプション,元フォルダ,先フォルダ（1行1件。',' を含むフォルダは '"' で囲む）
 BOOL BackUpDlg::WriteSetting()
 {
 	const CString path = GetDocumentsFilePath(kSetFileName);
@@ -523,7 +560,8 @@ BOOL BackUpDlg::WriteSetting()
 		}
 
 		CString line;
-		line.Format(_T("%d,%d,%s,%s\n"), entry.bk_enable, entry.opt, entry.src_path.GetString(), entry.dst_path.GetString());
+		line.Format(_T("%d,%d,%s,%s\n"), entry.bk_enable, entry.opt,
+			QuoteSettingField(entry.src_path).GetString(), QuoteSettingField(entry.dst_path).GetString());
 		file.WriteString(line);
 	}
 	file.Close();
@@ -543,12 +581,13 @@ BOOL BackUpDlg::ReadSetting()
 		CString str;
 		while (idx < kMaxEntry && file.ReadString(str))
 		{
+			// 以前の設定ファイル（囲みなし）もそのまま読める。先フォルダは行の終わりまでなので、囲みなしでも ',' を含められる
 			int cur_pos = 0;
 			BackupSetting& entry = entries_[idx];
-			entry.bk_enable  = _ttoi(str.Tokenize(_T(","), cur_pos));
-			entry.opt        = _ttoi(str.Tokenize(_T(","), cur_pos));
-			entry.src_path = str.Tokenize(_T(","), cur_pos);
-			entry.dst_path = str.Tokenize(_T(","), cur_pos);
+			entry.bk_enable  = _ttoi(ReadSettingField(str, cur_pos));
+			entry.opt        = _ttoi(ReadSettingField(str, cur_pos));
+			entry.src_path = ReadSettingField(str, cur_pos);
+			entry.dst_path = ReadSettingField(str, cur_pos, true);
 			idx++;
 		}
 
