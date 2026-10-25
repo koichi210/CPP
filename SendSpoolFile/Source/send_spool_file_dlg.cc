@@ -108,6 +108,17 @@ BOOL SendSpoolFileDlg::OnInitDialog()
 	AddPrinters(PRINTER_ENUM_LOCAL);
 	AddPrinters(PRINTER_ENUM_FAVORITE);
 
+	// 既定のプリンタを選ぶ（一覧に無ければ先頭のローカルプリンタ）
+	int sel = CB_ERR;
+	TCHAR default_printer[MAX_PATH] = {};
+	DWORD size = _countof(default_printer);
+	if (GetDefaultPrinter(default_printer, &size))
+	{
+		sel = static_cast<int>(SendDlgItemMessage(IDCB_PRINTER_NAME, CB_FINDSTRINGEXACT,
+			static_cast<WPARAM>(-1), reinterpret_cast<LPARAM>(default_printer)));
+	}
+	SendDlgItemMessage(IDCB_PRINTER_NAME, CB_SETCURSEL, (sel != CB_ERR) ? sel : 0, 0);
+
 	return TRUE;
 }
 
@@ -125,13 +136,10 @@ void SendSpoolFileDlg::AddPrinters(DWORD enum_flags)
 		num = 0;
 	}
 
+	// 列挙した順に末尾へ足す（位置 i へ挿入すると、2回目に列挙したものが先頭に入ってしまう）
 	for (DWORD i = 0; i < num; i++)
 	{
-		SendDlgItemMessage(IDCB_PRINTER_NAME, CB_INSERTSTRING, i, reinterpret_cast<LPARAM>(printer_infos[i].pPrinterName));
-	}
-	if (num > 0)
-	{
-		SendDlgItemMessage(IDCB_PRINTER_NAME, CB_SETCURSEL, 0, 0);
+		SendDlgItemMessage(IDCB_PRINTER_NAME, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(printer_infos[i].pPrinterName));
 	}
 }
 
