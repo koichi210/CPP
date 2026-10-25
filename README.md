@@ -2,6 +2,8 @@
 
 C++ の学習・検証コード置き場。MFC のダイアログアプリが中心で、1フォルダが1プロジェクト（`.sln` を持つ）。
 
+よく使う2本（OthelloMfc＝旧 othello、LoginHistory）は [Essentials](https://github.com/koichi210/Essentials) に移動しました。履歴もそちらに引き継いでいます。
+
 ## ビルド環境
 
 - Visual Studio 2019（ツールセット v142、C++17）。「C++ によるデスクトップ開発」と「最新の v142 ビルドツール用 C++ MFC (x86 および x64)」が必要
