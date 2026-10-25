@@ -74,4 +74,17 @@ struct MacroEvent
 	char		comment[MAX_PATH];
 };
 
+// 再生では1文字をそのまま仮想キーコードとして送るので、送れるのは英字・数字・空白だけ
+// 英字は小文字にする（記録と同じ。大文字は Shift を修飾キーで指定する）。送れない文字は '\0'
+// 設定画面の入力欄と、再生（古いファイルや手で書いたファイルの文字も通る）の両方で使う
+inline char ToPlayableKeyChar(char c)
+{
+	if ('A' <= c && c <= 'Z')
+	{
+		return static_cast<char>(c + ('a' - 'A'));
+	}
+	const bool playable = ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || c == ' ';
+	return playable ? c : '\0';
+}
+
 #endif  // EVENTRECORDER_MACROTOOL_MACRO_DEFS_H_

@@ -51,18 +51,6 @@ namespace
 	// 保存形式の区切り文字（ParseEventString）。コメント欄に入ると読み込んだとき項目がずれる
 	constexpr TCHAR kCommentForbiddenChars[] = _T(",;");
 
-	// 再生では1文字をそのまま仮想キーコードとして送るので、送れるのは英字・数字・空白だけ
-	// 英字は小文字にする（記録と同じ。大文字は Shift を修飾キーで指定する）。送れない文字は '\0'
-	char ToPlayableKeyChar(char c)
-	{
-		if ('A' <= c && c <= 'Z')
-		{
-			return static_cast<char>(c + ('a' - 'A'));
-		}
-		const bool playable = ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || c == ' ';
-		return playable ? c : '\0';
-	}
-
 	char ToCommentChar(char c)
 	{
 		return (c == ',' || c == ';') ? '\0' : c;

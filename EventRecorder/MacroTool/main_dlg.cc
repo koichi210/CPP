@@ -86,9 +86,19 @@ namespace
 		}
 		else
 		{
+			// 送れない文字（記号は別の仮想キーになる。'!' は PageUp）は送らずに飛ばす
 			for (const char* p = key.text; *p != '\0'; p++)
 			{
-				InputSimulator::KeyAction(static_cast<WORD>(*p));
+				if (IsDBCSLeadByte(static_cast<BYTE>(*p)) && p[1] != '\0')
+				{
+					p++;	// 2バイト文字は後ろのバイトごと飛ばす
+					continue;
+				}
+				const char c = ToPlayableKeyChar(*p);
+				if (c != '\0')
+				{
+					InputSimulator::KeyAction(static_cast<WORD>(c));
+				}
 			}
 		}
 
