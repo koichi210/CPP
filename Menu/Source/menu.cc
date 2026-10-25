@@ -8,9 +8,8 @@ namespace
 {
 	constexpr int kMaxLoadString = 100;
 
-	// メニューバー上の「テスト領域」の位置と、その中のサブメニュー付き項目の位置
+	// メニューバー上の「テスト領域」の位置
 	constexpr int kTestAreaPosition = 2;
-	constexpr int kTestSubMenuPosition = 1;
 
 	// 実行時に追加する項目のコマンド ID（ハンドラは無い）
 	constexpr UINT_PTR kAddedItemId = 1;
@@ -24,9 +23,21 @@ namespace
 		return GetSubMenu(GetMenu(wnd), kTestAreaPosition);
 	}
 
+	// 「テスト領域」の中で最初のサブメニュー付き項目のサブメニュー（無ければ nullptr）
+	// DelMenu で前の項目が消えると位置がずれるので、固定位置ではなく探す
 	HMENU GetTestSubMenu(HWND wnd)
 	{
-		return GetSubMenu(GetTestAreaMenu(wnd), kTestSubMenuPosition);
+		HMENU test_area = GetTestAreaMenu(wnd);
+		const int count = GetMenuItemCount(test_area);
+		for (int i = 0; i < count; i++)
+		{
+			HMENU sub_menu = GetSubMenu(test_area, i);
+			if (sub_menu != nullptr)
+			{
+				return sub_menu;
+			}
+		}
+		return nullptr;
 	}
 
 	// 末尾に項目を追加する
