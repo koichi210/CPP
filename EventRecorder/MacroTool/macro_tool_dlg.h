@@ -106,6 +106,7 @@ private:
 	HICON					icon_;
 	SimpleListCtrl			list_;
 	RestrictedEdit			key_edit_;
+	RestrictedEdit			comment_edit_;
 	CComboBox				mouse_combo_;
 	CComboBox				key_combo_;
 

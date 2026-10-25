@@ -46,6 +46,72 @@ namespace
 	constexpr int kExecuteNone = 0;
 	constexpr int kExecuteMax = 32767;
 
+	// キー文字列欄で打てない1バイト文字（英数字と空白以外の記号）。2バイト文字は kCharAscii で止める
+	constexpr TCHAR kKeyForbiddenChars[] = _T("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~");
+	// 保存形式の区切り文字（ParseEventString）。コメント欄に入ると読み込んだとき項目がずれる
+	constexpr TCHAR kCommentForbiddenChars[] = _T(",;");
+
+	// 再生では1文字をそのまま仮想キーコードとして送るので、送れるのは英字・数字・空白だけ
+	// 英字は小文字にする（記録と同じ。大文字は Shift を修飾キーで指定する）。送れない文字は '\0'
+	char ToPlayableKeyChar(char c)
+	{
+		if ('A' <= c && c <= 'Z')
+		{
+			return static_cast<char>(c + ('a' - 'A'));
+		}
+		const bool playable = ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || c == ' ';
+		return playable ? c : '\0';
+	}
+
+	char ToCommentChar(char c)
+	{
+		return (c == ',' || c == ';') ? '\0' : c;
+	}
+
+	// 貼り付けや IME で入った文字も含め、to_char が '\0' を返す文字を除く（2バイト文字は keep_dbcs のときだけ残す）
+	// 変わったときだけ書き戻し、カーソルは同じ文字の後ろに置く。戻り値は除いた後の文字列
+	CString FilterEditText(CEdit& edit, char (*to_char)(char), bool keep_dbcs)
+	{
+		CString text;
+		edit.GetWindowText(text);
+		int sel_start = 0;
+		int sel_end = 0;
+		edit.GetSel(sel_start, sel_end);
+
+		CString filtered;
+		int caret = 0;
+		for (int i = 0; i < text.GetLength(); i++)
+		{
+			if (IsDBCSLeadByte(static_cast<BYTE>(text[i])) && i + 1 < text.GetLength())
+			{
+				if (keep_dbcs)
+				{
+					filtered += text.Mid(i, 2);
+				}
+				i++;
+			}
+			else
+			{
+				const char c = to_char(text[i]);
+				if (c != '\0')
+				{
+					filtered += c;
+				}
+			}
+			if (i < sel_end)
+			{
+				caret = filtered.GetLength();
+			}
+		}
+
+		if (filtered != text)
+		{
+			edit.SetWindowText(filtered);
+			edit.SetSel(caret, caret);
+		}
+		return filtered;
+	}
+
 	// 一覧の列
 	enum ListColumn
 	{
@@ -233,6 +299,7 @@ void MacroToolDlg::DoDataExchange(CDataExchange* dx)
 	DDX_Control(dx, IDC_LISTCTRL, list_);
 	DDX_Control(dx, IDCB_MOUSE, mouse_combo_);
 	DDX_Control(dx, IDET_KEY, key_edit_);
+	DDX_Control(dx, IDET_COMMENT, comment_edit_);
 	DDX_Control(dx, IDCB_KEY, key_combo_);
 }
 
@@ -317,10 +384,13 @@ void MacroToolDlg::InitControls()
 	list_.EnableFullRowSelect();	// 先頭行を選択するので、行を作った後に呼ぶ
 
 	key_edit_.DisableCopyAndPaste(TRUE);
+	key_edit_.SetCharacterKind(RestrictedEdit::kCharAscii);
+	key_edit_.SetForbiddenCharacters(kKeyForbiddenChars);
+	comment_edit_.SetForbiddenCharacters(kCommentForbiddenChars);
 
 	// 入力欄は MacroEvent の文字配列に strcpy_s で写すので、配列に収まる長さまでにする（超えると strcpy_s で落ちる）
 	key_edit_.LimitText(sizeof(MacroKey::text) - 1);
-	static_cast<CEdit*>(GetDlgItem(IDET_COMMENT))->LimitText(sizeof(MacroEvent::comment) - 1);
+	comment_edit_.LimitText(sizeof(MacroEvent::comment) - 1);
 
 	CheckRadioButton(IDRB_MOUSE, IDRB_KEY, IDRB_MOUSE);
 
@@ -531,8 +601,17 @@ void MacroToolDlg::OnEnChangeSleep()
 
 void MacroToolDlg::OnEnChangeComment()
 {
+	// 打ち込みは RestrictedEdit で止める。貼り付けなどで入った区切り文字はここで除く
+	// （UpdateControl が選択行の値を表示したときは、そのまま写す）
 	CString text;
-	GetDlgItemText(IDET_COMMENT, text);
+	if (updating_controls_)
+	{
+		GetDlgItemText(IDET_COMMENT, text);
+	}
+	else
+	{
+		text = FilterEditText(comment_edit_, ToCommentChar, true);
+	}
 	strcpy_s(CurrentEvent().comment, text);
 	UpdateListControl();
 }
@@ -577,8 +656,17 @@ void MacroToolDlg::OnCbnSelchangeKey()
 
 void MacroToolDlg::OnEnChangeKey()
 {
+	// 打ち込みは RestrictedEdit で止める。貼り付けや IME で入った送れない文字はここで除く
+	// （UpdateControl が選択行の値を表示したときは、そのまま写す）
 	CString text;
-	GetDlgItemText(IDET_KEY, text);
+	if (updating_controls_)
+	{
+		GetDlgItemText(IDET_KEY, text);
+	}
+	else
+	{
+		text = FilterEditText(key_edit_, ToPlayableKeyChar, false);
+	}
 	strcpy_s(CurrentEvent().key.text, text);
 	EnsureEventKind(EventKind::kKey);
 	UpdateListControl();
